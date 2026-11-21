@@ -10,6 +10,9 @@
  * perdido é só mandado de novo. De tempos em tempos vem junto a assinatura do estado da tela; se ela não bate com a do servidor,
  * a partida segue, mas não vale recorde. O RECORDE (a tabela comum do Solo, variante = o nível) é o tempo da vitória, e só com a
  * partida refeita aqui: o número do navegador nunca entra.
+ * OS DESAFIOS DO SOLO (21/11/2026): cenários com objetivo (sim.ts, DESAFIOS), contra o computador de cada um (ia.ts,
+ * PERFIL_DO_DESAFIO); o recorde vai à variante `desafio-<id>`, com o número que a partida refeita aqui dá (`valorDoDesafio`).
+ * A VELOCIDADE do Solo (1×, 1,5× ou 2×) é só da tela: o relógio daqui deixa a partida andar até VELOCIDADE_MAX vezes o normal.
  *
  * NA SALA (1×1), "LOCKSTEP": a partida anda nos dois computadores, e só os COMANDOS passam pela rede. O tempo é cortado em TURNOS
  * de 2 passos (200 ms); o que alguém manda no turno k vale no turno k + 3 (600 ms depois), o que esconde os ~200 ms de ida e
@@ -29,9 +32,9 @@
  */
 import * as db from './db.js';
 import type { Contexto, Definicao } from './minijogo-motor.js';
-import { criarIA, NIVEIS, PERFIS, type IA, type Nivel } from './tocas/ia.js';
+import { criarIA, NIVEIS, PERFIL_DO_DESAFIO, PERFIS, type IA, type Nivel } from './tocas/ia.js';
 import { ehRobo, idsDosRobos, nomeDoRobo } from './minijogo-robos.js';
-import { aliados, assinatura, comandar, equipeDe, limparComando, MAPAS, novaPartida, passo, pontos, type Amostra, type Comando, type Dono, type Motivo, type Sim, type TipoDoMapa } from './tocas/sim.js';
+import { aliados, assinatura, comandar, DESAFIOS, ehDesafio, equipeDe, limparComando, MAPAS, novaPartida, passo, pontos, valorDoDesafio, type Amostra, type Comando, type Desafio, type Dono, type Motivo, type Sim, type TipoDoMapa } from './tocas/sim.js';
 
 /** Os números da simulação (tocas/sim.ts). */
 export const PASSOS_POR_SEGUNDO = 10;
@@ -40,6 +43,8 @@ export const PASSOS_MAX = 20 * 60 * PASSOS_POR_SEGUNDO;
 export const VITORIA_MIN_PASSOS = 4 * 60 * PASSOS_POR_SEGUNDO;
 /** A rede e a largada: os passos podem chegar um tico à frente do relógio do servidor. */
 export const FOLGA_DO_RELOGIO_MS = 3000;
+/** A VELOCIDADE do Solo (21/11/2026): a tela anda a 1×, 1,5× ou 2×; o relógio do servidor deixa até isto (a partida é a mesma). */
+export const VELOCIDADE_MAX = 2;
 /** Ninguém volta: a partida fecha sozinha depois disto (a pausa da janela sem foco tem esse tanto). */
 export const PRAZO_MS = 90 * 60_000;
 /** O maior trecho do Solo (2 minutos de jogo): o servidor anda isso de uma vez, no máximo. */
@@ -103,6 +108,8 @@ function solo(ctx: Contexto, quem: number, agora: () => number, sorteio: () => n
   let nivel: Nivel = 'normal';
   let mapa: TipoDoMapa = 'campo';
   let tutorial = false;
+  /** O desafio do Solo (21/11/2026), ou null: a partida de sempre. */
+  let desafio: Desafio | null = null;
   let inicio = 0;
   let sim: Sim | null = null;
   let ia: IA | null = null;
@@ -117,7 +124,11 @@ function solo(ctx: Contexto, quem: number, agora: () => number, sorteio: () => n
 
   const fechar = (r: Omit<Resultado, 'historico' | 'recorde'>) => {
     let recorde: Resultado['recorde'] = null;
-    if (r.conferido && r.venceu && !tutorial) recorde = db.guardarRecordeDoSolo(quem, 'tocas', nivel, r.passos * 100, true, { mapa });
+    if (r.conferido && r.venceu && !tutorial) {
+      // o desafio guarda o número dele (os pontos, a vida da Maravilha ou o tempo), calculado na partida refeita aqui
+      if (desafio && sim) recorde = db.guardarRecordeDoSolo(quem, 'tocas', `desafio-${desafio}`, valorDoDesafio(sim), DESAFIOS[desafio].menorMelhor, { mapa });
+      else recorde = db.guardarRecordeDoSolo(quem, 'tocas', nivel, r.passos * 100, true, { mapa });
+    }
     resultado = { ...r, historico: sim?.historico ?? [], recorde };
     fase = 'fim';
     ctx.avisar();
@@ -135,6 +146,7 @@ function solo(ctx: Contexto, quem: number, agora: () => number, sorteio: () => n
         mapa,
         nivel,
         tutorial,
+        desafio,
         partidaId,
         resultado,
         passosMax: PASSOS_MAX,
@@ -148,10 +160,11 @@ function solo(ctx: Contexto, quem: number, agora: () => number, sorteio: () => n
       if (corpo.tipo === 'comecar') {
         if (fase !== 'escolha') return null;
         tutorial = corpo.tutorial === true;
-        nivel = tutorial ? 'facil' : ehNivel(corpo.nivel) ? corpo.nivel : 'normal';
+        desafio = !tutorial && ehDesafio(corpo.desafio) ? corpo.desafio : null;
+        nivel = tutorial || desafio === 'relampago' ? 'facil' : desafio === 'cerco' ? 'dificil' : ehNivel(corpo.nivel) ? corpo.nivel : 'normal';
         mapa = tutorial ? 'campo' : ehMapa(corpo.mapa) ? corpo.mapa : MAPAS[Math.floor(sorteio() * MAPAS.length)];
-        sim = novaPartida(semente, { mapa });
-        ia = criarIA(1, tutorial ? PERFIS.tutorial : PERFIS[nivel]);
+        sim = novaPartida(semente, { mapa, desafio });
+        ia = criarIA(1, tutorial ? PERFIS.tutorial : desafio ? PERFIL_DO_DESAFIO[desafio] : PERFIS[nivel]);
         inicio = agora();
         fase = 'jogando';
         ctx.avisar();
@@ -171,7 +184,7 @@ function solo(ctx: Contexto, quem: number, agora: () => number, sorteio: () => n
       if (de !== sim.passo) return null;
       if ((ate as number) <= (de as number) || (ate as number) > (de as number) + MAIOR_TRECHO || (ate as number) > PASSOS_MAX + 1) return 'Sessão inválida.';
       // a janela sem foco pausa a partida (mais tempo), mas ninguém anda mais passos do que o relógio deixou
-      if (((ate as number) / PASSOS_POR_SEGUNDO) * 1000 > agora() - inicio + FOLGA_DO_RELOGIO_MS) return 'Sessão inválida.';
+      if (((ate as number) / (PASSOS_POR_SEGUNDO * VELOCIDADE_MAX)) * 1000 > agora() - inicio + FOLGA_DO_RELOGIO_MS) return 'Sessão inválida.';
       if (lote.length > 4000) return 'Sessão inválida.';
       const cmds: { p: number; c: Comando }[] = [];
       let ultimo = de as number;
@@ -199,9 +212,9 @@ function solo(ctx: Contexto, quem: number, agora: () => number, sorteio: () => n
       const fim = corpo.fim as Record<string, unknown> | undefined;
       if (fim && typeof fim === 'object' && sim.passo === ate) {
         const motivo = fim.motivo;
-        if (motivo !== 'centro' && motivo !== 'maravilha' && motivo !== 'tempo') return 'Sessão inválida.';
+        if (motivo !== 'centro' && motivo !== 'maravilha' && motivo !== 'tempo' && motivo !== 'desafio') return 'Sessão inválida.';
         if (typeof fim.venceu !== 'boolean') return 'Sessão inválida.';
-        if (fim.venceu && sim.passo < VITORIA_MIN_PASSOS) return 'Sessão inválida.';
+        if (fim.venceu && !desafio && sim.passo < VITORIA_MIN_PASSOS) return 'Sessão inválida.';
         if (motivo === 'tempo' && sim.passo < PASSOS_MAX - 1) return 'Sessão inválida.';
         desencontro = true;
         fechar({ venceu: fim.venceu, motivo, passos: sim.passo, conferido: false });

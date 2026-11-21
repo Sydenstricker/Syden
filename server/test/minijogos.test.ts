@@ -132,7 +132,7 @@ test('as categorias: cada uma rende as 8 rodadas sem repetir o objeto, e só com
       const usados = new Set<string>();
       const alvos = new Set<string>();
       for (let r = 0; r < RODADAS; r++) {
-        const [ref, alvo] = sortearPar(usados, ids, Math.random, r + 1);
+        const [ref, alvo] = sortearPar(usados, ids, Math.random, r + 1, alvos);
         assert.ok(ids.includes(ref) && ids.includes(alvo), `${nome}: ${ref} × ${alvo} fora da categoria`);
         assert.equal(OBJETOS[ref].medida === 'altura', OBJETOS[alvo].medida === 'altura', `${nome}: ${ref} × ${alvo} medidos de jeitos diferentes`);
         assert.ok(!alvos.has(alvo), `${nome}: ${alvo} saiu duas vezes`);

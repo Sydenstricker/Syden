@@ -1,17 +1,18 @@
 import { temWebGL } from './temWebGL';
-import { Bell, Trophy } from 'lucide-react';
+import { Bell, Gauge, Trophy } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type MouseEvent as ME, type PointerEvent as PE, type WheelEvent as WE } from 'react';
 import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { chave, useT } from './i18n';
 import { cursorDeHud, IconeDeHud, type NomeDoIconeDeHud } from './iconesDeHud';
 import { tocar } from './somDosJogos';
-import { criarIA, NIVEIS, PERFIS, type IA, type Nivel } from './tocas/ia';
+import { criarIA, NIVEIS, PERFIL_DO_DESAFIO, PERFIS, type IA, type Nivel } from './tocas/ia';
 import {
   assinatura,
   casasDaMuralha,
   centroDe,
   comandar,
+  DESAFIOS,
   eFonte,
   ePredio,
   aliados,
@@ -19,6 +20,7 @@ import {
   ERA2,
   eUnidade,
   limparComando,
+  LISTA_DE_DESAFIOS,
   lugarDeColeta,
   MAPAS,
   MELHORIAS,
@@ -28,7 +30,7 @@ import {
   ORDEM_DAS_MELHORIAS,
   passo,
   PASSO,
-  PASSOS_DA_MARAVILHA,
+  passosDaMaravilha,
   PASSOS_POR_SEGUNDO,
   podeConstruir,
   podePagar,
@@ -42,6 +44,7 @@ import {
   type Amostra,
   type Comando,
   type Custo,
+  type Desafio,
   type Dono,
   type Melhoria,
   type Recurso,
@@ -75,7 +78,7 @@ import './tocas/tocas.css';
  * botão do meio, o direito arrastado ou as setas movem o mapa. No toque: tocar escolhe, tocar no destino manda, arrastar move.
  */
 
-type MotivoDoFim = 'centro' | 'maravilha' | 'tempo' | 'desistiu' | 'saiu' | 'desencontro' | 'parou';
+type MotivoDoFim = 'centro' | 'maravilha' | 'tempo' | 'desafio' | 'desistiu' | 'saiu' | 'desencontro' | 'parou';
 export interface ResultadoTocas {
   venceu: boolean;
   vencedor?: Dono | null;
@@ -93,6 +96,8 @@ export interface EstadoTocas {
   mapa: TipoDoMapa;
   nivel?: Nivel;
   tutorial?: boolean;
+  /** O desafio do Solo (21/11/2026), ou null: a partida de sempre. */
+  desafio?: Desafio | null;
   partidaId: string;
   resultado: ResultadoTocas | null;
   passosMax: number;
@@ -148,6 +153,20 @@ const NOME: Record<TipoUnidade | TipoPredio, string> = {
 };
 const NOME_DO_RECURSO: Record<Recurso, string> = { comida: chave('Comida'), madeira: chave('Madeira'), ouro: chave('Ouro') };
 const NOME_DO_NIVEL: Record<Nivel, string> = { facil: chave('Fácil'), normal: chave('Normal'), dificil: chave('Difícil') };
+/**
+ * OS DESAFIOS DO SOLO (21/11/2026): o nome e o objetivo de cada um (a regra mora em tocas/sim.ts, DESAFIOS), e como se lê o
+ * recorde dele (os pontos, a vida da Maravilha em %, ou o tempo).
+ */
+const NOME_DO_DESAFIO: Record<Desafio, string> = { cerco: chave('Cerco'), maravilha: chave('Defender a Maravilha'), relampago: chave('Ataque relâmpago'), colheita: chave('Colheita') };
+const OBJETIVO_DO_DESAFIO: Record<Desafio, string> = {
+  cerco: chave('Aguente {tempo} contra ataques sem parar.'),
+  maravilha: chave('Mantenha a Maravilha de pé por {tempo}.'),
+  relampago: chave('Com um exército pronto, derrube o centro da vila em {tempo}.'),
+  colheita: chave('Colha {n} recursos em {tempo}.'),
+};
+const lerRecordeDoDesafio = (d: Desafio, valor: number) => (d === 'cerco' ? String(valor) : d === 'maravilha' ? `${valor}%` : relogio(valor / 100));
+/** As velocidades do Solo (só o ritmo da tela: a partida é a mesma, e o servidor a refaz igual). */
+const VELOCIDADES = [1, 1.5, 2] as const;
 const NOME_DO_MAPA: Record<TipoDoMapa, string> = { campo: chave('Campo'), floresta: chave('Floresta'), ouro: chave('Ouro no meio'), lagos: chave('Lagos') };
 const NOME_DA_MELHORIA: Record<Melhoria, string> = {
   ataqueLanceiro: chave('Ataque dos lanceiros'),
@@ -233,6 +252,7 @@ export function JogoTocas({ estado, jogador, agir, socket = null, channelId = 0 
       nivelDosRobos={estado.nivelDosRobos ?? 'normal'}
       nivel={estado.nivel ?? 'normal'}
       tutorial={!!estado.tutorial}
+      desafio={estado.desafio ?? null}
       nomes={nomes}
       agir={agir}
       estadoRef={estadoRef}
@@ -271,6 +291,24 @@ function Escolha({ estado, agir }: { estado: EstadoTocas; agir: Props['agir'] })
               {rec !== undefined && (
                 <small title={t('Recorde')}>
                   <Trophy size={12} aria-hidden="true" /> {relogio(rec / 100)}
+                </small>
+              )}
+            </button>
+          );
+        })}
+      </div>
+      <p className="tocas-escolha-titulo">{t('Desafios')}</p>
+      <div className="tocas-desafios">
+        {LISTA_DE_DESAFIOS.map((d) => {
+          const rec = estado.recordes?.[`desafio-${d}`];
+          const dados = DESAFIOS[d];
+          return (
+            <button key={d} type="button" className={`tocas-desafio tocas-desafio-${d}`} onClick={() => void agir({ tipo: 'comecar', desafio: d, ...(mapa ? { mapa } : {}) })}>
+              <strong>{t(NOME_DO_DESAFIO[d])}</strong>
+              <small>{t(OBJETIVO_DO_DESAFIO[d], { tempo: relogio(dados.limite), n: dados.meta ?? 0 })}</small>
+              {rec !== undefined && (
+                <small className="tocas-desafio-recorde" title={t('Recorde')}>
+                  <Trophy size={12} aria-hidden="true" /> {lerRecordeDoDesafio(d, rec)}
                 </small>
               )}
             </button>
@@ -378,7 +416,25 @@ function FimDaPartida({ estado, r, eu, assistindo, nomes }: { estado: EstadoToca
           : r.venceu
             ? t('Vocês derrubaram os dois centros da vila da outra equipe.')
             : t('A outra equipe derrubou os dois centros da vila de vocês.');
-  const texto =
+  const desafio = !estado.sala ? estado.desafio ?? null : null;
+  const textoDoDesafio = !desafio
+    ? null
+    : r.motivo === 'desistiu'
+      ? t('Você desistiu.')
+      : r.motivo === 'centro'
+        ? r.venceu
+          ? t('Você derrubou o centro da vila do computador.')
+          : t('O computador derrubou o seu centro da vila.')
+        : desafio === 'cerco'
+          ? t('A sua vila aguentou o cerco.')
+          : desafio === 'maravilha'
+            ? r.venceu
+              ? t('A sua Maravilha ficou de pé até o fim.')
+              : t('A sua Maravilha caiu.')
+            : desafio === 'colheita' && r.venceu
+              ? t('Você colheu {n} recursos.', { n: DESAFIOS.colheita.meta ?? 0 })
+              : t('O tempo do desafio acabou.');
+  const texto = textoDoDesafio ?? (
     r.motivo === 'desencontro' || r.motivo === 'parou'
       ? t('A partida se desencontrou entre os computadores e foi encerrada.')
       : r.motivo === 'tempo'
@@ -407,7 +463,7 @@ function FimDaPartida({ estado, r, eu, assistindo, nomes }: { estado: EstadoToca
                       : t('Você derrubou o centro da vila do computador.')
                     : outro
                       ? t('{nome} derrubou o seu centro da vila.', { nome: outro })
-                      : t('O computador derrubou o seu centro da vila.');
+                      : t('O computador derrubou o seu centro da vila.'));
   const empate = r.vencedor === null && estado.sala;
   const vencedores = nomes && r.vencedor !== null && r.vencedor !== undefined ? nomes.filter((_, d) => equipeDe(d) === r.vencedor) : [];
   // as linhas dos gráficos: eu primeiro (no 2×2, a aliada, depois a outra equipe); quem assiste vê todos pelo nome
@@ -422,11 +478,16 @@ function FimDaPartida({ estado, r, eu, assistindo, nomes }: { estado: EstadoToca
       {texto && <p className="minijogo-situacao">{texto}</p>}
       <p className="minijogo-situacao">
         {relogio(r.passos)}
-        {estado.tutorial ? '' : estado.nivel && !estado.sala ? ` · ${t(NOME_DO_NIVEL[estado.nivel])}` : ''} · {t(NOME_DO_MAPA[estado.mapa] ?? NOME_DO_MAPA.campo)}
+        {estado.tutorial ? '' : desafio ? ` · ${t(NOME_DO_DESAFIO[desafio])}` : estado.nivel && !estado.sala ? ` · ${t(NOME_DO_NIVEL[estado.nivel])}` : ''} · {t(NOME_DO_MAPA[estado.mapa] ?? NOME_DO_MAPA.campo)}
       </p>
       {r.recorde?.novo && (
         <p className="tocas-recorde">
-          <Trophy size={16} aria-hidden="true" /> {r.recorde.antes === null ? t('Primeira vitória neste nível!') : t('Novo recorde! Antes: {tempo}', { tempo: relogio(r.recorde.antes / 100) })}
+          <Trophy size={16} aria-hidden="true" />{' '}
+          {r.recorde.antes === null
+            ? desafio
+              ? t('Primeira vitória neste desafio!')
+              : t('Primeira vitória neste nível!')
+            : t('Novo recorde! Antes: {tempo}', { tempo: desafio ? lerRecordeDoDesafio(desafio, r.recorde.antes) : relogio(r.recorde.antes / 100) })}
         </p>
       )}
       {r.historico && r.historico.length > 1 && (
@@ -554,6 +615,8 @@ interface Painel {
   /** O sino do meu centro: tocado, e quantos já estão dentro. */
   sino: boolean;
   abrigados: number;
+  /** O que eu já levei ao estoque (o desafio da colheita). */
+  colhido: number;
   /** Uma marca que muda quando a seleção ou o que está nela muda (para os botões se refazerem). */
   versao: number;
 }
@@ -572,6 +635,7 @@ function Partida({
   nivelDosRobos,
   nivel,
   tutorial,
+  desafio,
   nomes,
   agir,
   estadoRef,
@@ -590,6 +654,7 @@ function Partida({
   nivelDosRobos: Nivel;
   nivel: Nivel;
   tutorial: boolean;
+  desafio: Desafio | null;
   nomes: string[] | null;
   agir: Props['agir'];
   estadoRef: { current: EstadoTocas };
@@ -601,7 +666,7 @@ function Partida({
   const mapa = useRef<HTMLCanvasElement>(null);
   const caixaSel = useRef<HTMLDivElement>(null);
   const simRef = useRef<Sim | null>(null);
-  if (!simRef.current) simRef.current = novaPartida(semente, { mapa: tipoDoMapa, quatro });
+  if (!simRef.current) simRef.current = novaPartida(semente, { mapa: tipoDoMapa, quatro, desafio: sala ? null : desafio });
   const sim = simRef.current;
   /** O nome de um dono, na sala (os robôs já vêm com o 🤖); no Solo, o computador. */
   const nomeDe = (d: number) => (nomes ? nomes[d] ?? '' : t('Computador'));
@@ -631,6 +696,20 @@ function Partida({
   const [aviso, setAviso] = useState<string | null>(null);
   const [acabou, setAcabou] = useState(false);
   const teclas = useRef(new Set<string>());
+  /** A VELOCIDADE do Solo (21/11/2026): só o ritmo dos passos na tela; a partida é a mesma (o servidor a refaz igual). */
+  const [velocidade, setVelocidade] = useState<number>(1);
+  const velocidadeRef = useRef(1);
+  velocidadeRef.current = velocidade;
+  /**
+   * O ATACAR ANDANDO (21/11/2026): armado pelo botão (ou a tecla G), o próximo clique no chão manda quem luta andar até lá,
+   * atacando quem aparecer no caminho (o `mover` com `atacando`, que a simulação já tinha e só o computador usava).
+   */
+  const [atacarAndando, setAtacarAndandoNaTela] = useState(false);
+  const atacarAndandoRef = useRef(false);
+  const setAtacarAndando = (v: boolean) => {
+    atacarAndandoRef.current = v;
+    setAtacarAndandoNaTela(v);
+  };
   const agirRef = useRef(agir);
   agirRef.current = agir;
 
@@ -738,7 +817,7 @@ function Partida({
     const v = vistaRef.current;
     const c = caixa.current;
     if (!v || !c) return;
-    const acao = colocandoRef.current || assistindo ? '' : acaoDoMouse(sim, eu, v, selRef.current, px, py);
+    const acao = colocandoRef.current || assistindo ? '' : atacarAndandoRef.current ? 'atacar' : acaoDoMouse(sim, eu, v, selRef.current, px, py);
     if (acao === cursorAtual.current) return;
     cursorAtual.current = acao;
     c.style.cursor = acao ? cursores.current[acao] ?? '' : '';
@@ -752,7 +831,7 @@ function Partida({
     let id = 0;
     let vista: Vista | null = null;
     // no Solo, o computador do nível escolhido (o mesmo que o servidor usa para refazer a partida); na sala, ninguém
-    const ia: IA | null = sala ? null : criarIA((1 - eu) as Dono, tutorial ? PERFIS.tutorial : PERFIS[nivel]);
+    const ia: IA | null = sala ? null : criarIA((1 - eu) as Dono, tutorial ? PERFIS.tutorial : desafio ? PERFIL_DO_DESAFIO[desafio] : PERFIS[nivel]);
     const piloto: IA = criarIA(eu, PERFIS.piloto);
     /**
      * OS ROBÔS DO 2×2 (20/11/2026): jogam DENTRO da simulação, aqui e em todo computador da sala (e no servidor), no mesmo passo:
@@ -1019,7 +1098,7 @@ function Partida({
         // é de duas pessoas: ela segue (só não se desenha)
         if (semFoco && !sala) return;
         if (sim.vencedor === null) {
-          const vel = import.meta.env.DEV && !sala ? Math.max(1, window.tocasVelocidade ?? 1) : 1;
+          const vel = sala ? 1 : Math.max(velocidadeRef.current, import.meta.env.DEV ? (window.tocasVelocidade ?? 1) : 1);
           acumulado += sala ? Math.min(dt, 0.25) : dt * vel;
           let n = 0;
           let parado = false;
@@ -1127,7 +1206,8 @@ function Partida({
         teclas.current.add(k);
         e.preventDefault();
       } else if (k === 'escape') {
-        if (colocandoRef.current) colocar(null);
+        if (atacarAndandoRef.current) setAtacarAndando(false);
+        else if (colocandoRef.current) colocar(null);
         else escolher([]);
       } else if (k === 'h' && !e.ctrlKey && !e.metaKey && !e.altKey) irAoCentro();
       else if (atalhoDeGrupo(e)) e.preventDefault();
@@ -1190,8 +1270,19 @@ function Partida({
     }
     const p = v.chao(px, py);
     if (!p) return;
-    ordenar({ t: 'mover', ids, x: p.x, y: p.y });
-    v.sinal(p.x, p.y, false);
+    // armado o atacar andando, quem luta vai atacando (os trabalhadores escolhidos junto só andam)
+    const atacando = atacarAndandoRef.current && us.some((u) => UNIDADES[u.tipo].combate);
+    if (atacarAndandoRef.current) setAtacarAndando(false);
+    ordenar(atacando ? { t: 'mover', ids, x: p.x, y: p.y, atacando: true } : { t: 'mover', ids, x: p.x, y: p.y });
+    v.sinal(p.x, p.y, atacando);
+    tocar('clique');
+  };
+  /** Arma (ou desarma) o atacar andando: só com alguém de luta escolhido. */
+  const alternarAtacarAndando = () => {
+    if (assistindo) return;
+    if (atacarAndandoRef.current) return setAtacarAndando(false);
+    if (!minhasUnidades().some((u) => UNIDADES[u.tipo].combate)) return void tocar('erro');
+    setAtacarAndando(true);
     tocar('clique');
   };
 
@@ -1344,7 +1435,7 @@ function Partida({
       } else gesto.current = { modo: 'toque', x0: p.x, y0: p.y, x: p.x, y: p.y, botao: 0, moveu: false, dist: 0 };
       return;
     }
-    gesto.current = { modo: e.button === 0 && !colocandoRef.current ? 'caixa' : 'mapa', x0: p.x, y0: p.y, x: p.x, y: p.y, botao: e.button, moveu: false, dist: 0 };
+    gesto.current = { modo: e.button === 0 && !colocandoRef.current && !atacarAndandoRef.current ? 'caixa' : 'mapa', x0: p.x, y0: p.y, x: p.x, y: p.y, botao: e.button, moveu: false, dist: 0 };
   };
   const aoMover = (e: PE<HTMLDivElement>) => {
     const v = vistaRef.current;
@@ -1391,6 +1482,7 @@ function Partida({
     if (g.modo === 'toque') {
       if (g.moveu) return;
       if (colocandoRef.current) return porPredio(p.x, p.y, false);
+      if (atacarAndandoRef.current) return mandar(p.x, p.y);
       const id = v.pegar(p.x, p.y);
       const e2 = id !== null ? sim.porId.get(id) : undefined;
       const minha = e2 && (eUnidade(e2) || ePredio(e2)) && e2.dono === eu;
@@ -1415,6 +1507,7 @@ function Partida({
         if (colocandoRef.current) colocar(null);
         else mandar(p.x, p.y);
       } else if (g.botao === 0 && colocandoRef.current) porPredio(p.x, p.y, e.shiftKey);
+      else if (g.botao === 0 && atacarAndandoRef.current) mandar(p.x, p.y);
     }
   };
   const aoRolar = (e: WE<HTMLDivElement>) => {
@@ -1439,9 +1532,12 @@ function Partida({
     const x = ((e.clientX - r.left) / r.width) * TAMANHO;
     const y = ((e.clientY - r.top) / r.height) * TAMANHO;
     if (e.button === 2) {
-      const ids = minhasUnidades().map((u) => u.id);
+      const us = minhasUnidades();
+      const ids = us.map((u) => u.id);
       if (ids.length) {
-        ordenar({ t: 'mover', ids, x, y });
+        const atacando = atacarAndandoRef.current && us.some((u) => UNIDADES[u.tipo].combate);
+        if (atacarAndandoRef.current) setAtacarAndando(false);
+        ordenar(atacando ? { t: 'mover', ids, x, y, atacando: true } : { t: 'mover', ids, x, y });
         tocar('clique');
       }
       return;
@@ -1676,13 +1772,37 @@ function Partida({
         {maravilha.map((m, d) =>
           m <= 0 ? null : !assistindo && d === eu ? (
             <span key={d} className="tocas-maravilha">
-              {t('Maravilha: {tempo}', { tempo: relogio(PASSOS_DA_MARAVILHA - m) })}
+              {t('Maravilha: {tempo}', { tempo: relogio(passosDaMaravilha(sim) - m) })}
             </span>
           ) : (
             <span key={d} className={`tocas-maravilha${assistindo || aliados(d, eu) ? '' : ' inimiga'}`}>
-              {nomes ? t('Maravilha de {nome}: {tempo}', { nome: nomeDe(d), tempo: relogio(PASSOS_DA_MARAVILHA - m) }) : t('Maravilha do computador: {tempo}', { tempo: relogio(PASSOS_DA_MARAVILHA - m) })}
+              {nomes ? t('Maravilha de {nome}: {tempo}', { nome: nomeDe(d), tempo: relogio(passosDaMaravilha(sim) - m) }) : t('Maravilha do computador: {tempo}', { tempo: relogio(passosDaMaravilha(sim) - m) })}
             </span>
           ),
+        )}
+        {desafio && !sala && desafio !== 'maravilha' && (
+          <span className="tocas-objetivo" title={t(NOME_DO_DESAFIO[desafio])}>
+            <Trophy size={14} aria-hidden="true" />
+            {desafio === 'colheita'
+              ? `${Math.min(painel.colhido, DESAFIOS.colheita.meta ?? 0)}/${DESAFIOS.colheita.meta ?? 0}`
+              : relogio(Math.max(0, DESAFIOS[desafio].limite - painel.passo))}
+          </span>
+        )}
+        {!sala && (
+          <button
+            type="button"
+            className={`tocas-velocidade${velocidade > 1 ? ' ativo' : ''}`}
+            title={t('Velocidade')}
+            aria-label={`${t('Velocidade')}: ${String(velocidade).replace('.', ',')}×`}
+            onClick={() => {
+              const i = VELOCIDADES.indexOf(velocidade as (typeof VELOCIDADES)[number]);
+              setVelocidade(VELOCIDADES[(i + 1) % VELOCIDADES.length]);
+              tocar('clique');
+            }}
+          >
+            <Gauge size={14} aria-hidden="true" />
+            {String(velocidade).replace('.', ',')}×
+          </button>
         )}
         {!assistindo && (
           <button type="button" className="tocas-desistir" disabled={acabou} onClick={() => void agir({ tipo: 'desistir', passos: sim.passo })}>
@@ -1810,6 +1930,19 @@ function Partida({
         </div>
         {!assistindo && (
         <div className="tocas-acoes">
+          {unidades.some((u) => UNIDADES[u.tipo].combate) && (
+            <button
+              type="button"
+              className={`tocas-botao tocas-atacar-andando${atacarAndando ? ' ativo' : ''}`}
+              aria-pressed={atacarAndando}
+              aria-keyshortcuts="g"
+              onClick={alternarAtacarAndando}
+            >
+              <IconeDeHud nome="mira" tamanho={18} />
+              <span className="tocas-botao-nome">{t('Atacar andando')}</span>
+              {tecla('g', alternarAtacarAndando)}
+            </button>
+          )}
           {trabalhadores.length > 0 && CONSTRUIVEIS.map(botaoConstruir)}
           {predio && predio.dono === eu && predio.pronto && (
             <>
@@ -1834,6 +1967,7 @@ function Partida({
               )}
             </>
           )}
+          {atacarAndando && <p className="tocas-dica">{t('Escolha para onde ir: quem aparecer no caminho é atacado.')}</p>}
           {colocando?.tipo === 'muralha' && <p className="tocas-dica">{colocando.inicio ? t('Agora a outra ponta da muralha.') : t('Escolha onde a muralha começa.')}</p>}
           {predioQueTreina() && !colocando && <p className="tocas-dica">{t('Botão direito no mapa: para onde vai quem nasce aqui.')}</p>}
         </div>
@@ -1912,6 +2046,7 @@ function lerPainel(sim: Sim, eu: Dono, versao: number, entregas: { passo: number
     ociosos: sim.unidades.filter((u) => u.dono === eu && u.tipo === 'trabalhador' && u.ordem.tipo === 'parado' && !u.abrigado).length,
     sino: !!sim.predios.find((p) => p.dono === eu && p.tipo === 'centro')?.sino,
     abrigados: sim.unidades.filter((u) => u.dono === eu && u.abrigado).length,
+    colhido: Math.floor(sim.colhido[eu] ?? 0),
     versao,
   };
 }

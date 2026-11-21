@@ -1,5 +1,6 @@
 /**
- * QUIZ RELÂMPAGO (05/11/2026; do M.P.I.Q. do levantamento em docs/mario-party-3.md, só a mecânica): cinco perguntas NOSSAS, sobre
+ * QUIZ RELÂMPAGO (05/11/2026; do M.P.I.Q. do levantamento em docs/mario-party-3.md, só a mecânica): cinco perguntas NOSSAS (150 desde
+ * 21/11/2026: as 30 de antes e 120 de conhecimento geral, sem franquia), sobre
  * o próprio Syden e a horta, com três respostas cada. Todos veem a mesma pergunta ao mesmo tempo, cada um na própria tela, e
  * responde UMA vez; quando o tempo dela acaba, a certa aparece para todos, e vem a seguinte. Vale quantas acertou, e no empate a
  * soma do tempo das certas.
@@ -12,7 +13,14 @@
 import { FOLGA_ACIMA, inteiro, microjogo, numero, REACAO_MINIMA, sortear, type Resultado } from './comum.js';
 
 /** A resposta certa de cada pergunta, na ordem da lista do site (o índice das três opções de lá). */
-export const CERTAS = [1, 0, 2, 1, 0, 2, 1, 0, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2] as const;
+export const CERTAS = [
+  1, 0, 2, 1, 0, 2, 1, 0, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2,
+  // as 120 de conhecimento geral (21/11/2026)
+  1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0,
+  1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0,
+  1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0,
+  1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0,
+] as const;
 export const PERGUNTAS_POR_RODADA = 5;
 /** Quanto cada pergunta fica valendo na tela. */
 export const PERGUNTA_MS = 4000;

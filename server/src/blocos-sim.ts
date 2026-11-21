@@ -178,6 +178,27 @@ export const QUEBRA_CABECAS: readonly { linhas: readonly string[]; trocas: numbe
   { linhas: ['.1....', '.0.03.', '.11033'], trocas: 3 },
   { linhas: ['....01', '.10.01', '100110'], trocas: 3 },
   { linhas: ['.....4', '.....4', '....22', '....44', '224224'], trocas: 3 },
+  // as 20 de 21/11/2026 (a segunda auditoria, lote D): achadas por sorteio e conferidas pela mesma busca do teste
+  { linhas: ['.023..', '030322'], trocas: 2 },
+  { linhas: ['...2..', '..02..', '..00.2'], trocas: 2 },
+  { linhas: ['..50.5', '..0500'], trocas: 2 },
+  { linhas: ['.11...', '2231..', '1323.1'], trocas: 2 },
+  { linhas: ['...1..', '.0.1..', '.0.01.'], trocas: 2 },
+  { linhas: ['.22...', '.20.00'], trocas: 2 },
+  { linhas: ['...2..', '...2..', '3.332.'], trocas: 2 },
+  { linhas: ['....3.', '332.22'], trocas: 2 },
+  { linhas: ['3.....', '0.3...', '3.0.0.'], trocas: 3 },
+  { linhas: ['2.....', '4.21..', '2.4141'], trocas: 3 },
+  { linhas: ['...2..', '...2..', '.1.1..', '.1.0..', '.002..'], trocas: 3 },
+  { linhas: ['..3...', '13131.'], trocas: 3 },
+  { linhas: ['....4.', '..0.4.', '.4040.'], trocas: 3 },
+  { linhas: ['..4..4', '..54.0', '5.50.0'], trocas: 3 },
+  { linhas: ['.0..1.', '110.0.'], trocas: 3 },
+  { linhas: ['..4...', '114.14'], trocas: 3 },
+  { linhas: ['..3...', '..1...', '..1..3', '5155.3'], trocas: 3 },
+  { linhas: ['0.....', '5.....', '0.055.', '0.500.'], trocas: 3 },
+  { linhas: ['....3.', '....3.', '223.2.'], trocas: 3 },
+  { linhas: ['1...2.', '112.2.'], trocas: 3 },
 ];
 
 /** As velocidades da largada: de 1 (a de sempre) a VELOCIDADES. */

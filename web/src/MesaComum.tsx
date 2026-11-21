@@ -48,6 +48,9 @@ export function EscolhaDaMesa({
   const [tresTres, setTresTres] = useState(false);
   const [paraTras, setParaTras] = useState(true);
   const [mar, setMar] = useState(10);
+  // as variantes de 21/11/2026 (o lote D): as damas de 10 × 10 e as armas especiais da naval
+  const [tamanho, setTamanho] = useState<8 | 10>(8);
+  const [armas, setArmas] = useState(false);
   const nomeDoNivel: Record<NivelDaMesa, string> = {
     iniciante: t('Iniciante'),
     facil: t('Fácil'),
@@ -64,8 +67,8 @@ export function EscolhaDaMesa({
     }
     if (jogo === 'gomoku') Object.assign(corpo, { exato, troca, captura, tresTres });
     if (jogo === 'mancala') Object.assign(corpo, { sementes, variante });
-    if (jogo === 'naval') Object.assign(corpo, { salvo, mar });
-    if (jogo === 'damas') corpo.paraTras = paraTras;
+    if (jogo === 'naval') Object.assign(corpo, { salvo, mar, armas: armas && !salvo });
+    if (jogo === 'damas') Object.assign(corpo, { paraTras, tamanho });
     aoEscolher(corpo);
   };
 
@@ -141,6 +144,23 @@ export function EscolhaDaMesa({
             <input type="checkbox" checked={!paraTras} onChange={(e) => setParaTras(!e.target.checked)} />
             {t('A pedra não come para trás')}
           </label>
+          {/* o tabuleiro (21/11/2026): 8 × 8, as brasileiras, ou 10 × 10, as internacionais; o lado em figura */}
+          <div className="mesa-botoes" role="group" aria-label={t('Tabuleiro')}>
+            {([8, 10] as const).map((n) => (
+              <button
+                key={n}
+                type="button"
+                className={`tab-rodadas-botao mesa-mar${tamanho === n ? ' escolhida' : ''}`}
+                aria-pressed={tamanho === n}
+                aria-label={`${n} × ${n}`}
+                onClick={() => setTamanho(n)}
+              >
+                <span>
+                  {n} × {n}
+                </span>
+              </button>
+            ))}
+          </div>
         </fieldset>
       )}
       {jogo === 'mancala' && (
@@ -203,6 +223,33 @@ export function EscolhaDaMesa({
             <input type="checkbox" checked={salvo} onChange={(e) => setSalvo(e.target.checked)} />
             {t('Salvo: um tiro por navio que ainda boia')}
           </label>
+          {/* as armas especiais (21/11/2026) não se somam ao salvo */}
+          <label className="mesa-opcao">
+            <input type="checkbox" checked={armas && !salvo} disabled={salvo} onChange={(e) => setArmas(e.target.checked)} />
+            {t('Armas especiais: um tiro em cruz e um sonar')}
+          </label>
+        </fieldset>
+      )}
+      {jogo === 'partida-de-xadrez' && solo && (
+        <fieldset className="mesa-grupo">
+          <legend>{t('Finais de treino')}</legend>
+          {/* os finais (server/src/minijogo-partida-de-xadrez.ts, FINAIS_DE_TREINO): as peças em figura, o nome para o leitor */}
+          <div className="mesa-botoes">
+            {(
+              [
+                ['dama', '♔♕', t('Rei e dama contra rei')],
+                ['torre', '♔♖', t('Rei e torre contra rei')],
+                ['bispos', '♔♗♗', t('Dois bispos contra rei')],
+                ['peao', '♔♙', t('Rei e peão contra rei')],
+              ] as const
+            ).map(([id, pecas, nome]) => (
+              <button key={id} type="button" className="tab-rodadas-botao mesa-final" aria-label={nome} title={nome} onClick={() => comecar({ final: id })}>
+                <span aria-hidden="true">
+                  {[...pecas].map((c) => c + '︎').join('')} {'♚︎'}
+                </span>
+              </button>
+            ))}
+          </div>
         </fieldset>
       )}
       <ComoJogar jogo={jogo} />
@@ -257,14 +304,21 @@ export function ComoJogar({ jogo, figura }: { jogo: string; figura?: ReactNode }
       t('A pedra que termina o lance na última fileira vira dama, que anda a diagonal inteira.'),
       t('A mesma posição pela terceira vez empata, e 20 lances só de dama sem comer também.'),
       t('Na variante sem comer para trás, a pedra só come para a frente; a dama continua comendo para todo lado.'),
+      t('No tabuleiro de 10 × 10, as internacionais, são 20 pedras de cada lado; a regra é a mesma.'),
     ],
     naval: [
       t('Ponha os navios sem encostar um no outro, nem na diagonal.'),
       t('Atire no mar do outro: acertou, atira de novo. Vence quem afundar a frota inteira.'),
       t('No salvo, cada vez é uma rajada com um tiro por navio seu que ainda boia.'),
       t('O mar de 8 × 8 tem a frota menor, e o de 12 × 12, a maior.'),
+      t('Com as armas especiais, cada um tem uma vez o tiro em cruz (a casa e as quatro vizinhas) e uma vez o sonar (quantos navios passam numa área de 3 × 3). As duas gastam a vez.'),
     ],
-    'partida-de-xadrez': [t('As regras do xadrez inteiras. Clique na peça e depois na casa: as casas que valem acendem.'), t('Quem abre fica com as brancas.')],
+    'partida-de-xadrez': [
+      t('As regras do xadrez inteiras. Clique na peça e depois na casa: as casas que valem acendem.'),
+      t('Quem abre fica com as brancas.'),
+      t('Nos finais de treino, você joga de brancas e precisa dar o mate. O recorde é em quantos lances.'),
+      t('No fim, as setas embaixo do tabuleiro andam pela partida, lance a lance.'),
+    ],
     xadrez: [
       t('Ache o melhor lance da posição. A resposta do outro lado vem sozinha.'),
       t('Na corrida, são 3 minutos de problemas, do mais fácil ao mais difícil: cada erro tira 10 segundos.'),
@@ -278,23 +332,27 @@ export function ComoJogar({ jogo, figura }: { jogo: string; figura?: ReactNode }
       t('Com 11 pontos, a dupla vê as cartas e decide se joga a mão de onze. Vence quem chegar a 12.'),
       t('No mineiro não há vira: as manilhas são o 4 de paus, o 7 de copas, o ás de espadas e o 7 de ouros.'),
       t('No mineiro, a mão vale 2, e o truco, o seis, o nove e o doze valem 4, 8, 10 e 12. Com 10 pontos, é a mão de dez: jogar valendo 4, ou correr e dar 2.'),
+      t('Em quatro, faça sinais ao parceiro: só ele vê. 😉 zap, 🤨 copas, 😏 espadas, 😛 ouros, 😬 um 3, 😐 nada.'),
     ],
     domino: [
       t('Encoste uma pedra numa ponta da mesa com o mesmo número.'),
       t('Sem pedra que sirva, compre. Sem nada para comprar, a vez passa.'),
       t('Quem bate fica sem pedras e leva os pontos das mãos dos outros. Trancado, leva quem tem menos pontos na mão.'),
       t('Com as batidas especiais, bater com carroça ou com a pedra que serve nas duas pontas vale o dobro; a carroça nas duas pontas, o quádruplo.'),
+      t('No dominó de pontos, quem deixa as pontas somando 5, 10, 15… marca a soma na hora; a carroça na ponta conta as duas metades. A partida vai a 150.'),
     ],
     cidades: [
       t('Ande pelo dado e compre a capital onde parar. Quem para na cidade de outro paga aluguel.'),
       t('Com a região inteira, construa até 4 prédios: o aluguel sobe a cada um.'),
       t('A cidade que ninguém compra vai a leilão. Hipotecar uma cidade dá dinheiro, mas ela não cobra aluguel.'),
       t('Ganha o maior patrimônio no fim das rodadas, ou quem sobrar.'),
+      t('Nas Capitais do mundo, cada região é um continente.'),
     ],
     sudoku: [
       t('Cada linha, coluna e bloco de 3 × 3 tem os números de 1 a 9, sem repetir.'),
       t('Escolha a casa e depois o número. O lápis anota só para você.'),
       t('O número pequeno no botão diz quantos ainda faltam.'),
+      t('No modo Juntos, a turma resolve o mesmo tabuleiro: cada número aparece para todos, na cor de quem o pôs.'),
     ],
   };
   if (!regras[jogo]) return null;

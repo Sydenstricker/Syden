@@ -138,6 +138,9 @@
 
 .futebol-botoes {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
   gap: 12px;
 }
 .futebol-botoes button {
@@ -155,6 +158,22 @@
   height: 84px;
   background: var(--accent);
   color: #fff;
+}
+/* com o bote (21/11/2026) são até cinco botões: no celular, menores e em duas linhas */
+@media (max-width: 480px) {
+  .futebol-botoes {
+    gap: 8px;
+    max-width: 220px;
+  }
+  .futebol-botoes button {
+    width: 58px;
+    height: 58px;
+    font-size: 0.8rem;
+  }
+  .futebol-botoes button.chute {
+    width: 68px;
+    height: 68px;
+  }
 }
 
 .futebol-escolha {

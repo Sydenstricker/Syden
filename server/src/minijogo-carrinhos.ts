@@ -36,6 +36,7 @@ import {
   VMAX,
   VOLTAS,
   VOLTAS_DA_RESISTENCIA,
+  sufixoDasVoltas,
   type Pista,
 } from './carrinhos-sim.js';
 import type { Definicao } from './minijogo-motor.js';
@@ -58,11 +59,11 @@ export const voltasPedidas = (v: unknown) => (v === VOLTAS_DA_RESISTENCIA ? VOLT
 
 /**
  * A chave do recorde em carrinhos_recordes: o id da pista pronta, ou o CÓDIGO da pista do editor (o texto inteiro: quem tem o
- * código corre a mesma pista, e o recorde de um amigo nela aparece como nas prontas); com '@20' na resistência. A Toca em
+ * código corre a mesma pista, e o recorde de um amigo nela aparece como nas prontas); com '@20c' na resistência (com o combustível, 21/11/2026; o '@20' de antes fica guardado, sem ser oferecido). A Toca em
  * cinco voltas é 'toca-1', a chave de antes: os recordes de antes continuam valendo.
  */
 export const chaveDoRecorde = (pista: Pista, voltas: number) =>
-  (PISTAS[pista.id] === pista ? pista.id : codigoDaPista(pista.tracado)) + (voltas === VOLTAS ? '' : `@${voltas}`);
+  (PISTAS[pista.id] === pista ? pista.id : codigoDaPista(pista.tracado)) + sufixoDasVoltas(voltas);
 
 /** Refaz a corrida pelas entradas; erro se não chegou. */
 function conferirCorrida(pista: Pista, voltas: number, faixa: number, corpo: Record<string, unknown>): { erro: string } | { passos: number; voltas: number[]; entradas: number[]; saidas: number } {

@@ -5,8 +5,8 @@ import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { tocar } from './somDosJogos';
 import { ALTURA, carregarImagens, DesenhoDoTransito, LARGURA, TECLAS } from './transito/desenho';
 import { escolhaDoPiloto } from './transito/piloto';
-import { liberar, novaPartida, passo, PASSO, PASSOS_DA_PARTIDA, PENA_DA_AMBULANCIA, travado, type Estado, type Mapa, type Modo } from './transito/sim';
-import { Play, Timer } from 'lucide-react';
+import { CAMPANHA, liberar, novaPartida, passo, PASSO, PASSOS_DA_PARTIDA, PENA_DA_AMBULANCIA, travado, type Estado, type Mapa, type Modo } from './transito/sim';
+import { Lock, Play, Target, Timer } from 'lucide-react';
 import './transito.css';
 
 /**
@@ -31,6 +31,10 @@ export interface EstadoTransito {
   placar: { userId: number; username: string; pontos: number | null; atravessaram: number | null; batidas: number | null; posicao: number | null }[];
   recorde: { antes: number | null; novo: boolean } | null;
   partidaId: string;
+  /** A CAMPANHA (21/11/2026): a fase jogada e a meta dela (null fora da campanha), e os recordes de cada fase (na escolha e no fim). */
+  etapa?: number | null;
+  meta?: number | null;
+  campanha?: (number | null)[];
 }
 
 type Props = {
@@ -55,6 +59,11 @@ export function JogoTransito({ estado, eu, jogador, agir }: Props) {
     return (
       <div className="transito-fim">
         {meu && meu.pontos !== null && <p className="transito-fim-pontos">{t('Pontos: {n}', { n: meu.pontos })}</p>}
+        {estado.etapa && estado.meta !== null && estado.meta !== undefined && meu && meu.pontos !== null && (
+          <p className={`minijogo-situacao transito-meta${meu.pontos >= estado.meta ? ' passou' : ''}`}>
+            <Target size={16} aria-hidden="true" /> {meu.pontos >= estado.meta ? t('Fase {n} concluída!', { n: estado.etapa }) : t('A meta era {n}.', { n: estado.meta })}
+          </p>
+        )}
         {meu && meu.atravessaram !== null && (
           <p className="transito-fim-conta">
             <span>
@@ -92,7 +101,14 @@ export function JogoTransito({ estado, eu, jogador, agir }: Props) {
     );
   }
   if (!jogador || !meu) return <p className="minijogo-situacao">…</p>;
-  if (estado.fase === 'escolha') return <EscolhaDoTransito aoJogar={(modo, mapa) => void agir({ tipo: 'jogar', modo, mapa })} />;
+  if (estado.fase === 'escolha')
+    return (
+      <EscolhaDoTransito
+        campanha={estado.campanha ?? []}
+        aoJogar={(modo, mapa) => void agir({ tipo: 'jogar', modo, mapa })}
+        aoJogarFase={(n) => void agir({ tipo: 'jogar', fase: n })}
+      />
+    );
   // ESC pausa só no Solo (o recorde é dele): na sala, o relógio é o de todos
   return (
     <Cruzamento
@@ -100,6 +116,8 @@ export function JogoTransito({ estado, eu, jogador, agir }: Props) {
       semente={estado.semente}
       modo={estado.modo ?? 'minuto'}
       mapa={estado.mapa ?? 'cruz'}
+      etapa={estado.etapa ?? null}
+      meta={estado.meta ?? null}
       solo={estado.recorde !== null}
       aoTerminar={(liberacoes) => void agir({ tipo: 'fim', liberacoes })}
     />
@@ -120,7 +138,15 @@ function FiguraDoMapa({ mapa }: { mapa: Mapa }) {
  * A ESCOLHA DO SOLO (19/11/2026): o modo (o minuto, ou "até bater": sem relógio, acaba na primeira batida) e o mapa (o cruzamento ou
  * o T, em figuras). Cada combinação tem o recorde dela. A escolha fica lembrada no aparelho.
  */
-function EscolhaDoTransito({ aoJogar }: { aoJogar: (modo: Modo, mapa: Mapa) => void }) {
+function EscolhaDoTransito({
+  campanha,
+  aoJogar,
+  aoJogarFase,
+}: {
+  campanha: (number | null)[];
+  aoJogar: (modo: Modo, mapa: Mapa) => void;
+  aoJogarFase: (n: number) => void;
+}) {
   const t = useT();
   const lembrado = (() => {
     try {
@@ -175,6 +201,40 @@ function EscolhaDoTransito({ aoJogar }: { aoJogar: (modo: Modo, mapa: Mapa) => v
           <Play size={16} aria-hidden="true" /> {t('Jogar')}
         </button>
       </div>
+      {/* A CAMPANHA (21/11/2026): dez fases; a próxima abre quando o recorde da anterior chega à meta. O número da fase, a figura do
+          mapa, a meta e o recorde; a fechada tem o cadeado. */}
+      <p className="transito-campanha-titulo">{t('Campanha')}</p>
+      <ol className="transito-campanha">
+        {CAMPANHA.map((f, i) => {
+          const rec = campanha[i] ?? null;
+          const aberta = i === 0 || (campanha[i - 1] ?? -1) >= CAMPANHA[i - 1].meta;
+          const passou = rec !== null && rec >= f.meta;
+          const rotulo = `${t('Fase {n}', { n: i + 1 })}${aberta ? '' : ` · ${t('Fechada')}`}`;
+          return (
+            <li key={i}>
+              <button
+                type="button"
+                className={`transito-fase${passou ? ' passou' : ''}`}
+                disabled={!aberta}
+                aria-label={rotulo}
+                title={rotulo}
+                onClick={() => aoJogarFase(i + 1)}
+              >
+                <strong>{i + 1}</strong>
+                {aberta ? <FiguraDoMapa mapa={f.mapa} /> : <Lock size={20} aria-hidden="true" />}
+                <small>
+                  <Target size={11} aria-hidden="true" /> {f.meta}
+                </small>
+                {rec !== null && (
+                  <small>
+                    <Icone nome="trophy" /> {rec}
+                  </small>
+                )}
+              </button>
+            </li>
+          );
+        })}
+      </ol>
     </div>
   );
 }
@@ -202,7 +262,24 @@ interface Painel {
   demo: boolean;
 }
 
-function Cruzamento({ semente, modo, mapa, solo, aoTerminar }: { semente: number; modo: Modo; mapa: Mapa; solo: boolean; aoTerminar: (liberacoes: number[]) => void }) {
+function Cruzamento({
+  semente,
+  modo,
+  mapa,
+  etapa,
+  meta,
+  solo,
+  aoTerminar,
+}: {
+  semente: number;
+  modo: Modo;
+  mapa: Mapa;
+  /** A fase da campanha (21/11/2026), ou null: o minuto ou o "até bater". */
+  etapa: number | null;
+  meta: number | null;
+  solo: boolean;
+  aoTerminar: (liberacoes: number[]) => void;
+}) {
   const t = useT();
   const tela = useRef<HTMLCanvasElement>(null);
   const [pronta, setPronta] = useState(false);
@@ -231,7 +308,7 @@ function Cruzamento({ semente, modo, mapa, solo, aoTerminar }: { semente: number
         const d = new DesenhoDoTransito(ctx, img, { teclas: !matchMedia('(pointer: coarse)').matches, mapa });
         desenho.current = d;
         setPronta(true);
-        const e = novaPartida(semente, { modo, mapa });
+        const e = novaPartida(semente, etapa !== null ? { fase: etapa } : { modo, mapa });
         // a demonstração: outra semente, o minuto, e o piloto jogando (sem placas nem som)
         let demo: Estado | null = null;
         if (solo) {
@@ -351,7 +428,7 @@ function Cruzamento({ semente, modo, mapa, solo, aoTerminar }: { semente: number
             setPainel({
               pontos: e.pontos,
               // no "até bater", o relógio sobe
-              restante: modo === 'minuto' ? Math.max(0, PASSOS_DA_PARTIDA - e.passo) : e.passo,
+              restante: modo === 'minuto' ? Math.max(0, e.limite - e.passo) : e.passo,
               sequencia: e.sequencia,
               travado: travado(e),
               contagem: contando ? Math.ceil((largada - agora) / 1000) : null,
@@ -374,7 +451,7 @@ function Cruzamento({ semente, modo, mapa, solo, aoTerminar }: { semente: number
     };
     // a partida nasce uma vez por semente
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [semente, modo, mapa]);
+  }, [semente, modo, mapa, etapa]);
 
   // as teclas: Q, E, C e Z, as pontas do teclado como as pontas do mapa (e 7, 9, 3 e 1 no teclado numérico)
   useEffect(() => {
@@ -413,6 +490,12 @@ function Cruzamento({ semente, modo, mapa, solo, aoTerminar }: { semente: number
           <div className="transito-painel" aria-hidden="true">
             <span className="transito-pontos">
               <Icone nome="car" /> {painel.pontos}
+              {meta !== null && (
+                <span className={`transito-meta-no-painel${painel.pontos >= meta ? ' passou' : ''}`}>
+                  {' '}
+                  / <Target size={12} aria-hidden="true" /> {meta}
+                </span>
+              )}
             </span>
             <span className={`transito-relogio${modo === 'minuto' && painel.restante < 600 ? ' acabando' : ''}`}>{relogio}</span>
             {painel.sequencia >= 2 && (

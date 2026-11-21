@@ -151,6 +151,21 @@
   align-items: center;
 }
 
+/* ---- Palavra secreta: 4, 5 ou 6 letras (21/11/2026; --letras vem do .palavra) ---- */
+.palavra .palavra-linha {
+  grid-template-columns: repeat(var(--letras, 5), 44px);
+}
+
+.palavra .palavra-mini div {
+  grid-template-columns: repeat(var(--letras, 5), 14px);
+}
+
+@media (max-width: 480px) {
+  .palavra .palavra-linha {
+    grid-template-columns: repeat(var(--letras, 5), 38px);
+  }
+}
+
 /* ---- Palavra secreta: o dueto e o quarteto ---- */
 .palavra-quadros {
   display: flex;
@@ -164,7 +179,7 @@
 }
 
 .palavra-quadros.varias .palavra-linha {
-  grid-template-columns: repeat(5, 28px);
+  grid-template-columns: repeat(var(--letras, 5), 28px);
   gap: 3px;
 }
 
@@ -337,4 +352,80 @@
   font-size: calc(12px * var(--escala-do-texto, 1));
   color: var(--text-muted);
   text-align: center;
+}
+
+/* ---- Stop: a conferência por categoria (21/11/2026) ---- */
+.stop-etapas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+.stop-etapas li {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: calc(11px * var(--escala-do-texto, 1));
+}
+
+.stop-etapas li.feita {
+  opacity: 0.5;
+}
+
+.stop-etapas li.atual {
+  border-color: var(--accent, #5865f2);
+  color: var(--text-strong);
+  font-weight: 700;
+}
+
+.stop-categoria-atual {
+  margin: 4px 0 0;
+  text-align: center;
+  font-size: calc(18px * var(--escala-do-texto, 1));
+  color: var(--text-strong);
+}
+
+.stop-letra-pequena {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.6em;
+  height: 1.6em;
+  margin-right: 4px;
+  border-radius: 6px;
+  background: var(--bg-darkest);
+  font-weight: 800;
+}
+
+.stop-lado-a-lado {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.stop-resposta.carta {
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.stop-resposta.carta .stop-quem {
+  max-width: 100%;
+}
+
+.stop-resposta.carta .stop-texto {
+  flex: 0 0 auto;
+  font-size: calc(16px * var(--escala-do-texto, 1));
+  font-weight: 700;
 }

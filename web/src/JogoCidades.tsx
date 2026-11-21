@@ -5,6 +5,8 @@ import { coresDe, Dado, Peca, useAgora } from './JogoTabuleiro';
 import { BotoesDosRobos, cadaUmPorSi } from './EscolhaDosRobos';
 import { Tabuleiro3D } from './cidades3d/Tabuleiro3D';
 import { ComoJogar } from './MesaComum';
+import { nomeDoPais } from './i18n/paises';
+import { CAPITAL_DO_PAIS } from './capitaisDoMundo';
 import { COR_DO_GRUPO, COR_DO_GRUPO_NO_BRASIL, lugarDaCasaDasCidades, voltaDasCidades } from './cidadesVolta';
 import type { EstadoCidades, OcorridoDasCidades, Partida, PropostaDasCidades } from './minijogos';
 
@@ -47,7 +49,13 @@ type T = ReturnType<typeof useT>;
 function nomeDaCasa(e: EstadoCidades, i: number, t: T): string {
   const c = e.casas[i];
   if (!c) return '';
-  if (c.tipo === 'cidade') return c.nome ?? '';
+  // as Capitais do mundo (21/11/2026): "Tóquio (Japão)", a capital traduzida e o país pelo Intl, na língua de quem lê
+  if (c.tipo === 'cidade') {
+    if (!c.pais || !c.nome) return c.nome ?? '';
+    const capital = CAPITAL_DO_PAIS[c.nome];
+    const pais = nomeDoPais(c.nome, idiomaAtual());
+    return capital ? `${t(capital)} (${pais})` : pais;
+  }
   if (c.tipo === 'transporte') {
     if (c.nome === 'rodoviaria') return t('Rodoviária');
     if (c.nome === 'porto') return t('Porto');
@@ -834,10 +842,11 @@ export function EscolhaDasCidades({ solo = false, aoEscolher, aoVoltar }: { solo
   const t = useT();
   const [robos, setRobos] = useState(3);
   const [rapida, setRapida] = useState(false);
-  // O TABULEIRO (20/11/2026): as 20 capitais (32 casas, o de fábrica) ou o Brasil inteiro (as 27, 40 casas)
-  const [tabuleiro, setTabuleiro] = useState<'capitais' | 'brasil'>('capitais');
+  // O TABULEIRO (20/11/2026): as 20 capitais (32 casas, o de fábrica), o Brasil inteiro (as 27, 40 casas) ou, desde 21/11/2026,
+  // as Capitais do mundo (20 países, 32 casas)
+  const [tabuleiro, setTabuleiro] = useState<'capitais' | 'brasil' | 'mundo'>('capitais');
   const comRobos = (corpo: Record<string, unknown>) =>
-    aoEscolher({ ...(solo ? { ...corpo, robos } : corpo), ...(rapida ? { rapida: true } : {}), ...(tabuleiro === 'brasil' ? { tabuleiro } : {}) });
+    aoEscolher({ ...(solo ? { ...corpo, robos } : corpo), ...(rapida ? { rapida: true } : {}), ...(tabuleiro !== 'capitais' ? { tabuleiro } : {}) });
   return (
     <div className="tab-escolha">
       {solo && <BotoesDosRobos opcoes={ROBOS.map(cadaUmPorSi)} escolhida={robos} aoEscolher={setRobos} />}
@@ -847,6 +856,9 @@ export function EscolhaDasCidades({ solo = false, aoEscolher, aoVoltar }: { solo
         </button>
         <button type="button" aria-pressed={tabuleiro === 'brasil'} onClick={() => setTabuleiro('brasil')}>
           {t('Brasil inteiro')} · {t('{n} capitais', { n: 27 })}
+        </button>
+        <button type="button" aria-pressed={tabuleiro === 'mundo'} onClick={() => setTabuleiro('mundo')}>
+          {t('Capitais do mundo')}
         </button>
       </div>
       <label className="mesa-opcao">

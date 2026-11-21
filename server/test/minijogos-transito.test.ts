@@ -166,3 +166,43 @@ test('na sala, o minuto no cruzamento, sem escolha', () => {
   assert.deepEqual([e.fase, e.modo, e.mapa], ['jogando', 'minuto', 'cruz']);
   assert.equal(p.jogo.acao(anaId, { tipo: 'jogar', modo: 'ate-bater' }), 'A partida está andando.');
 });
+
+test('a campanha (21/11/2026): a fase 1 aberta, a 2 só com a meta da 1; o recorde de cada fase vai à tabela comum, pelo servidor', async () => {
+  const { escolhaDoPiloto } = await import('../../web/src/transito/piloto.js');
+  const cia = await idDe((await criarConta(app, 'cia-transito')).token);
+  const solo = () => {
+    const ctx = { agendar: () => {}, avisar: () => {}, terminar: () => {}, naSala: () => [cia], nome: () => 'cia', comunidade: 0, solo: true };
+    const jogo = criarTransito({ agora: () => agora, aleatorio: () => 0.3131 }).comecar(ctx as never, { naSala: [cia], criadaPor: cia, corpo: {} });
+    assert.ok(typeof jogo !== 'string');
+    return jogo;
+  };
+  let jogo = solo();
+  const p0 = jogo.publico(cia) as { campanha: (number | null)[] };
+  assert.equal(p0.campanha.length, sim.CAMPANHA.length);
+  assert.deepEqual(p0.campanha, sim.CAMPANHA.map(() => null));
+  assert.equal(jogo.acao(cia, { tipo: 'jogar', fase: 2 }), 'Sessão inválida.', 'a fase 2 ainda está fechada');
+  assert.equal(jogo.acao(cia, { tipo: 'jogar', fase: 99 }), 'Sessão inválida.');
+  assert.equal(jogo.acao(cia, { tipo: 'jogar', fase: 1 }), null);
+  const p = jogo.publico(cia) as { semente: number; etapa: number; meta: number };
+  assert.equal(p.etapa, 1);
+  assert.equal(p.meta, sim.CAMPANHA[0].meta);
+  // o piloto joga a fase 1
+  const e = sim.novaPartida(p.semente, { fase: 1 });
+  const lista: number[] = [];
+  while (!e.terminou) {
+    if (e.passo % 6 === 0) {
+      const q = escolhaDoPiloto(e as never);
+      if (q >= 0 && sim.liberar(e, q)) lista.push(e.passo, q);
+    }
+    sim.passo(e);
+  }
+  assert.ok(e.pontos >= sim.CAMPANHA[0].meta, 'o piloto passa da meta');
+  agora += (e.passo / 60) * 1000 + 1000;
+  assert.equal(jogo.acao(cia, { tipo: 'fim', liberacoes: lista }), null);
+  assert.equal(db.recordeDoSolo(cia, 'transito', 'fase-1')?.valor, e.pontos);
+  // agora a 2 abre
+  jogo = solo();
+  assert.equal((jogo.publico(cia) as { campanha: (number | null)[] }).campanha[0], e.pontos);
+  assert.equal(jogo.acao(cia, { tipo: 'jogar', fase: 2 }), null);
+  assert.equal((jogo.publico(cia) as { mapa: string }).mapa, sim.CAMPANHA[1].mapa);
+});

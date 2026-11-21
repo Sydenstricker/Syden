@@ -108,13 +108,26 @@ export const OBJETOS: Record<string, { nome: string }> = {
   caminhonete: { nome: chave('Caminhonete') },
   'carro-de-corrida': { nome: chave('Carro de corrida') },
   caminhao: { nome: chave('Caminhão') },
+  // 21/11/2026: a fazenda e o esporte
+  pintinho: { nome: chave('Pintinho') },
+  galo: { nome: chave('Galo') },
+  ganso: { nome: chave('Ganso') },
+  porco: { nome: chave('Porco') },
+  ovelha: { nome: chave('Ovelha') },
+  cabra: { nome: chave('Cabra') },
+  'bola-de-beisebol': { nome: chave('Bola de beisebol') },
+  'bola-de-volei': { nome: chave('Bola de vôlei') },
+  'pedra-de-curling': { nome: chave('Pedra de curling') },
+  'patins-de-gelo': { nome: chave('Patins de gelo') },
+  esqui: { nome: chave('Esqui') },
+  'gol-de-handebol': { nome: chave('Gol de handebol') },
 };
 
 /**
  * As figuras desenhadas NA DIAGONAL (o lápis, o avião, o foguete): o comprimento delas é o da diagonal do
  * desenho, e não a largura nem a altura.
  */
-export const NA_DIAGONAL = new Set(['lapis', 'banana', 'violao', 'aviao', 'foguete', 'limao', 'cenoura', 'milho', 'berinjela', 'baguete', 'skate', 'batata', 'pepino']);
+export const NA_DIAGONAL = new Set(['lapis', 'banana', 'violao', 'aviao', 'foguete', 'limao', 'cenoura', 'milho', 'berinjela', 'baguete', 'skate', 'batata', 'pepino', 'esqui']);
 
 /** Figuras em que o objeto medido é só PARTE do desenho: em Júpiter, o anel passa para fora da esfera. */
 export const PARTE_MEDIDA: Record<string, number> = { jupiter: 0.72 };
@@ -130,6 +143,9 @@ export const CATEGORIAS_DO_TAMANHO: { id: string; nome: string; figuras: [string
   { id: 'gigantes', nome: chave('Gigantes'), figuras: ['onibus', 'torre-eiffel', 'everest'] },
   { id: 'comida', nome: chave('Comida'), figuras: ['morango', 'hamburguer', 'baguete'] },
   { id: 'veiculos', nome: chave('Veículos'), figuras: ['patinete', 'ambulancia', 'helicoptero'] },
+  // 21/11/2026
+  { id: 'fazenda', nome: chave('Fazenda'), figuras: ['pintinho', 'porco', 'vaca'] },
+  { id: 'esportes', nome: chave('Esporte'), figuras: ['bola-de-volei', 'patins-de-gelo', 'gol-de-handebol'] },
 ];
 
 export type Medida = 'altura' | 'comprimento' | 'diametro';
@@ -286,8 +302,8 @@ export interface EstadoXadrez {
   placar: LinhaDoPlacar[];
 }
 
-export type Papel = 'lobisomem' | 'vidente' | 'anjo' | 'armadilha' | 'caldeirao' | 'aldeao';
-export type PapelEspecial = 'vidente' | 'anjo' | 'armadilha' | 'caldeirao';
+export type Papel = 'lobisomem' | 'vidente' | 'anjo' | 'armadilha' | 'caldeirao' | 'amuleto' | 'carapaca' | 'mascara' | 'aldeao';
+export type PapelEspecial = 'vidente' | 'anjo' | 'armadilha' | 'caldeirao' | 'amuleto' | 'carapaca' | 'mascara';
 
 /** O Lobisomem (server/src/minijogo-lobisomem.ts; o preparo, a defesa, as poções e a história desde 19/11/2026). */
 export interface EstadoLobisomem {
@@ -318,7 +334,9 @@ export interface EstadoLobisomem {
   mortosDaNoite: number[];
   eliminado: number | null;
   armadilha: { quem: number; alvo: number | null } | null;
-  vencedor: 'vila' | 'lobisomens' | null;
+  /** No veredito, quem o amuleto salvou (21/11/2026). */
+  amuletoQuebrou?: number | null;
+  vencedor: 'vila' | 'lobisomens' | 'mascara' | null;
   historia: LinhaDaHistoriaDoLobisomem[] | null;
 }
 export interface LinhaDaHistoriaDoLobisomem {
@@ -333,6 +351,8 @@ export interface LinhaDaHistoriaDoLobisomem {
   sim?: number;
   nao?: number;
   saiu?: boolean;
+  carapaca?: boolean;
+  amuleto?: boolean;
 }
 
 /** O desenha e adivinha (server/src/minijogo-desenho.ts). */
@@ -526,7 +546,7 @@ export interface EstadoCidades {
   modo: 'rodadas' | 'falencia';
   rodada: number;
   rodadas: number | null;
-  casas: { tipo: TipoDaCasaDasCidades; nome?: string; uf?: string; grupo?: number; preco?: number; aluguel?: number; custo?: number; valor?: number }[];
+  casas: { tipo: TipoDaCasaDasCidades; nome?: string; uf?: string; grupo?: number; preco?: number; aluguel?: number; custo?: number; valor?: number; pais?: boolean }[];
   salario: number;
   multiplicador: number[];
   aluguelDoTransporte: number[];
@@ -553,8 +573,8 @@ export interface EstadoCidades {
   deNovo?: boolean;
   /** Quanto custa sair do engarrafamento. */
   sairDoEngarrafamento?: number;
-  /** O tabuleiro (20/11/2026): 'capitais' (32 casas, o de fábrica) ou 'brasil' (40 casas, as 27 capitais). */
-  tabuleiro?: 'capitais' | 'brasil';
+  /** O tabuleiro (20/11/2026): 'capitais' (32 casas, o de fábrica), 'brasil' (40 casas, as 27 capitais) ou 'mundo' (21/11/2026: 32 casas, 20 países). */
+  tabuleiro?: 'capitais' | 'brasil' | 'mundo';
   /** A temporada de uma notícia: os aluguéis do grupo vezes `fator` até `vezes` vezes passarem. */
   temporada?: { grupo: number; fator: number; vezes: number } | null;
 }
@@ -737,6 +757,31 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'paises',
     nome: chave('Países'),
     dica: chave('Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.'),
+    abas: ['solo', 'coletivo'],
+  },
+  // OS TEMAS NOVOS DOS QUIZZES (21/11/2026, o lote D): listas nossas, com os nomes de cada idioma do Wikidata.
+  {
+    id: 'elementos',
+    nome: chave('Elementos químicos'),
+    dica: chave('Sai um elemento químico secreto, e cada um chuta outros. Cada chute mostra o que bate com o secreto: a família, o estado físico, o período, o grupo e o número atômico. Quem acertar com menos chutes ganha mais pontos.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    id: 'dinossauros',
+    nome: chave('Dinossauros'),
+    dica: chave('Sai um dinossauro secreto, e cada um chuta outros. Cada chute mostra o que bate com o secreto: o período, a dieta, o grupo, o comprimento e onde ele foi achado. Quem acertar com menos chutes ganha mais pontos.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    id: 'estados',
+    nome: chave('Estados do Brasil'),
+    dica: chave('Sai um estado secreto do Brasil, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a população, a área, o litoral e a fronteira com outro país. Quem acertar com menos chutes ganha mais pontos.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    id: 'animais',
+    nome: chave('Animais'),
+    dica: chave('Sai um animal secreto, e cada um chuta outros. Cada chute mostra o que bate com o secreto: a classe, a dieta, onde ele vive e o peso. Quem acertar com menos chutes ganha mais pontos.'),
     abas: ['solo', 'coletivo'],
   },
   {

@@ -1,3 +1,4 @@
+import { Crosshair, Plus, Radar } from 'lucide-react';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useT } from './i18n';
 import { ControlesDaMesa, ComHistorico, type EstadoDaMesa } from './MesaComum';
@@ -41,7 +42,14 @@ export interface EstadoNaval {
   /** O lado do mar e a frota dele (20/11/2026). */
   mar?: number;
   frota?: number[];
+  /** As ARMAS ESPECIAIS (21/11/2026): se a partida tem, quais cada lado já usou, e os sonares (a área e o número, para todos). */
+  armas?: boolean;
+  usadas?: [{ cruz: boolean; sonar: boolean }, { cruz: boolean; sonar: boolean }] | null;
+  sonares?: { lado: 0 | 1; centro: number; navios: number }[];
 }
+
+/** A arma da vez: o tiro comum, ou uma das especiais (server/src/minijogo-naval.ts, `usarArma`). */
+type ArmaDaTela = 'tiro' | 'cruz' | 'sonar';
 
 /** A frota que a pessoa vê no 3D (só aparência, só neste aparelho): a pirata ou a moderna. */
 const FROTA_GUARDADA = 'syden:naval-frota';
@@ -124,7 +132,12 @@ export function JogoNaval({
 
   const ultimo = estado.ultimo;
   let resultado: string | null = null;
-  if (ultimo && jogando) {
+  // o último lance foi um sonar: o número dele no lugar do "Água!" de antes
+  const ultimoTexto = (estado as unknown as EstadoDaMesa).historico?.at(-1)?.texto ?? '';
+  const ultimoSonar = ultimoTexto.startsWith('◎') ? estado.sonares?.at(-1) : undefined;
+  if (ultimoSonar && jogando) {
+    resultado = t('Sonar: {n} navios na área', { n: ultimoSonar.navios });
+  } else if (ultimo && jogando) {
     resultado =
       ultimo.resultado === 'agua'
         ? t('Água!')
@@ -140,8 +153,19 @@ export function JogoNaval({
   const [mira, setMira] = useState<number[]>([]);
   const tirosDaVez = estado.salvo && sentado ? (estado.tirosDaRajada?.[meuLado] ?? 0) : 0;
   const vezChave = `${estado.vez}:${(estado as unknown as EstadoDaMesa).historico?.length ?? 0}:${estado.fase}`;
-  useEffect(() => setMira([]), [vezChave]);
+  // a arma escolhida (21/11/2026): volta ao tiro comum a cada lance
+  const [arma, setArma] = useState<ArmaDaTela>('tiro');
+  useEffect(() => {
+    setMira([]);
+    setArma('tiro');
+  }, [vezChave]);
+  const usadas = sentado ? estado.usadas?.[meuLado as 0 | 1] : undefined;
   const mirar = (casa: number) => {
+    if (arma !== 'tiro') {
+      agir({ tipo: 'jogada', casa, arma });
+      setArma('tiro');
+      return;
+    }
     if (!estado.salvo) return agir({ tipo: 'jogada', casa });
     setMira((m) => (m.includes(casa) ? m.filter((c) => c !== casa) : m.length < tirosDaVez ? [...m, casa] : m));
   };
@@ -210,6 +234,7 @@ export function JogoNaval({
                 mira={alvo ? mira : []}
                 frota={frota}
                 lado={n}
+                sonares={(estado.sonares ?? []).filter((x) => x.lado !== lado)}
               />
             );
           })}
@@ -221,6 +246,34 @@ export function JogoNaval({
         {situacao}
         {resultado && <span className={`naval-resultado ${ultimo?.resultado}`}> {resultado}</span>}
       </p>
+      {estado.armas && sentado && jogando && (
+        <div className="naval-armas" role="radiogroup" aria-label={t('Armas especiais')}>
+          {(
+            [
+              ['tiro', t('Tiro'), <Crosshair key="t" size={20} aria-hidden="true" />],
+              ['cruz', t('Tiro em cruz'), <Plus key="c" size={22} strokeWidth={3} aria-hidden="true" />],
+              ['sonar', t('Sonar'), <Radar key="s" size={20} aria-hidden="true" />],
+            ] as const
+          ).map(([id, nomeDaArma, figura]) => {
+            const gasta = id !== 'tiro' && usadas?.[id] === true;
+            return (
+              <button
+                key={id}
+                type="button"
+                role="radio"
+                aria-checked={arma === id}
+                aria-label={nomeDaArma}
+                title={nomeDaArma}
+                className={`btn-secondary naval-arma${arma === id ? ' escolhida' : ''}`}
+                disabled={!minhaVez || gasta}
+                onClick={() => setArma(id)}
+              >
+                {figura}
+              </button>
+            );
+          })}
+        </div>
+      )}
       {estado.salvo && minhaVez && (
         <div className="minijogo-acoes">
           <span>
@@ -531,9 +584,12 @@ function MarDaTela({
   frota,
   lado = LADO,
   mira = [],
+  sonares = [],
 }: {
   /** As casas da rajada do salvo já escolhidas. */
   mira?: number[];
+  /** Os sonares usados NESTE mar (21/11/2026): a área de 3 × 3 em volta do centro e quantos navios passam por ela. */
+  sonares?: { centro: number; navios: number }[];
   frota: FrotaDaCena;
   lado?: number;
   titulo: string;
@@ -551,7 +607,7 @@ function MarDaTela({
     <section className={`naval-mar${meu ? ' meu' : ''}${alvo ? ' alvo' : ''}${daVez ? ' na-mira' : ''}`}>
       <h4 className="naval-titulo">{titulo}</h4>
       <Mar3D
-        dados={{ tiros: mar.tiros, navios: mar.navios, meu, podeAtirar, ultima, frota, mirada: mira, lado }}
+        dados={{ tiros: mar.tiros, navios: mar.navios, meu, podeAtirar, ultima, frota, mirada: mira, lado, sonares }}
         aoAtirar={atirar}
         grade={
       <div className="naval-grade" style={estiloDaGrade(lado)}>
@@ -571,6 +627,25 @@ function MarDaTela({
               }}
               aria-hidden="true"
             />
+          );
+        })}
+        {sonares.map((x, k) => {
+          // a área do sonar, cortada na borda do mar
+          const l = Math.floor(x.centro / lado);
+          const c = x.centro % lado;
+          const l0 = Math.max(0, l - 1);
+          const c0 = Math.max(0, c - 1);
+          const l1 = Math.min(lado - 1, l + 1);
+          const c1 = Math.min(lado - 1, c + 1);
+          return (
+            <span
+              key={`s${k}`}
+              className={`naval-sonar${x.navios === 0 ? ' vazio' : ''}`}
+              style={{ gridRow: `${l0 + 1} / ${l1 + 2}`, gridColumn: `${c0 + 1} / ${c1 + 2}` }}
+              aria-hidden="true"
+            >
+              <span>{x.navios}</span>
+            </span>
           );
         })}
         {mar.tiros.map((tiro, casa) => (

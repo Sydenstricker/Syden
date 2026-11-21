@@ -16,6 +16,16 @@
  * - 'pare': a barra corre: pare dentro da faixa verde.
  * - 'conte': cenouras piscam na tela: escolha quantas eram, entre três.
  *
+ * E os oito de 21/11/2026 (o lote D), também sem texto, cada um conferido pelos dados daqui:
+ * - 'maior': dois montes de cenoura: toque no maior.
+ * - 'cor': uma cor no alto: toque no círculo da mesma cor (os quatro em ordem sorteada).
+ * - 'intruso': seis cenouras e um nabo no meio: toque no nabo.
+ * - 'toques': o tambor mostra quantas batidas (de 3 a 6): bata essas vezes (o tempo mínimo de cada batida é conferido).
+ * - 'esquiva': a pedra cai numa das três faixas: vá para outra.
+ * - 'soma': dois dados: escolha a soma, entre três.
+ * - 'sombra': um legume no alto: escolha a sombra dele, entre três.
+ * - 'memoria': a cenoura aparece numa das quatro tocas e se esconde: toque onde ela estava.
+ *
  * É jogo entre amigos: conferência razoável, não perfeita (a mesma da Festa: um programa que espere a hora certa passa, como
  * passaria um dedo perfeito). Não usa o eco da rodada da Festa: a folga é a de quem não mediu (ATRASO_MAXIMO + FOLGA_DA_REDE).
  *
@@ -29,7 +39,12 @@ import * as db from './db.js';
 import { ATRASO_MAXIMO, FOLGA_ACIMA, FOLGA_DA_REDE, PREPARO_MS, REACAO_MINIMA } from './festa/comum.js';
 import type { Contexto, Jogo } from './minijogo-motor.js';
 
-export const TIPOS_RELAMPAGO = ['toque', 'lado', 'espere', 'pare', 'conte'] as const;
+/** Os tipos, na ordem do sorteio: os novos vão no FIM (a semente de antes dá os mesmos cinco primeiros só pelo tamanho). */
+export const TIPOS_RELAMPAGO = ['toque', 'lado', 'espere', 'pare', 'conte', 'maior', 'cor', 'intruso', 'toques', 'esquiva', 'soma', 'sombra', 'memoria'] as const;
+/** O intervalo mínimo entre duas batidas do 'toques' (um dedo não bate mais rápido que isto). */
+export const BATIDA_MINIMA_MS = 70;
+/** Quantos legumes há para a 'sombra' (o desenho de cada um mora no site). */
+export const FORMAS_DA_SOMBRA = 5;
 export type TipoRelampago = (typeof TIPOS_RELAMPAGO)[number];
 export const VIDAS_RELAMPAGO = 3;
 /** Quanto dura o primeiro microjogo, o mais rápido possível, e quanto cada um encurta. */
@@ -52,7 +67,15 @@ export type DadosRelampago =
   | { tipo: 'lado'; direcao: number; aparece: number }
   | { tipo: 'espere'; aparece: number }
   | { tipo: 'pare'; periodo: number; de: number; ate: number }
-  | { tipo: 'conte'; quantas: number; opcoes: number[]; mostra: number; posicoes: number[] };
+  | { tipo: 'conte'; quantas: number; opcoes: number[]; mostra: number; posicoes: number[] }
+  | { tipo: 'maior'; esquerda: number; direita: number; aparece: number }
+  | { tipo: 'cor'; cor: number; ordem: number[]; aparece: number }
+  | { tipo: 'intruso'; casa: number; aparece: number }
+  | { tipo: 'toques'; quantas: number; aparece: number }
+  | { tipo: 'esquiva'; pista: number; aparece: number }
+  | { tipo: 'soma'; a: number; b: number; opcoes: number[]; aparece: number }
+  | { tipo: 'sombra'; forma: number; opcoes: number[]; aparece: number }
+  | { tipo: 'memoria'; casa: number; mostra: number };
 
 /** O valor da barra do 'pare' no tempo t (ms desde o começo): uma onda triangular de 0 a 100 (só + − × ÷). */
 export function barraDoPare(periodo: number, t: number): number {
@@ -69,7 +92,44 @@ export function sortearRelampago(i: number, aleatorio: () => number, anterior: T
   if (tipo === anterior) tipo = TIPOS_RELAMPAGO[(TIPOS_RELAMPAGO.indexOf(tipo) + 1) % TIPOS_RELAMPAGO.length];
   // o que aparece, aparece na primeira metade (sobra tempo de reagir)
   const aparece = 300 + n(Math.max(1, Math.floor(dur * 0.45)));
+  // os de ler e escolher aparecem cedo (sobra tempo de pensar)
+  const cedo = () => 250 + n(Math.max(1, Math.floor(dur * 0.15)));
+  const embaralhar = (xs: number[]) => {
+    for (let k = xs.length - 1; k > 0; k--) {
+      const j = n(k + 1);
+      [xs[k], xs[j]] = [xs[j], xs[k]];
+    }
+    return xs;
+  };
   switch (tipo) {
+    case 'maior': {
+      const esquerda = 2 + n(6);
+      let direita = 2 + n(6);
+      if (direita === esquerda) direita = esquerda === 7 ? 6 : esquerda + 1;
+      return { tipo, esquerda, direita, aparece: cedo() };
+    }
+    case 'cor':
+      return { tipo, cor: n(4), ordem: embaralhar([0, 1, 2, 3]), aparece: cedo() };
+    case 'intruso':
+      return { tipo, casa: n(6), aparece };
+    case 'toques':
+      return { tipo, quantas: 3 + n(Math.min(4, Math.max(1, Math.floor((dur - 800) / 450)))), aparece: cedo() };
+    case 'esquiva':
+      return { tipo, pista: n(3), aparece };
+    case 'soma': {
+      const a = 1 + n(6);
+      const b = 1 + n(6);
+      const s = a + b;
+      const outras = embaralhar([s - 2, s - 1, s + 1, s + 2].filter((x) => x >= 2 && x <= 12)).slice(0, 2);
+      return { tipo, a, b, opcoes: [s, ...outras].sort((x, y) => x - y), aparece: cedo() };
+    }
+    case 'sombra': {
+      const forma = n(FORMAS_DA_SOMBRA);
+      const outras = embaralhar(Array.from({ length: FORMAS_DA_SOMBRA }, (_, k) => k).filter((k) => k !== forma)).slice(0, 2);
+      return { tipo, forma, opcoes: embaralhar([forma, ...outras]), aparece: cedo() };
+    }
+    case 'memoria':
+      return { tipo, casa: n(4), mostra: Math.max(600, Math.floor(dur * 0.3)) };
     case 'toque':
       return { tipo, casa: n(9), aparece };
     case 'lado':
@@ -110,9 +170,76 @@ export function respostaCerta(d: DadosRelampago, t: number, r: unknown): boolean
       const v = barraDoPare(d.periodo, t);
       return v >= d.de && v <= d.ate;
     }
-    default:
+    case 'conte':
       return t >= d.mostra && r === d.quantas;
+    case 'maior':
+      return t >= d.aparece + REACAO_MINIMA && r === (d.esquerda > d.direita ? 0 : 1);
+    case 'cor':
+      return t >= d.aparece + REACAO_MINIMA && Number.isInteger(r) && d.ordem[r as number] === d.cor;
+    case 'intruso':
+      return t >= d.aparece + REACAO_MINIMA && r === d.casa;
+    case 'toques':
+      // a última batida não chega antes de todas as outras, cada uma no mínimo BATIDA_MINIMA_MS depois da anterior
+      return r === d.quantas && t >= d.aparece + REACAO_MINIMA + (d.quantas - 1) * BATIDA_MINIMA_MS;
+    case 'esquiva':
+      return t >= d.aparece + REACAO_MINIMA && (r === 0 || r === 1 || r === 2) && r !== d.pista;
+    case 'soma':
+      return t >= d.aparece + REACAO_MINIMA && r === d.a + d.b;
+    case 'sombra':
+      return t >= d.aparece + REACAO_MINIMA && r === d.forma;
+    case 'memoria':
+      return t >= d.mostra && r === d.casa;
   }
+}
+
+/** A resposta honesta e certa (para o robô e o teste): o instante e o que se manda. */
+export function respostaHonesta(d: DadosRelampago): { t: number; r?: number } {
+  switch (d.tipo) {
+    case 'toque':
+      return { t: d.aparece + 250, r: d.casa };
+    case 'lado':
+      return { t: d.aparece + 250, r: d.direcao };
+    case 'espere':
+      return { t: d.aparece + 250 };
+    case 'pare': {
+      const alvo = (d.de + d.ate) / 2;
+      for (let t = 0; t < 5000; t += 5) if (Math.abs(barraDoPare(d.periodo, t) - alvo) < 2) return { t };
+      return { t: 0 };
+    }
+    case 'conte':
+      return { t: d.mostra + 200, r: d.quantas };
+    case 'maior':
+      return { t: d.aparece + 300, r: d.esquerda > d.direita ? 0 : 1 };
+    case 'cor':
+      return { t: d.aparece + 300, r: d.ordem.indexOf(d.cor) };
+    case 'intruso':
+      return { t: d.aparece + 300, r: d.casa };
+    case 'toques':
+      return { t: d.aparece + 250 + d.quantas * 120, r: d.quantas };
+    case 'esquiva':
+      return { t: d.aparece + 250, r: (d.pista + 1) % 3 };
+    case 'soma':
+      return { t: d.aparece + 400, r: d.a + d.b };
+    case 'sombra':
+      return { t: d.aparece + 350, r: d.forma };
+    case 'memoria':
+      return { t: d.mostra + 250, r: d.casa };
+  }
+}
+
+/** Uma resposta errada, no instante da certa (para o teste). */
+export function respostaErrada(d: DadosRelampago): { t: number; r?: number } {
+  const c = respostaHonesta(d);
+  if (d.tipo === 'espere') return { t: Math.max(0, d.aparece - 200) };
+  if (d.tipo === 'pare') {
+    for (let t = 0; t < 5000; t += 5) {
+      const v = barraDoPare(d.periodo, t);
+      if (v < d.de - 3 || v > d.ate + 3) return { t };
+    }
+  }
+  if (d.tipo === 'esquiva') return { t: c.t, r: d.pista };
+  if (d.tipo === 'cor') return { t: c.t, r: (d.ordem.indexOf(d.cor) + 1) % 4 };
+  return { t: c.t, r: (c.r ?? 0) + 1 };
 }
 
 interface Pessoa {

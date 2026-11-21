@@ -114,6 +114,9 @@ export interface JogadorNaTela {
   vel: number;
   carga: number;
   tonto: number;
+  /** O bote (21/11/2026): escorregando, ou no chão depois dele. */
+  bote?: boolean;
+  caido?: boolean;
   nome: string;
   /** A cor do pelo (do avatar pronto da pessoa, ou o creme do mascote). */
   pelo: [number, number, number];
@@ -123,7 +126,18 @@ export interface JogadorNaTela {
 /** O balanço dos braços e das orelhas, pelo relógio da tela. */
 export function desenharJogador(g: CanvasRenderingContext2D, f: Folhas, j: JogadorNaTela, ms: number) {
   const ang = Math.atan2(j.fy, j.fx);
-  const correndo = Math.min(1, j.vel / 1.6);
+  // o carrinho: a poeira atrás, e o corpo deitado de lado (mais largo, sem balanço); no chão, o mesmo, parado
+  if (j.bote || j.caido) {
+    if (j.bote) {
+      g.fillStyle = 'rgba(214,196,150,0.55)';
+      for (let k = 1; k <= 3; k++) {
+        g.beginPath();
+        g.arc(j.x - j.fx * k * 7, j.y - j.fy * k * 7, 5 - k, 0, Math.PI * 2);
+        g.fill();
+      }
+    }
+  }
+  const correndo = j.bote || j.caido ? 0 : Math.min(1, j.vel / 1.6);
   const balanco = Math.sin(ms / 80 + j.id) * 0.45 * correndo;
   // a sombra e, para mim, o anel no chão
   g.fillStyle = 'rgba(0,0,0,0.18)';
@@ -140,6 +154,8 @@ export function desenharJogador(g: CanvasRenderingContext2D, f: Folhas, j: Jogad
   g.save();
   g.translate(Math.round(j.x), Math.round(j.y));
   g.rotate(ang);
+  // deitado no carrinho: achatado no sentido do corpo
+  if (j.bote || j.caido) g.scale(1.15, 0.8);
   // os braços (a peça da Kenney, de cada lado do ombro), balançando ao correr
   const braco = f.braco[j.time];
   if (braco.complete && braco.naturalWidth) {

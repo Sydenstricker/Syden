@@ -26,7 +26,7 @@ export type PedraDoDomino = [number, number];
 export type PontaDoDomino = 'esquerda' | 'direita';
 
 export type LanceDoDomino =
-  | { id: number; tipo: 'jogou'; userId: number; pedra: PedraDoDomino; ponta: PontaDoDomino | null; sozinho: boolean }
+  | { id: number; tipo: 'jogou'; userId: number; pedra: PedraDoDomino; ponta: PontaDoDomino | null; sozinho: boolean; pontos?: number }
   | { id: number; tipo: 'comprou'; userId: number; sozinho: boolean }
   | { id: number; tipo: 'passou'; userId: number }
   | { id: number; tipo: 'bateu'; userId: number }
@@ -62,6 +62,9 @@ export interface EstadoDomino {
   } | null;
   vencedor: { lado: number; membros: number[] } | null;
   interrompida: boolean;
+  /** O dominó de pontos (21/11/2026): marca quem deixa as pontas em múltiplo de 5; a soma das pontas de agora. */
+  pontos?: boolean;
+  somaDasPontas?: number | null;
 }
 
 /** Onde ficam os pontos de cada número, na grade de 3 × 3 (coluna, linha), com a metade em pé. */
@@ -165,7 +168,9 @@ export function JogoDomino({ estado: bruto, eu, jogador, restante, agir }: { est
   const textoDoLance = (l: LanceDoDomino) => {
     switch (l.tipo) {
       case 'jogou':
-        return t('{nome} jogou {pedra}.', { nome: nomeDe(l.userId), pedra: rotulo(l.pedra) });
+        return l.pontos
+          ? t('{nome} jogou {pedra} e marcou {n}.', { nome: nomeDe(l.userId), pedra: rotulo(l.pedra), n: l.pontos })
+          : t('{nome} jogou {pedra}.', { nome: nomeDe(l.userId), pedra: rotulo(l.pedra) });
       case 'comprou':
         return t('{nome} comprou uma pedra.', { nome: nomeDe(l.userId) });
       case 'passou':
@@ -212,6 +217,12 @@ export function JogoDomino({ estado: bruto, eu, jogador, restante, agir }: { est
         <span className="dom-alvo">
           {t('Até {n} pontos', { n: estado.alvo })}
           {!estado.duplas && ` · ${t('Dorme: {n}', { n: estado.dorme })}`}
+          {/* no dominó de pontos, a soma das pontas de agora: o 5 na figura diz que é ela que conta */}
+          {estado.pontos && estado.somaDasPontas != null && (
+            <span className={`dom-soma${estado.somaDasPontas > 0 && estado.somaDasPontas % 5 === 0 ? ' marca' : ''}`} title={t('Soma das pontas')}>
+              {' · '}Σ {estado.somaDasPontas}
+            </span>
+          )}
         </span>
       </div>
 

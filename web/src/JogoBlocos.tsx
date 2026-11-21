@@ -1,6 +1,7 @@
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { tocar } from './somDosJogos';
-import { ArrowLeftRight, Bot, Check, ChevronsUp, Gauge, Infinity as SemFim, Puzzle, Timer, Trophy } from 'lucide-react';
+import { ArrowLeftRight, Bot, Check, ChevronsUp, Gauge, Infinity as SemFim, Lightbulb, Puzzle, Timer, Trophy } from 'lucide-react';
+import { TreinoDaCadeia } from './blocos/TreinoDaCadeia';
 import { criarImpacto } from './impacto';
 import { useEffect, useRef, useState } from 'react';
 import { ALTURA, desenharMiniatura, desenharTabuleiro, faiscasEm, LARGURA, PECA, type Enfeites } from './blocos/desenho';
@@ -190,6 +191,9 @@ export function EscolhaDosBlocos({ aoEscolher, aoVoltar }: { aoEscolher: (modo: 
     aoEscolher(`${modo}:${velocidade}`);
   };
   const [vencidas] = useState(fasesVencidasNoAparelho);
+  /** O TREINO DA CADEIA (21/11/2026): só nesta tela, sem servidor (blocos/TreinoDaCadeia.tsx). */
+  const [treino, setTreino] = useState(false);
+  if (treino) return <TreinoDaCadeia aoVoltar={() => setTreino(false)} />;
   const niveis = [
     { id: 'facil', robos: 1 },
     { id: 'medio', robos: 2 },
@@ -208,6 +212,12 @@ export function EscolhaDosBlocos({ aoEscolher, aoVoltar }: { aoEscolher: (modo: 
           <button type="button" className="minijogo-jogo" onClick={() => escolher('dois-minutos')}>
             <Timer size={40} aria-hidden="true" />
             <span>{t('2 minutos')}</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" className="minijogo-jogo" onClick={() => setTreino(true)}>
+            <Lightbulb size={40} aria-hidden="true" />
+            <span>{t('Treino da cadeia')}</span>
           </button>
         </li>
         {niveis.map((n) => (

@@ -10,9 +10,16 @@
  *   minha posição chegar lá. Quando EU chuto, a bola sai na hora aqui (a previsão) e fica assim até o servidor responder; se ele
  *   recusar, ela volta. Encostar na bola solta também a põe no meu pé na hora, por 0,4 s, esperando o servidor confirmar.
  * - Toda troca de onde a bola vem (a previsão, o servidor, o pé) passa por um DESVIO que some aos poucos: a bola não pula.
+ * - O BOTE (21/11/2026): o carrinho escorrega aqui, e quando ele encosta na bola COMO ELA ESTÁ NA TELA, o bote vai ao servidor
+ *   (quem dá o carrinho tem razão, pelos últimos 300 ms) e o carrinho acaba; a bola solta chega no quadro seguinte.
  */
 import {
   ALCANCE,
+  alcancaBote,
+  BOTE_CAIDO_ACERTO,
+  BOTE_TONTO,
+  comecarBote,
+  relogiosDoBote,
   aplicarChute,
   DOMINIO_MAX,
   foraDoCentro,
@@ -53,7 +60,7 @@ export interface Quadro {
   fim: 0 | 1;
   /** x, y, vx, vy, dono, versão, proteção, altura, subida */
   b: number[];
-  /** id, x, y, vx, vy, fx, fy, carga, tonto, eco */
+  /** id, x, y, vx, vy, fx, fy, carga, tonto, eco, bote (1 escorregando, 2 no chão; só dos robôs) */
   j: number[][];
   /** As respostas aos chutes: id, número, 1 aceito / 0 recusado. */
   c: number[][];
@@ -62,7 +69,7 @@ export interface Quadro {
 
 export type EventoDaTela =
   | { tipo: 'chute' | 'passe' | 'dominio' | 'quique' | 'reinicio' | 'fim'; id?: number }
-  | { tipo: 'roubo'; id: number; de: number }
+  | { tipo: 'roubo' | 'bote'; id: number; de: number }
   | { tipo: 'gol'; time: 0 | 1; autor: number; contra: boolean };
 
 const MS_POR_PASSO = 1000 / 60;
@@ -140,6 +147,8 @@ export class ClienteDaSala {
           eu.carga = 0;
           eu.tonto = 0;
           eu.semDominio = 0;
+          eu.bote = 0;
+          eu.caido = 0;
           this.previsto = null;
           this.posseAte = 0;
         }
@@ -165,6 +174,14 @@ export class ClienteDaSala {
           this.posseAte = 0;
         }
         this.aoEvento({ tipo: 'roubo', id: a, de: b });
+      } else if (tipo === 'b') {
+        // o bote: quem levou perde a bola e fica tonto um instante
+        if (eu && b === eu.id) {
+          eu.tonto = Math.max(eu.tonto, BOTE_TONTO);
+          eu.carga = 0;
+          this.posseAte = 0;
+        }
+        if (a !== eu?.id) this.aoEvento({ tipo: 'bote', id: a, de: b });
       } else if (tipo === 'q') this.aoEvento({ tipo: 'quique' });
       else if (tipo === 'g') {
         this.previsto = null;
@@ -212,6 +229,9 @@ export class ClienteDaSala {
       j.fy /= nf;
       j.carga = lb[7];
       j.tonto = lb[8];
+      // o bote dos robôs, só para o desenho (escorregando ou no chão)
+      j.bote = lb[10] === 1 ? 1 : 0;
+      j.caido = lb[10] === 2 ? 1 : 0;
     }
     // A BOLA
     const bola = this.vista.bola;
@@ -286,7 +306,27 @@ export class ClienteDaSala {
       c = NADA;
     }
     const comBola = this.vista.bola.dono === eu.id;
+    if (c.bote) comecarBote(eu, comBola, c.dx, c.dy);
     passoDoJogador(eu, c, comBola);
+    relogiosDoBote(eu);
+    // no carrinho e no chão: nem chute nem passe; o carrinho que encosta na bola da tela vai ao servidor
+    if (eu.bote > 0 || eu.caido > 0) {
+      eu.carga = 0;
+      eu.alto = false;
+      if (eu.bote > 0 && !this.previsto && alcancaBote(this.vista, eu)) {
+        const s = ++this.seq;
+        this.enviar({ tipo: 'bote', x: eu.x, y: eu.y, fx: eu.fx, fy: eu.fy, s });
+        eu.bote = 0;
+        eu.caido = BOTE_CAIDO_ACERTO;
+        this.posseAte = 0;
+        this.aoEvento({ tipo: 'bote', id: eu.id, de: this.vista.bola.dono });
+      }
+      if (++this.envio >= 3) {
+        this.envio = 0;
+        this.enviar({ tipo: 'pos', x: eu.x, y: eu.y, vx: eu.vx, vy: eu.vy, fx: eu.fx, fy: eu.fy, c: 0, r: this.reinicio, ts: Math.round(agora) % 1e9 });
+      }
+      return;
+    }
     foraDoCentro(this.vista, eu);
     if (comBola) {
       const [x, y] = frenteDe(eu);

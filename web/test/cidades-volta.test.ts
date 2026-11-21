@@ -32,3 +32,13 @@ test('as cores: 7 grupos na de 32, 9 no Brasil inteiro', () => {
   assert.deepEqual(lugarDaCasaDasCidades(9), { x: 360, y: 0 });
   assert.deepEqual(lugarDaCasaDasCidades(25), { x: 0, y: 280 });
 });
+
+test('as Capitais do mundo: cada país do tabuleiro do servidor tem o nome da capital, e nada sobra', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { CAPITAL_DO_PAIS } = await import('../src/capitaisDoMundo.ts');
+  const fonte = readFileSync(new URL('../../server/src/minijogo-cidades.ts', import.meta.url), 'utf8');
+  const bloco = fonte.slice(fonte.indexOf('export const PAISES_DO_MUNDO'), fonte.indexOf('const doMundo'));
+  const codigos = [...bloco.matchAll(/\['([A-Z]{2})', \d\]/g)].map((m) => m[1]);
+  assert.equal(codigos.length, 20);
+  assert.deepEqual([...codigos].sort(), Object.keys(CAPITAL_DO_PAIS).sort());
+});

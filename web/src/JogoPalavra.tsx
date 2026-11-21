@@ -1,5 +1,5 @@
 import { Delete } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { EstadoPalavra, Partida } from './minijogos';
@@ -14,6 +14,8 @@ const CLASSE = ['nao-tem', 'outro-lugar', 'no-lugar'];
 /** O que o servidor de 19/11/2026 manda a mais: o dueto e o quarteto, o modo difícil e a sequência do Solo. */
 type EstadoPalavraNovo = Omit<EstadoPalavra, 'meu' | 'outros'> & {
   palavras?: number;
+  /** Quantas letras tem a palavra (4, 5 ou 6; 21/11/2026). Servidor antigo: 5. */
+  letras?: number;
   dificil?: boolean;
   meu: { texto: string; cores: number[]; coresTodas?: number[][] }[];
   resolvidas?: (number | null)[];
@@ -59,6 +61,7 @@ export function JogoPalavra({
   const t = useT();
   const estado = estadoBase as unknown as EstadoPalavraNovo & Partida;
   const nPalavras = estado.palavras ?? 1;
+  const n = estado.letras ?? 5;
   const resolvidas = estado.resolvidas ?? [estado.acertei ? estado.meu.length : null];
   const [escrito, setEscrito] = useState('');
   // Um chute por vez (revisão de 16/10/2026): Enter segurado, ou duas vezes com a internet lenta, mandava o mesmo
@@ -89,12 +92,12 @@ export function JogoPalavra({
   const tecla = (k: string) => {
     if (!chutando) return;
     if (k === 'Enter') {
-      if (escrito.length === 5 && !enviando) {
+      if (escrito.length === n && !enviando) {
         setEnviando(true);
         void Promise.resolve(agir({ tipo: 'chute', texto: escrito })).finally(() => setEnviando(false));
       }
     } else if (k === 'Backspace') setEscrito((e) => e.slice(0, -1));
-    else if (/^[a-z]$/.test(k)) setEscrito((e) => (e.length < 5 ? e + k : e));
+    else if (/^[a-z]$/.test(k)) setEscrito((e) => (e.length < n ? e + k : e));
   };
 
   useEffect(() => {
@@ -141,7 +144,7 @@ export function JogoPalavra({
   const corDaTecla = new Map<string, number>();
   for (const c of estado.meu) {
     coresDe(c).forEach((cs, b) => {
-      if (cs.length !== 5 || (nPalavras > 1 && resolvidas[b] !== null)) return;
+      if (cs.length !== n || (nPalavras > 1 && resolvidas[b] !== null)) return;
       [...limpar(c.texto)].forEach((letra, i) => corDaTecla.set(letra, Math.max(corDaTecla.get(letra) ?? -1, cs[i])));
     });
   }
@@ -151,20 +154,21 @@ export function JogoPalavra({
     Array.from({ length: estado.chutes }, (_, l) => {
       const feito = estado.meu[l];
       const cs = feito ? coresDe(feito)[b] : undefined;
-      if (feito && cs && cs.length === 5) return { letras: [...feito.texto], cores: cs, atual: false };
-      if (!feito && l === estado.meu.length && chutando && resolvidas[b] === null) return { letras: [...escrito.padEnd(5)], cores: null, atual: true };
-      return { letras: [...'     '], cores: null, atual: false };
+      if (feito && cs && cs.length === n) return { letras: [...feito.texto], cores: cs, atual: false };
+      if (!feito && l === estado.meu.length && chutando && resolvidas[b] === null) return { letras: [...escrito.padEnd(n)], cores: null, atual: true };
+      return { letras: [...' '.repeat(n)], cores: null, atual: false };
     });
 
   let situacao: string;
   if (estado.fase === 'revelando') situacao = t('A palavra era: {palavra}', { palavra: reveladas });
   else if (estado.acertei) situacao = t('Acertou! Agora é torcer pelos outros.');
   else if (estado.meu.length >= estado.chutes) situacao = t('Acabaram os seus chutes. Espere a palavra.');
-  else situacao = t('Escreva uma palavra de 5 letras e aperte Enter.');
+  // (a de 5 é o texto de sempre; a de 4 e a de 6, o mesmo com o número)
+  else situacao = n === 5 ? t('Escreva uma palavra de 5 letras e aperte Enter.') : t('Escreva uma palavra de {n} letras e aperte Enter.', { n });
 
   const outros = estado.outros.filter((o) => o.userId !== eu);
   return (
-    <div className="palavra">
+    <div className="palavra" style={{ '--letras': n } as CSSProperties}>
       <div className={`palavra-quadros${nPalavras > 1 ? ' varias' : ''}`}>
         {Array.from({ length: nPalavras }, (_, b) => (
           <div key={b} className={`palavra-quadro${nPalavras > 1 && resolvidas[b] !== null ? ' resolvido' : ''}`} aria-label={t('Seu quadro')}>
@@ -218,7 +222,7 @@ export function JogoPalavra({
                 {Array.from({ length: nPalavras }, (_, b) => (
                   <div key={b} className="palavra-mini">
                     {(o.coresTodas ?? o.cores.map((c) => [c])).map((todas, l) =>
-                      (todas[b] ?? []).length === 5 ? (
+                      (todas[b] ?? []).length === n ? (
                         <div key={l}>
                           {todas[b].map((c, i) => (
                             <span key={i} className={CLASSE[c]}>

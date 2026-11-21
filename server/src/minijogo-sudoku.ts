@@ -4,7 +4,7 @@ import { contarSolucoes, daReserva, encherReserva, gerarPelaTecnica, PEDIDO, pre
 
 /**
  * O SUDOKU EM CORRIDA: todo mundo recebe o MESMO tabuleiro, cada um resolve no seu, e a sala vê a barra de
- * progresso de cada um subindo. Sudoku não tem palavra, então sai pronto nos 71 idiomas.
+ * progresso de cada um subindo (desde 21/11/2026, também o COOPERATIVO: a turma no mesmo tabuleiro, ver acaoJuntos). Sudoku não tem palavra, então sai pronto nos 71 idiomas.
  *
  * O servidor gera o tabuleiro (com uma solução só, senão a corrida não é justa) e guarda a solução; o site
  * nunca a recebe. Cada número posto é conferido na hora: o errado fica vermelho e conta como erro no placar,
@@ -77,6 +77,8 @@ export const sudoku: Definicao = {
   comecar(ctx, { naSala, criadaPor, corpo }) {
     const dificuldade: Dificuldade = String(corpo.dificuldade) in DIFICULDADES ? (String(corpo.dificuldade) as Dificuldade) : 'medio';
     const noFim = corpo.conferencia === 'fim';
+    // O SUDOKU COOPERATIVO (21/11/2026): só na sala; no Solo é sempre a corrida (sozinho, dá no mesmo)
+    const juntos = corpo.modo === 'juntos' && !ctx.solo;
     // O SUDOKU X (20/11/2026): as duas diagonais também valem (cada uma com os nove números)
     const x = corpo.x === true;
     const pedido = PEDIDO[dificuldade];
@@ -106,6 +108,95 @@ export const sudoku: Definicao = {
       fase = 'fim';
       ctx.terminar();
     };
+
+    /**
+     * O SUDOKU COOPERATIVO (21/11/2026, o lote D da segunda auditoria), escolhido na largada ao lado da corrida: a turma resolve
+     * O MESMO TABULEIRO, junto. Cada casa preenchida aparece para todos, com quem a preencheu (`autores`). No "conferir na hora",
+     * a casa certa TRAVA (ninguém apaga o acerto de ninguém) e a errada fica vermelha para todos, contando o erro de quem a pôs;
+     * no "conferir no fim", qualquer um confere com o tabuleiro cheio, e a penalidade é da turma. O tempo é da turma: acaba
+     * quando o tabuleiro fecha. Sem recorde (o recorde é do Solo, e no Solo não há cooperativo).
+     */
+    const comum = [...enigma];
+    const autores: (number | null)[] = enigma.map(() => null);
+    const contribuicao = new Map<number, { erros: number }>(naSala.map((id) => [id, { erros: 0 }]));
+    let marcadasDaTurma = new Set<number>();
+    let penalidadeDaTurma = 0;
+    let terminouATurmaEm: number | null = null;
+    const certasDaTurma = () => comum.filter((n, i) => enigma[i] === 0 && n === solucao[i]).length;
+    const preenchidasDaTurma = () => comum.filter((n, i) => enigma[i] === 0 && n !== 0).length;
+    const terminarATurma = () => {
+      terminouATurmaEm = Date.now() - inicio + penalidadeDaTurma;
+      acabar();
+    };
+    const acaoJuntos = (quem: number, corpo: Record<string, unknown>): string | null => {
+      let c = contribuicao.get(quem);
+      if (!c) {
+        c = { erros: 0 };
+        contribuicao.set(quem, c);
+      }
+      if (corpo.tipo === 'conferir') {
+        if (!noFim) return 'Nesta partida cada número é conferido na hora.';
+        if (preenchidasDaTurma() < aPreencher) return 'Preencha todas as casas antes de conferir.';
+        const erradas = comum.map((n, i) => (enigma[i] === 0 && n !== solucao[i] ? i : -1)).filter((i) => i >= 0);
+        marcadasDaTurma = new Set(erradas);
+        // o erro conta para quem pôs o número errado
+        for (const i of erradas) {
+          const autor = autores[i];
+          if (autor !== null) contribuicao.get(autor)!.erros++;
+        }
+        penalidadeDaTurma += erradas.length * PENALIDADE_MS;
+        if (erradas.length === 0) {
+          terminarATurma();
+          return null;
+        }
+        ctx.avisar();
+        return null;
+      }
+      const casa = Number(corpo.casa);
+      const valor = Number(corpo.valor);
+      if (!Number.isInteger(casa) || casa < 0 || casa > 80 || enigma[casa] !== 0) return 'Essa casa não está livre.';
+      if (!Number.isInteger(valor) || valor < 0 || valor > 9) return 'Escolha um número de 1 a 9.';
+      if (!noFim && comum[casa] !== 0 && comum[casa] === solucao[casa]) return 'Essa casa já está certa.';
+      comum[casa] = valor;
+      autores[casa] = valor ? quem : null;
+      marcadasDaTurma.delete(casa);
+      if (!noFim && valor && valor !== solucao[casa]) c.erros++;
+      if (!noFim && certasDaTurma() === aPreencher) {
+          terminarATurma();
+          return null;
+        }
+      ctx.avisar();
+      return null;
+    };
+    const publicoJuntos = () => {
+      const certasPor = new Map<number, number>();
+      comum.forEach((n, i) => {
+        const autor = autores[i];
+        if (autor === null || enigma[i] !== 0) return;
+        // no "conferir no fim" conta o que cada um PREENCHEU (a certa contaria o que está errado)
+        if (noFim || n === solucao[i]) certasPor.set(autor, (certasPor.get(autor) ?? 0) + 1);
+      });
+      return {
+        fase,
+        enigma,
+        dificuldade,
+        conferencia: noFim ? 'fim' : 'hora',
+        x,
+        juntos: true,
+        largada: { dificuldade, conferencia: noFim ? 'fim' : 'hora', x, modo: 'juntos' },
+        meu: comum,
+        autores,
+        errados: noFim ? [...marcadasDaTurma].filter((i) => comum[i] !== solucao[i]) : comum.map((n, i) => (n && n !== solucao[i] ? i : -1)).filter((i) => i >= 0),
+        penalidadeMs: penalidadeDaTurma,
+        total: aPreencher,
+        recorde: null,
+        turma: { certas: noFim ? preenchidasDaTurma() : certasDaTurma(), tempoMs: terminouATurmaEm },
+        // a "corrida" do cooperativo é a parte de cada um: quantas casas pôs (e os erros), na ordem de quem pôs mais
+        corrida: [...contribuicao.entries()]
+          .map(([userId, k]) => ({ userId, username: ctx.nome(userId), certas: certasPor.get(userId) ?? 0, erros: k.erros, tempoMs: terminouATurmaEm }))
+          .sort((a, b) => b.certas - a.certas || a.erros - b.erros || a.username.localeCompare(b.username)),
+      };
+    };
     ctx.agendar(SUDOKU_MS, acabar);
     // Acaba quando todo mundo da sala terminou; quem saiu da sala não segura os outros.
     const todosProntos = () => {
@@ -125,6 +216,7 @@ export const sudoku: Definicao = {
 
     return {
       publico(quem) {
+        if (juntos) return publicoJuntos();
         const meu = jogadores.get(quem);
         return {
           fase,
@@ -156,6 +248,7 @@ export const sudoku: Definicao = {
       acao(quem, corpo) {
         if (corpo.tipo !== 'jogada' && corpo.tipo !== 'conferir') return 'Ação desconhecida.';
         if (fase !== 'jogando') return 'A partida acabou.';
+        if (juntos) return acaoJuntos(quem, corpo);
         let j = jogadores.get(quem);
         if (!j) {
           j = novo();
@@ -185,6 +278,8 @@ export const sudoku: Definicao = {
         return null;
       },
       conferir() {
+        // no cooperativo, quem sai não segura nem acaba: a turma que fica continua
+        if (juntos) return;
         if (fase === 'jogando' && todosProntos()) acabar();
       },
     };

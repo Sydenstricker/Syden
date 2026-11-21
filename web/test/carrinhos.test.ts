@@ -189,3 +189,70 @@ test('as medalhas: só nos traçados prontos, sobre o piloto quase perfeito; o p
     assert.equal(medalhaPelosPassos(base, cheio, FATORES_DOS_CARRINHOS), null, `${id}: o acelerador cheio não ganha medalha`);
   }
 });
+
+test('o combustível (21/11/2026): só na resistência; acelerar gasta, soltar não, e parado no box o tanque enche', () => {
+  assert.equal(sim.novoCarro(0, sim.PISTA_PADRAO, sim.VOLTAS).combustivel, null);
+  const c = sim.novoCarro(0, sim.PISTA_PADRAO, sim.VOLTAS_DA_RESISTENCIA);
+  assert.equal(c.combustivel, 1);
+  for (let i = 0; i < 120; i++) sim.passo(c, sim.ACELERADOR_MAXIMO);
+  const depois = c.combustivel!;
+  assert.ok(depois < 1, 'acelerar gasta');
+  for (let i = 0; i < 30; i++) sim.passo(c, 0);
+  assert.equal(c.combustivel, depois, 'soltar não gasta');
+  // o tanque vazio: só se arrasta
+  const vazio = sim.novoCarro(0, sim.PISTA_PADRAO, sim.VOLTAS_DA_RESISTENCIA);
+  vazio.combustivel = 0;
+  for (let i = 0; i < 300; i++) sim.passo(vazio, sim.ACELERADOR_MAXIMO);
+  assert.ok(vazio.v <= (sim.VMAX * sim.SEM_COMBUSTIVEL) / sim.ACELERADOR_MAXIMO + 1e-9);
+  // parado no box (o trecho antes da linha), enche; parado fora dele, não
+  const b = sim.novoCarro(0, sim.PISTA_PADRAO, sim.VOLTAS_DA_RESISTENCIA);
+  b.combustivel = 0.5;
+  b.s = sim.PISTA_PADRAO.volta[0] - 2;
+  assert.ok(sim.noBox(b));
+  for (let i = 0; i < 60; i++) sim.passo(b, 0);
+  assert.ok(b.combustivel! > 0.5 && b.combustivel! <= 1);
+  const f = sim.novoCarro(0, sim.PISTA_PADRAO, sim.VOLTAS_DA_RESISTENCIA);
+  f.combustivel = 0.5;
+  f.s = 3;
+  for (let i = 0; i < 60; i++) sim.passo(f, 0);
+  assert.equal(f.combustivel, 0.5);
+  // a chave do recorde da resistência é outra (os tempos sem combustível ficam em "@20")
+  assert.equal(sim.sufixoDasVoltas(sim.VOLTAS), '');
+  assert.equal(sim.sufixoDasVoltas(sim.VOLTAS_DA_RESISTENCIA), '@20c');
+});
+
+test('o combustível: o piloto automático para no box e termina as 20 voltas em toda pista e faixa, sem o tanque secar; quem não para seca', () => {
+  for (const id of sim.IDS_DAS_PISTAS) {
+    for (let faixa = 0; faixa < sim.FAIXAS; faixa++) {
+      const c = sim.novoCarro(faixa, sim.PISTAS[id], sim.VOLTAS_DA_RESISTENCIA);
+      let menor = 1;
+      let paradas = 0;
+      let antes = 1;
+      let subindo = false;
+      while (!c.chegou && c.passo < sim.PASSOS_MAXIMOS) {
+        sim.passo(c, sim.pilotoAutomatico(c, 0.3));
+        if (c.combustivel! > antes && !subindo) {
+          paradas++;
+          subindo = true;
+        } else if (c.combustivel! < antes) subindo = false;
+        menor = Math.min(menor, c.combustivel!);
+        antes = c.combustivel!;
+      }
+      assert.ok(c.chegou, `${id}, faixa ${faixa}`);
+      assert.ok(menor > 0, `${id}, faixa ${faixa}: o tanque secou`);
+      assert.ok(paradas >= 2, `${id}, faixa ${faixa}: ${paradas} paradas`);
+    }
+  }
+  // quem nunca solta no box (só o acelerador das curvas) seca e se arrasta
+  const semBox = sim.novoCarro(0, sim.PISTA_PADRAO, sim.VOLTAS_DA_RESISTENCIA);
+  let secou = false;
+  while (!semBox.chegou && semBox.passo < sim.PASSOS_MAXIMOS) {
+    const cheio = semBox.combustivel;
+    semBox.combustivel = 1;
+    const g = sim.pilotoAutomatico(semBox, 0.3);
+    semBox.combustivel = cheio;
+    sim.passo(semBox, g);
+    if (semBox.combustivel === 0) secou = true;
+  }
+  assert.ok(secou);
+});

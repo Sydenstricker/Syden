@@ -945,6 +945,84 @@ os mesmos nos dois conjuntos, e o recorde de pontos também. O servidor refaz a 
 mais de objetivos do segundo mora à parte na tabela comum (`objetivos2-<pista>`). Os botões da escolha são as próprias palavras (★ TOCA,
 ★★ PULO). As letras da praça não foram conferidas uma a uma: conferir jogando.
 
+**O LOTE D DA SEGUNDA AUDITORIA, ONDA 2 (21/11/2026):** cinco agentes, um por grupo; ninguém jogou nada disso com gente.
+
+**OS QUIZZES, OS TEMAS NOVOS (21/11/2026, o lote D):** quatro temas, cada um um jogo da estante nas duas abas, sem música (como os outros quizzes): os **Elementos químicos** (os 118; família, estado físico, período, grupo e número atômico; saem até o plutônio, e o nome leva o símbolo: "Ferro (Fe)"), os **Dinossauros** (73 gêneros; o período é de ordem, Triássico → Cretáceo, mais a dieta, o grupo, o comprimento e os continentes; os raros são só chute), os **Estados do Brasil** (as 27 UFs, o Worldle do país: distância e rumo, com o amarelo até 900 km pela `perto` da coluna, a região, a população, a área, o litoral e a fronteira com outro país) e os **Animais** (88 selvagens, sem domésticos; classe, dieta, habitat, continentes e peso). Como a mitologia, a lista e as colunas são NOSSAS, escritas nos scripts (`server/scripts/quiz-{elementos,dinossauros,estados,animais}.mjs`, sobre o comum `quiz-wikidata.mjs`), e o nome em cada idioma vem do Wikidata (CC0); dos estados, também o ponto, a população (a mais recente que o Wikidata guarda) e a área. Bicho cujo rótulo no Wikidata é o nome científico sai pelo "nome comum do táxon" (P1843) da língua, e os que nem assim têm, à mão em pt-BR. Os dados de dinossauros e animais são de divulgação: ordem de grandeza. Testes: `server/test/minijogos-quiz.test.ts`, `web/test/quiz.test.ts` (todo valor dos dados tem rótulo).
+
+**O "QUAL É O TAMANHO?", FAZENDA E ESPORTE (21/11/2026, o lote D):** duas categorias novas, com 12 figuras do Fluent Emoji conferidas inteiras (pintinho, galo, ganso, porco, ovelha, cabra; bola de beisebol, bola de vôlei, pedra de curling, patins de gelo, esqui, gol de handebol) e os objetos que já existiam. Ficaram de fora os bichos do mar (o Fluent os desenha curvados ou de pé, e a medida mentiria), o peru (em português é também o país), o jumento (pulando), as bolas de rúgbi e de futebol americano (na diagonal, a ponta erra a medida) e o frisbee (o rastro do voo). Com 13 objetos, Esportes às vezes repetia o objeto a estimar: o sorteio agora guarda os ESTIMADOS (`estimados` em `sortearPar`), e só a referência pode voltar.
+
+**A PALAVRA SECRETA DE 4 E DE 6 LETRAS (21/11/2026, o lote D):** escolhida na largada (`corpo.letras`; a de 5 continua a de fábrica), em todos os modos. As que saem são NOSSAS (`sorteio-4.txt`, 297; `sorteio-6.txt`, 339), conferidas contra o VERO; as que se chutam saem do VERO pelo mesmo script, agora com o tamanho (`palavras-do-vero.py saida.txt 6 --final`; o de 5, regenerado, saiu byte a byte igual ao de antes). O recorde e a sequência do Solo de 4 e de 6 são à parte (`@4`, `@6` na variante).
+
+**O STOP, A CONFERÊNCIA POR CATEGORIA (21/11/2026, o lote D):** depois do STOP, a turma confere UMA categoria de cada vez, toda a sala na mesma, com as respostas de todos lado a lado em cartas; contestar e aceitar só nela. Cada categoria tem 25 s (`CONFERINDO_POR_CATEGORIA_MS`), e o "Pronto" de todos passa à próxima; depois da última, os pontos. A regra de quando a resposta cai (a maioria, ou o aceite de quem escreveu) não mudou.
+
+**A PARTIDA DE XADREZ, OS FINAIS E A REVISÃO (21/11/2026, o lote D da segunda auditoria):** no Solo, os FINAIS DE TREINO
+(`FINAIS_DE_TREINO` em minijogo-partida-de-xadrez.ts): rei e dama, rei e torre, dois bispos e rei e peão contra o rei. A pessoa joga
+de brancas e abre (a mesa comum ganhou `quemAbre`: sem ele, o sorteio de sempre), o motor defende sempre no Difícil, e a meta é o mate;
+o recorde é em quantos lances, contado pelo servidor, na tabela comum (`partida-de-xadrez`, variante `final-<id>`, menor é melhor;
+empate não grava; quem VOLTA o lance dá o mate mas não grava recorde, decisão dele, 21/11/2026: `voltou`). Medido com o motor dos dois lados: os quatro acabam em mate, de 11 a 20 lances. Na sala, não há final. No fim de
+qualquer partida, a REVISÃO: o público leva as posições depois de cada lance (só na fase fim), e as setas embaixo do tabuleiro (ou as
+do teclado) andam por ela, lance a lance; só tela.
+
+**AS DAMAS DE 10 × 10 (21/11/2026):** as internacionais, escolhidas na largada (`tamanho: 10`); as brasileiras continuam de fábrica. A
+regra é a mesma (comer para trás, a lei da maioria, a dama voadora, coroar só terminando); muda o tabuleiro, de 100 casas, com 20
+pedras de cada lado. As contas tiram o lado do próprio tabuleiro. O robô olha menos no de 10 (`NIVEL_DAS_DAMAS_10`: 2, 3 e 4 lances),
+porque a conta roda na thread do servidor e o difícil de 6 levava até ~1 s. No 3D, o tabuleiro de 10 é feito por código (o do KayKit é
+de 8).
+
+**AS ARMAS ESPECIAIS DA BATALHA NAVAL (21/11/2026):** variante da largada, só sem o salvo. Cada lado tem, UMA VEZ por partida, o TIRO
+EM CRUZ (a casa e as quatro vizinhas sem tiro, juntas; a vez passa sempre) e o SONAR (quantos navios do outro passam pela área de 3 × 3,
+sem dizer onde; gasta a vez). O servidor confere e calcula (`usarArma`). A área e o número do sonar aparecem para todos, de propósito:
+o dono do mar já sabe onde estão os navios e quem usou já tem o número, então nenhum navio escondido aparece para ninguém que não o
+tivesse. O robô usa as duas (`jogadaDoRoboComArmas`): sonar sem fogo à vista e depois de 4 tiros, procura nas áreas em que o sonar
+achou navio, cruz quando abre 4 casas novas; só com o que a pessoa no lugar dele veria. Na tela, três botões-figura na vez (mira, cruz,
+radar); no 3D, as casas do sonar tingidas e uma boia por navio. Teste: `server/test/minijogos-lote-d-mesas.test.ts`.
+
+**O DOMINÓ, O LOTE D (21/11/2026):** o DOMINÓ DE PONTOS, uma opção da largada (`corpo.pontos`): depois de cada pedra, se a soma
+das pontas é múltiplo de 5, quem jogou (ou a dupla) marca a soma na hora; a carroça na ponta conta as duas metades e a primeira
+pedra sozinha conta inteira (`somaDasPontas`). Batida e trancado levam as mãos dos outros arredondadas para baixo, de 5 em 5, e a
+partida vai a 150, acabando no meio da mão se alguém chegar. Combina com as batidas especiais. O NÍVEL DOS ROBÔS no Solo (fácil,
+normal, difícil; o normal é o de antes), por `jogadaDoRoboNoDomino`, que vê só o que a pessoa naquele lugar veria. O difícil É O
+ROBÔ QUE CONTA: as pedras vistas, os números que cada um mostrou não ter ao passar (a compra apaga o que se sabia), prender o
+adversário, não fechar o parceiro e, no de pontos, o que as pedras ocultas podem marcar em seguida. Medido contra a pessoa jogada
+pelo relógio: no 1×1 o robô ganha 45%, 62% e 72%; no de pontos, 62%, 85% e 90%. O 150 e os pesos são chute.
+
+**O TRUCO, OS SINAIS (21/11/2026):** no jogo de quatro, cada um faz ao parceiro a cara da carta forte, como na mesa de verdade:
+😉 zap, 🤨 copas, 😏 espadas, 😛 ouros (as manilhas pelo naipe, no paulista e no mineiro), 😬 um 3, 😐 nada. O SERVIDOR manda o
+sinal SÓ ao parceiro: o adversário e quem assiste não sabem nem que houve um (o teste confere). Um a cada 800 ms, e pode-se blefar.
+Os robôs fazem o sinal verdadeiro logo na distribuição (`sinalDaMao`) e leem o do parceiro enquanto a carta prometida não saiu:
+confiam mais na mão da dupla (pedir, aceitar, mão de onze) e, com o parceiro de manilha ainda por jogar, guardam a carta deles.
+
+**AS CAPITAIS DO MUNDO (21/11/2026):** o terceiro tabuleiro da largada (`tabuleiro: 'mundo'`), a mesma volta de 32 casas e os
+mesmos preços da de fábrica, com 20 países em 7 grupos por continente (a Ásia em dois). A casa guarda o CÓDIGO do país (o da lista
+do quiz; `pais: true`), que é a sigla na placa. O nome da casa, no cartão de detalhe (as duas vistas), na compra, no leilão, no
+aluguel e no histórico, é "Tóquio (Japão)": a CAPITAL passa pela tradução (decisão dele, mesmo dia; `CAPITAL_DO_PAIS` em
+web/src/capitaisDoMundo.ts, e o teste confere que bate com os países do servidor) e o país vem do Intl, como no quiz. País novo pede
+a linha da capital.
+
+**O SUDOKU COOPERATIVO (21/11/2026):** na largada, ao lado da corrida, o modo Juntos (só na sala): a turma resolve O MESMO
+tabuleiro, e cada número aparece para todos na cor de quem o pôs (`autores`). No "conferir na hora", a casa certa trava (ninguém
+apaga o acerto de ninguém) e a errada fica vermelha para todos, contando o erro de quem a pôs; no "conferir no fim", qualquer um
+confere e a penalidade é da turma. Acaba quando o tabuleiro fecha, com o tempo da turma; quem sai não segura. Sem recorde. Teste:
+`server/test/minijogos-sudoku-juntos.test.ts`.
+
+**O LOBISOMEM, OS PAPÉIS NOVOS (21/11/2026, lote D):** três papéis a mais no preparo, pela regra dos nomes de COISA (o Syden não sabe o sexo de quem recebe): o **Amuleto** (🧿, o "príncipe" do jogo de mesa: a primeira vez que o julgamento decide tirar a pessoa, ele quebra, ela fica e o papel abre a todos), a **Carapaça** (🐢, o "ancião": aguenta o primeiro ataque dos lobisomens, calada; o anjo e a cura não a gastam, o veneno passa) e a **Máscara** (🎭, o "curtidor": joga por conta própria e vence se a VILA a tirar no julgamento, e a partida acaba ali; atacada, envenenada ou levada pela Armadilha, só sai). `ESPECIAIS` em `minijogo-lobisomem.ts`; a história do fim mostra a carapaça e o amuleto. O microfone de noite (lote C) não mudou. Os nomes são a confirmar com ele. Testes: `server/test/minijogos-lobisomem.test.ts`.
+
+**O FUTEBOL, O BOTE (21/11/2026, lote D):** o carrinho para tirar a bola (E ou V; o botão "Bote" no toque), nas duas cópias da simulação (`comecarBote`, `alcancaBote`, `aplicarBote`, `relogiosDoBote`): escorrega reto 0,3 s, e encostando na bola ela sai SOLTA na direção do carrinho (quem deu não vira dono); quem a conduzia fica tonto um instante e não se machuca. Errou, fica 0,5 s no chão (acertou, 0,2 s), e só dá outro depois de 2,5 s. Os robôs dão bote às vezes, mais no difícil (pelo relógio, igual nos dois lados). NA SALA, quem dá o carrinho tem razão, como no chute: o carrinho anda na tela de quem o deu, e quando encosta na bola da tela o bote vai ao servidor, que procura nos últimos 300 ms a bola (sem chute desde então, com o mesmo dono) perto da posição dita, confere a recarga no relógio da partida e a solta (evento 'b' no quadro; o bote dos robôs vai numa coluna a mais, só para o desenho). O bote de gente não aparece desenhado na tela dos outros. Números chutados. Testes: `server/test/minijogos-futebol.test.ts`, `web/test/futebol.test.ts`.
+
+**A COZINHA, AS FASES DO SOLO (21/11/2026, lote D):** além da planta livre, oito restaurantes em sequência (`FASES_DA_COZINHA`, nas duas cópias de `cozinha-receitas.ts`): sorveteria, lanchonete, xis, pizzaria, peixaria, café, churrascaria e o banquete (todas as receitas), cada um com a planta e o CARDÁPIO dele (os pedidos saem só dali: `sortearPedidos(..., cardapio)`, que sem cardápio sorteia igual a antes) e as ESTRELAS (os pontos do servidor para 1, 2 e 3). A primeira abre de fábrica; cada uma abre com 1 estrela na anterior, conferido pelo servidor nos recordes. O recorde é por fase na tabela comum (jogo 'cozinha-paciencia', variante `fase-<id>`, com os pratos e as estrelas). Na escolha do Solo, a fileira das fases (número ou cadeado, as figuras do cardápio, as estrelas e o recorde); no fim, as estrelas grandes. As metas foram medidas com o piloto (um prato por vez): ele sempre tira 1 estrela e nunca 3, que pedem cozinhar duas coisas juntas (o teste cobra). Fase nova vai no FIM.
+
+**A FESTA, O TREINO, O QUIZ E O RELÂMPAGO (21/11/2026, lote D):** o **TREINO**, só no Solo: escolhe-se um microjogo na largada (a lista em "Treino") e joga-se 20 rodadas dele, sem placar na tela, sem recorde, prêmio, dobro ou troféu; o microjogo de 2 ou mais ganha os robôs que faltam (`modo: 'treino'`, `TREINO_RODADAS` em `minijogo-festa.ts`). O **QUIZ RELÂMPAGO** passou de 30 para 150 perguntas: as 120 novas são de conhecimento geral, NOSSAS e sem franquia (o céu, o corpo, os bichos, as cores, os números, as estações, a geografia), traduzidas como o resto; a certa continua só no servidor (`CERTAS`), e pergunta nova vai no fim das duas listas. O **MODO RELÂMPAGO** ganhou oito tipos de microjogo, todos sem texto e conferidos pelos dados do servidor: o monte maior, a cor igual (com uma forma dentro de cada cor, para não depender só dela), o nabo entre as cenouras, as batidas no tambor (cada batida no mínimo 70 ms depois da outra), a pedra que cai (ir para outra faixa), a soma dos dados, a sombra do legume e a toca onde a cenoura estava (`TIPOS_RELAMPAGO`, os novos no fim). Testes: `server/test/minijogos-festa.test.ts`, `server/test/minijogos-festa-relampago.test.ts`.
+
+**TOCAS E TORRES, O LOTE D (21/11/2026):** o ATACAR ANDANDO chegou à tela (a simulação já tinha o `mover` com `atacando`, só o computador usava): o botão da mira (tecla G) com tropa escolhida, e o próximo clique, toque ou botão direito no chão manda andar atacando quem aparecer; Esc desarma. A VELOCIDADE do Solo (1×, 1,5×, 2×, botão no topo) é só o ritmo da tela: o servidor deixa a partida andar até 2× o relógio (`VELOCIDADE_MAX`), e o recorde, em passos, não muda. OS DESAFIOS DO SOLO (`DESAFIOS` em sim.ts, `PERFIL_DO_DESAFIO` em ia.ts, nas duas cópias): o Cerco (10 min contra o difícil adiantado; recorde = pontos), Defender a Maravilha (ela já de pé, o exército do computador mirando nela; 5 min; recorde = a vida dela em %), o Ataque relâmpago (exército pronto, o centro do fácil em 8 min; recorde = tempo) e a Colheita (2500 recursos, sem ataque; recorde = tempo), na tabela comum (variante `desafio-<id>`), com o número da partida refeita pelo servidor. Sem desafio, a partida é a de sempre. Números chutados; o piloto passa nos quatro (a Maravilha perde às vezes no mapa "ouro").
+
+**O ESTOURA-BALÃO, O LOTE D (21/11/2026):** QUEM SAIU CONTINUA: sem balão, o kart vira fantasma (meio transparente), segue andando, pega caixa e solta item que pega os outros, mas não é atingido, não bate e não vence; no servidor, só o "acertou" e a "batida" pedem balão. AS DUPLAS: na sala, quem convida escolhe, e vale com 4, 6 ou 8 (o lugar `i` vai ao time `i % (total/2)`, que larga do mesmo lado); o item e a batida não pegam o colega (o servidor confere), acaba quando sobra um time, os balões têm a cor do time e o troféu é dos dois que venceram, em 1º. No Solo, 2×2 e 2×2×2 com robô de parceiro. DUAS ARENAS NOVAS, o Pomar e o Cânion, nas duas cópias de sim.ts (o servidor confere as paredes como sempre), pintadas com o tema da pista de mesmo nome.
+
+**OS CARRINHOS, O COMBUSTÍVEL DA RESISTÊNCIA (21/11/2026):** só nas 20 voltas, nas duas cópias da regra: o tanque dá 7 voltas de acelerador inteiro (o gasto é o acelerador vezes o que andou; soltar não gasta), vazio o carro se arrasta, e o BOX é o trecho de 6 antes da linha, em toda faixa: parado nele, o tanque enche (2,5 s do vazio ao cheio). O piloto automático e os robôs planejam a parada (duas por corrida, as faixas continuam a 1%). O servidor refaz igual. O recorde da resistência recomeça em `@20c`; os de antes ficam em `@20`, que ninguém mais oferece. Na tela, o tanque ao lado do acelerador, o box marcado na pista e o aviso com o tanque baixo. Números chutados.
+
+**O TRÂNSITO, A CAMPANHA (21/11/2026):** dez fases (`CAMPANHA` em sim.ts, as duas cópias), cada uma com mapa, duração (40 s a 1:30), ritmo das chegadas, rapidez, a hora em que entram curvas, moto, caminhão e ambulância, e uma META de pontos (~60% do pior de oito sorteios do piloto). Sem fase, a partida é a de sempre (o teste confere). A 1ª está sempre aberta; a próxima abre quando o recorde da anterior chega à meta, lido da tabela comum (variante `fase-<n>`, os pontos refeitos pelo servidor), sem tabela nova. Na escolha do Solo, a grade das fases com a meta, o recorde e o cadeado.
+
+**A HORTA EM CASCATA, O LOTE D (21/11/2026):** o TREINO DA CADEIA (`blocos/treino.ts`, `TreinoDaCadeia.tsx`, a lâmpada na escolha do Solo): lições prontas em que uma troca solta uma cadeia; a lâmpada mostra a troca, a pessoa tenta, e a regra de sempre diz a cadeia que saiu. Só no site, sem servidor nem recorde; o teste confere cada lição. Mais 20 QUEBRA-CABEÇAS (8 de duas trocas e 12 de três), achados por sorteio e conferidos pela busca do teste, no fim da lista (os recordes das 20 de antes valem).
+
 **OS JOGOS NOVOS DE 16/11/2026 (pedido dele: "implemente esses jogos"; feitos por agentes, um por jogo, com arte só do que já
 existia no projeto). Todos fora das conquistas da turma até ele decidir; em nenhum alguém jogou com gente (o equilíbrio é chute
 medido contra o piloto automático); os Coletivos sem e2e com o LiveKit, só o teste do servidor.**

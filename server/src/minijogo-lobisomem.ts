@@ -25,10 +25,17 @@ import { embaralhar, type Definicao } from './minijogo-motor.js';
  *
  * OS NOMES NÃO DIZEM O SEXO DE QUEM RECEBE O PAPEL (o Syden não sabe): "Caçador" e "Bruxa" diriam, então os papéis novos
  * têm nome de COISA, como as classes das Lendas: a ARMADILHA (que dispara quando cai) e o CALDEIRÃO (das poções).
+ *
+ * OS TRÊS DE 21/11/2026, também coisas (escolhidos no preparo, como os outros):
+ * - o AMULETO: a primeira vez que a vila decide tirar essa pessoa no julgamento, ele quebra e ela fica, com o papel aberto
+ *   a todos dali em diante (o "príncipe" do jogo de mesa);
+ * - a CARAPAÇA: aguenta o primeiro ataque dos lobisomens, calada (o amanhecer diz só que ninguém morreu); o veneno passa;
+ * - a MÁSCARA: joga por conta própria e vence se a VILA a tirar do jogo no julgamento (o "curtidor" do jogo de mesa); a
+ *   partida acaba ali. Atacada pelos lobisomens, envenenada ou levada pela Armadilha, ela só sai.
  */
 
-export type Papel = 'lobisomem' | 'vidente' | 'anjo' | 'armadilha' | 'caldeirao' | 'aldeao';
-export const ESPECIAIS = ['vidente', 'anjo', 'armadilha', 'caldeirao'] as const;
+export type Papel = 'lobisomem' | 'vidente' | 'anjo' | 'armadilha' | 'caldeirao' | 'amuleto' | 'carapaca' | 'mascara' | 'aldeao';
+export const ESPECIAIS = ['vidente', 'anjo', 'armadilha', 'caldeirao', 'amuleto', 'carapaca', 'mascara'] as const;
 export type Especial = (typeof ESPECIAIS)[number];
 
 export const MINIMO_LOBISOMEM = 4;
@@ -120,8 +127,12 @@ export interface LinhaDaHistoria {
   /** Quem fez (a vidente, o anjo, o Caldeirão, a Armadilha). */
   de?: number;
   alvo?: number | null;
-  /** O ataque não matou (o anjo ou a cura). */
+  /** O ataque não matou (o anjo, a cura ou a carapaça). */
   salvo?: boolean;
+  /** Quem salvou foi a carapaça (21/11/2026). */
+  carapaca?: boolean;
+  /** No julgamento, o amuleto quebrou e a pessoa ficou (21/11/2026). */
+  amuleto?: boolean;
   lobisomem?: boolean;
   mortos?: number[];
   votos?: number;
@@ -176,7 +187,12 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
       /** A Armadilha que caiu e ainda vai escolher, e quem ela levou. */
       let armadilha: { quem: number; alvo: number | null } | null = null;
       let depoisDaArmadilha: (() => void) | null = null;
-      let vencedor: 'vila' | 'lobisomens' | null = null;
+      let vencedor: 'vila' | 'lobisomens' | 'mascara' | null = null;
+      /** A Carapaça e o Amuleto valem uma vez; quem quebrou o amuleto fica com o papel aberto a todos. */
+      let carapacaInteira = true;
+      let amuletoInteiro = true;
+      let amuletoQuebrou: number | null = null;
+      const revelados = new Set<number>();
       const historia: LinhaDaHistoria[] = [];
 
       const vivosCom = (p: Papel) => [...vivos].filter((id) => papel.get(id) === p);
@@ -279,8 +295,14 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
         conversa = [];
         const mortos: number[] = [];
         if (alvoDosLobos !== null) {
-          const salvo = alvoDosLobos === protegido || curouHoje;
-          historia.push({ dia, tipo: 'ataque', alvo: alvoDosLobos, salvo });
+          let salvo = alvoDosLobos === protegido || curouHoje;
+          // a Carapaça aguenta o primeiro ataque que a acertaria (o anjo ou a cura, se vieram, não a gastam)
+          const carapaca = !salvo && carapacaInteira && papel.get(alvoDosLobos) === 'carapaca';
+          if (carapaca) {
+            carapacaInteira = false;
+            salvo = true;
+          }
+          historia.push({ dia, tipo: 'ataque', alvo: alvoDosLobos, salvo, ...(carapaca ? { carapaca: true } : {}) });
           if (!salvo) mortos.push(alvoDosLobos);
         } else historia.push({ dia, tipo: 'ataque', alvo: null });
         if (protegido !== null) historia.push({ dia, tipo: 'protecao', de: vivosCom('anjo')[0] ?? [...papel].find(([, p]) => p === 'anjo')?.[0], alvo: protegido });
@@ -324,6 +346,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
       // ---------------- O DIA ----------------
       function comecarDia() {
         fase = 'dia';
+        amuletoQuebrou = null;
         votos.clear();
         acusado = null;
         julgamento.clear();
@@ -359,8 +382,16 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
         if (fase !== 'julgamento' || acusado === null) return;
         const sim = [...julgamento.values()].filter(Boolean).length;
         const nao = julgamento.size - sim;
-        const saiu = sim > nao;
-        historia.push({ dia, tipo: 'julgamento', alvo: acusado, sim, nao, saiu });
+        let saiu = sim > nao;
+        // o Amuleto quebra na primeira vez: a pessoa fica, e o papel dela abre para todos
+        const amuleto = saiu && amuletoInteiro && papel.get(acusado) === 'amuleto';
+        if (amuleto) {
+          amuletoInteiro = false;
+          amuletoQuebrou = acusado;
+          revelados.add(acusado);
+          saiu = false;
+        }
+        historia.push({ dia, tipo: 'julgamento', alvo: acusado, sim, nao, saiu, ...(amuleto ? { amuleto: true } : {}) });
         eliminado = saiu ? acusado : null;
         veredito();
       }
@@ -369,6 +400,14 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
         if (eliminado !== null) vivos.delete(eliminado);
         const caiu = eliminado !== null && papel.get(eliminado) === 'armadilha' ? eliminado : null;
         fase = 'veredito';
+        // a Máscara tirada pela vila vence ali mesmo
+        if (eliminado !== null && papel.get(eliminado) === 'mascara') {
+          vencedor = 'mascara';
+          fase = 'fim';
+          ctx.terminar();
+          avisar();
+          return;
+        }
         if (caiu === null && verificarFim()) return;
         marcar(VEREDITO_MS, () => {
           const proxima = () => {
@@ -391,7 +430,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
           const meu = papel.get(quem) ?? null;
           const souLobo = meu === 'lobisomem';
           const vivoEu = vivos.has(quem);
-          const aberto = (id: number) => fase === 'fim' || !vivos.has(id) || id === quem || (souLobo && papel.get(id) === 'lobisomem');
+          const aberto = (id: number) => fase === 'fim' || !vivos.has(id) || id === quem || revelados.has(id) || (souLobo && papel.get(id) === 'lobisomem');
           const caldeiraoAgindo = meu === 'caldeirao' && fase === 'noite' && etapa === 'pocao' && vivoEu;
           return {
             fase,
@@ -429,6 +468,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
             julgamento: fase === 'veredito' || fase === 'fim' ? Object.fromEntries(julgamento) : null,
             mortosDaNoite: fase === 'noite' || fase === 'preparo' ? [] : mortosDaNoite,
             eliminado: fase === 'veredito' || fase === 'fim' ? eliminado : null,
+            amuletoQuebrou: fase === 'veredito' ? amuletoQuebrou : null,
             armadilha: fase === 'armadilha' || armadilha?.alvo !== null ? armadilha : null,
             vencedor,
             historia: fase === 'fim' ? historia : null,

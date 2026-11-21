@@ -75,7 +75,7 @@ function respostaCerta(d: Dados): { t: number; r?: number } {
       return { t: 0 };
     }
     default:
-      return { t: d.mostra + 200, r: d.quantas };
+      return rel.respostaHonesta(d);
   }
 }
 
@@ -135,7 +135,7 @@ test('a resposta errada vale como erro (e não deixa tentar de novo)', () => {
   if (d.tipo === 'espere' || d.tipo === 'pare') {
     // antes do sinal (ou fora da faixa): no 'espere', cedo demais; no 'pare', a ponta da barra (0) fica fora da faixa
     m.jogo.acao(anaId, { tipo: 'acerto', k: 0, t: d.tipo === 'espere' ? Math.max(0, d.aparece - 200) : 0 });
-  } else m.jogo.acao(anaId, { tipo: 'acerto', k: 0, t: certa.t, r: (certa.r ?? 0) + 1 });
+  } else m.jogo.acao(anaId, { tipo: 'acerto', k: 0, t: certa.t, r: rel.respostaErrada(d).r });
   assert.equal(m.estado(anaId).meu, false);
   m.jogo.acao(anaId, { tipo: 'acerto', k: 0, t: certa.t, r: certa.r });
   assert.equal(m.estado(anaId).meu, false, 'não se tenta de novo');
@@ -232,4 +232,29 @@ test('o recorde do Solo: os acertos contados pelo servidor, na tabela comum (e n
   // na sala, o público não tem recorde
   const sala = comecar([anaId, biaId], 9);
   assert.equal('recordeAntes' in sala.estado(), false);
+});
+
+test('os oito tipos novos (21/11/2026): todos saem no sorteio, a resposta honesta vale e a errada não, e o tempo é conferido', () => {
+  let s = 77;
+  const a = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const vistos = new Set<string>();
+  let anterior: (typeof rel.TIPOS_RELAMPAGO)[number] | null = null;
+  for (let i = 0; i < 400; i++) {
+    const d = rel.sortearRelampago(i % 30, a, anterior);
+    anterior = d.tipo;
+    vistos.add(d.tipo);
+    const dur = rel.duracaoRelampago(i % 30);
+    const c = rel.respostaHonesta(d);
+    assert.ok(c.t <= dur, `${d.tipo}: a honesta cabe no tempo (${c.t} de ${dur})`);
+    assert.equal(rel.respostaCerta(d, c.t, c.r), true, `${d.tipo}: a honesta vale`);
+    const e = rel.respostaErrada(d);
+    assert.equal(rel.respostaCerta(d, e.t, e.r), false, `${d.tipo}: a errada não vale`);
+  }
+  for (const tipo of rel.TIPOS_RELAMPAGO) assert.ok(vistos.has(tipo), `saiu ${tipo}`);
+  // as batidas: mais depressa do que um dedo bate não vale
+  const toques = { tipo: 'toques' as const, quantas: 5, aparece: 300 };
+  assert.equal(rel.respostaCerta(toques, 300 + 100 + 4 * rel.BATIDA_MINIMA_MS - 1, 5), false);
+  assert.equal(rel.respostaCerta(toques, 300 + 100 + 4 * rel.BATIDA_MINIMA_MS, 5), true);
+  // a memória: antes de a cenoura se esconder, não
+  assert.equal(rel.respostaCerta({ tipo: 'memoria', casa: 2, mostra: 900 }, 800, 2), false);
 });

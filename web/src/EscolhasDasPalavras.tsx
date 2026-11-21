@@ -11,7 +11,8 @@ import './jogosDePalavras.css';
  *   e o Sudoku X (as duas diagonais também valem).
  * - Stop: rodadas, tempo, as categorias (da lista nossa, traduzida, e as LIVRES, escritas pela turma e nunca traduzidas) e
  *   as letras que ficam fora do sorteio.
- * - Palavra secreta: normal, dueto ou quarteto, e o modo difícil.
+ * - Palavra secreta: normal, dueto ou quarteto, o modo difícil e, desde 21/11/2026, palavras de 4, 5 ou 6 letras (a de 5 é a de
+ *   fábrica; o recorde do Solo de cada tamanho é à parte).
  * - Desenha e adivinha: as rodadas (1 a 3) e o tempo de cada desenho (20/11/2026), e a lista própria da sala (escrita por quem
  *   começa, nunca traduzida), sozinha ou junto com a nossa.
  */
@@ -43,16 +44,20 @@ function Opcoes<T extends string | number>({
 
 export function EscolhaDosJogosDePalavras({
   jogo,
+  solo = false,
   aoEscolher,
   aoVoltar,
 }: {
   jogo: IdDoJogo;
+  /** No Solo não há o Sudoku cooperativo (21/11/2026): sozinho, é a corrida de sempre. */
+  solo?: boolean;
   aoEscolher: (corpo: Record<string, unknown>) => void;
   aoVoltar: () => void;
 }) {
   const t = useT();
   // Sudoku
   const [dificuldade, setDificuldade] = useState<'facil' | 'medio' | 'dificil' | 'extremo'>('medio');
+  const [juntos, setJuntos] = useState(false);
   const [conferencia, setConferencia] = useState<'hora' | 'fim'>('hora');
   const [x, setX] = useState(false);
   // Stop
@@ -64,6 +69,7 @@ export function EscolhaDosJogosDePalavras({
   // Palavra secreta
   const [modo, setModo] = useState<'normal' | 'dueto' | 'quarteto'>('normal');
   const [dificil, setDificil] = useState(false);
+  const [letras, setLetras] = useState<4 | 5 | 6>(5);
   // Desenho
   const [lista, setLista] = useState('');
   const [soLista, setSoLista] = useState(false);
@@ -81,7 +87,7 @@ export function EscolhaDosJogosDePalavras({
   let conteudo: ReactNode = null;
   let pode = true;
   if (jogo === 'sudoku') {
-    corpo = { dificuldade, conferencia, ...(x ? { x: true } : {}) };
+    corpo = { dificuldade, conferencia, ...(x ? { x: true } : {}), ...(juntos && !solo ? { modo: 'juntos' } : {}) };
     conteudo = (
       <>
         <fieldset>
@@ -119,6 +125,20 @@ export function EscolhaDosJogosDePalavras({
             ]}
           />
         </fieldset>
+        {/* O COOPERATIVO (21/11/2026): a turma no mesmo tabuleiro, ao lado da corrida de sempre */}
+        {!solo && (
+          <fieldset>
+            <legend>{t('Modo')}</legend>
+            <Opcoes
+              valor={juntos ? 'juntos' : 'corrida'}
+              aoMudar={(v) => setJuntos(v === 'juntos')}
+              opcoes={[
+                { valor: 'corrida', nome: `🏁 ${t('Corrida')}` },
+                { valor: 'juntos', nome: `🤝 ${t('Juntos')}` },
+              ]}
+            />
+          </fieldset>
+        )}
       </>
     );
   } else if (jogo === 'stop') {
@@ -169,9 +189,13 @@ export function EscolhaDosJogosDePalavras({
       </>
     );
   } else if (jogo === 'palavra') {
-    corpo = { modo, dificil };
+    corpo = { modo, dificil, letras };
     conteudo = (
       <>
+        <fieldset>
+          <legend>{t('Letras')}</legend>
+          <Opcoes valor={letras} aoMudar={setLetras} opcoes={([4, 5, 6] as const).map((n) => ({ valor: n, nome: String(n) }))} />
+        </fieldset>
         <fieldset>
           <legend>{t('Palavras ao mesmo tempo')}</legend>
           <Opcoes

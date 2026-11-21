@@ -115,6 +115,21 @@ const FIGURAS = {
   caminhonete: 'Pickup truck',
   'carro-de-corrida': 'Racing car',
   treno: 'Sled',
+  // 21/11/2026: a fazenda e o esporte (conferidos um a um; de fora o jumento, que vem pulando, o peru, que em português é
+  // também o país, o búfalo e o boi, iguais à vaca, as bolas de rúgbi e de futebol americano, desenhadas na diagonal com
+  // a ponta cortando a medida, e o frisbee, com o rastro do voo)
+  pintinho: 'Baby chick',
+  galo: 'Rooster',
+  ganso: 'Goose',
+  porco: 'Pig',
+  ovelha: 'Ewe',
+  cabra: 'Goat',
+  'bola-de-beisebol': 'Baseball',
+  'bola-de-volei': 'Volleyball',
+  'pedra-de-curling': 'Curling stone',
+  'patins-de-gelo': 'Ice skate',
+  esqui: 'Skis',
+  'gol-de-handebol': 'Goal net',
 };
 
 function arquivoDe(pasta) {

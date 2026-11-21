@@ -701,3 +701,73 @@
     display: none;
   }
 }
+
+/* OS DESAFIOS DO SOLO, A VELOCIDADE E O ATACAR ANDANDO (21/11/2026) */
+.tocas-desafios {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  width: 100%;
+  max-width: 680px;
+}
+.tocas-desafio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-input);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.tocas-desafio:hover {
+  background: var(--bg-hover);
+}
+.tocas-desafio small {
+  color: var(--text-muted);
+  font-size: 0.85em;
+}
+.tocas-desafio .tocas-desafio-recorde {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.tocas-objetivo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #ffd66b;
+  font-variant-numeric: tabular-nums;
+}
+.tocas-velocidade {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font: inherit;
+  font-size: 0.85em;
+  font-variant-numeric: tabular-nums;
+  padding: 3px 8px;
+  border-radius: var(--radius, 8px);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.tocas-velocidade.ativo {
+  color: #ffd66b;
+  border-color: #ffd66b;
+}
+.tocas-atacar-andando {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+.tocas-atacar-andando.ativo {
+  border-color: #ff9b8a;
+  background: rgba(255, 155, 138, 0.15);
+}

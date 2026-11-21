@@ -17,6 +17,12 @@
  * máxima; acima dela, até a FOLGA, o carro DERRAPA (treme e perde um pouco de velocidade); passou da folga, SAI DA PISTA,
  * fica fora FORA_PASSOS e volta, piscando, ao lugar de onde saiu, parado. Cinco voltas, ou vinte na RESISTÊNCIA.
  *
+ * O COMBUSTÍVEL DA RESISTÊNCIA (21/11/2026): só nas corridas de VOLTAS_DA_RESISTENCIA. O tanque cheio (1) dá AUTONOMIA voltas
+ * de acelerador inteiro; acelerar gasta, na proporção do acelerador e do quanto andou (soltar não gasta). Vazio, o carro só se
+ * arrasta (o acelerador vai a SEM_COMBUSTIVEL, no máximo). O BOX é o trecho de BOX_COMPRIMENTO logo ANTES da linha de chegada,
+ * em toda faixa: parado nele (soltando o acelerador até a velocidade zerar), o tanque enche ENCHE_POR_PASSO a cada passo, até
+ * cheio. Reabastecer custa o tempo de frear, encher e sair de novo. Tudo dentro do passo: o servidor refaz igual.
+ *
  * A PISTA: as peças largas da Kenney têm 2 de largura e 4 de comprimento, e as curvas pequena (raio 2) e grande (raio 4) são
  * CONCÊNTRICAS: duas fileiras de peças lado a lado dão 4 faixas. A linha do meio das duas fileiras faz as curvas com raio 3.
  * Numa curva para um lado a faixa de dentro é mais curta; para que nenhuma faixa ganhe por isso, a velocidade máxima de cada
@@ -34,6 +40,11 @@ export const PASSO = 1 / 60;
 export const VOLTAS = 5;
 /** A RESISTÊNCIA (19/11/2026): a mesma corrida, com vinte voltas. */
 export const VOLTAS_DA_RESISTENCIA = 20;
+/**
+ * O SUFIXO DA CHAVE DO RECORDE pelas voltas: nada nas 5; "@20c" na resistência com combustível (21/11/2026: os tempos de antes,
+ * sem combustível, ficam guardados em "@20", que ninguém mais oferece).
+ */
+export const sufixoDasVoltas = (voltas: number) => (voltas === VOLTAS ? '' : voltas === VOLTAS_DA_RESISTENCIA ? '@20c' : `@${voltas}`);
 export const FAIXAS = 4;
 /** Na corrida contra o relógio (e nos recordes), quem joga corre sempre nesta faixa: os tempos se comparam. */
 export const FAIXA_DO_RECORDE = 1;
@@ -54,6 +65,11 @@ export const FORA_PASSOS = 105;
 export const PISCA_PASSOS = 60;
 /** Uma corrida não passa de 30 minutos (a resistência longa, com saídas, cabe). */
 export const PASSOS_MAXIMOS = 30 * 60 * 60;
+/** O combustível da resistência (ver no topo): quantas voltas um tanque dá, o acelerador do tanque vazio, o box e o encher. */
+export const AUTONOMIA = 7;
+export const SEM_COMBUSTIVEL = 2;
+export const BOX_COMPRIMENTO = 6;
+export const ENCHE_POR_PASSO = 1 / 150;
 
 /** O raio das curvas da linha do meio (entre as duas fileiras de peças). */
 export const RAIO_DO_MEIO = 3;
@@ -419,6 +435,8 @@ export interface Carro {
   /** O passo do fim de cada volta. */
   voltas: number[];
   chegou: boolean;
+  /** O tanque, de 0 a 1, só na resistência (null nas corridas de 5 voltas). */
+  combustivel: number | null;
 }
 
 export const novoCarro = (faixa: number, pista: Pista = PISTA_PADRAO, meta: number = VOLTAS): Carro => ({
@@ -435,7 +453,13 @@ export const novoCarro = (faixa: number, pista: Pista = PISTA_PADRAO, meta: numb
   saidas: 0,
   voltas: [],
   chegou: false,
+  combustivel: meta >= VOLTAS_DA_RESISTENCIA ? 1 : null,
 });
+
+/** O quanto o carro já andou nesta volta (de 0 ao comprimento da volta da faixa dele). */
+export const naVolta = (c: Carro) => c.s - c.voltas.length * c.pista.volta[c.faixa];
+/** O carro está no BOX (o trecho antes da linha de chegada)? */
+export const noBox = (c: Carro) => naVolta(c) >= c.pista.volta[c.faixa] - BOX_COMPRIMENTO;
 
 export type Evento = 'saiu' | 'voltou' | 'volta' | 'chegou' | null;
 
@@ -461,6 +485,8 @@ export function passo(c: Carro, acelerador: number): Evento {
   if (g < 0) g = 0;
   if (g > ACELERADOR_MAXIMO) g = ACELERADOR_MAXIMO;
   if (c.chegou) g = 0;
+  // o tanque vazio: só se arrasta
+  if (c.combustivel !== null && c.combustivel <= 0 && g > SEM_COMBUSTIVEL) g = SEM_COMBUSTIVEL;
   c.v = acelerar(c.v, g);
   const limite = limiteEm(c.pista, c.faixa, c.s);
   c.derrapa = 0;
@@ -476,6 +502,15 @@ export function passo(c: Carro, acelerador: number): Evento {
     c.v -= ATRITO_DA_DERRAPAGEM * PASSO;
   }
   c.s += c.v * PASSO;
+  if (c.combustivel !== null && !c.chegou) {
+    if (g > 0 && c.combustivel > 0) {
+      c.combustivel -= ((g / ACELERADOR_MAXIMO) * c.v * PASSO) / (AUTONOMIA * c.pista.volta[c.faixa]);
+      if (c.combustivel < 0) c.combustivel = 0;
+    } else if (g === 0 && c.v === 0 && c.combustivel < 1 && noBox(c)) {
+      c.combustivel += ENCHE_POR_PASSO;
+      if (c.combustivel > 1) c.combustivel = 1;
+    }
+  }
   if (!c.chegou && c.s >= (c.voltas.length + 1) * c.pista.volta[c.faixa]) {
     c.voltas.push(c.passo);
     if (c.voltas.length >= c.meta) {
@@ -493,6 +528,10 @@ export function passo(c: Carro, acelerador: number): Evento {
  */
 export function pilotoAutomatico(c: Carro, margem = 0.3): number {
   if (c.fora > 0 || c.chegou) return 0;
+  if (c.combustivel !== null) {
+    const b = paradaNoBox(c);
+    if (b !== null) return b;
+  }
   let s = c.s, v = acelerar(c.v, ACELERADOR_MAXIMO);
   for (let k = 0; k < 240; k++) {
     const t = trechoEm(c.pista, c.faixa, s);
@@ -502,6 +541,31 @@ export function pilotoAutomatico(c: Carro, margem = 0.3): number {
     v = acelerar(v, 0);
   }
   return ACELERADOR_MAXIMO;
+}
+
+/**
+ * O BOX DO PILOTO AUTOMÁTICO (21/11/2026): para na volta em que o tanque não dá mais uma volta inteira depois da linha (e não
+ * dá para chegar), soltando o acelerador no ponto em que o carro para dentro do box; parado, espera encher o que falta para
+ * o fim (ou o tanque cheio). Devolve o acelerador, ou null quando o box não manda nada agora.
+ */
+function paradaNoBox(c: Carro): number | null {
+  const volta = c.pista.volta[c.faixa];
+  const d = naVolta(c);
+  const tanque = c.combustivel ?? 1;
+  // o que falta para o fim, com o acelerador inteiro (o gasto de verdade é menor: nas curvas se solta)
+  const precisa = (c.meta - c.voltas.length - d / volta) / AUTONOMIA;
+  if (c.v === 0 && noBox(c) && tanque < 1 && tanque < precisa + 0.03) return 0;
+  if (tanque >= precisa) return null;
+  // ainda dá mais uma volta inteira depois desta: para na próxima
+  if (tanque - (volta - d) / volta / AUTONOMIA >= 1.05 / AUTONOMIA) return null;
+  // onde pararia soltando agora
+  let s = d, v = c.v;
+  for (let k = 0; k < 600 && v > 0; k++) {
+    v = acelerar(v, 0);
+    s += v * PASSO;
+  }
+  if (s >= volta - BOX_COMPRIMENTO + 0.5 && s < volta) return 0;
+  return null;
 }
 
 /** O acelerador em trechos: [passos, acelerador, passos, acelerador, …]. */

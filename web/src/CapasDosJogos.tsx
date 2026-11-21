@@ -110,6 +110,14 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaPaises />;
     case 'mitologia':
       return <CapaMitologia />;
+    case 'elementos':
+      return <CapaElementos />;
+    case 'dinossauros':
+      return <CapaDinossauros />;
+    case 'estados':
+      return <CapaEstados />;
+    case 'animais':
+      return <CapaAnimais />;
   }
 }
 
@@ -533,6 +541,99 @@ function CapaPaises() {
         <rect key={i} x={30 + i * 26} y="86" width="22" height="20" rx="3" fill={cor} />
       ))}
       <path d="M36 101 L46 91 M40 91 L46 91 L46 97" fill="none" stroke="#1d1d1f" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** A linha de chute dos quizzes (verde, amarelo, vermelho), embaixo das capas dos temas de 21/11/2026. */
+function LinhaDoQuiz({ cores }: { cores: string[] }) {
+  return (
+    <>
+      {cores.map((cor, i) => (
+        <rect key={i} x={30 + i * 26} y="90" width="22" height="18" rx="3" fill={cor} />
+      ))}
+    </>
+  );
+}
+
+/** Elementos químicos: um pedaço da tabela periódica, com a casa grande do ferro (o símbolo é igual em toda língua). */
+function CapaElementos() {
+  const casas = [
+    [0, 0, '#e5484d'], [5, 0, '#8e6fd8'], [0, 1, '#e5484d'], [1, 1, '#f2b84b'], [3, 1, '#3aa394'], [4, 1, '#3aa394'], [5, 1, '#8e6fd8'],
+    [0, 2, '#e5484d'], [1, 2, '#f2b84b'], [2, 2, '#4f7df5'], [3, 2, '#9aa0a6'], [4, 2, '#3aa394'], [5, 2, '#8e6fd8'],
+  ] as const;
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#1c2133" />
+      {casas.map(([x, y, cor], i) => (
+        <rect key={i} x={14 + x * 13} y={14 + y * 13} width="11" height="11" rx="2" fill={cor} opacity="0.85" />
+      ))}
+      <rect x="98" y="10" width="48" height="56" rx="5" fill="#4f7df5" />
+      <text x="122" y="22" textAnchor="middle" fontSize="9" fontWeight="700" fill="#e8eefc">26</text>
+      <text x="122" y="52" textAnchor="middle" fontSize="26" fontWeight="800" fill="#ffffff">Fe</text>
+      <LinhaDoQuiz cores={['#a8473a', '#d3ad69', '#3aa394', '#3aa394']} />
+    </svg>
+  );
+}
+
+/** Dinossauros: o pescoçudo no horizonte, com uma palmeira e um vulcão ao fundo. */
+function CapaDinossauros() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#f1c27d" />
+      <path d="M100 76 L122 30 L144 76 Z" fill="#a0603a" />
+      <path d="M116 42 L122 30 L128 42 Q122 46 116 42 Z" fill="#e5484d" />
+      <rect y="76" width="160" height="44" fill="#6a8f3a" />
+      <path d="M30 74 Q34 56 56 56 Q70 56 74 64 L92 24 Q96 18 100 22 Q102 26 98 30 L84 70 Q82 76 76 76 Z" fill="#3f6b4a" />
+      <rect x="36" y="70" width="6" height="12" fill="#3f6b4a" />
+      <rect x="60" y="70" width="6" height="12" fill="#3f6b4a" />
+      <path d="M30 70 Q18 74 10 70 Q20 66 32 64 Z" fill="#3f6b4a" />
+      <circle cx="97" cy="24" r="1.3" fill="#1d1d1f" />
+      <path d="M18 76 Q16 56 14 44" fill="none" stroke="#7a5230" strokeWidth="3" />
+      <path d="M14 44 Q4 40 0 46 M14 44 Q8 34 2 34 M14 44 Q22 36 28 40 M14 44 Q24 44 26 50" fill="none" stroke="#2f7a3a" strokeWidth="4" strokeLinecap="round" />
+      <LinhaDoQuiz cores={['#3aa394', '#a8473a', '#d3ad69', '#3aa394']} />
+    </svg>
+  );
+}
+
+/** Estados do Brasil: o mapa do país (simplificado, por código), um alfinete no secreto e a bússola do chute. */
+function CapaEstados() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#16324a" />
+      <path
+        d="M46 22 L64 14 L80 18 L92 14 L104 22 L118 26 L130 34 L128 44 L120 52 L116 62 L104 70 L96 80 L86 86 L80 80 L72 72 L62 66 L56 56 L44 50 L34 44 L36 32 Z"
+        fill="#3fb27f"
+      />
+      <path d="M64 14 L72 32 L92 36 L104 22 M72 32 L66 50 L56 56 M92 36 L96 54 L116 62 M96 54 L80 66 L72 72" fill="none" stroke="#2a7a55" strokeWidth="1.2" />
+      <path d="M98 40 a6 6 0 1 1 12 0 c0 5 -6 11 -6 11 s-6 -6 -6 -11 z" fill="#e5484d" />
+      <circle cx="104" cy="40" r="2.2" fill="#ffffff" />
+      <LinhaDoQuiz cores={['#d3ad69', '#3aa394', '#a8473a', '#3aa394']} />
+      <path d="M36 105 L46 95 M40 95 L46 95 L46 101" fill="none" stroke="#1d1d1f" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Animais: a pegada, a pena e a escama, as três classes que mais saem. */
+function CapaAnimais() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#2c3f2a" />
+      <g fill="#e9c46a">
+        <ellipse cx="52" cy="50" rx="14" ry="12" />
+        <ellipse cx="34" cy="34" rx="5" ry="7" />
+        <ellipse cx="46" cy="24" rx="5" ry="7" />
+        <ellipse cx="60" cy="24" rx="5" ry="7" />
+        <ellipse cx="72" cy="34" rx="5" ry="7" />
+      </g>
+      <path d="M104 64 Q100 40 118 18 Q124 40 112 62 Z" fill="#6fb3e0" />
+      <path d="M118 18 L108 66" stroke="#2c5f84" strokeWidth="1.6" />
+      <g fill="#3aa394">
+        <path d="M128 52 a8 8 0 0 1 16 0 Z" />
+        <path d="M120 62 a8 8 0 0 1 16 0 Z" />
+        <path d="M136 62 a8 8 0 0 1 16 0 Z" />
+      </g>
+      <LinhaDoQuiz cores={['#3aa394', '#d3ad69', '#d3ad69', '#a8473a']} />
     </svg>
   );
 }

@@ -319,3 +319,124 @@
   font-weight: 700;
   transform: rotate(-3deg);
 }
+
+/* os finais de treino do xadrez (21/11/2026): as peças em figura no botão */
+.mesa-final span {
+  font-size: 1.35em;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+/* a revisão da partida de xadrez (21/11/2026): as setas embaixo do tabuleiro */
+.xadrez-revisao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 6px 0;
+}
+.xadrez-revisao .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 36px;
+  padding: 4px 8px;
+}
+.xadrez-revisao-passo {
+  min-width: 4em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+.xadrez-final {
+  margin: 2px 0;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* as armas especiais da Batalha naval (21/11/2026) */
+.naval-armas {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 6px 0;
+}
+.naval-arma {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 40px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+}
+.naval-arma.escolhida {
+  border-color: var(--accent, #5b8def);
+}
+.naval-arma:disabled {
+  opacity: 0.35;
+}
+.naval-sonar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(64, 200, 220, 0.9);
+  border-radius: 4px;
+  background: rgba(64, 200, 220, 0.14);
+  color: #0d4a57;
+  font-weight: 800;
+  pointer-events: none;
+}
+.naval-sonar.vazio {
+  border-color: rgba(120, 140, 150, 0.8);
+  background: rgba(120, 140, 150, 0.12);
+  color: #44525a;
+}
+.naval-sonar span {
+  padding: 0 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* OS SINAIS DO TRUCO (21/11/2026): a cara do parceiro em cima dele, e as seis caras para fazer, embaixo da mesa */
+.truco-sinal {
+  font-size: 22px;
+  line-height: 1;
+  animation: truco-sinal-entra 0.35s ease-out;
+}
+@keyframes truco-sinal-entra {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+.truco-sinais {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin: 4px 0;
+}
+.truco-sinal-botao {
+  min-width: 40px;
+  min-height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface, transparent);
+  font-size: 20px;
+  cursor: pointer;
+}
+.truco-sinal-botao.feito {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent) inset;
+}
+
+/* O DOMINÓ DE PONTOS (21/11/2026): a soma das pontas acende quando é múltiplo de 5 */
+.dom-soma.marca {
+  color: var(--accent);
+  font-weight: 800;
+}

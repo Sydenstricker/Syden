@@ -204,3 +204,55 @@
   color: var(--text-strong);
   font-weight: 700;
 }
+
+/* AS FASES DO SOLO (21/11/2026): o número, as figuras do cardápio e as estrelas */
+.cozinha-fases {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+.cozinha-fase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+.cozinha-fase:disabled {
+  opacity: 0.5;
+}
+.cozinha-fase-numero {
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.cozinha-fase-cardapio {
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+}
+.cozinha-estrelas {
+  display: inline-flex;
+  gap: 2px;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.cozinha-estrelas.grandes {
+  font-size: 2.4rem;
+  justify-content: center;
+  width: 100%;
+  margin: 8px 0;
+}
+.cozinha-estrelas .cheia {
+  color: #f4c430;
+}
+.cozinha-estrelas .vazia {
+  color: var(--text-muted, #999);
+  opacity: 0.4;
+}
+@media (max-width: 480px) {
+  .cozinha-fases {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

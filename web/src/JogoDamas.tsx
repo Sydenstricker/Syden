@@ -7,7 +7,7 @@ import type { DamasDaCena } from './mesa3d/damas';
 import { useCena3D } from './mesa3d/useCena3D';
 
 const JOGADA_MS = 90_000;
-const COLUNAS = 'abcdefgh';
+const COLUNAS = 'abcdefghij';
 
 /** Um lance que o servidor gerou (server/src/minijogo-damas.ts): o site nunca refaz a regra, só escolhe da lista. */
 export interface LanceDasDamas {
@@ -25,8 +25,10 @@ export interface EstadoDamas {
   motivo: 'jogo' | 'tempo' | 'desistiu' | 'acordo' | null;
   /** A mesma posição pela terceira vez (19/11/2026). */
   repetida?: boolean;
-  /** 64 casas, linha 0 no alto (o lado das escuras): 0 vazia, 1 pedra clara, 2 dama clara, 3 pedra escura, 4 dama escura. */
+  /** 64 casas (100 no de 10), linha 0 no alto (o lado das escuras): 0 vazia, 1 pedra clara, 2 dama clara, 3 pedra escura, 4 dama escura. */
   casas: number[];
+  /** O lado do tabuleiro (21/11/2026): 8 as brasileiras, 10 as internacionais. */
+  tamanho?: 8 | 10;
   /** O lado da mesa que joga com as claras. */
   claras: 0 | 1;
   ultimo: LanceDasDamas | null;
@@ -67,6 +69,9 @@ export function JogoDamas({
   const lances = minhaVez ? (estado.lances ?? []) : [];
   // Quem joga de escuras vê o tabuleiro girado: as peças dele embaixo.
   const girado = meuLado >= 0 && meuLado !== estado.claras;
+  // o lado do tabuleiro: 8, ou 10 nas internacionais (21/11/2026)
+  const n = estado.tamanho ?? (estado.casas.length === 100 ? 10 : 8);
+  const total = n * n;
 
   const [escolhida, setEscolhida] = useState<number | null>(null);
   const [prefixo, setPrefixo] = useState<number[]>([]);
@@ -159,16 +164,16 @@ export function JogoDamas({
           prefixo,
           destinos: [...proximos],
           aComer: [...aComer],
-          clicaveis: minhaVez ? Array.from({ length: 64 }, (_, i) => i).filter((i) => (Math.floor(i / 8) + (i % 8)) % 2 === 1 && (origens.includes(i) || proximos.has(i) || sel !== null)) : [],
+          clicaveis: minhaVez ? Array.from({ length: total }, (_, i) => i).filter((i) => (Math.floor(i / n) + (i % n)) % 2 === 1 && (origens.includes(i) || proximos.has(i) || sel !== null)) : [],
           ultimo: estado.ultimo,
         }}
         aoClicar={clicar}
         reserva={
-          <div className="damas">
-            {Array.from({ length: 64 }, (_, d) => {
-              const i = girado ? 63 - d : d;
-              const linha = Math.floor(i / 8);
-              const coluna = i % 8;
+          <div className="damas" style={{ gridTemplateColumns: `repeat(${n}, 1fr)`, gridTemplateRows: `repeat(${n}, 1fr)` }}>
+            {Array.from({ length: total }, (_, d) => {
+              const i = girado ? total - 1 - d : d;
+              const linha = Math.floor(i / n);
+              const coluna = i % n;
               const escura = (linha + coluna) % 2 === 1;
               const peca = estado.casas[i] ?? 0;
               const classes = ['damas-casa', escura ? 'escura' : 'clara'];
@@ -186,7 +191,7 @@ export function JogoDamas({
                   type="button"
                   className={classes.join(' ')}
                   disabled={!escura || !clicavel}
-                  aria-label={`${COLUNAS[coluna]}${8 - linha}`}
+                  aria-label={`${COLUNAS[coluna]}${n - linha}`}
                   aria-pressed={sel === i || undefined}
                   onClick={() => clicar(i)}
                 >

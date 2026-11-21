@@ -55,6 +55,15 @@ export function JogoFesta({
   // o modo Relâmpago (19/11/2026): outra partida, com a tela dela
   if ((estado as unknown as { modo?: string }).modo === 'relampago')
     return <JogoRelampago estado={estado as unknown as EstadoRelampago} eu={eu} jogador={jogador} agir={agir} />;
+  // O TREINO (21/11/2026): um microjogo só, à vontade, sem placar
+  const treino = (estado as unknown as { treino?: boolean }).treino === true;
+  if (treino && (estado.terminada || estado.fase === 'fim'))
+    return (
+      <div className="minijogo-fim">
+        <CoelhoComemorando avatar={estado.jogadores.find((j) => j.userId === eu)?.avatar ?? null} />
+        <p className="minijogo-fim-titulo">{t('Fim do treino')}</p>
+      </div>
+    );
   if (estado.terminada || estado.fase === 'fim') {
     // A CLASSIFICAÇÃO DO SERVIDOR, a mesma dos troféus (revisão independente, 03/11/2026: a tela dava medalha pelo placar de
     // todos, inclusive a quem tinha saído, e ao único que ficou): só quem ficou até o fim, com 2 ou mais, tem posição e
@@ -101,7 +110,13 @@ export function JogoFesta({
   }
   return (
     <div className={`festa festa-jogo-${estado.microjogo}`}>
-      <PlacarAoVivo eu={eu} linhas={estado.placar} />
+      {treino ? (
+        <p className="minijogo-situacao">
+          {t('Treino')} · {estado.rodada}
+        </p>
+      ) : (
+        <PlacarAoVivo eu={eu} linhas={estado.placar} />
+      )}
       <RodadaDaFesta estado={{ ...estado, fase: estado.fase }} eu={eu} jogador={jogador} restante={restante} agir={agir} />
     </div>
   );
@@ -273,7 +288,7 @@ export function EscolhaDaFesta({
   aoVoltar,
   solo = false,
 }: {
-  aoEscolher: (corpo: { modo?: 'relampago'; rodadas?: number; robos?: number }) => void;
+  aoEscolher: (corpo: { modo?: 'relampago' | 'treino'; rodadas?: number; robos?: number; microjogo?: string }) => void;
   aoVoltar: () => void;
   solo?: boolean;
 }) {
@@ -326,6 +341,26 @@ export function EscolhaDaFesta({
           </li>
         ))}
       </ul>
+      {/* O TREINO (21/11/2026): só no Solo; um microjogo, à vontade, sem pontos */}
+      {solo && (
+        <details className="festa-treino">
+          <summary>
+            <span aria-hidden="true">🎯</span> <strong>{t('Treino')}</strong>
+          </summary>
+          <ul className="festa-treino-lista">
+            {[...TELAS.values()]
+              .map((m) => ({ id: m.id, nome: t(m.nome) }))
+              .sort((a, b) => a.nome.localeCompare(b.nome))
+              .map((m) => (
+                <li key={m.id}>
+                  <button type="button" className="btn-secondary" onClick={() => aoEscolher({ modo: 'treino', microjogo: m.id })}>
+                    {m.nome}
+                  </button>
+                </li>
+              ))}
+          </ul>
+        </details>
+      )}
       <div className="minijogo-acoes">
         <button type="button" className="btn-secondary" onClick={aoVoltar}>
           {t('Outros jogos')}

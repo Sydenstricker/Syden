@@ -28,6 +28,13 @@
  * avisa. O que sobra possível: andar sempre no limite do turbo pelo console (é o mesmo limite das posições), e o mesmo de
  * antes, desviar com posições inventadas.
  *
+ * QUEM SAIU CONTINUA (21/11/2026): sem balão, o kart segue como FANTASMA: manda posição, pega caixa e usa item (que pega os
+ * outros), mas não é atingido, não bate, não conta como vivo e não vence. Só o "acertou" e a "batida" pedem balão.
+ *
+ * AS DUPLAS (21/11/2026): quem convida escolhe; com 4, 6 ou 8 na sala, times de dois (o lugar na largada `i` vai ao time
+ * `i % (total / 2)`, que larga do mesmo lado). O item e a batida não pegam o colega; acaba quando sobra um time com balão, e
+ * o troféu é do time que venceu (os dois em 1º).
+ *
  * O SOLO: contra coelhos do computador, a partida inteira roda no navegador (web/src/balao/), e aqui só se guarda o fim, sem
  * troféu (o troféu é um registro entre amigos).
  */
@@ -97,6 +104,8 @@ const velocidade = (a: { n: number; x: number; y: number }, b: { n: number; x: n
 
 interface Jogador {
   largada: number;
+  /** O time, nas duplas (sem duplas, o próprio lugar na largada: cada um por si). */
+  equipe: number;
   baloes: number;
   /** Quantos balões dos outros estourou, e quantos perdeu. */
   estouros: number;
@@ -129,6 +138,7 @@ export interface LinhaDoBalao {
   username: string;
   avatar: number | string | null;
   largada: number;
+  equipe: number;
   baloes: number;
   estouros: number;
   vivo: boolean;
@@ -147,6 +157,8 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
       const arena: Arena = ARENAS.find((a) => a.id === pedida) ?? ARENAS[Math.floor(aleatorio() * ARENAS.length)];
       const semente = Math.floor(aleatorio() * 2 ** 31);
       const inscritos = [...naSala];
+      const duplas = corpo.duplas === true && inscritos.length >= 4 && inscritos.length % 2 === 0;
+      const times = duplas ? inscritos.length / 2 : inscritos.length;
       const evento = `balao-${ctx.comunidade ?? 0}-${agora()}`;
       const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
       const jogadores = new Map<number, Jogador>(
@@ -156,6 +168,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
             id,
             {
               largada: i,
+              equipe: i % times,
               baloes: BALOES,
               estouros: 0,
               levou: 0,
@@ -188,9 +201,26 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
       const presentes = () => new Set(ctx.naSala());
       const difundir = (dados: unknown) => ctx.difundir?.(dados);
 
-      /** `o` ficou na frente de `l`: quem tem balão na frente; entre eles, mais balões, depois mais estouros; quem saiu depois, na frente. */
-      const naFrente = (o: Jogador, l: Jogador) =>
-        o.vivo !== l.vivo
+      /** Da mesma dupla (e não é a mesma pessoa): o item e a batida não pegam. */
+      const mesmaEquipe = (a: number, b: number) => duplas && a !== b && jogadores.get(a)?.equipe === jogadores.get(b)?.equipe;
+      /** O placar de um time nas duplas: alguém com balão, os balões somados, os estouros somados. */
+      const placarDoTime = (e: number) => {
+        const os = [...jogadores.values()].filter((j) => j.equipe === e);
+        return [os.some((j) => j.vivo) ? 1 : 0, os.reduce((s, j) => s + j.baloes, 0), os.reduce((s, j) => s + j.estouros, 0)];
+      };
+      const timeNaFrente = (a: number, b: number): number => {
+        const x = placarDoTime(a), y = placarDoTime(b);
+        for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] > y[i] ? 1 : -1;
+        return 0;
+      };
+      /**
+       * `o` ficou na frente de `l`: nas duplas, primeiro o time; depois quem tem balão na frente; entre eles, mais balões,
+       * depois mais estouros; quem saiu depois, na frente.
+       */
+      const naFrente = (o: Jogador, l: Jogador): boolean =>
+        duplas && o.equipe !== l.equipe && timeNaFrente(o.equipe, l.equipe) !== 0
+          ? timeNaFrente(o.equipe, l.equipe) > 0
+          : o.vivo !== l.vivo
           ? o.vivo
           : o.vivo
             ? o.baloes > l.baloes || (o.baloes === l.baloes && (o.estouros > l.estouros || (o.estouros === l.estouros && o.levou < l.levou)))
@@ -210,6 +240,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
           username: ctx.nome(l.userId),
           avatar: avatares.get(l.userId) ?? null,
           largada: l.j.largada,
+          equipe: l.j.equipe,
           baloes: l.j.baloes,
           estouros: l.j.estouros,
           vivo: l.j.vivo,
@@ -233,8 +264,14 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
         ficaram = new Set(inscritos.filter((id) => presentes().has(id)));
         const ordem = classificacao();
         const turma = ordem.filter((l) => l.posicao !== null);
+        // nas duplas, o troféu é do time que venceu: os dois em 1º
+        const timeVencedor = duplas ? turma[0]?.equipe : undefined;
         if (turma.length >= 2) {
           for (const l of turma) {
+            if (duplas) {
+              if (l.equipe !== timeVencedor) continue;
+              l.posicao = 1;
+            }
             if (l.posicao === null || l.posicao > 3) continue;
             db.guardarTrofeu({
               userId: l.userId,
@@ -256,7 +293,8 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
         if (fase !== 'jogando') return;
         const aqui = presentes();
         const vivos = inscritos.filter((id) => aqui.has(id) && jogadores.get(id)!.vivo);
-        if (vivos.length <= 1) fechar();
+        const lados = duplas ? new Set(vivos.map((id) => jogadores.get(id)!.equipe)).size : vivos.length;
+        if (lados <= 1) fechar();
       };
 
       /**
@@ -266,7 +304,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
        */
       const acertar = (quem: number, item: ItemVivo, s: number): boolean => {
         const j = jogadores.get(quem);
-        if (!j || !j.vivo || gastos.has(item.id) || item.dono === quem) return false;
+        if (!j || !j.vivo || gastos.has(item.id) || item.dono === quem || mesmaEquipe(quem, item.dono)) return false;
         if (s < j.ultimoEstouro + INVULNERAVEL) return false;
         gastos.add(item.id);
         itens.delete(item.id);
@@ -305,7 +343,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
       const ultimaBatida = new Map<string, number>();
       const bater = (vitima: number, atacante: number, s: number): boolean => {
         const j = jogadores.get(vitima), a = jogadores.get(atacante);
-        if (!j || !a || !j.vivo || !a.vivo || vitima === atacante) return false;
+        if (!j || !a || !j.vivo || !a.vivo || vitima === atacante || mesmaEquipe(vitima, atacante)) return false;
         if (s < j.ultimoEstouro + INVULNERAVEL) return false;
         const par = vitima < atacante ? `${vitima}:${atacante}` : `${atacante}:${vitima}`;
         if (s < (ultimaBatida.get(par) ?? -Infinity) + BATIDA_DE_NOVO) return false;
@@ -341,7 +379,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
         if (ate.n <= de.n) return;
         const v = velocidade(de, ate);
         for (const [outro, o] of jogadores) {
-          if (outro === quem || !o.vivo) continue;
+          if (outro === quem || !o.vivo || mesmaEquipe(quem, outro)) continue;
           for (let s = de.n + 1; s <= ate.n; s++) {
             const p = ondeEstava(outro, s);
             if (!p) continue;
@@ -362,7 +400,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
         if (ate.n < inicio) return;
         j.conferidoAte = ate.n;
         for (const item of [...itens.values()]) {
-          if (item.dono === quem || gastos.has(item.id)) continue;
+          if (item.dono === quem || mesmaEquipe(quem, item.dono) || gastos.has(item.id)) continue;
           const s0 = Math.max(inicio, item.n), s1 = Math.min(ate.n, item.fim);
           for (let s = s0; s <= s1; s++) {
             const t = ate.n > de.n ? (s - de.n) / (ate.n - de.n) : 1;
@@ -426,6 +464,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
         publico: () => ({
           fase,
           arena: arena.id,
+          duplas,
           semente,
           partidaId: evento,
           decorridoMs: fase === 'jogando' ? agora() - verdeEm : null,
@@ -435,15 +474,14 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
         acao: () => 'Ação desconhecida.',
         tempoReal(quem, dados) {
           const j = jogadores.get(quem);
-          if (!j || !j.vivo || fase !== 'jogando' || !dados || typeof dados !== 'object') return null;
+          // o FANTASMA (sem balão) segue mandando posição, pegando caixa e usando item; só o "acertou" e a "batida" pedem balão
+          if (!j || fase !== 'jogando' || !dados || typeof dados !== 'object') return null;
           const d = dados as Record<string, unknown>;
           // A POSIÇÃO
           if (d.tipo === undefined) {
             const { x, y, a, n } = d;
             if (!numero(x) || !numero(y) || !numero(a) || !numero(n)) return null;
             if (!aceitarPosicao(quem, j, x, y, n)) return null;
-            // o caminho dela pode ter acabado com o último balão
-            if (!j.vivo) return null;
             return { userId: quem, x, y, a, n };
           }
           const u = j.ultima;
@@ -461,7 +499,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
           }
           // O "ACERTOU" DE QUEM LEVOU: o item existe, não é dela, e a última posição dela estava perto dele
           if (d.tipo === 'acertou') {
-            if (typeof d.id !== 'string' || !numero(d.n)) return null;
+            if (!j.vivo || typeof d.id !== 'string' || !numero(d.n)) return null;
             const item = itens.get(d.id);
             if (!item || gastos.has(d.id) || item.dono === quem || Math.abs(u.n - d.n) > 8) return null;
             const p = item.tipo === 'repolho' ? repolhoNoPasso(item.caminho, item.n, u.n) : u.n >= item.n && u.n < item.fim ? [item.x, item.y] : null;
@@ -471,7 +509,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
           }
           // A BATIDA DE QUEM LEVOU (quem leva é quem diz): o outro estava ali, pelas posições dele, e rápido
           if (d.tipo === 'batida') {
-            if (!numero(d.de) || !numero(d.n) || Math.abs(u.n - d.n) > 8) return null;
+            if (!j.vivo || !numero(d.de) || !numero(d.n) || Math.abs(u.n - d.n) > 8) return null;
             const de = d.de;
             const o = jogadores.get(de);
             if (!o || de === quem || !o.vivo) return null;

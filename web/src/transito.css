@@ -220,3 +220,58 @@
   font-weight: 400;
   text-decoration: underline;
 }
+
+/* A CAMPANHA (21/11/2026): dez fases em grade, a fechada com o cadeado */
+.transito-campanha-titulo {
+  margin: 14px 0 6px;
+  font-weight: 600;
+  text-align: center;
+}
+.transito-campanha {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  max-width: 460px;
+}
+.transito-fase {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-input);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.transito-fase:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+.transito-fase:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.transito-fase.passou {
+  border-color: #7fd18b;
+}
+.transito-fase small {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.transito-fase svg {
+  width: 26px;
+  height: 26px;
+}
+.transito-meta.passou,
+.transito-meta-no-painel.passou {
+  color: #7fd18b;
+}

@@ -8,7 +8,7 @@ import type { Partida } from './minijogos';
 import type { CenaDaCozinha, Icones } from './cozinha/cena';
 import { COLUNAS, LINHAS, irPara, novaCozinha, passo, espaco, progresso, usar, type Cozinha, type Evento, type TipoDeEstacao } from './cozinha/cozinha';
 import { pilotar } from './cozinha/piloto';
-import { PLANTAS_DA_COZINHA, RECEITAS, confere, itemDaChave, type IdDaReceita, type Item, type PlantaDaCozinha } from './cozinha/receitas';
+import { FASES_DA_COZINHA, PLANTAS_DA_COZINHA, RECEITAS, confere, estrelasDaCozinha, faseAberta, faseDaCozinha, itemDaChave, type IdDaReceita, type Item, type PlantaDaCozinha } from './cozinha/receitas';
 import './cozinha.css';
 
 /** A Cozinha da toca (server/src/minijogo-cozinha.ts): cada um na própria cozinha, os mesmos pedidos para todos. */
@@ -34,8 +34,11 @@ export interface EstadoCozinha {
   planta?: PlantaDaCozinha;
   /** Quem escolhe a planta. */
   escolhe?: number;
-  /** No Solo, na escolha: o recorde de cada planta (os pontos). */
-  recordes?: Partial<Record<PlantaDaCozinha, number>> | null;
+  /** No Solo, na escolha: o recorde de cada planta e de cada fase (`fase-<id>`), em pontos. */
+  recordes?: Partial<Record<string, number>> | null;
+  /** A fase do Solo (21/11/2026), e as estrelas que ela deu no fim. */
+  faseDoSolo?: string | null;
+  estrelas?: number | null;
   /** No fim do Solo: se a partida virou o recorde, e o recorde de antes. */
   recorde?: { antes: number | null; novo: boolean } | null;
   partidaId: string;
@@ -62,8 +65,10 @@ export function JogoCozinha({ estado, eu, jogador, agir }: { estado: EstadoCozin
   if (estado.terminada || estado.fase === 'fim') {
     const ficaram = estado.placar.filter((l) => l.posicao !== null);
     const meu = estado.placar.find((l) => l.userId === eu);
+    const faseFeita = faseDaCozinha(estado.faseDoSolo);
     return (
       <>
+        {faseFeita && typeof estado.estrelas === 'number' && <Estrelas n={estado.estrelas} grandes />}
         {estado.recorde &&
           (estado.recorde.novo ? (
             <p className="minijogo-situacao cozinha-recorde">
@@ -78,7 +83,38 @@ export function JogoCozinha({ estado, eu, jogador, agir }: { estado: EstadoCozin
   }
   if (estado.fase === 'escolhendo') {
     if (estado.escolhe !== eu) return <p className="minijogo-situacao">{t('Esperando a escolha de quem começou…')}</p>;
+    const melhor = (id: string) => estado.recordes?.[`fase-${id}`];
     return (
+      <>
+      {estado.solo && (
+        <ol className="cozinha-fases" aria-label={t('Fases')}>
+          {FASES_DA_COZINHA.map((f, i) => {
+            const aberta = faseAberta(i, melhor);
+            const feitos = melhor(f.id);
+            return (
+              <li key={f.id}>
+                <button
+                  type="button"
+                  className="minijogo-jogo cozinha-fase"
+                  disabled={!aberta}
+                  title={aberta ? f.estrelas.map((p, k) => `${'★'.repeat(k + 1)} ${p}`).join(' · ') : undefined}
+                  onClick={() => {
+                    tocar('clique');
+                    void agir({ tipo: 'fase', fase: f.id });
+                  }}
+                >
+                  <span className="cozinha-fase-numero">{aberta ? i + 1 : '🔒'}</span>
+                  <span className="cozinha-fase-cardapio" aria-hidden="true">
+                    {f.cardapio.length > 6 ? '🍽️' : [...new Set(f.cardapio.map(reservaDe))].join('')}
+                  </span>
+                  <Estrelas n={feitos === undefined ? 0 : estrelasDaCozinha(f, feitos)} />
+                  {feitos !== undefined && <span className="cozinha-planta-recorde">🏆 {feitos}</span>}
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      )}
       <ul className="cozinha-plantas">
         {PLANTAS_DA_COZINHA.map((p) => (
           <li key={p}>
@@ -96,9 +132,24 @@ export function JogoCozinha({ estado, eu, jogador, agir }: { estado: EstadoCozin
           </li>
         ))}
       </ul>
+      </>
     );
   }
   return <CozinhaNaTela key={estado.partidaId} estado={estado} eu={eu} jogador={jogador} agir={agir} />;
+}
+
+/** As estrelas de uma fase (21/11/2026): as ganhas cheias, as outras vazias. */
+function Estrelas({ n, grandes = false }: { n: number; grandes?: boolean }) {
+  const t = useT();
+  return (
+    <span className={`cozinha-estrelas${grandes ? ' grandes' : ''}`} role="img" aria-label={t('{n} de 3 estrelas', { n })}>
+      {[0, 1, 2].map((k) => (
+        <span key={k} className={k < n ? 'cheia' : 'vazia'} aria-hidden="true">
+          ★
+        </span>
+      ))}
+    </span>
+  );
 }
 
 /** As cores do mapinha de cada planta, por estação (sem texto: o desenho diz). */

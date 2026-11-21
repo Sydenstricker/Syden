@@ -11,6 +11,7 @@ import './lobisomem.css';
  * e o Syden não sabe quem o recebe. Ficaram "Anjo" (o protetor, nome comum do jogo no Brasil) e "Da vila".
  * Os novos de 19/11/2026 também: o caçador virou a ARMADILHA (dispara quando cai) e a bruxa, o CALDEIRÃO (das poções) —
  * nomes de coisa, como as classes das Lendas, que não marcam sexo em língua nenhuma.
+ * E os de 21/11/2026, pela mesma regra: o AMULETO (o príncipe), a CARAPAÇA (o ancião) e a MÁSCARA (o curtidor).
  */
 export const PAPEIS: Record<Papel, { emoji: string; nome: string; explicacao: string }> = {
   lobisomem: {
@@ -38,13 +39,28 @@ export const PAPEIS: Record<Papel, { emoji: string; nome: string; explicacao: st
     nome: chave('Caldeirão'),
     explicacao: chave('À noite, veja quem os lobisomens atacaram. Uma poção salva essa pessoa e outra tira alguém do jogo; cada uma vale uma vez.'),
   },
+  amuleto: {
+    emoji: '🧿',
+    nome: chave('Amuleto'),
+    explicacao: chave('Na primeira vez que a vila decidir tirar você do jogo, o amuleto quebra e você fica. Todos passam a ver o seu papel.'),
+  },
+  carapaca: {
+    emoji: '🐢',
+    nome: chave('Carapaça'),
+    explicacao: chave('Você aguenta o primeiro ataque dos lobisomens. Ninguém fica sabendo.'),
+  },
+  mascara: {
+    emoji: '🎭',
+    nome: chave('Máscara'),
+    explicacao: chave('Você joga por conta própria: vence se a vila tirar você do jogo no julgamento. Levante suspeitas, mas sem exagero.'),
+  },
   aldeao: {
     emoji: '🏡',
     nome: chave('Da vila'),
     explicacao: chave('À noite, durma. De dia, descubra quem são os lobisomens e vote para tirá-los do jogo.'),
   },
 };
-const ESPECIAIS: PapelEspecial[] = ['vidente', 'anjo', 'armadilha', 'caldeirao'];
+const ESPECIAIS: PapelEspecial[] = ['vidente', 'anjo', 'armadilha', 'caldeirao', 'amuleto', 'carapaca', 'mascara'];
 /** Os limites do servidor (minijogo-lobisomem.ts, LIMITES). */
 const LIMITES = { noiteMs: [30_000, 90_000], diaMs: [60_000, 300_000] } as const;
 
@@ -104,7 +120,13 @@ export function JogoLobisomem({
   if (fase === 'preparo') return <Preparo estado={estado} eu={eu} restante={restante} agir={agir} />;
 
   let faixa: string;
-  if (fase === 'fim') faixa = estado.vencedor === 'vila' ? t('A vila venceu!') : t('Os lobisomens venceram!');
+  if (fase === 'fim')
+    faixa =
+      estado.vencedor === 'vila'
+        ? t('A vila venceu!')
+        : estado.vencedor === 'mascara'
+          ? t('A Máscara venceu: a vila tirou {nome} do jogo.', { nome: nome(estado.eliminado) })
+          : t('Os lobisomens venceram!');
   else if (noite) faixa = t('Noite {n}. A vila dorme.', { n: estado.dia });
   else if (fase === 'amanhecer')
     faixa = estado.mortosDaNoite.length ? t('Fora do jogo esta noite: {nomes}', { nomes: nomes(estado.mortosDaNoite) }) : t('Ninguém morreu esta noite.');
@@ -113,6 +135,7 @@ export function JogoLobisomem({
   else if (fase === 'defesa') faixa = estado.acusado === eu ? t('Você tem a palavra. Defenda-se pela voz.') : t('{nome} tem a palavra. Ouçam a defesa.', { nome: nome(estado.acusado) });
   else if (fase === 'julgamento') faixa = t('{nome} sai do jogo?', { nome: nome(estado.acusado) });
   else if (estado.eliminado !== null) faixa = t('A vila tirou {nome} do jogo.', { nome: nome(estado.eliminado) });
+  else if (estado.amuletoQuebrou) faixa = t('O amuleto de {nome} quebrou: fica no jogo.', { nome: nome(estado.amuletoQuebrou) });
   else if (estado.acusado !== null) faixa = t('{nome} fica no jogo.', { nome: nome(estado.acusado) });
   else faixa = t('Empate: ninguém sai hoje.');
 
@@ -431,7 +454,7 @@ function Historia({ historia, nome }: { historia: LinhaDaHistoriaDoLobisomem[]; 
     switch (l.tipo) {
       case 'ataque':
         if (l.alvo === null || l.alvo === undefined) return `🐺 ${t('Ninguém foi atacado.')}`;
-        return `🐺 ${t('Os lobisomens atacaram {nome} durante a noite.', { nome: nome(l.alvo) })}${l.salvo ? ` ${t('Sobreviveu.')}` : ''}`;
+        return `🐺 ${t('Os lobisomens atacaram {nome} durante a noite.', { nome: nome(l.alvo) })}${l.salvo ? ` ${l.carapaca ? '🐢 ' : ''}${t('Sobreviveu.')}` : ''}`;
       case 'protecao':
         return `😇 ${t('{de} protegeu {alvo}.', { de: nome(l.de), alvo: nome(l.alvo) })}`;
       case 'visao':
@@ -445,7 +468,13 @@ function Historia({ historia, nome }: { historia: LinhaDaHistoriaDoLobisomem[]; 
       case 'acusado':
         return l.alvo === null || l.alvo === undefined ? `⚖️ ${t('Empate: ninguém sai hoje.')}` : `⚖️ ${nome(l.alvo)} · 🗳️ ${l.votos ?? 0}`;
       case 'julgamento':
-        return `👍 ${l.sim ?? 0} · 👎 ${l.nao ?? 0} — ${l.saiu ? t('A vila tirou {nome} do jogo.', { nome: nome(l.alvo) }) : t('{nome} fica no jogo.', { nome: nome(l.alvo) })}`;
+        return `👍 ${l.sim ?? 0} · 👎 ${l.nao ?? 0} — ${
+          l.amuleto
+            ? `🧿 ${t('O amuleto de {nome} quebrou: fica no jogo.', { nome: nome(l.alvo) })}`
+            : l.saiu
+              ? t('A vila tirou {nome} do jogo.', { nome: nome(l.alvo) })
+              : t('{nome} fica no jogo.', { nome: nome(l.alvo) })
+        }`;
       case 'armadilha':
         return `🪤 ${nome(l.de)} → ${l.alvo ? nome(l.alvo) : t('Ninguém')}`;
     }

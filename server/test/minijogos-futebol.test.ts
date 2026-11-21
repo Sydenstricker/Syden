@@ -371,3 +371,84 @@ test('na sala (20/11/2026): o tempo de jogo e o gol de ouro de quem começa; for
   assert.deepEqual([vq.minutos, vq.golDeOuro, vq.duracao], [3, false, sim.PARTIDA_PASSOS]);
   q.jogo.parar?.();
 });
+
+test('o bote na simulação (21/11/2026): o carrinho tira a bola de quem conduz, sem virar dono; errou, fica no chão e espera a recarga', () => {
+  const m = sim.novoMundo([[1], [2]]);
+  m.pausa = 0;
+  m.centro = false;
+  const a = sim.jogadorPorId(m, 1)!;
+  const b = sim.jogadorPorId(m, 2)!;
+  a.x = 200;
+  a.y = 200;
+  b.x = 250;
+  b.y = 200;
+  b.fx = -1;
+  b.fy = 0;
+  sim.darBola(m, b);
+  m.bola.protege = 0;
+  const eventos: string[] = [];
+  let primeiro = true;
+  for (let k = 0; k < 30; k++) {
+    sim.passoDoMundo(m, (j) => (j.id === 1 ? { dx: 1, dy: 0, chute: false, passe: false, bote: primeiro && !(primeiro = false) } : sim.NADA));
+    eventos.push(...m.eventos.map((e) => e.tipo));
+    if (eventos.includes('bote')) break;
+  }
+  assert.ok(eventos.includes('bote'), 'o carrinho alcançou');
+  assert.equal(m.bola.dono, 0, 'a bola fica solta');
+  assert.ok(m.bola.vx > 2, 'saiu na direção do carrinho');
+  assert.ok(b.tonto > 0 && b.tonto <= sim.BOTE_TONTO, 'quem levou fica tonto um instante');
+  assert.ok(a.caido > 0 && a.caido <= sim.BOTE_CAIDO_ACERTO, 'acertou: pouco tempo no chão');
+  // outro bote antes da recarga não começa
+  assert.equal(sim.comecarBote(a, false, 1, 0), false);
+  // errou no vazio: fica no chão o tempo inteiro
+  const m2 = sim.novoMundo([[1], [2]]);
+  m2.pausa = 0;
+  const c = sim.jogadorPorId(m2, 1)!;
+  c.x = 100;
+  c.y = 100;
+  m2.bola.x = 500;
+  m2.bola.y = 300;
+  let ok = true;
+  for (let k = 0; k <= sim.BOTE_PASSOS; k++) sim.passoDoMundo(m2, (j) => (j.id === 1 ? { dx: 0, dy: 1, chute: false, passe: false, bote: ok && !(ok = false) } : sim.NADA));
+  assert.equal(c.bote, 0);
+  assert.ok(c.caido > 0, 'no chão depois do carrinho');
+  assert.ok(c.fy > 0.99, 'escorregou para onde apontava');
+  const yAntes = c.y;
+  sim.passoDoMundo(m2, (j) => (j.id === 1 ? { dx: 0, dy: 1, chute: false, passe: false } : sim.NADA));
+  assert.ok(Math.abs(c.y - yAntes) < 1, 'no chão, quase não anda');
+});
+
+test('o bote na sala (21/11/2026): quem dá o carrinho tem razão pelos últimos 300 ms; perto do companheiro não vale, e há recarga', () => {
+  const p = comecar([anaId, biaId]);
+  p.largar();
+  p.m.centro = false;
+  const a = p.eu(anaId);
+  const b = p.eu(biaId);
+  b.x = 200;
+  b.y = 200;
+  b.fx = -1;
+  b.fy = 0;
+  sim.darBola(p.m, b);
+  p.m.bola.protege = 0;
+  a.x = 168;
+  a.y = 200;
+  p.andar(PASSO_MS);
+  assert.equal(p.m.bola.dono, biaId);
+  const bote = (d: Record<string, unknown>) => {
+    p.jogo.tempoReal!(anaId, { tipo: 'bote', ...d });
+    return p.jogo && (p.jogo as unknown as Interno)._motivo();
+  };
+  assert.equal(bote({ x: 60, y: 60, fx: 1, fy: 0, s: 1 }), 'longe de si');
+  assert.equal(bote({ x: a.x, y: a.y, fx: 1, fy: 0, s: 2 }), null);
+  assert.equal(p.m.bola.dono, 0);
+  assert.ok(p.eu(biaId).tonto > 0);
+  p.andar(PASSO_MS);
+  assert.ok(p.quadros.some((q) => (q.e as unknown[][]).some((e) => e[0] === 'b' && e[1] === anaId && e[2] === biaId)), 'o evento vai no quadro');
+  // de novo, logo: a recarga
+  sim.darBola(p.m, b);
+  p.m.bola.protege = 0;
+  p.andar(PASSO_MS);
+  agora += 1000;
+  assert.equal(bote({ x: a.x, y: a.y, fx: 1, fy: 0, s: 3 }), 'recarga');
+  p.jogo.parar!();
+});

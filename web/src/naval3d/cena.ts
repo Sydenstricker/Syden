@@ -61,6 +61,11 @@ export interface MarDaCena {
   mirada?: number[];
   /** O lado do mar (20/11/2026: 8, 10 ou 12; sem ele, 10). A cena o lê ao nascer. */
   lado?: number;
+  /**
+   * Os SONARES usados neste mar (21/11/2026, as armas especiais): a área de 3 × 3 tingida (azul com navio, cinza sem) e, no
+   * meio, uma boia amarela por navio que passa por ela. Sem texto: o número também está na grade 2D, para o leitor.
+   */
+  sonares?: { centro: number; navios: number }[];
   /** A frota que a pessoa escolheu ver (de fábrica, a pirata). */
   frota?: FrotaDaCena;
   /**
@@ -138,6 +143,13 @@ export class MarNaval3D {
   /** As marcas da rajada do salvo, refeitas a cada mudança. */
   private rajada = new THREE.Group();
   private matDaRajada = new THREE.MeshBasicMaterial({ color: '#ff8a3d', transparent: true, opacity: 0.6, depthWrite: false });
+  /** Os sonares (21/11/2026), refeitos quando mudam. */
+  private sonar = new THREE.Group();
+  private chaveDoSonar = '';
+  private matDoSonar = new THREE.MeshBasicMaterial({ color: '#40c8dc', transparent: true, opacity: 0.32, depthWrite: false });
+  private matDoSonarVazio = new THREE.MeshBasicMaterial({ color: '#8a9aa4', transparent: true, opacity: 0.32, depthWrite: false });
+  private matDaBoia = new THREE.MeshStandardMaterial({ color: '#ffd23a', emissive: '#7a5a00', emissiveIntensity: 0.4 });
+  private geoDaBoia = new THREE.SphereGeometry(0.11, 10, 8);
 
   constructor(
     private caixa: HTMLElement,
@@ -326,9 +338,43 @@ export class MarNaval3D {
       this.rajada.add(m);
     }
     if (!this.rajada.parent) this.cena.add(this.rajada);
+    this.montarSonares(d.sonares ?? []);
     this.mira.visible = this.mira.visible && d.podeAtirar;
     this.renderer.domElement.style.cursor = d.podeAtirar ? 'crosshair' : d.montagem ? 'pointer' : '';
     this.montarFantasma(d);
+  }
+
+  /** As áreas dos sonares e as boias de cada uma (uma por navio achado), só quando a lista muda. */
+  private montarSonares(lista: { centro: number; navios: number }[]) {
+    const chave = JSON.stringify(lista);
+    if (chave === this.chaveDoSonar) return;
+    this.chaveDoSonar = chave;
+    this.sonar.clear();
+    const n = this.n;
+    for (const x of lista) {
+      const l = Math.floor(x.centro / n);
+      const c = x.centro % n;
+      for (let dl = -1; dl <= 1; dl++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          if (l + dl < 0 || l + dl >= n || c + dc < 0 || c + dc >= n) continue;
+          const m = new THREE.Mesh(this.casaGeo, x.navios ? this.matDoSonar : this.matDoSonarVazio);
+          m.rotation.x = -Math.PI / 2;
+          const p = centro((l + dl) * n + c + dc, n);
+          m.position.set(p.x, 0.05, p.z);
+          this.sonar.add(m);
+        }
+      }
+      // as boias no meio da área, em roda
+      const meio = centro(x.centro, n);
+      for (let k = 0; k < x.navios; k++) {
+        const b = new THREE.Mesh(this.geoDaBoia, this.matDaBoia);
+        const ang = (k / Math.max(1, x.navios)) * Math.PI * 2;
+        const raio = x.navios > 1 ? 0.28 : 0;
+        b.position.set(meio.x + Math.cos(ang) * raio, 0.22, meio.z + Math.sin(ang) * raio);
+        this.sonar.add(b);
+      }
+    }
+    if (!this.sonar.parent) this.cena.add(this.sonar);
   }
 
   /** O navio-fantasma (casas verdes ou vermelhas, e o navio meio transparente quando cabe) e o realce do escolhido. */
@@ -558,6 +604,7 @@ export class MarNaval3D {
     });
     this.renderer.forceContextLoss();
     this.matDaRajada.dispose();
+    for (const x of [this.matDoSonar, this.matDoSonarVazio, this.matDaBoia, this.geoDaBoia]) x.dispose();
     this.renderer.dispose();
     tela.remove();
   }

@@ -12,6 +12,8 @@ import {
   manilhaDa,
   quemGanhaARodada,
   quemLevaAMao,
+  sinalDaMao,
+  INTERVALO_DO_SINAL,
   PAUSA_DA_MAO,
   PAUSA_DA_RODADA,
   TEMPO_DA_DECISAO,
@@ -452,4 +454,43 @@ test('ações desconhecidas e a partida com id', () => {
   assert.equal(typeof j.estado(A).partidaId, 'string');
   assert.ok(j.estado(A).partidaId.startsWith('truco-'));
   void PAUSA_DA_MAO;
+});
+
+test('o sinal verdadeiro da mão: a manilha mais forte pelo naipe, senão um 3, senão nada (no paulista e no mineiro)', () => {
+  assert.equal(sinalDaMao(['Ap', '3o', '4e'], 'A'), 'zap');
+  assert.equal(sinalDaMao(['Ae', 'Ac', '4e'], 'A'), 'copas');
+  assert.equal(sinalDaMao(['Ao', '5e'], 'A'), 'ouros');
+  assert.equal(sinalDaMao(['3o', '5e', 'Ke'], 'A'), 'tres');
+  assert.equal(sinalDaMao(['4o', '5e', 'Ke'], 'A'), 'nada');
+  assert.equal(sinalDaMao(['Ae', '7o', '2c'], 'mineiro'), 'espadas');
+  assert.equal(sinalDaMao(['4p', '7c'], 'mineiro'), 'zap');
+  assert.equal(sinalDaMao(['4o', '7e'], 'mineiro'), 'nada');
+});
+
+test('os sinais ao parceiro: só no jogo de quatro, só o parceiro vê, e um a cada tanto', () => {
+  let agora = 1000;
+  const j = comecar([A, B, C, D], { agora: () => agora, baralhos: [deck([['4o', '5o', '6o'], ['4e', '5e', '6e'], ['4c', '5c', '6c'], ['4p', '5p', '6p']], 'Ko')] });
+  type ComSinal = Estado & { possoSinalizar: boolean; sinalDoParceiro: { sinal: string } | null; meuSinal: { sinal: string } | null };
+  const ver = (q: number) => j.estado(q) as ComSinal;
+  assert.equal(ver(A).possoSinalizar, true);
+  assert.equal(j.acao(A, { tipo: 'sinal', sinal: 'careta' }), 'Sinal desconhecido.');
+  j.ok(A, { tipo: 'sinal', sinal: 'zap' });
+  assert.equal(ver(C).sinalDoParceiro?.sinal, 'zap', 'o parceiro vê');
+  assert.equal(ver(A).meuSinal?.sinal, 'zap', 'quem fez vê o que fez');
+  for (const quem of [B, D, 99]) {
+    assert.equal(ver(quem).sinalDoParceiro, null);
+    assert.ok(!JSON.stringify(j.estado(quem)).includes('zap'), `${quem} não sabe do sinal`);
+  }
+  assert.equal(j.acao(A, { tipo: 'sinal', sinal: 'copas' }), 'Calma com os sinais.');
+  agora += INTERVALO_DO_SINAL;
+  j.ok(A, { tipo: 'sinal', sinal: 'copas' });
+  assert.equal(ver(C).sinalDoParceiro?.sinal, 'copas', 'vale o último');
+  // fora da vez também: B sinaliza a D
+  j.ok(B, { tipo: 'sinal', sinal: 'nada' });
+  assert.equal(ver(D).sinalDoParceiro?.sinal, 'nada');
+  assert.equal(ver(A).sinalDoParceiro, null);
+
+  const dois = comecar([A, B]);
+  assert.equal(dois.acao(A, { tipo: 'sinal', sinal: 'zap' }), 'Sinal só no jogo de quatro.');
+  assert.equal((dois.estado(A) as ComSinal).possoSinalizar, false);
 });

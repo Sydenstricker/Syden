@@ -24,8 +24,11 @@ export function EscolhaDasCartas({
 }) {
   const t = useT();
   const [especiais, setEspeciais] = useState(false);
+  // o dominó de pontos e o nível dos robôs (21/11/2026)
+  const [pontos, setPontos] = useState(false);
+  const [nivel, setNivel] = useState<'facil' | 'normal' | 'dificil'>('normal');
   const [variante, setVariante] = useState<'paulista' | 'mineiro'>('paulista');
-  const escolhas = (): Record<string, unknown> => (jogo === 'domino' ? { especiais } : { variante });
+  const escolhas = (): Record<string, unknown> => (jogo === 'domino' ? { especiais, ...(pontos ? { pontos: true } : {}), ...(solo ? { nivel } : {}) } : { variante });
 
   return (
     <div className="tab-escolha mesa-escolha">
@@ -34,6 +37,10 @@ export function EscolhaDasCartas({
           <label className="mesa-opcao">
             <input type="checkbox" checked={especiais} onChange={(e) => setEspeciais(e.target.checked)} />
             {t('Batidas especiais: carroça e lá-e-ló valem o dobro')}
+          </label>
+          <label className="mesa-opcao">
+            <input type="checkbox" checked={pontos} onChange={(e) => setPontos(e.target.checked)} />
+            {t('Dominó de pontos: marca quem deixa as pontas somando 5, 10, 15…')}
           </label>
         </fieldset>
       )}
@@ -49,6 +56,24 @@ export function EscolhaDasCartas({
                 onClick={() => setVariante(v)}
               >
                 {v === 'paulista' ? t('Paulista') : t('Mineiro')}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      )}
+      {jogo === 'domino' && solo && (
+        <fieldset className="mesa-grupo">
+          <legend>{t('Nível do computador')}</legend>
+          <div className="mesa-botoes">
+            {(['facil', 'normal', 'dificil'] as const).map((n) => (
+              <button
+                key={n}
+                type="button"
+                className={`tab-rodadas-botao${nivel === n ? ' escolhida' : ''}`}
+                aria-pressed={nivel === n}
+                onClick={() => setNivel(n)}
+              >
+                {n === 'facil' ? t('Fácil') : n === 'normal' ? t('Normal') : t('Difícil')}
               </button>
             ))}
           </div>

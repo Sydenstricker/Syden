@@ -184,3 +184,38 @@ describe('trânsito da toca', () => {
     assert.equal(e.pontos, antes - PENA_DA_AMBULANCIA);
   });
 });
+
+describe('a campanha (21/11/2026)', () => {
+  it('sem fase, a partida de sempre: o sorteio e a regra não mudaram', () => {
+    const a = novaPartida(31337);
+    assert.equal(a.fase, null);
+    assert.equal(a.rapidez, 1);
+    assert.deepEqual(sortearChegadas(31337), a.chegadas);
+  });
+  it('cada uma das dez fases tem o mapa, a duração e a meta dela, e o piloto automático passa em todas', async () => {
+    const { CAMPANHA, faseDaCampanha } = await import('../src/transito/sim');
+    assert.equal(CAMPANHA.length, 10);
+    assert.equal(faseDaCampanha(0), null);
+    assert.equal(faseDaCampanha(11), null);
+    CAMPANHA.forEach((f, i) => {
+      for (const semente of [101, 202, 303]) {
+        const e = novaPartida(semente, { fase: i + 1 });
+        assert.equal(e.mapa, f.mapa);
+        assert.equal(e.limite, f.segundos * 60);
+        while (!e.terminou) {
+          if (e.passo % 6 === 0) {
+            const q = escolhaDoPiloto(e);
+            if (q >= 0) liberar(e, q);
+          }
+          passo(e);
+        }
+        assert.ok(e.pontos >= f.meta, `fase ${i + 1}, semente ${semente}: ${e.pontos} < ${f.meta}`);
+        // o servidor refaz a fase pelas mesmas regras (as liberações vazias dão a mesma partida sem ninguém)
+        assert.equal(refazer(semente, [], { fase: i + 1 }).passo, f.segundos * 60);
+      }
+    });
+    // a 1ª só tem carros seguindo reto (no cruzamento)
+    const um = novaPartida(5, { fase: 1 });
+    assert.ok(um.chegadas.every((c) => c.manobra === 'reto' && c.tipo === 'carro'));
+  });
+});

@@ -1,10 +1,14 @@
 # As palavras que se pode CHUTAR na Palavra secreta (server/src/minijogo-palavra.ts), tiradas do VERO, o corretor
 # ortográfico do LibreOffice (LGPLv3/MPL): https://github.com/LibreOffice/dictionaries/tree/master/pt_BR
 # Uso: baixe pt_BR.aff e pt_BR.dic para uma pasta vazia e rode, de dentro dela:
-#   python -I palavras-do-vero.py cinco.txt
-# Ele expande os sufixos e prefixos do hunspell e guarda as palavras de 5 letras sem acento (a chave), com as grafias.
-# A lista final (validas.txt) é a chave e, quando a grafia é uma só e tem acento, a grafia depois do tab.
+#   python -I palavras-do-vero.py cinco.txt [N] [--final]
+# Ele expande os sufixos e prefixos do hunspell e guarda as palavras de N letras (5, se não disser) sem acento (a chave),
+# com as grafias. A lista final (validas.txt; validas-4.txt e validas-6.txt desde 21/11/2026) é a chave e, quando a grafia é
+# uma só e tem acento, a grafia depois do tab: é o que o --final escreve.
 import re, sys, unicodedata, collections
+
+N = int(next((a for a in sys.argv[2:] if a.isdigit()), '5'))
+FINAL = '--final' in sys.argv
 
 aff = open('pt_BR.aff', encoding='utf-8-sig').read().splitlines()
 regras = collections.defaultdict(list)  # flag -> [(tipo, cruza, tira, poe, flags, cond)]
@@ -63,12 +67,16 @@ for linha in open('pt_BR.dic', encoding='utf-8-sig').read().splitlines()[1:]:
     for w in sufs:
         tudo += [x for x, _, _ in aplicar(w, pfx)]
     for w in tudo:
-        if len(w) == 5 and w.isalpha() and w.islower():
+        if len(w) == N and w.isalpha() and w.islower():
             chave = sem_acento(w)
-            if re.fullmatch('[a-z]{5}', chave):
+            if re.fullmatch('[a-z]{%d}' % N, chave):
                 formas[chave].add(w)
 
-with open(sys.argv[1], 'w', encoding='utf-8') as s:
+with open(sys.argv[1], 'w', encoding='utf-8', newline='\n') as s:
     for k in sorted(formas):
-        s.write(k + '\t' + ','.join(sorted(formas[k])) + '\n')
+        if FINAL:
+            unica = sorted(formas[k])[0] if len(formas[k]) == 1 else k
+            s.write(k + ('\t' + unica if unica != k else '') + '\n')
+        else:
+            s.write(k + '\t' + ','.join(sorted(formas[k])) + '\n')
 print(len(formas))

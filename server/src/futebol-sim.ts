@@ -95,6 +95,20 @@ export const GOL_REINICIO = 60;
 export const MAXIMO_POR_TIME = 4;
 /** O círculo do meio: na saída, o time que não dá a saída espera fora dele até a bola sair de lá. */
 export const RAIO_DO_CENTRO = 50;
+/**
+ * O BOTE (21/11/2026, a segunda auditoria): o carrinho para tirar a bola de quem a conduz. Quem dá o bote escorrega para a frente
+ * (para onde está virado, ou para onde aponta a direção na hora) por BOTE_PASSOS, sem virar; encostando na bola, ela sai solta
+ * na direção do carrinho, e quem a conduzia fica tonto um instante (não se machuca: é a mesma tontura do roubo, mais curta).
+ * Errou, fica no chão por BOTE_CAIDO (acertou, menos), e só dá outro depois da RECARGA. Quem conduz a bola não dá bote.
+ */
+export const BOTE_PASSOS = 18;
+export const BOTE_VEL = 3.6;
+export const BOTE_RECARGA = 150;
+export const BOTE_CAIDO = 30;
+export const BOTE_CAIDO_ACERTO = 12;
+export const BOTE_ALCANCE = R_JOGADOR + R_BOLA + 7;
+export const BOTE_EMPURRAO = 3.2;
+export const BOTE_TONTO = 18;
 
 export interface Bola {
   x: number;
@@ -134,6 +148,10 @@ export interface Jogador {
   esperaRoubo: number;
   /** Os passos tonto, depois de perder a bola num roubo: não anda. */
   tonto: number;
+  /** O bote (21/11/2026): os passos que faltam do carrinho, os passos no chão depois dele, e a recarga. */
+  bote: number;
+  caido: number;
+  recargaDoBote: number;
   /** Movido de fora (na sala, a pessoa move o próprio coelho no computador dela): o passo não o anda. */
   externo: boolean;
   /** Corre como robô (o computador, ou quem saiu da sala e deixou o coelho com ele). */
@@ -151,6 +169,8 @@ export interface Comando {
   passe: boolean;
   /** Segurando o chute ALTO (vale o que estava apertado enquanto carregava). */
   alto?: boolean;
+  /** O bote, só no passo em que foi apertado. */
+  bote?: boolean;
 }
 
 export type Evento =
@@ -158,6 +178,8 @@ export type Evento =
   | { tipo: 'passe'; id: number }
   | { tipo: 'dominio'; id: number }
   | { tipo: 'roubo'; id: number; de: number }
+  /** O bote acertou a bola (`de`: quem a conduzia, ou 0 se estava solta). */
+  | { tipo: 'bote'; id: number; de: number }
   | { tipo: 'quique' }
   | { tipo: 'gol'; time: 0 | 1; autor: number; contra: boolean }
   | { tipo: 'reinicio' }
@@ -230,6 +252,9 @@ export function novoMundo(times: [number[], number[]], nivel = 1, duracao = PART
         semDominio: 0,
         esperaRoubo: 0,
         tonto: 0,
+        bote: 0,
+        caido: 0,
+        recargaDoBote: 0,
         externo: false,
         robo: id < 0,
         gols: 0,
@@ -275,6 +300,8 @@ export function posicionar(m: Mundo, saida: 0 | 1) {
     j.semDominio = 0;
     j.esperaRoubo = 0;
     j.tonto = 0;
+    j.bote = 0;
+    j.caido = 0;
   }
   const b = m.bola;
   b.x = CX;
@@ -322,6 +349,17 @@ export function foraDoCentro(m: Mundo, j: { x: number; y: number; time: 0 | 1 })
 
 /** Anda um passo com o comando (o chute e o passe são do passo do mundo). `fator`: o do robô (pela dificuldade). */
 export function passoDoJogador(j: Jogador, c: Comando, comBola: boolean, fator = FATOR_DO_ROBO) {
+  // no bote, escorrega reto, perdendo força; no chão depois dele, não anda
+  if (j.bote > 0) {
+    const k = 0.4 + (0.6 * j.bote) / BOTE_PASSOS;
+    j.vx = j.fx * BOTE_VEL * k;
+    j.vy = j.fy * BOTE_VEL * k;
+    j.x += j.vx;
+    j.y += j.vy;
+    prenderNoCampo(j);
+    return;
+  }
+  if (j.caido > 0) c = NADA;
   const max = (comBola ? VEL_COM_BOLA : VEL) * (j.robo ? fator : 1);
   let dx = limitar(c.dx, -1, 1);
   let dy = limitar(c.dy, -1, 1);
@@ -385,6 +423,75 @@ export function vetorDoPasse(m: Mundo, j: Jogador): [number, number] {
     }
   }
   return [vx, vy];
+}
+
+/**
+ * Começa o bote, se dá: sem a bola, sem estar tonto, no chão ou na recarga. A direção apertada na hora vira o rumo do carrinho.
+ * Devolve se começou.
+ */
+export function comecarBote(j: Jogador, comBola: boolean, dx = 0, dy = 0): boolean {
+  if (comBola || j.bote > 0 || j.caido > 0 || j.recargaDoBote > 0 || j.tonto > 0) return false;
+  const n = Math.sqrt(dx * dx + dy * dy);
+  if (n > 0.05) {
+    j.fx = dx / n;
+    j.fy = dy / n;
+  }
+  j.bote = BOTE_PASSOS;
+  j.recargaDoBote = BOTE_RECARGA;
+  j.carga = 0;
+  j.alto = false;
+  // escorregando e no chão, não domina a bola (ela sai do carrinho, não fica com ele)
+  j.semDominio = Math.max(j.semDominio, BOTE_PASSOS + BOTE_CAIDO);
+  return true;
+}
+
+/** Os relógios do bote, um passo (a recarga, o chão e o fim do carrinho). */
+export function relogiosDoBote(j: Jogador) {
+  if (j.recargaDoBote > 0) j.recargaDoBote--;
+  if (j.caido > 0) j.caido--;
+  if (j.bote > 0) {
+    j.bote--;
+    if (j.bote === 0) j.caido = BOTE_CAIDO;
+  }
+}
+
+/** O carrinho de `j` alcança a bola agora: ela está baixa e perto, solta ou com alguém do outro time. */
+export function alcancaBote(m: Mundo, j: Jogador): boolean {
+  const b = m.bola;
+  if (j.bote <= 0 || b.z > ALTURA_DO_CORPO || (m.centro && j.time !== m.saida)) return false;
+  if (b.dono !== 0) {
+    const d = jogadorPorId(m, b.dono);
+    if (!d || d.time === j.time) return false;
+  }
+  const dx = b.x - j.x;
+  const dy = b.y - j.y;
+  return dx * dx + dy * dy <= BOTE_ALCANCE * BOTE_ALCANCE;
+}
+
+/** O bote acertou: a bola sai solta na direção do carrinho, quem a conduzia fica tonto um instante, e o carrinho acaba. */
+export function aplicarBote(m: Mundo, j: Jogador) {
+  const b = m.bola;
+  const de = b.dono;
+  const vitima = de !== 0 ? jogadorPorId(m, de) : undefined;
+  if (vitima) {
+    vitima.esperaRoubo = ESPERA_ROUBO;
+    vitima.tonto = Math.max(vitima.tonto, BOTE_TONTO);
+    vitima.carga = 0;
+    vitima.alto = false;
+    vitima.semDominio = Math.max(vitima.semDominio, BOTE_TONTO);
+  }
+  b.dono = 0;
+  b.vx = j.fx * BOTE_EMPURRAO + (vitima ? vitima.vx * 0.3 : 0);
+  b.vy = j.fy * BOTE_EMPURRAO + (vitima ? vitima.vy * 0.3 : 0);
+  b.z = 0;
+  b.vz = 0;
+  b.protege = 0;
+  b.ultimo = j.id;
+  b.versao++;
+  j.bote = 0;
+  j.caido = BOTE_CAIDO_ACERTO;
+  j.semDominio = BOTE_CAIDO_ACERTO;
+  m.eventos.push({ tipo: 'bote', id: j.id, de });
 }
 
 /** O jogador pode tocar na bola agora: ele a conduz, ou ela está solta e encostada nele. */
@@ -663,7 +770,15 @@ export function passoDoMundo(m: Mundo, comando: (j: Jogador) => Comando | null) 
     if (!c0) continue;
     // tonto: não anda nem chuta (a velocidade vai caindo)
     const c = j.tonto > 0 ? NADA : c0;
+    if (c.bote) comecarBote(j, m.bola.dono === j.id, c.dx, c.dy);
     passoDoJogador(j, c, m.bola.dono === j.id, NIVEIS_DO_ROBO[m.nivel]?.fator ?? FATOR_DO_ROBO);
+    // no carrinho e no chão, nem chute nem passe; o carrinho que encosta na bola a tira
+    if (j.bote > 0 || j.caido > 0) {
+      j.carga = 0;
+      j.alto = false;
+      if (alcancaBote(m, j)) aplicarBote(m, j);
+      continue;
+    }
     if (c.chute) {
       if (j.carga < CARGA_MAX) j.carga++;
       if (c.alto) j.alto = true;
@@ -702,6 +817,7 @@ export function passoDoMundo(m: Mundo, comando: (j: Jogador) => Comando | null) 
     if (j.semDominio > 0) j.semDominio--;
     if (j.esperaRoubo > 0) j.esperaRoubo--;
     if (j.tonto > 0) j.tonto--;
+    if (!j.externo) relogiosDoBote(j);
   }
   if (m.passo >= m.duracao) {
     // o empate com o gol de ouro ligado: a prorrogação curta (o primeiro gol vence; sem gol, fica o empate)
@@ -808,6 +924,15 @@ export function comandoDoRobo(m: Mundo, j: Jogador): Comando {
     return ir(j, kx, gy);
   }
   if (maisPerto === j && !nossa) {
+    // O BOTE: colado em quem conduz, virado para a bola e fora da recarga, às vezes dá o carrinho (mais vezes no difícil; o
+    // "acaso" é o relógio, igual nos dois lados)
+    if (doDono && j.recargaDoBote === 0 && j.bote === 0 && j.caido === 0 && dist2(j) < 30 * 30 && !m.centro) {
+      const bx = b.x - j.x;
+      const by = b.y - j.y;
+      const db = Math.sqrt(bx * bx + by * by) || 1;
+      const chance = [2, 4, 7][m.nivel] ?? 4;
+      if ((bx * j.fx + by * j.fy) / db > 0.6 && (m.tempo * 13 + j.slot * 29) % 200 < chance) return { dx: bx / db, dy: by / db, chute: false, passe: false, bote: true };
+    }
     // na bola, chegando por trás dela (do lado do próprio gol), para sair conduzindo para o ataque
     const tx = b.x + b.vx * 8;
     const ty = b.y + b.vy * 8;

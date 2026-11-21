@@ -19,18 +19,22 @@ import { guardarRecordeDoSolo, lerRecordeDoSolo } from './recorde-solo-tardio.js
  */
 
 const PASTA = new URL('../assets/palavra-secreta/', import.meta.url);
-export const SORTEIO: string[] = readFileSync(new URL('sorteio.txt', PASTA), 'utf8').split('\n').filter(Boolean);
-const GRAFIA = new Map<string, string>();
-for (const linha of readFileSync(new URL('validas.txt', PASTA), 'utf8').split('\n')) {
-  if (!linha) continue;
-  const [chave, grafia] = linha.split('\t');
-  GRAFIA.set(chave, grafia ?? chave);
-}
 
-export const RODADAS_PALAVRA = 3;
-export const CHUTES = 6;
-export const PALAVRA_MS = 3 * 60_000;
-export const REVELACAO_MS = 6_000;
+/**
+ * OS TAMANHOS (21/11/2026, o lote D da segunda auditoria): palavras de 4, 5 ou 6 letras, escolhidas na largada. A de 5 continua
+ * a de fábrica, com as listas de sempre (`sorteio.txt`, `validas.txt`); as de 4 e de 6 têm as delas (`sorteio-4.txt`,
+ * `validas-4.txt`…), as que saem também NOSSAS e as que se chutam do VERO, pelo mesmo script (server/scripts/palavras-do-vero.py
+ * com o tamanho). O recorde do Solo de 4 e de 6 é à parte (a variante ganha "@4", "@6").
+ */
+export const TAMANHOS = [4, 5, 6] as const;
+export type Tamanho = (typeof TAMANHOS)[number];
+export const TAMANHO_PADRAO: Tamanho = 5;
+const sufixo = (n: Tamanho) => (n === TAMANHO_PADRAO ? '' : `-${n}`);
+const lerLinhas = (arquivo: string) =>
+  readFileSync(new URL(arquivo, PASTA), 'utf8')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
 
 export const semAcento = (texto: string) =>
   texto
@@ -38,26 +42,51 @@ export const semAcento = (texto: string) =>
     .replace(/[̀-ͯ]/g, '')
     .toLowerCase();
 
-// A grafia da palavra SORTEADA (a nossa, com acento) vale para quem chuta essa mesma palavra. Antes ela sobrescrevia a do
-// dicionário, e outra palavra válida com as mesmas letras ("avos" contra a sorteada "avós") aparecia com o acento errado.
-const GRAFIA_SORTEADA = new Map(SORTEIO.map((p) => [semAcento(p).replace(/ç/g, 'c'), p]));
-for (const [chave, p] of GRAFIA_SORTEADA) if (!GRAFIA.has(chave)) GRAFIA.set(chave, p);
+interface Dicionario {
+  sorteio: string[];
+  /** A chave sem acento → a grafia (a do VERO, ou a nossa quando a palavra é das que saem). */
+  grafia: Map<string, string>;
+  /** A grafia da palavra SORTEADA (a nossa, com acento) vale para quem chuta essa mesma palavra. */
+  sorteada: Map<string, string>;
+}
+function lerDicionario(n: Tamanho): Dicionario {
+  const sorteio = lerLinhas(`sorteio${sufixo(n)}.txt`);
+  const grafia = new Map<string, string>();
+  for (const linha of lerLinhas(`validas${sufixo(n)}.txt`)) {
+    const [chave, g] = linha.split('\t');
+    grafia.set(chave, g ?? chave);
+  }
+  // Antes a grafia sorteada sobrescrevia a do dicionário, e outra palavra válida com as mesmas letras ("avos" contra a
+  // sorteada "avós") aparecia com o acento errado: agora ela só vale para quem chuta a sorteada.
+  const sorteada = new Map(sorteio.map((p) => [semAcento(p).replace(/ç/g, 'c'), p]));
+  for (const [chave, p] of sorteada) if (!grafia.has(chave)) grafia.set(chave, p);
+  return { sorteio, grafia, sorteada };
+}
+export const DICIONARIOS = Object.fromEntries(TAMANHOS.map((n) => [n, lerDicionario(n)])) as Record<Tamanho, Dicionario>;
+/** As de 5 letras que podem sair (o nome de sempre, para os testes). */
+export const SORTEIO: string[] = DICIONARIOS[5].sorteio;
+
+export const RODADAS_PALAVRA = 3;
+export const CHUTES = 6;
+export const PALAVRA_MS = 3 * 60_000;
+export const REVELACAO_MS = 6_000;
 
 /** É uma palavra que se pode chutar? */
-export const valida = (chave: string) => GRAFIA.has(chave);
+export const valida = (chave: string, n: Tamanho = TAMANHO_PADRAO) => DICIONARIOS[n].grafia.has(chave);
 
 /**
  * As cores de um chute, como no Termo: 2 = letra no lugar, 1 = a letra existe noutro lugar, 0 = não existe. A letra
  * repetida só fica amarela quantas vezes ela ainda sobra na palavra (os verdes contam primeiro).
  */
 export function cores(chute: string, palavra: string): number[] {
-  const saida = [0, 0, 0, 0, 0];
+  const n = palavra.length;
+  const saida = Array<number>(n).fill(0);
   const sobra = new Map<string, number>();
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < n; i++) {
     if (chute[i] === palavra[i]) saida[i] = 2;
     else sobra.set(palavra[i], (sobra.get(palavra[i]) ?? 0) + 1);
   }
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < n; i++) {
     if (saida[i] === 2) continue;
     const n = sobra.get(chute[i]) ?? 0;
     if (n > 0) {
@@ -97,9 +126,9 @@ export const _sequencias = sequencias;
  */
 export function respeitaAsDicas(chute: string, anteriores: { chave: string; cores: number[] }[]): boolean {
   for (const { chave, cores: cs } of anteriores) {
-    if (cs.length !== 5) continue;
+    if (cs.length !== chute.length) continue;
     const precisa = new Map<string, number>();
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < cs.length; i++) {
       if (cs[i] === 2 && chute[i] !== chave[i]) return false;
       if (cs[i] >= 1) precisa.set(chave[i], (precisa.get(chave[i]) ?? 0) + 1);
     }
@@ -133,21 +162,25 @@ export const palavra: Definicao = {
   comecar(ctx, { naSala, criadaPor, corpo }) {
     const modo: ModoDaPalavra = String(corpo.modo) in PALAVRAS_POR_MODO ? (String(corpo.modo) as ModoDaPalavra) : 'normal';
     const dificil = corpo.dificil === true;
+    const letras: Tamanho = (TAMANHOS as readonly number[]).includes(Number(corpo.letras)) ? (Number(corpo.letras) as Tamanho) : TAMANHO_PADRAO;
+    const dic = DICIONARIOS[letras];
     const porRodada = PALAVRAS_POR_MODO[modo];
     const maxChutes = CHUTES_POR_MODO[modo];
     const rodadas = ctx.solo ? 1 : RODADAS_PALAVRA;
     const tempo = ctx.solo ? PALAVRA_SOLO_MS : PALAVRA_MS;
-    if (SORTEIO.length < rodadas * porRodada) return 'As palavras não estão no servidor.';
-    const sorteadas = _teste.palavras ?? embaralhar([...SORTEIO]).slice(0, rodadas * porRodada);
-    const largada = { modo, dificil };
+    if (dic.sorteio.length < rodadas * porRodada) return 'As palavras não estão no servidor.';
+    const sorteadas = _teste.palavras ?? embaralhar([...dic.sorteio]).slice(0, rodadas * porRodada);
+    const largada = { modo, dificil, letras };
     let rodada = 1;
     let fase: 'chutando' | 'revelando' | 'fim' = 'chutando';
     let inicio = Date.now();
     const quadros = new Map<number, Quadro>();
     const pontos = new Map(naSala.map((id) => [id, 0]));
     // A sequência do Solo (ver SESSAO_MS): mostrada desde o começo, e decidida no fim.
-    const chaveDaSequencia = `${criadaPor}:${modo}${dificil ? ':dificil' : ''}`;
-    const varianteDoRecorde = `${modo}${dificil ? ':dificil' : ''}`;
+    // a de 5 letras continua na variante de sempre; a de 4 e a de 6 têm a delas
+    const doTamanho = letras === TAMANHO_PADRAO ? '' : `@${letras}`;
+    const chaveDaSequencia = `${criadaPor}:${modo}${dificil ? ':dificil' : ''}${doTamanho}`;
+    const varianteDoRecorde = `${modo}${dificil ? ':dificil' : ''}${doTamanho}`;
     let sequencia: { atual: number; recorde: number | null; novo: boolean } | null = null;
     if (ctx.solo) {
       const s = sequencias.get(chaveDaSequencia);
@@ -224,6 +257,7 @@ export const palavra: Definicao = {
           fase,
           chutes: maxChutes,
           palavras: porRodada,
+          letras,
           dificil,
           modo,
           largada,
@@ -251,9 +285,9 @@ export const palavra: Definicao = {
         if (corpo.tipo !== 'chute') return 'Ação desconhecida.';
         if (fase !== 'chutando') return 'Esta rodada já acabou.';
         const chave = semAcento(String(corpo.texto ?? '').trim());
-        if (!/^[a-zç]{5}$/.test(chave)) return 'Escreva uma palavra de 5 letras.';
+        if (!new RegExp(`^[a-zç]{${letras}}$`).test(chave)) return `Escreva uma palavra de ${letras} letras.`;
         const limpa = chave.replace(/ç/g, 'c');
-        if (!valida(limpa)) return 'Essa palavra não está na lista.';
+        if (!valida(limpa, letras)) return 'Essa palavra não está na lista.';
         let q = quadros.get(quem);
         if (!q) {
           q = quadroNovo();
@@ -271,7 +305,7 @@ export const palavra: Definicao = {
           );
           if (!respeita) return 'No modo difícil, use as letras já reveladas.';
         }
-        const grafia = alvo.includes(limpa) ? (GRAFIA_SORTEADA.get(limpa) ?? limpa) : (GRAFIA.get(limpa) ?? limpa);
+        const grafia = alvo.includes(limpa) ? (dic.sorteada.get(limpa) ?? limpa) : (dic.grafia.get(limpa) ?? limpa);
         quadro.chutes.push({ texto: grafia, chave: limpa, cores: alvo.map((p, b) => (quadro.resolvidas[b] !== null ? [] : cores(limpa, p))) });
         alvo.forEach((p, b) => {
           if (quadro.resolvidas[b] === null && p === limpa) quadro.resolvidas[b] = quadro.chutes.length;

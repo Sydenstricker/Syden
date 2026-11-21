@@ -16,6 +16,7 @@ import {
   validarTracado,
   VOLTAS,
   VOLTAS_DA_RESISTENCIA,
+  sufixoDasVoltas,
   type ErroDoTracado,
   type LetraDaPeca,
   type Pista,
@@ -248,7 +249,7 @@ export function EscolhaDaPistaDosCarrinhos({
   const t = useT();
   const [editando, setEditando] = useState(false);
   const doEditor = !PISTAS[pista] && tracado ? tracado : null;
-  const sufixo = voltas === VOLTAS ? '' : `@${voltas}`;
+  const sufixo = sufixoDasVoltas(voltas);
   return (
     <div className="carrinhos-escolha-pista">
       <ul className="carrinhos-pistas">

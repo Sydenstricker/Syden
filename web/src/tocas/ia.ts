@@ -38,6 +38,7 @@ import {
   type Melhoria,
   aliados,
   equipeDe,
+  type Desafio,
 } from './sim.js';
 
 export interface Perfil {
@@ -65,6 +66,8 @@ export interface Perfil {
   fazendasNaEra?: boolean;
   /** Nunca ataca nem treina tropa (o tutorial). */
   pacifico?: boolean;
+  /** O alvo do ataque é a Maravilha do outro, quando há uma (o desafio da Maravilha). */
+  mirarMaravilha?: boolean;
 }
 
 /**
@@ -99,6 +102,17 @@ export const PERFIS: Record<'computador' | 'piloto' | 'tutorial' | Nivel, Perfil
     melhorias: ['machado', 'arado', 'ataqueLanceiro', 'picareta', 'armaduraLanceiro', 'ataqueArqueiro', 'ataqueCavaleiro', 'armaduraArqueiro', 'armaduraCavaleiro'],
   },
   tutorial: { trabalhadores: 6, quartelCom: 99, arqueariaCom: 99, eraCom: 99, torres: 0, catapultas: 0, primeiroAtaque: 1e9, onda: 99, intervalo: 1e9, recuo: 0, exercitoCom: 99, pensa: 20, pacifico: true },
+};
+
+/**
+ * O COMPUTADOR DE CADA DESAFIO DO SOLO (21/11/2026): o do cerco é o difícil atacando cedo e sem parar; o da Maravilha já tem o
+ * exército (sim.ts, montarDesafio) e vai direto nela; o relâmpago é contra o fácil, e a colheita contra quem não ataca.
+ */
+export const PERFIL_DO_DESAFIO: Record<Desafio, Perfil> = {
+  cerco: { ...PERFIS.dificil, primeiroAtaque: 2400, onda: 7, intervalo: 700, recuo: 2 },
+  maravilha: { ...PERFIS.normal, primeiroAtaque: 150, onda: 7, intervalo: 800, recuo: 2, exercitoCom: 4, quartelCom: 4, arqueariaCom: 5, catapultas: 2, mirarMaravilha: true },
+  relampago: PERFIS.facil,
+  colheita: PERFIS.tutorial,
 };
 
 export type IA = (sim: Sim) => void;
@@ -140,6 +154,17 @@ export function criarIA(dono: Dono, perfil: Perfil = PERFIS.computador): IA {
           alvoFinal.x = q.x;
           alvoFinal.y = q.y;
         }
+      }
+    }
+    // o desafio da Maravilha: o alvo é ela, enquanto estiver de pé
+    let maravilhaInimiga: number | null = null;
+    if (perfil.mirarMaravilha) {
+      const m = sim.predios.find((p) => p.tipo === 'maravilha' && !aliados(p.dono, dono));
+      if (m) {
+        const q = centroDe(m);
+        alvoFinal.x = q.x;
+        alvoFinal.y = q.y;
+        maravilhaInimiga = m.id;
       }
     }
     // guardar para a era: quando chega a hora, a tropa espera
@@ -271,7 +296,7 @@ export function criarIA(dono: Dono, perfil: Perfil = PERFIS.computador): IA {
       const centroInimigo = sim.predios.find((p) => p.dono === inimigo && p.tipo === 'centro');
       if (centroInimigo) {
         const cats = exercito.filter((u) => u.tipo === 'catapulta' && u.ordem.tipo !== 'atacar' && dist2(u, alvoFinal.x, alvoFinal.y) < 12 * 12);
-        if (cats.length) comandar(sim, dono, { t: 'alvo', ids: cats.map((u) => u.id), alvo: centroInimigo.id });
+        if (cats.length) comandar(sim, dono, { t: 'alvo', ids: cats.map((u) => u.id), alvo: maravilhaInimiga ?? centroInimigo.id });
       }
       return;
     }

@@ -35,9 +35,18 @@
  * pelo relógio daqui. Vencido, sai da fila no instante do prazo, entra o próximo e custa PENA_DO_PEDIDO_PERDIDO. Quem vence é
  * `vencer`, chamado antes de cada ação, ao montar o estado, no fim e na conferência das rotas (a cada 4 s), que avisa a turma; a
  * tela conta o prazo sozinha (`restaMs`) e esconde a comanda vencida sem esperar.
+ *
+ * AS FASES DO SOLO (21/11/2026, o lote D): além da planta livre, o Solo tem uma sequência de restaurantes (FASES_DA_COZINHA),
+ * cada um com a planta e o cardápio dele (os pedidos saem só dali) e a meta de 1 a 3 estrelas pelos pontos DAQUI. A fase abre
+ * com 1 estrela na anterior (conferido aqui, pelos recordes); o recorde é por fase, na tabela comum (variante `fase-<id>`).
  */
 import {
   DURACAO_MS,
+  FASES_DA_COZINHA,
+  estrelasDaCozinha,
+  faseAberta,
+  faseDaCozinha,
+  type FaseDaCozinha,
   FOGO_DAS_PLANTAS,
   FOLGA_DO_FOGO_MS,
   PLANTAS_DA_COZINHA,
@@ -111,10 +120,23 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
       const inscritos = [...naSala];
       const solo = ctx.solo === true || inscritos.length === 1;
       const evento = `cozinha-${ctx.comunidade ?? 0}-${agora()}`;
-      const pedidos: IdDaReceita[] = sortearPedidos(aleatorio, PEDIDOS_DA_PARTIDA);
-      const pedida = PLANTAS_DA_COZINHA.includes(corpo.planta as PlantaDaCozinha) ? (corpo.planta as PlantaDaCozinha) : null;
+      let pedidos: IdDaReceita[] = sortearPedidos(aleatorio, PEDIDOS_DA_PARTIDA);
+      /** A fase do Solo (21/11/2026): só se estiver aberta para quem joga. */
+      const melhoresDe = (quem: number) => {
+        const m = new Map(db.recordesDoSolo(quem, JOGO_DO_RECORDE).map((r) => [r.variante, r.valor]));
+        return (id: string) => m.get(`fase-${id}`);
+      };
+      const faseLiberada = (id: unknown): FaseDaCozinha | null => {
+        const f = faseDaCozinha(id);
+        if (!f || !solo) return null;
+        return faseAberta(FASES_DA_COZINHA.indexOf(f), melhoresDe(inscritos[0])) ? f : null;
+      };
+      let faseDoSolo: FaseDaCozinha | null = faseLiberada(corpo.fase);
+      if (faseDoSolo) pedidos = sortearPedidos(aleatorio, PEDIDOS_DA_PARTIDA, faseDoSolo.cardapio);
+      const pedida = faseDoSolo ? faseDoSolo.planta : PLANTAS_DA_COZINHA.includes(corpo.planta as PlantaDaCozinha) ? (corpo.planta as PlantaDaCozinha) : null;
       let planta: PlantaDaCozinha = pedida ?? 'toca';
       let fase: 'escolhendo' | 'preparando' | 'jogando' | 'fim' = pedida ? 'preparando' : 'escolhendo';
+      let estrelas: number | null = null;
       let recorde: { antes: number | null; novo: boolean } | null = null;
       let inicio = 0;
       const cozinheiros = new Map<number, Cozinheiro>(
@@ -197,8 +219,12 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
         if (solo) {
           const quem = inscritos[0];
           const c = cozinheiros.get(quem)!;
-          if (turma.has(quem) && c.pontos > 0) recorde = db.guardarRecordeDoSolo(quem, JOGO_DO_RECORDE, planta, c.pontos, false, { pratos: c.pratos });
-          else recorde = { antes: db.recordeDoSolo(quem, JOGO_DO_RECORDE, planta)?.valor ?? null, novo: false };
+          // numa fase, o recorde e as estrelas são dela; na planta livre, da planta
+          const variante = faseDoSolo ? `fase-${faseDoSolo.id}` : planta;
+          if (faseDoSolo) estrelas = estrelasDaCozinha(faseDoSolo, c.pontos);
+          if (turma.has(quem) && c.pontos > 0)
+            recorde = db.guardarRecordeDoSolo(quem, JOGO_DO_RECORDE, variante, c.pontos, false, { pratos: c.pratos, ...(faseDoSolo ? { estrelas } : {}) });
+          else recorde = { antes: db.recordeDoSolo(quem, JOGO_DO_RECORDE, variante)?.valor ?? null, novo: false };
         }
         if (!solo && turma.size >= 2) {
           for (const l of placar()) {
@@ -294,6 +320,9 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
             placar: placar(),
             solo,
             planta,
+            /** A fase do Solo escolhida (21/11/2026), e as estrelas que ela deu no fim. */
+            faseDoSolo: faseDoSolo ? faseDoSolo.id : null,
+            estrelas,
             /** Quem escolhe a planta (na fase 'escolhendo'). */
             escolhe: solo ? inscritos[0] : criadaPor,
             /** No Solo, na escolha: o recorde de cada planta. */
@@ -311,6 +340,17 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
             if (quem !== criadaPor && !(solo && inscritos.includes(quem))) return 'Você está assistindo esta partida.';
             if (!PLANTAS_DA_COZINHA.includes(corpo.planta as PlantaDaCozinha)) return 'Ação desconhecida.';
             escolher(corpo.planta as PlantaDaCozinha);
+            return null;
+          }
+          if (corpo.tipo === 'fase') {
+            // a fase do Solo: o cardápio dela, e a planta dela
+            if (fase !== 'escolhendo') return 'Esta rodada já acabou.';
+            if (!solo || !inscritos.includes(quem)) return 'Você está assistindo esta partida.';
+            const f = faseLiberada(corpo.fase);
+            if (!f) return 'Ação desconhecida.';
+            faseDoSolo = f;
+            pedidos = sortearPedidos(aleatorio, PEDIDOS_DA_PARTIDA, f.cardapio);
+            escolher(f.planta);
             return null;
           }
           if (corpo.tipo !== 'entregar' && corpo.tipo !== 'fogo' && corpo.tipo !== 'extintor') return 'Ação desconhecida.';

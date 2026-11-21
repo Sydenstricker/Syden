@@ -133,6 +133,41 @@ export function quemGanhaARodada(mesa: NaMesa[], manilha: string): { resultado: 
   return { resultado: (no[0].lugar % 2) as 0 | 1, lugar: no[0].lugar };
 }
 
+/**
+ * OS SINAIS AO PARCEIRO (21/11/2026, o lote D da segunda auditoria): no jogo de quatro, como na mesa de verdade, cada um faz ao
+ * parceiro o sinal da carta forte que tem — piscar é o zap, as sobrancelhas são o copas, a boca de lado é o espadas, a língua é
+ * o ouros (as manilhas pelo naipe, no paulista e no mineiro), os dentes são um 3, e a cara séria é "não tenho nada". O SERVIDOR
+ * manda o sinal SÓ ao parceiro: os adversários não veem nada, nem que houve um sinal. Quem sinaliza pode blefar (é truco); os
+ * robôs sinalizam a verdade, no começo da mão, e leem o sinal do parceiro (confiam mais na mão da dupla e, com o parceiro
+ * forte jogando depois, guardam a carta deles).
+ */
+export const SINAIS = ['zap', 'copas', 'espadas', 'ouros', 'tres', 'nada'] as const;
+export type Sinal = (typeof SINAIS)[number];
+/** Um sinal a cada tanto, por pessoa: não vira metralhadora de caretas. */
+export const INTERVALO_DO_SINAL = 800;
+/** O sinal de cada manilha, pelo naipe (ouros, espadas, copas, paus): a ordem de NAIPES. */
+const SINAL_DO_NAIPE: Record<string, Sinal> = { o: 'ouros', e: 'espadas', c: 'copas', p: 'zap' };
+/** O quanto o robô confia a mais na mão da dupla com cada sinal do parceiro. */
+const PESO_DO_SINAL: Record<Sinal, number> = { zap: 3, copas: 2.5, espadas: 2, ouros: 1.5, tres: 1, nada: -0.5 };
+
+/** O sinal verdadeiro de uma mão: a manilha mais forte, senão um 3, senão nada. */
+export function sinalDaMao(mao: Carta[], manilha: string): Sinal {
+  const fortes = mao.map((c) => forca(c, manilha)).sort((a, b) => b - a);
+  const melhor = mao.find((c) => forca(c, manilha) === fortes[0]);
+  if (melhor && fortes[0] >= 100) {
+    if (manilha === MINEIRO) return (['ouros', 'espadas', 'copas', 'zap'] as const)[fortes[0] - 100];
+    return SINAL_DO_NAIPE[naipeDe(melhor)];
+  }
+  return mao.some((c) => valorDe(c) === '3') ? 'tres' : 'nada';
+}
+
+/** A carta que o sinal promete já saiu (aberta) pela mão de quem sinalizou? */
+function sinalCumprido(sinal: Sinal, jogadas: Carta[], manilha: string): boolean {
+  if (sinal === 'nada') return false;
+  if (sinal === 'tres') return jogadas.some((c) => valorDe(c) === '3' && forca(c, manilha) < 100);
+  return jogadas.some((c) => forca(c, manilha) >= 100 && sinalDaMao([c], manilha) === sinal);
+}
+
 export type Fase = 'mao-de-onze' | 'jogando' | 'truco' | 'rodada' | 'resultado' | 'fim';
 
 export type Ocorrido =
@@ -205,6 +240,15 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
       let interrompida = false;
       let ultimo: (Ocorrido & { id: number }) | null = null;
       let idDoOcorrido = 0;
+      /** Os sinais desta mão, por lugar (só no jogo de quatro), e as cartas abertas que cada um já jogou nela. */
+      let sinais: ({ sinal: Sinal; id: number } | null)[] = [];
+      let jogadas: Carta[][] = [];
+      const sinalEm: number[] = [];
+      let idDoSinal = 0;
+      const sinalizar = (lugar: number, sinal: Sinal) => {
+        sinais[lugar] = { sinal, id: ++idDoSinal };
+        sinalEm[lugar] = agora();
+      };
       const contar = (o: Ocorrido) => {
         ultimo = { ...o, id: ++idDoOcorrido };
       };
@@ -267,6 +311,10 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
         pedido = null;
         onze = null;
         semTruco = false;
+        sinais = lugares.map(() => null);
+        jogadas = lugares.map(() => []);
+        // os robôs fazem ao parceiro o sinal verdadeiro da mão, logo que veem as cartas
+        if (n === 4) lugares.forEach((id, s) => ehRobo(id) && sinalizar(s, sinalDaMao(maos[s], manilha)));
         // com 11 (no mineiro, com 10)
         const com11 = ([0, 1] as const).filter((t) => pontos[t] === contagem.decide);
         if (com11.length === 2) {
@@ -336,6 +384,7 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
       const jogar = (lugar: number, carta: Carta, coberta: boolean) => {
         maos[lugar] = maos[lugar].filter((c) => c !== carta);
         mesa.push({ lugar, carta, coberta });
+        if (!coberta) jogadas[lugar].push(carta);
         if (mesa.length < n) {
           vez = (vez + 1) % n;
           marcarVez();
@@ -412,8 +461,17 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
         const time = timeDe(lugar);
         const feitas = resultados.filter((r) => r === time).length;
         const perdidas = resultados.filter((r) => r !== 'empate' && r !== time).length;
-        return media + 4 * feitas - 4 * perdidas;
+        const sinal = sinalDoParceiro(lugar);
+        return media + 4 * feitas - 4 * perdidas + (sinal ? PESO_DO_SINAL[sinal] : 0);
       };
+
+      /** O sinal do parceiro que ainda vale (a carta prometida não saiu), ou null; só no jogo de quatro. */
+      function sinalDoParceiro(lugar: number): Sinal | null {
+        if (n !== 4) return null;
+        const parceiro = (lugar + 2) % 4;
+        const s = sinais[parceiro]?.sinal ?? null;
+        return s && !sinalCumprido(s, jogadas[parceiro], manilha) ? s : null;
+      }
 
       /** A carta do robô: a mais fraca que ganha a rodada; a mais fraca de todas se o parceiro já ganha ou se nada ganha. */
       const cartaDoRobo = (lugar: number): Carta => {
@@ -428,6 +486,10 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
         const deles = Math.max(-1, ...mesa.filter((m) => timeDe(m.lugar) !== time).map(naMesa));
         const nossa = Math.max(-1, ...mesa.filter((m) => timeDe(m.lugar) === time).map(naMesa));
         if (nossa > deles) return ordenadas[0];
+        // o parceiro sinalizou uma manilha e ainda joga nesta rodada: guarda a carta forte para a próxima
+        const sinal = sinalDoParceiro(lugar);
+        const parceiroJoga = n === 4 && !mesa.some((m) => m.lugar === (lugar + 2) % 4);
+        if (parceiroJoga && sinal && sinal !== 'tres' && sinal !== 'nada') return ordenadas[0];
         return ordenadas.find((c) => f(c) > deles) ?? ordenadas[0];
       };
 
@@ -518,6 +580,10 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
             ultimo,
             // quantos robôs (o "Jogar de novo" do Solo pede os mesmos)
             robos: robos.length,
+            // os sinais (21/11/2026): só o do parceiro chega, e o meu (para a tela mostrar qual fiz)
+            possoSinalizar: n === 4 && meu >= 0 && fase !== 'fim' && fase !== 'resultado',
+            sinalDoParceiro: n === 4 && parceiro >= 0 && fase !== 'fim' ? sinais[parceiro] : null,
+            meuSinal: n === 4 && meu >= 0 && fase !== 'fim' ? sinais[meu] : null,
           };
         },
         acao(quem, corpo) {
@@ -526,6 +592,16 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
           if (fase === 'fim') return 'A partida acabou.';
           const meuTime = timeDe(meu);
           const tipo = String(corpo.tipo ?? '');
+          if (tipo === 'sinal') {
+            if (n !== 4) return 'Sinal só no jogo de quatro.';
+            if (fase === 'resultado') return 'Espere a próxima mão.';
+            const sinal = String(corpo.sinal ?? '') as Sinal;
+            if (!SINAIS.includes(sinal)) return 'Sinal desconhecido.';
+            if (agora() - (sinalEm[meu] ?? -Infinity) < INTERVALO_DO_SINAL) return 'Calma com os sinais.';
+            sinalizar(meu, sinal);
+            ctx.avisar();
+            return null;
+          }
           if (tipo === 'onze') {
             if (fase !== 'mao-de-onze' || onze === null) return 'Não há mão de onze agora.';
             if (meuTime !== onze) return 'Quem decide a mão de onze é quem tem 11.';

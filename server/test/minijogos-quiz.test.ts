@@ -23,7 +23,8 @@ test('Quiz: todo tema tem itens de id único, todas as colunas preenchidas, e o 
   for (const [id, tema] of Object.entries(TEMAS)) {
     assert.equal(new Set(tema.itens.map((i) => i.id)).size, tema.itens.length, `${id}: id repetido`);
     for (const item of tema.itens) for (const c of tema.colunas) assert.ok(item[c.id] !== undefined, `${id}/${item.id}: sem ${c.id}`);
-    assert.ok(tema.itens.filter(tema.sorteavel ?? (() => true)).length >= 30, `${id}: pouco para sortear`);
+    // (os estados do Brasil são 27, e saem todos)
+    assert.ok(tema.itens.filter(tema.sorteavel ?? (() => true)).length >= (id === 'estados' ? 27 : 30), `${id}: pouco para sortear`);
   }
   assert.ok(TEMAS.monstros.itens.length >= 250);
   assert.ok(TEMAS.mitologia.itens.length >= 100);
@@ -189,4 +190,55 @@ test('Quiz: o modo Bandeira dos países — a ficha por rodada, o SVG sem o cód
   const segunda = (jogo.publico(1) as { bandeira: string }).bandeira;
   assert.notEqual(segunda, visto.bandeira);
   assert.notEqual(bandeiraDaFicha(segunda), svg);
+});
+
+test('Quiz, os temas do lote D (21/11/2026): elementos, dinossauros, estados do Brasil e animais', () => {
+  const { elementos, dinossauros, estados, animais } = TEMAS;
+  assert.equal(elementos.itens.length, 118);
+  assert.equal(estados.itens.length, 27);
+  assert.ok(dinossauros.itens.length >= 60 && animais.itens.length >= 80);
+  // os nomes vêm do Wikidata, por idioma; o do elemento leva o símbolo
+  const nome = (tema: typeof elementos, id: string, idioma = 'pt-BR') => catalogo(tema, idioma).find((i) => i.id === id)!.nome;
+  assert.equal(nome(elementos, 'Fe'), 'Ferro (Fe)');
+  assert.equal(nome(elementos, 'Fe', 'en'), 'Iron (Fe)');
+  assert.equal(nome(estados, 'SP'), 'São Paulo');
+  assert.equal(nome(dinossauros, 'Q14332'), 'Tiranossauro');
+  assert.equal(nome(animais, 'Q140'), 'Leão');
+  // o bicho sai pelo nome comum, e não pelo científico do rótulo do Wikidata ("Acinonyx jubatus")
+  assert.equal(nome(animais, 'Q23907'), 'Guepardo');
+  assert.equal(nome(animais, 'Q1126155'), 'Peixe-palhaço');
+  assert.equal(nome(animais, 'Q1126155', 'en'), 'Common clownfish');
+  // a tabela periódica: o ferro no período 4, grupo 8; o mercúrio e o bromo líquidos; os sintéticos depois do 94 não saem
+  const fe = elementos.itens.find((e) => e.id === 'Fe')!;
+  assert.deepEqual([fe.periodo, fe.grupo, fe.familia, fe.estado, fe.numero], [4, 8, 'transicao', 'solido', 26]);
+  assert.deepEqual(elementos.itens.filter((e) => e.estado === 'liquido').map((e) => e.id).sort(), ['Br', 'Hg']);
+  assert.ok(!elementos.sorteavel!(elementos.itens.find((e) => e.id === 'Og')!) && elementos.sorteavel!(fe));
+  // os dinossauros raros são só chute
+  const raros = dinossauros.itens.filter((d) => d.raro);
+  assert.ok(raros.length > 0 && raros.every((d) => !dinossauros.sorteavel!(d)));
+  // nos estados, o amarelo da distância é o vizinho (até 900 km), não os 1500 km dos países
+  const local = estados.colunas.find((c) => c.id === 'local')!;
+  const ponto = (id: string) => estados.itens.find((e) => e.id === id)!.local;
+  assert.equal(comparar(local, ponto('RJ'), ponto('SP')).cor, 1, 'RJ e SP são vizinhos');
+  assert.equal(comparar(local, ponto('RS'), ponto('BA')).cor, 0);
+  assert.equal(comparar(local, ponto('AM'), ponto('PA')).cor, 0);
+  assert.equal(comparar({ id: 'local', tipo: 'distancia' }, ponto('AM'), ponto('PA')).cor, 1, 'nos países seria amarelo');
+});
+
+test('Quiz, os temas do lote D: uma partida inteira em cada um, com a resposta certa no primeiro chute', () => {
+  for (const id of ['elementos', 'dinossauros', 'estados', 'animais']) {
+    const tema = TEMAS[id];
+    const secreto = tema.itens.filter(tema.sorteavel ?? (() => true))[0];
+    _testeQuiz.itens = [secreto.id];
+    let relogio: (() => void) | null = null;
+    const ctx = { agendar: (_ms: number, f: () => void) => void (relogio = f), avisar: () => {}, terminar: () => {}, naSala: () => [1], nome: () => 'p1' } as unknown as Contexto;
+    const jogo = criarQuiz(tema).comecar(ctx, { naSala: [1], criadaPor: 1, corpo: { rodadas: 1 } });
+    _testeQuiz.itens = null;
+    assert.ok(typeof jogo !== 'string', id);
+    assert.equal(jogo.acao(1, { tipo: 'chute', id: secreto.id }), null);
+    const visto = jogo.publico(1) as { fase: string; meu: { vereditos: { cor: number }[] }[] };
+    assert.equal(visto.fase, 'revelando', id);
+    assert.ok(visto.meu[0].vereditos.every((v) => v.cor === 2), `${id}: tudo verde`);
+    assert.ok(relogio);
+  }
 });

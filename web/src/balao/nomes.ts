@@ -5,4 +5,6 @@ export const NOMES_DAS_ARENAS: Record<string, string> = {
   horta: chave('Horta'),
   praia: chave('Praia'),
   neve: chave('Neve'),
+  pomar: chave('Pomar'),
+  canion: chave('Cânion'),
 };

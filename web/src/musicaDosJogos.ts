@@ -124,6 +124,10 @@ export const TRILHA_DO_JOGO: Readonly<Record<string, Trilha | null>> = {
   monstros: null,
   mitologia: null,
   paises: null,
+  elementos: null,
+  dinossauros: null,
+  estados: null,
+  animais: null,
 };
 const ENTRADA_S = 1.2;
 const SAIDA_S = 0.6;

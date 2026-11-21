@@ -31,6 +31,10 @@
  * A AMBULÂNCIA COM PRESSA (20/11/2026, a segunda auditoria): ela traz um RELÓGIO em cima, que começa quando ela chega. Solta em até
  * 4 s, vale 3; até 7 s, 2; até 10 s, 1 (o valor fica marcado na hora de soltar). Passados 10 s sem soltar, custa 2 pontos ali mesmo
  * e, quando passar, não vale nada. Tudo pelo passo: o servidor refaz igual.
+ *
+ * A CAMPANHA (21/11/2026, a segunda auditoria, lote D): dez fases curtas, cada uma com o mapa, a duração, o ritmo das chegadas, a
+ * rapidez de quem anda, a hora em que entram as curvas e cada tipo de carro, e uma META de pontos (CAMPANHA). A fase é um minuto
+ * diferente: sem `fase`, a partida é a de sempre (o sorteio e a regra não mudaram; o teste confere ponto a ponto).
  */
 
 export const PASSO = 1 / 60;
@@ -97,7 +101,52 @@ export function manobraPermitida(mapa: Mapa, entrada: number, m: Manobra): boole
 export interface Opcoes {
   modo?: Modo;
   mapa?: Mapa;
+  /** A fase da campanha (1 a CAMPANHA.length): manda no mapa, na duração e no sorteio. */
+  fase?: number;
 }
+
+/** Quando cada coisa entra no sorteio (o passo), e o aperto das chegadas (o espaço entre elas, vezes isto). */
+export interface Sorteio {
+  direita: number;
+  esquerda: number;
+  moto: number;
+  caminhao: number;
+  ambulancia: number;
+  aperto: number;
+}
+const NUNCA = 1e9;
+/** O sorteio de sempre (o minuto e o "até bater"). */
+export const SORTEIO_DE_SEMPRE: Sorteio = { direita: 600, esquerda: 1500, moto: 300, caminhao: 900, ambulancia: 1200, aperto: 1 };
+
+export interface FaseDoTransito extends Sorteio {
+  mapa: Mapa;
+  segundos: number;
+  /** Quem anda vai a esta fração da velocidade de sempre. */
+  rapidez: number;
+  /** Os pontos para passar (e abrir a próxima). */
+  meta: number;
+}
+
+/**
+ * AS DEZ FASES DA CAMPANHA: começa só com carros seguindo reto, devagar e com folga; depois entram as curvas, a moto, o T, o
+ * caminhão e a ambulância; da 7ª em diante aperta e acelera, e a última tem um minuto e meio. As metas são chute: uns 60% do
+ * que o piloto automático faz no pior de oito sorteios (o teste cobra que ele passe em todas).
+ */
+export const CAMPANHA: FaseDoTransito[] = [
+  { mapa: 'cruz', segundos: 40, aperto: 1.25, rapidez: 0.9, direita: NUNCA, esquerda: NUNCA, moto: NUNCA, caminhao: NUNCA, ambulancia: NUNCA, meta: 18 },
+  { mapa: 'cruz', segundos: 45, aperto: 1.15, rapidez: 0.95, direita: 300, esquerda: NUNCA, moto: 300, caminhao: NUNCA, ambulancia: NUNCA, meta: 26 },
+  { mapa: 't', segundos: 45, aperto: 1.15, rapidez: 0.95, direita: 300, esquerda: 1200, moto: 300, caminhao: NUNCA, ambulancia: NUNCA, meta: 24 },
+  { mapa: 'cruz', segundos: 50, aperto: 1.05, rapidez: 1, direita: 300, esquerda: 900, moto: 300, caminhao: 600, ambulancia: NUNCA, meta: 34 },
+  { mapa: 't', segundos: 50, aperto: 1, rapidez: 1, direita: 300, esquerda: 900, moto: 300, caminhao: 600, ambulancia: 900, meta: 40 },
+  { mapa: 'cruz', segundos: 60, ...SORTEIO_DE_SEMPRE, rapidez: 1, meta: 55 },
+  { mapa: 'cruz', segundos: 60, aperto: 0.88, rapidez: 1.1, direita: 200, esquerda: 600, moto: 200, caminhao: 400, ambulancia: 600, meta: 65 },
+  { mapa: 't', segundos: 60, aperto: 0.85, rapidez: 1.1, direita: 200, esquerda: 600, moto: 200, caminhao: 400, ambulancia: 600, meta: 70 },
+  { mapa: 'cruz', segundos: 75, aperto: 0.82, rapidez: 1.12, direita: 120, esquerda: 400, moto: 120, caminhao: 200, ambulancia: 400, meta: 100 },
+  { mapa: 'cruz', segundos: 90, aperto: 0.78, rapidez: 1.15, direita: 60, esquerda: 300, moto: 60, caminhao: 120, ambulancia: 300, meta: 140 },
+];
+/** A fase da campanha pelo número (1 a 10), ou null. */
+export const faseDaCampanha = (n: unknown): FaseDoTransito | null =>
+  typeof n === 'number' && Number.isInteger(n) && n >= 1 && n <= CAMPANHA.length ? CAMPANHA[n - 1] : null;
 
 export interface Chegada {
   passo: number;
@@ -162,6 +211,9 @@ export interface Estado {
   mapa: Mapa;
   /** O passo em que a partida acaba de qualquer jeito (o minuto, ou o teto do "até bater"). */
   limite: number;
+  /** A fase da campanha (null: o minuto ou o "até bater" de sempre) e a rapidez de quem anda (1 fora da campanha). */
+  fase: number | null;
+  rapidez: number;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -293,7 +345,7 @@ export const paradaDe = (c: { caminho: number; tipo: Tipo }) => CAMINHOS[c.camin
  * a direita depois dos 10 s, a esquerda depois dos 25 s; ambulância de vez em quando depois dos 20 s, a moto depois dos 5 s e o
  * caminhão depois dos 15 s. `ate`: o último passo sorteado (o minuto, ou o teto do "até bater").
  */
-export function sortearChegadas(semente: number, mapa: Mapa = 'cruz', ate = PASSOS_DA_PARTIDA): Chegada[] {
+export function sortearChegadas(semente: number, mapa: Mapa = 'cruz', ate = PASSOS_DA_PARTIDA, s: Sorteio = SORTEIO_DE_SEMPRE): Chegada[] {
   const r = sorteador(semente);
   const lista: Chegada[] = [];
   const entradas = ENTRADAS[mapa];
@@ -308,16 +360,16 @@ export function sortearChegadas(semente: number, mapa: Mapa = 'cruz', ate = PASS
     const entrada = entradas[k];
     const sm = r();
     let manobra: Manobra = 'reto';
-    if (passo >= 1500) manobra = sm < 0.22 ? 'direita' : sm < 0.44 ? 'esquerda' : 'reto';
-    else if (passo >= 600) manobra = sm < 0.3 ? 'direita' : 'reto';
+    if (passo >= s.esquerda) manobra = sm < 0.22 ? 'direita' : sm < 0.44 ? 'esquerda' : 'reto';
+    else if (passo >= s.direita) manobra = sm < 0.3 ? 'direita' : 'reto';
     // no T, quem iria para a rua que não existe vai para outra
     if (!manobraPermitida(mapa, entrada, manobra)) manobra = entrada === 1 ? (sm < 0.5 ? 'direita' : 'esquerda') : 'reto';
     const st = r();
     const tipo: Tipo =
-      passo >= 1200 && st < 0.07 ? 'ambulancia' : passo >= 900 && st < 0.15 ? 'caminhao' : passo >= 300 && st < 0.26 ? 'moto' : 'carro';
+      passo >= s.ambulancia && st < 0.07 ? 'ambulancia' : passo >= s.caminhao && st < 0.15 ? 'caminhao' : passo >= s.moto && st < 0.26 ? 'moto' : 'carro';
     const pele = Math.floor(r() * PELES);
     lista.push({ passo, entrada, manobra, tipo, pele });
-    const ritmo = ritmoDaChegada(passo);
+    const ritmo = ritmoDaChegada(passo) * s.aperto;
     passo += Math.max(20, Math.round(ritmo * 60 * (0.65 + 0.7 * r())));
   }
   return lista;
@@ -328,16 +380,19 @@ export function sortearChegadas(semente: number, mapa: Mapa = 'cruz', ate = PASS
 // ---------------------------------------------------------------------------------------------------------------------
 
 export function novaPartida(semente: number, opcoes: Opcoes = {}): Estado {
-  const modo: Modo = opcoes.modo === 'ate-bater' ? 'ate-bater' : 'minuto';
-  const mapa: Mapa = opcoes.mapa === 't' ? 't' : 'cruz';
-  const limite = modo === 'minuto' ? PASSOS_DA_PARTIDA : PASSOS_SEM_FIM_MAX;
+  const f = faseDaCampanha(opcoes.fase);
+  const modo: Modo = !f && opcoes.modo === 'ate-bater' ? 'ate-bater' : 'minuto';
+  const mapa: Mapa = f ? f.mapa : opcoes.mapa === 't' ? 't' : 'cruz';
+  const limite = f ? f.segundos * 60 : modo === 'minuto' ? PASSOS_DA_PARTIDA : PASSOS_SEM_FIM_MAX;
   return {
     semente,
     modo,
     mapa,
     limite,
+    fase: f ? (opcoes.fase as number) : null,
+    rapidez: f ? f.rapidez : 1,
     passo: 0,
-    chegadas: sortearChegadas(semente, mapa, limite),
+    chegadas: sortearChegadas(semente, mapa, limite, f ?? SORTEIO_DE_SEMPRE),
     proxima: 0,
     carros: [],
     proximoId: 1,
@@ -439,7 +494,7 @@ export function passo(e: Estado): void {
       pele: ch.pele,
       caminho,
       s: 0,
-      v: velocidade(e.passo) * MEDIDAS[ch.tipo].rapidez,
+      v: velocidade(e.passo) * e.rapidez * MEDIDAS[ch.tipo].rapidez,
       liberado: false,
       batido: false,
       x: p.x,
@@ -462,7 +517,7 @@ export function passo(e: Estado): void {
   }
 
   // quem anda
-  const vmax = velocidade(e.passo);
+  const vmax = velocidade(e.passo) * e.rapidez;
   const saem: Carro[] = [];
   const frente: (Carro | null)[] = [null, null, null, null];
   for (const c of e.carros) {

@@ -19,10 +19,14 @@
  * na primeira batida) e o mapa (o cruzamento, ou o T). O recorde do minuto no cruzamento continua em transito_recordes; os outros três
  * vão para a tabela comum dos recordes do Solo (jogo 'transito', variante "<modo>-<mapa>"). Na sala, o minuto no cruzamento, como
  * sempre. O relógio confere pelo passo em que a partida refeita acabou: ninguém joga mais depressa do que o relógio deixou.
+ *
+ * A CAMPANHA (21/11/2026): dez fases (transito-sim.ts, CAMPANHA), cada uma com mapa, ritmo e META de pontos. A fase 1 está sempre
+ * aberta; a próxima abre quando o recorde da anterior chega à meta dela. O recorde de cada fase vai à tabela comum (variante
+ * "fase-<n>"), com os pontos da partida refeita aqui; abrir é só ler esses recordes (sem tabela nova).
  */
 import * as db from './db.js';
 import type { Definicao } from './minijogo-motor.js';
-import { MAPAS, MODOS, PASSOS_DA_PARTIDA, PASSOS_SEM_FIM_MAX, refazer, type Mapa, type Modo } from './transito-sim.js';
+import { CAMPANHA, faseDaCampanha, MAPAS, MODOS, PASSOS_DA_PARTIDA, PASSOS_SEM_FIM_MAX, refazer, type Mapa, type Modo } from './transito-sim.js';
 
 export const DURACAO_MS = (PASSOS_DA_PARTIDA / 60) * 1000;
 /** A contagem da largada na tela (3 s) e a rede: o fim pode chegar um tico antes do relógio do servidor. */
@@ -52,6 +56,18 @@ function guardarRecorde(userId: number, modo: Modo, mapa: Mapa, pontos: number):
     : db.guardarRecordeDoSolo(userId, 'transito', varianteDoRecorde(modo, mapa), pontos, false).novo;
 }
 
+/** Os recordes da campanha de alguém, fase a fase (null: nunca jogou a fase). */
+export function recordesDaCampanha(userId: number): (number | null)[] {
+  const todos = new Map(db.recordesDoSolo(userId, 'transito').map((r) => [r.variante, r.valor]));
+  return CAMPANHA.map((_, i) => todos.get(`fase-${i + 1}`) ?? null);
+}
+/** A fase `n` está aberta: a 1 sempre; as outras, com a meta da anterior batida. */
+export function faseAberta(userId: number, n: number): boolean {
+  if (n === 1) return true;
+  const antes = db.recordeDoSolo(userId, 'transito', `fase-${n - 1}`)?.valor ?? null;
+  return antes !== null && antes >= CAMPANHA[n - 2].meta;
+}
+
 interface Motorista {
   pontos: number | null;
   atravessaram: number | null;
@@ -76,6 +92,8 @@ export function criarTransito({ agora = Date.now, aleatorio = Math.random }: { a
       let mapa: Mapa = solo ? lerMapa(corpo?.mapa) : 'cruz';
       let fase: 'escolha' | 'jogando' | 'fim' = solo && ctx.solo && corpo?.modo === undefined ? 'escolha' : 'jogando';
       const motoristas = new Map<number, Motorista>(inscritos.map((id) => [id, { pontos: null, atravessaram: null, batidas: null }]));
+      /** A fase da campanha que se joga (null: o minuto ou o "até bater"). */
+      let etapa: number | null = null;
       let recordeAntes = solo ? recordeDe(inscritos[0], modo, mapa) : null;
       let recordeNovo = false;
 
@@ -102,7 +120,11 @@ export function criarTransito({ agora = Date.now, aleatorio = Math.random }: { a
         const terminaram = inscritos.filter((id) => motoristas.get(id)!.pontos !== null);
         if (solo) {
           const m = motoristas.get(inscritos[0])!;
-          if (m.pontos !== null && m.pontos > 0) recordeNovo = guardarRecorde(inscritos[0], modo, mapa, m.pontos);
+          if (m.pontos !== null && m.pontos > 0)
+            recordeNovo =
+              etapa !== null
+                ? db.guardarRecordeDoSolo(inscritos[0], 'transito', `fase-${etapa}`, m.pontos, false).novo
+                : guardarRecorde(inscritos[0], modo, mapa, m.pontos);
         } else if (terminaram.length >= 2) {
           for (const l of placar()) {
             if (l.posicao === null || l.posicao > 3 || !l.pontos) continue;
@@ -144,6 +166,10 @@ export function criarTransito({ agora = Date.now, aleatorio = Math.random }: { a
             placar: placar(),
             recorde: solo ? { antes: recordeAntes, novo: recordeNovo } : null,
             partidaId: evento,
+            // a campanha: a fase jogada, a meta dela e, na escolha e no fim, os recordes de cada fase (o que está aberto)
+            etapa,
+            meta: etapa !== null ? CAMPANHA[etapa - 1].meta : null,
+            ...(solo && fase !== 'jogando' ? { campanha: recordesDaCampanha(inscritos[0]) } : {}),
           };
         },
         acao(quem, corpo) {
@@ -151,9 +177,19 @@ export function criarTransito({ agora = Date.now, aleatorio = Math.random }: { a
           if (!m) return 'Você está assistindo esta partida.';
           if (corpo.tipo === 'jogar') {
             if (fase !== 'escolha') return 'A partida está andando.';
-            modo = lerModo(corpo.modo);
-            mapa = lerMapa(corpo.mapa);
-            recordeAntes = recordeDe(quem, modo, mapa);
+            if (corpo.fase !== undefined) {
+              const f = faseDaCampanha(corpo.fase);
+              if (!f) return 'Sessão inválida.';
+              if (!faseAberta(quem, corpo.fase as number)) return 'Sessão inválida.';
+              etapa = corpo.fase as number;
+              modo = 'minuto';
+              mapa = f.mapa;
+              recordeAntes = db.recordeDoSolo(quem, 'transito', `fase-${etapa}`)?.valor ?? null;
+            } else {
+              modo = lerModo(corpo.modo);
+              mapa = lerMapa(corpo.mapa);
+              recordeAntes = recordeDe(quem, modo, mapa);
+            }
             inicio = agora();
             fase = 'jogando';
             ctx.agendar(modo === 'minuto' ? PRAZO_MS : PRAZO_SEM_FIM_MS, () => terminar());
@@ -163,7 +199,7 @@ export function criarTransito({ agora = Date.now, aleatorio = Math.random }: { a
           if (corpo.tipo !== 'fim') return 'Ação desconhecida.';
           if (fase !== 'jogando' || m.pontos !== null) return 'Esta rodada já acabou.';
           const lista = corpo.liberacoes;
-          const limite = modo === 'minuto' ? PASSOS_DA_PARTIDA : PASSOS_SEM_FIM_MAX;
+          const limite = etapa !== null ? CAMPANHA[etapa - 1].segundos * 60 : modo === 'minuto' ? PASSOS_DA_PARTIDA : PASSOS_SEM_FIM_MAX;
           const maximo = LIBERACOES_MAX * Math.ceil(limite / PASSOS_DA_PARTIDA);
           if (!Array.isArray(lista) || lista.length % 2 !== 0 || lista.length > maximo * 2) return 'Sessão inválida.';
           const vistos = new Set<number>();
@@ -177,7 +213,7 @@ export function criarTransito({ agora = Date.now, aleatorio = Math.random }: { a
             vistos.add(chave);
             anterior = p;
           }
-          const e = refazer(semente, lista as number[], { modo, mapa });
+          const e = refazer(semente, lista as number[], etapa !== null ? { fase: etapa } : { modo, mapa });
           // ninguém joga mais depressa do que o relógio deixou (pausar só alonga): o minuto, ou até o passo em que a partida acabou
           if ((e.passo / 60) * 1000 > agora() - inicio + FOLGA_DO_RELOGIO_MS) return 'Sessão inválida.';
           m.pontos = e.pontos;

@@ -642,3 +642,31 @@ test('sozinho pela rota do Solo, com robôs e 10 rodadas', async () => {
   assert.equal(p.jogadores.length, 4);
   await comAna('DELETE', '/api/minijogo-solo');
 });
+
+test('o treino (21/11/2026): só no Solo, um microjogo só, rodada atrás de rodada, sem recorde nem prêmio; o de 2 ou mais ganha o robô', async () => {
+  const { MICROJOGOS, microjogoDe, TREINO_RODADAS } = await import('../src/minijogo-festa.js');
+  const m = contexto([anaId]);
+  const ctx = { ...m.ctx, solo: true };
+  const jogo = criarFesta({ agora: () => agora, aleatorio: meio }).comecar(ctx, { naSala: [anaId], criadaPor: anaId, corpo: { modo: 'treino', microjogo: 'relogio' } });
+  assert.ok(typeof jogo !== 'string');
+  const p = jogo.publico(anaId) as { treino?: boolean; rodadas: number; microjogo: string; robos: number; recordeAntes?: unknown };
+  assert.equal(p.treino, true);
+  assert.equal(p.rodadas, TREINO_RODADAS);
+  assert.equal(p.microjogo, 'relogio');
+  assert.equal(p.robos, 0);
+  assert.equal('recordeAntes' in p, false, 'sem recorde');
+  // um microjogo que não existe, ou fora do Solo: não
+  assert.equal(criarFesta({ agora: () => agora }).comecar(ctx, { naSala: [anaId], criadaPor: anaId, corpo: { modo: 'treino', microjogo: 'xx' } }), 'Ação desconhecida.');
+  assert.equal(criarFesta({ agora: () => agora }).comecar(m.ctx, { naSala: [anaId], criadaPor: anaId, corpo: { modo: 'treino', microjogo: 'relogio' } }), 'Ação desconhecida.');
+  // o de 2 ou mais: o robô que falta
+  const dupla = MICROJOGOS.find((id) => (microjogoDe(id).minimo ?? 1) >= 2);
+  if (dupla) {
+    const j2 = criarFesta({ agora: () => agora, aleatorio: meio }).comecar(ctx, { naSala: [anaId], criadaPor: anaId, corpo: { modo: 'treino', microjogo: dupla } });
+    assert.ok(typeof j2 !== 'string');
+    const p2 = j2.publico(anaId) as { robos: number; microjogo: string };
+    assert.equal(p2.robos, (microjogoDe(dupla).minimo ?? 1) - 1);
+    assert.equal(p2.microjogo, dupla);
+    j2.parar?.();
+  }
+  jogo.parar?.();
+});

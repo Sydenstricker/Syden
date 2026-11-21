@@ -147,11 +147,13 @@ test('Stop (20/11/2026): o bônus de quem para com tudo valendo, e a contestaç�
     s.disparar(); // parando → conferindo
     const ver = (q = ids[0]) => jogo.publico(q) as VistoStop;
     const pontosDe = (q: number) => ver().placar.find((l) => l.userId === q)!.pontos;
-    return { s, jogo, ver, pontosDe };
+    // a conferência é por categoria (21/11/2026): o "pronto" de todos passa à próxima
+    const prontos = () => ids.forEach((id) => jogo.acao(id, { tipo: 'pronto' }));
+    return { s, jogo, ver, pontosDe, prontos };
   };
   // com tudo valendo, quem parou leva o bônus
   const a = jogar([1, 2]);
-  for (const id of [1, 2]) a.jogo.acao(id, { tipo: 'pronto' });
+  for (let c = 0; c < 3; c++) a.prontos();
   assert.equal(a.ver().fase, 'resultado');
   assert.deepEqual(a.ver().bonus, { userId: 1, pontos: BONUS_DO_STOP });
   assert.equal(a.pontosDe(1), 30 + BONUS_DO_STOP);
@@ -165,11 +167,12 @@ test('Stop (20/11/2026): o bônus de quem para com tudo valendo, e a contestaç�
   b.jogo.acao(1, { tipo: 'aceitar', categoria: 0 }); // desfaz
   assert.equal(b.ver().respostas![0].respostas[0].valida, true);
   b.jogo.acao(1, { tipo: 'aceitar', categoria: 0 });
-  b.s.disparar(); // o tempo da conferência acaba
+  for (let c = 0; c < 3; c++) b.s.disparar(); // o tempo de cada categoria acaba
   assert.equal(b.ver().bonus, null);
   assert.equal(b.pontosDe(1), 20);
   // com três: dois dos dois outros derrubam (mais da metade), um só não
   const c = jogar([1, 2, 3]);
+  c.prontos(); // a categoria 1
   c.jogo.acao(2, { tipo: 'contestar', categoria: 1, alvo: 3 });
   assert.equal(c.ver().respostas![2].respostas[1].valida, true, 'um de dois: não é mais da metade');
   c.jogo.acao(1, { tipo: 'contestar', categoria: 1, alvo: 3 });

@@ -10,7 +10,8 @@ import { CoelhoComemorando } from './moldura';
  * O MODO RELÂMPAGO DA FESTA (19/11/2026, server/src/minijogo-festa-relampago.ts): microjogos de 4 a 5 s, cada vez mais
  * rápidos, com 3 vidas. Cada um joga na própria tela; o servidor sorteia, marca o relógio e confere cada resposta. Tudo
  * desenhado por código e sem texto dentro do jogo: a cenoura para tocar, a seta para repetir, a luz para esperar, a barra para
- * parar na faixa verde, as cenouras para contar.
+ * parar na faixa verde, as cenouras para contar. E os oito de 21/11/2026: o monte maior, a cor igual, o nabo entre as cenouras,
+ * as batidas no tambor, a pedra que cai, a soma dos dados, a sombra do legume e a toca onde a cenoura estava.
  */
 
 type DadosRelampago =
@@ -18,7 +19,15 @@ type DadosRelampago =
   | { tipo: 'lado'; direcao: number; aparece: number }
   | { tipo: 'espere'; aparece: number }
   | { tipo: 'pare'; periodo: number; de: number; ate: number }
-  | { tipo: 'conte'; quantas: number; opcoes: number[]; mostra: number; posicoes: number[] };
+  | { tipo: 'conte'; quantas: number; opcoes: number[]; mostra: number; posicoes: number[] }
+  | { tipo: 'maior'; esquerda: number; direita: number; aparece: number }
+  | { tipo: 'cor'; cor: number; ordem: number[]; aparece: number }
+  | { tipo: 'intruso'; casa: number; aparece: number }
+  | { tipo: 'toques'; quantas: number; aparece: number }
+  | { tipo: 'esquiva'; pista: number; aparece: number }
+  | { tipo: 'soma'; a: number; b: number; opcoes: number[]; aparece: number }
+  | { tipo: 'sombra'; forma: number; opcoes: number[]; aparece: number }
+  | { tipo: 'memoria'; casa: number; mostra: number };
 
 export interface EstadoRelampago {
   modo: 'relampago';
@@ -88,9 +97,140 @@ function Cenoura({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
   );
 }
 
+/** As cores do 'cor' (fáceis de separar, também para quem não enxerga bem o vermelho e o verde: formas diferentes por dentro). */
+const CORES_DO_RELAMPAGO = ['#d9534f', '#f0ad4e', '#5b8fc9', '#6fa356'];
+/** O desenho de dentro de cada cor (para não depender só da cor). */
+function MarcaDaCor({ cor, x, y }: { cor: number; x: number; y: number }) {
+  const s = '#fff';
+  if (cor === 0) return <circle cx={x} cy={y} r="5" fill={s} />;
+  if (cor === 1) return <rect x={x - 5} y={y - 5} width="10" height="10" fill={s} />;
+  if (cor === 2) return <polygon points={`${x},${y - 6} ${x + 6},${y + 5} ${x - 6},${y + 5}`} fill={s} />;
+  return <polygon points={`${x},${y - 6} ${x + 6},${y} ${x},${y + 6} ${x - 6},${y}`} fill={s} />;
+}
+
+/** Um nabo (o intruso entre as cenouras). */
+function Nabo({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <circle cx="0" cy="2" r="7" fill="#efe6f2" />
+      <path d="M-7 0 A7 7 0 0 1 7 0 Z" fill="#9a5fb0" />
+      <polygon points="-2,8 2,8 0,13" fill="#efe6f2" />
+      <rect x="-4" y="-12" width="3" height="7" fill="#7fae5a" />
+      <rect x="1" y="-12" width="3" height="7" fill="#6a9a4a" />
+    </g>
+  );
+}
+
+/** Os legumes da 'sombra' (o mesmo número do servidor, FORMAS_DA_SOMBRA); `sombra`: tudo escuro, só a silhueta. */
+function Legume({ forma, x, y, s = 1, sombra = false }: { forma: number; x: number; y: number; s?: number; sombra?: boolean }) {
+  const c = (cor: string) => (sombra ? '#3a3330' : cor);
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      {forma === 0 && (
+        <>
+          <polygon points="-6,-6 6,-6 0,14" fill={c('#e07a2e')} />
+          <rect x="-4" y="-13" width="3" height="8" fill={c('#7fae5a')} />
+          <rect x="1" y="-13" width="3" height="8" fill={c('#6a9a4a')} />
+        </>
+      )}
+      {forma === 1 && (
+        <>
+          <ellipse cx="0" cy="3" rx="13" ry="10" fill={c('#e8913a')} />
+          <rect x="-1.5" y="-10" width="3" height="6" fill={c('#6a8a3a')} />
+        </>
+      )}
+      {forma === 2 && (
+        <>
+          <circle cx="0" cy="2" r="11" fill={c('#7fae5a')} />
+          <circle cx="-5" cy="-2" r="6" fill={c('#9ccc72')} />
+        </>
+      )}
+      {forma === 3 && (
+        <>
+          <rect x="-3" y="0" width="6" height="11" fill={c('#efe3cf')} />
+          <path d="M-11 2 A11 10 0 0 1 11 2 Z" fill={c('#c94a3a')} />
+        </>
+      )}
+      {forma === 4 && (
+        <>
+          <ellipse cx="0" cy="4" rx="5" ry="10" fill={c('#7a3e8e')} />
+          <rect x="-2" y="-11" width="4" height="6" fill={c('#6a9a4a')} />
+        </>
+      )}
+    </g>
+  );
+}
+
+/** Um dado com os pontos. */
+function Dado({ n, x, y }: { n: number; x: number; y: number }) {
+  const P: Record<number, [number, number][]> = {
+    1: [[0, 0]],
+    2: [[-1, -1], [1, 1]],
+    3: [[-1, -1], [0, 0], [1, 1]],
+    4: [[-1, -1], [1, -1], [-1, 1], [1, 1]],
+    5: [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]],
+    6: [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]],
+  };
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <rect x="-22" y="-22" width="44" height="44" rx="7" fill="#f3ead8" stroke="#8e6a52" strokeWidth="2" />
+      {(P[n] ?? []).map(([a, b], i) => (
+        <circle key={i} cx={a * 11} cy={b * 11} r="4.2" fill="#5a3a2a" />
+      ))}
+    </g>
+  );
+}
+
+/** As batidas do tambor: conta aqui e manda quando chega ao número. */
+function Tambor({ d, t, ativo, barra, responder }: { d: Extract<DadosRelampago, { tipo: 'toques' }>; t: number; ativo: boolean; barra: React.ReactNode; responder: (r?: number) => void }) {
+  const [batidas, setBatidas] = useState(0);
+  const bater = () => {
+    if (!ativo || t < d.aparece) return;
+    tocar('clique');
+    const n = batidas + 1;
+    setBatidas(n);
+    if (n >= d.quantas) responder(n);
+  };
+  useTeclas(ativo, (e) => {
+    if (e.key === ' ' || e.key === 'Enter') return (bater(), true);
+    return false;
+  });
+  return (
+    <button type="button" className="festa-saque" disabled={!ativo} onPointerDown={(e) => (e.preventDefault(), bater())} style={{ width: '100%', maxWidth: 420 }}>
+      <svg viewBox="0 0 240 130" aria-hidden="true">
+        {barra}
+        {t >= d.aparece &&
+          Array.from({ length: d.quantas }, (_, k) => (
+            <circle key={k} cx={120 + (k - (d.quantas - 1) / 2) * 22} cy="22" r="7" fill={k < batidas ? '#e07a2e' : '#f3ead8'} stroke="#8e6a52" strokeWidth="2" />
+          ))}
+        <ellipse cx="120" cy="70" rx="56" ry="14" fill="#c94a3a" />
+        <rect x="64" y="70" width="112" height="40" fill="#b5651d" />
+        <ellipse cx="120" cy="110" rx="56" ry="14" fill="#8e4a1d" />
+        <ellipse cx="120" cy="70" rx="50" ry="11" fill="#f3ead8" />
+      </svg>
+    </button>
+  );
+}
+
 /** Um microjogo relâmpago, valendo. `t` é o tempo dele (ms desde o começo, neste relógio). */
 function Microjogo({ d, t, fim, ativo, responder }: { d: DadosRelampago; t: number; fim: number; ativo: boolean; responder: (r?: number) => void }) {
   useTeclas(ativo, (e) => {
+    const k = /^[1-9]$/.test(e.key) ? Number(e.key) - 1 : -1;
+    if (d.tipo === 'maior') {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') return (responder(0), true);
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') return (responder(1), true);
+      return false;
+    }
+    if (d.tipo === 'esquiva') {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') return (responder(0), true);
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') return (responder(2), true);
+      if (k >= 0 && k <= 2) return (responder(k), true);
+      return false;
+    }
+    if (d.tipo === 'cor' && k >= 0 && k <= 3) return (responder(k), true);
+    if (d.tipo === 'intruso' && k >= 0 && k <= 5) return (responder(k), true);
+    if (d.tipo === 'memoria' && k >= 0 && k <= 3 && t >= d.mostra) return (responder(k), true);
+    if ((d.tipo === 'soma' || d.tipo === 'sombra') && k >= 0 && k <= 2) return (responder(d.opcoes[k]), true);
     if (d.tipo === 'lado' && e.key in TECLAS_DAS_SETAS) return (responder(TECLAS_DAS_SETAS[e.key]), true);
     if ((d.tipo === 'espere' || d.tipo === 'pare') && (e.key === ' ' || e.key === 'Enter')) return (responder(), true);
     if (d.tipo === 'toque' && /^[1-9]$/.test(e.key)) return (responder(Number(e.key) - 1), true);
@@ -100,6 +240,130 @@ function Microjogo({ d, t, fim, ativo, responder }: { d: DadosRelampago; t: numb
   const barra = (
     <rect x="0" y="0" width={240 * Math.max(0, 1 - t / fim)} height="5" fill="#f2c46a" />
   );
+  const tocavel = (k: number) => ({ onPointerDown: (e: React.PointerEvent) => (e.preventDefault(), responder(k)), style: { cursor: 'pointer' } as const });
+  if (d.tipo === 'maior') {
+    const monte = (n: number, x0: number) =>
+      Array.from({ length: n }, (_, i) => <Cenoura key={i} x={x0 + (i % 3) * 22} y={118 - Math.floor(i / 3) * 26} s={1.1} />);
+    return (
+      <svg viewBox="0 0 240 150" width="100%" style={{ maxWidth: 420, touchAction: 'none' }}>
+        {barra}
+        {[0, 1].map((lado) => (
+          <g key={lado} {...tocavel(lado)}>
+            <rect x={lado === 0 ? 10 : 126} y="20" width="104" height="122" rx="8" fill="#9a7556" />
+            {t >= d.aparece && monte(lado === 0 ? d.esquerda : d.direita, lado === 0 ? 40 : 156)}
+          </g>
+        ))}
+      </svg>
+    );
+  }
+  if (d.tipo === 'cor')
+    return (
+      <svg viewBox="0 0 240 150" width="100%" style={{ maxWidth: 420, touchAction: 'none' }}>
+        {barra}
+        {t >= d.aparece && (
+          <>
+            <circle cx="120" cy="44" r="26" fill={CORES_DO_RELAMPAGO[d.cor]} />
+            <MarcaDaCor cor={d.cor} x={120} y={44} />
+          </>
+        )}
+        {d.ordem.map((c, k) => (
+          <g key={k} {...tocavel(k)}>
+            <circle cx={42 + k * 52} cy="118" r="22" fill={t >= d.aparece ? CORES_DO_RELAMPAGO[c] : '#8a8a8a'} />
+            {t >= d.aparece && <MarcaDaCor cor={c} x={42 + k * 52} y={118} />}
+          </g>
+        ))}
+      </svg>
+    );
+  if (d.tipo === 'intruso')
+    return (
+      <svg viewBox="0 0 240 150" width="100%" style={{ maxWidth: 420, touchAction: 'none' }}>
+        {barra}
+        {Array.from({ length: 6 }, (_, k) => {
+          const x = 50 + (k % 3) * 70;
+          const y = 50 + Math.floor(k / 3) * 60;
+          return (
+            <g key={k} {...tocavel(k)}>
+              <rect x={x - 28} y={y - 26} width="56" height="52" rx="6" fill="#9a7556" />
+              {t >= d.aparece && (k === d.casa ? <Nabo x={x} y={y} s={1.6} /> : <Cenoura x={x} y={y - 2} s={1.5} />)}
+            </g>
+          );
+        })}
+      </svg>
+    );
+  if (d.tipo === 'toques') return <Tambor d={d} t={t} ativo={ativo} barra={barra} responder={responder} />;
+  if (d.tipo === 'esquiva') {
+    const queda = t >= d.aparece ? Math.min(1, (t - d.aparece) / 900) : 0;
+    return (
+      <svg viewBox="0 0 240 150" width="100%" style={{ maxWidth: 420, touchAction: 'none' }}>
+        {barra}
+        {[0, 1, 2].map((p) => (
+          <g key={p} {...tocavel(p)}>
+            <rect x={6 + p * 78} y="10" width="72" height="136" rx="6" fill={p % 2 ? '#a98a6a' : '#9a7556'} />
+          </g>
+        ))}
+        {t >= d.aparece && (
+          <>
+            <ellipse cx={42 + d.pista * 78} cy="128" rx={10 + 14 * queda} ry={3 + 3 * queda} fill="rgba(0,0,0,0.35)" pointerEvents="none" />
+            <circle cx={42 + d.pista * 78} cy={20 + 90 * queda} r="16" fill="#7d7470" stroke="#5a524e" strokeWidth="2" pointerEvents="none" />
+          </>
+        )}
+        <g pointerEvents="none">
+          <Cenoura x={120} y={132} s={0.9} />
+        </g>
+      </svg>
+    );
+  }
+  if (d.tipo === 'soma')
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+        <svg viewBox="0 0 240 90" width="100%" style={{ maxWidth: 420 }} aria-hidden="true">
+          {barra}
+          {t >= d.aparece && (
+            <>
+              <Dado n={d.a} x={80} y={50} />
+              <text x="120" y="58" textAnchor="middle" fontSize="24" fontWeight="900" fill="currentColor">
+                +
+              </text>
+              <Dado n={d.b} x={160} y={50} />
+            </>
+          )}
+        </svg>
+        <div className="minijogo-acoes">
+          {d.opcoes.map((n) => (
+            <button key={n} type="button" className="btn-secondary" disabled={!ativo || t < d.aparece} onPointerDown={(e) => (e.preventDefault(), responder(n))}>
+              {n}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  if (d.tipo === 'sombra')
+    return (
+      <svg viewBox="0 0 240 150" width="100%" style={{ maxWidth: 420, touchAction: 'none' }}>
+        {barra}
+        {t >= d.aparece && <Legume forma={d.forma} x={120} y={44} s={2} />}
+        {d.opcoes.map((f, k) => (
+          <g key={k} {...tocavel(f)}>
+            <rect x={18 + k * 72} y="84" width="60" height="60" rx="8" fill="#f3ead8" />
+            {t >= d.aparece && <Legume forma={f} x={48 + k * 72} y={114} s={1.5} sombra />}
+          </g>
+        ))}
+      </svg>
+    );
+  if (d.tipo === 'memoria') {
+    const mostrando = t < d.mostra;
+    return (
+      <svg viewBox="0 0 240 120" width="100%" style={{ maxWidth: 420, touchAction: 'none' }}>
+        {barra}
+        {[0, 1, 2, 3].map((k) => (
+          <g key={k} {...(mostrando ? {} : tocavel(k))}>
+            <ellipse cx={36 + k * 56} cy="82" rx="24" ry="12" fill="#5a3a2a" />
+            {mostrando && k === d.casa && <Cenoura x={36 + k * 56} y={62} s={1.4} />}
+          </g>
+        ))}
+      </svg>
+    );
+  }
   if (d.tipo === 'toque')
     return (
       <svg viewBox="0 0 240 160" width="100%" style={{ maxWidth: 420, touchAction: 'none' }}>

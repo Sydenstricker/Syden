@@ -38,6 +38,8 @@ export interface OpcoesDoBalao {
   robos?: number[];
   /** A dificuldade dos robôs (só o Solo). */
   dificuldade?: DificuldadeDoBalao;
+  /** As duplas (21/11/2026): os balões na cor do time, e o item e a batida não pegam o colega. */
+  duplas?: boolean;
   semente: number;
   /** O performance.now() do sinal verde (no futuro, durante a contagem). */
   verdeEm: number;
@@ -99,6 +101,8 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
     const arena = p.arena;
     const mapa = mapaDaArena(arena, 56);
     const porId = new Map(o.participantes.map((q) => [q.id, q]));
+    /** A cor dos balões: a do lugar na largada, ou, nas duplas, a do time. */
+    const corDe = (q: Participante | undefined) => corDoBalao(q ? (o.duplas && q.equipe !== undefined ? q.equipe : q.largada) : 0);
     let tremor = 0;
     const estouros: { alvo: number; x: number; y: number; em: number }[] = [];
     const partida = criarPartida({
@@ -110,6 +114,7 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
       participantes: o.participantes,
       robos: o.robos,
       dificuldade: o.dificuldade,
+      duplas: o.duplas,
       semente: o.semente,
       baloes: o.baloes,
       rivais: o.rivais,
@@ -140,14 +145,16 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
     const umPasso = () => {
       partida.passo();
       // RODANDO (perdeu um balão), a câmera fica parada no rumo de antes: é o kart que gira na frente dela, e não o mundo
-      if (meu && temBalao(meu.id) && meu.kart.rodando === 0) seguir(meu.kart.rumo + (meu.kart.angulo - meu.kart.rumo) * 0.35);
+      // (o meu fantasma, sem balão, segue com a câmera atrás dele)
+      if (meu && meu.kart.rodando === 0) seguir(meu.kart.rumo + (meu.kart.angulo - meu.kart.rumo) * 0.35);
       if (tremor > 0) tremor--;
     };
 
     const desenhar = () => {
       const n = partida.n;
       const tempo = performance.now() / 1000;
-      const euJogo = !!meu && temBalao(meu.id);
+      // eu dirijo (com balão ou de fantasma, 21/11/2026); sem kart, assisto
+      const euJogo = !!meu;
       // quem assiste vê os outros um pouco atrás (o que já chegou), sem adivinhar
       const nVer = euJogo ? n : Math.max(0, n - 6);
       // A CÂMERA: atrás de mim; sem kart ou sem balão, atrás de quem eu escolhi (ou do primeiro com balão)
@@ -158,7 +165,6 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
         if (assistindo === null || !vivos.some((q) => q.id === assistindo)) assistindo = vivos[0]?.id ?? null;
         foco = assistindo !== null ? posicaoDe(assistindo, nVer) : null;
         if (foco) seguir(foco.a, 0.12);
-        else if (meu) foco = { x: meu.kart.x, y: meu.kart.y, a: meu.kart.angulo };
       }
       if (!foco) {
         const l = largadaDa(arena, 0);
@@ -196,7 +202,7 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
       }
       // os karts, com os balões atrás (piscando nos 2 s depois de perder um) e o escudo em volta
       for (const q of o.participantes) {
-        if (!temBalao(q.id)) continue;
+        const fantasma = !temBalao(q.id);
         const l = partida.locais.find((k) => k.id === q.id);
         const pos = l ? { x: l.kart.x, y: l.kart.y, a: l.kart.angulo } : posicaoDe(q.id, nVer);
         if (!pos) continue;
@@ -207,10 +213,23 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
           tremor: ehMeu && tremor > 0 ? (tremor % 2 ? 1 : -1) : 0,
         });
         if (!kf) continue;
-        figuras.push(ehMeu ? { ...kf, z: kf.z - 0.01 } : kf);
+        // o FANTASMA (quem ficou sem balão e segue andando): meio transparente, sem balões
+        const desenho = fantasma
+          ? {
+              ...kf,
+              desenhar: (ctx: CanvasRenderingContext2D) => {
+                ctx.save();
+                ctx.globalAlpha = 0.45;
+                kf.desenhar(ctx);
+                ctx.restore();
+              },
+            }
+          : kf;
+        figuras.push(ehMeu ? { ...desenho, z: kf.z - 0.01 } : desenho);
+        if (fantasma) continue;
         let ultimo = l ? l.ultimoEstouro : -Infinity;
         if (!l) for (const e of o.eventos) if (e.tipo === 'estourou' && e.alvo === q.id) ultimo = e.n;
-        figuras.push(...baloesNaTela(cam, pos.x, pos.y, pos.a, baloesDe(q.id), corDoBalao(q.largada), tempo, nVer < ultimo + INVULNERAVEL));
+        figuras.push(...baloesNaTela(cam, pos.x, pos.y, pos.a, baloesDe(q.id), corDe(q), tempo, nVer < ultimo + INVULNERAVEL));
         if (partida.escudoAtivo(q.id, nVer)) {
           const f = figuraNoChao(d, cam, 'escudo', pos.x, pos.y, 1.9);
           if (f) figuras.push({ ...f, z: kf.z - 0.02 });
@@ -224,7 +243,7 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
           estouros.splice(i, 1);
           continue;
         }
-        const f = estouroNaTela(cam, estouros[i].x, estouros[i].y, corDoBalao(porId.get(estouros[i].alvo)?.largada ?? 0), t);
+        const f = estouroNaTela(cam, estouros[i].x, estouros[i].y, corDe(porId.get(estouros[i].alvo)), t);
         if (f) figuras.push(f);
       }
       figuras.sort((a, b) => b.z - a.z);
@@ -239,7 +258,7 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
       for (const q of o.participantes) {
         if (!temBalao(q.id) || (euJogo && q.id === o.eu)) continue;
         const pos = posicaoDe(q.id, nVer);
-        if (pos) pontoNoMapaDaArena(d.ctx, arena, W - 60, H - 60, 56, pos.x, pos.y, corDoBalao(q.largada));
+        if (pos) pontoNoMapaDaArena(d.ctx, arena, W - 60, H - 60, 56, pos.x, pos.y, corDe(q));
       }
       if (euJogo) pontoNoMapaDaArena(d.ctx, arena, W - 60, H - 60, 56, meu!.kart.x, meu!.kart.y, '#fbf3e4');
       if (n <= 40) semaforo(d.ctx, n <= 0 ? Math.round(((o.verdeEm - performance.now()) * PASSOS_POR_SEGUNDO) / 1000) : 0);
@@ -275,7 +294,7 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
 
     // quem assiste troca de câmera com ◀ ▶
     const trocar = (e: KeyboardEvent) => {
-      if (meu && temBalao(meu.id)) return;
+      if (meu) return;
       if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
       const vivos = o.participantes.filter((q) => q.id !== o.eu && temBalao(q.id));
       if (!vivos.length) return;

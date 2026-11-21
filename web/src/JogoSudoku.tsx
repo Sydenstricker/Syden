@@ -18,7 +18,14 @@ type EstadoSudokuNovo = EstadoSudoku & {
   x?: boolean;
   penalidadeMs?: number;
   recorde?: { antes: number | null; novo: boolean; valor: number | null } | null;
+  /** O cooperativo (21/11/2026): o tabuleiro é da turma, `autores` diz quem pôs cada número, `turma` o quanto já foi. */
+  juntos?: boolean;
+  autores?: (number | null)[];
+  turma?: { certas: number; tempoMs: number | null };
 };
+
+/** As cores de quem preencheu, no cooperativo (pela ordem dos ids, para não trocarem no meio da partida). */
+const CORES_DA_TURMA = ['#3f7fd0', '#d0503f', '#3f9a52', '#c98a1c', '#9058c0', '#1f9a9a', '#cf5f98', '#7a8a2e'];
 
 /** "4:07": o tempo de quem terminou. */
 const minutos = (ms: number) => {
@@ -63,7 +70,12 @@ export function JogoSudoku({
   const [historico, setHistorico] = useState<{ casa: number; antes: number }[]>([]);
   const tabuleiro = estado.meu ?? estado.enigma;
   const minha = estado.corrida.find((l) => l.userId === eu);
-  const terminei = minha?.tempoMs !== null && minha?.tempoMs !== undefined;
+  const juntos = estado.juntos === true;
+  const terminei = juntos ? estado.turma?.tempoMs != null : minha?.tempoMs !== null && minha?.tempoMs !== undefined;
+  // no cooperativo, a cor e o nome de quem pôs cada número
+  const ordemDaTurma = [...estado.corrida].map((l) => l.userId).sort((a, b) => a - b);
+  const corDe = (id: number) => CORES_DA_TURMA[Math.max(0, ordemDaTurma.indexOf(id)) % CORES_DA_TURMA.length];
+  const nomeDe = (id: number) => estado.corrida.find((l) => l.userId === id)?.username ?? '';
   const noFim = estado.conferencia === 'fim';
   const x = estado.x === true;
   const cheio = tabuleiro.every((n) => n !== 0);
@@ -93,12 +105,18 @@ export function JogoSudoku({
   if (estado.terminada) {
     return (
       <>
+        {juntos && (
+          <p className="minijogo-situacao">
+            {estado.turma?.tempoMs != null ? `✓ ${t('Tempo da turma: {tempo}', { tempo: minutos(estado.turma.tempoMs) })}` : `${estado.turma?.certas ?? 0}/${estado.total}`}
+          </p>
+        )}
         <Placar
           eu={eu}
           linhas={estado.corrida.map((l) => ({
             userId: l.userId,
             username: l.username,
-            valor: l.tempoMs !== null ? minutos(l.tempoMs) : `${l.certas}/${estado.total}`,
+            // no cooperativo, a parte de cada um (as casas que pôs)
+            valor: juntos ? String(l.certas) : l.tempoMs !== null ? minutos(l.tempoMs) : `${l.certas}/${estado.total}`,
           }))}
         />
         <Recorde recorde={estado.recorde} />
@@ -179,8 +197,19 @@ export function JogoSudoku({
           ]
             .filter(Boolean)
             .join(' ');
+          // a errada fica com o vermelho de sempre
+          const autor = juntos && !dada && n && !estado.errados.includes(i) ? (estado.autores?.[i] ?? null) : null;
           return (
-            <button key={i} type="button" role="gridcell" className={classes} tabIndex={-1} onClick={() => setCasa(i)}>
+            <button
+              key={i}
+              type="button"
+              role="gridcell"
+              className={classes}
+              tabIndex={-1}
+              onClick={() => setCasa(i)}
+              style={autor !== null ? { color: corDe(autor) } : undefined}
+              title={autor !== null ? nomeDe(autor) : undefined}
+            >
               {n ? (
                 n
               ) : minhasNotas.length > 0 ? (
@@ -243,8 +272,31 @@ export function JogoSudoku({
         {(estado.penalidadeMs ?? 0) > 0 && <span className="sudoku-penalidade">+{minutos(estado.penalidadeMs ?? 0)}</span>}
       </div>
       {x && !terminei && <p className="sudoku-regra-x">✕ {t('As duas diagonais também têm os números de 1 a 9.')}</p>}
-      {terminei && <p className="minijogo-situacao">{t('Você terminou! Agora é torcer pelos outros.')}</p>}
+      {terminei && !juntos && <p className="minijogo-situacao">{t('Você terminou! Agora é torcer pelos outros.')}</p>}
       {terminei && <Recorde recorde={estado.recorde} />}
+      {juntos ? (
+        // O COOPERATIVO (21/11/2026): a barra é da turma, e embaixo a parte de cada um, na cor dos números dele
+        <ul className="sudoku-corrida">
+          <li className="eu">
+            <span className="minijogo-nome">{t('Turma')}</span>
+            <span className="sudoku-barra" aria-hidden="true">
+              <span style={{ width: `${((estado.turma?.certas ?? 0) / estado.total) * 100}%` }} />
+            </span>
+            <span className="sudoku-numero">{`${estado.turma?.certas ?? 0}/${estado.total}`}</span>
+          </li>
+          {estado.corrida.map((l) => (
+            <li key={l.userId}>
+              <span className="minijogo-nome" style={{ color: corDe(l.userId) }}>
+                ● {l.username}
+              </span>
+              <span className="sudoku-numero">
+                {l.certas}
+                {l.erros > 0 && <span className="sudoku-erros"> · ✕{l.erros}</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
       <ul className="sudoku-corrida">
         {estado.corrida.map((l) => (
           <li key={l.userId} className={l.userId === eu ? 'eu' : ''}>
@@ -259,6 +311,7 @@ export function JogoSudoku({
           </li>
         ))}
       </ul>
+      )}
       <Relogio restante={restante} total={SUDOKU_MS} />
       <ComoJogar
         jogo="sudoku"

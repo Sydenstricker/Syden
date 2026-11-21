@@ -14,6 +14,10 @@
  *   chutou depois. Achou: a bola sai de lá e anda os passos que passaram desde então (é o que a tela de quem chutou já
  *   mostrou). A posição do chute tem de estar perto de onde o servidor viu a pessoa. O DOMÍNIO da bola solta segue a mesma
  *   ideia: quem encostou nela como a tela dele mostrava, nos últimos 300 ms, fica com ela.
+ * - O BOTE (21/11/2026) também: o carrinho escorrega no computador de quem o dá, e quando a tela dele mostra o carrinho
+ *   encostando na bola, o site manda o bote com a posição e o rumo; o servidor procura nos últimos 300 ms um instante em que a
+ *   bola (sem chute desde então) estava baixa, perto dessa posição, solta ou com alguém do outro time, e a tira. A posição tem
+ *   de estar perto de onde o servidor viu a pessoa, e um bote só vale depois da recarga (contada no relógio da partida).
  * - Os times se equilibram com ROBÔS (o número ímpar, ou poucos: no mínimo 2 por time). Quem sai da sala deixa o coelho com o
  *   computador até voltar.
  *
@@ -32,7 +36,10 @@ import { ehRobo, idsDosRobos, MAXIMO_DE_ROBOS, nomeDoRobo } from './minijogo-rob
 import {
   ALCANCE,
   ALTURA_DO_CORPO,
+  aplicarBote,
   aplicarChute,
+  BOTE_ALCANCE,
+  BOTE_RECARGA,
   CHUTE_MAX,
   comandoDoRobo,
   CONTAGEM,
@@ -92,6 +99,8 @@ interface Pessoa {
   /** O relógio do site (ms) da última posição, devolvido no quadro: o site mede o tempo de ida e volta. */
   eco: number;
   ultimoChute: number;
+  /** O passo da partida do último bote que valeu (a recarga). */
+  ultimoBote: number;
   baldes: { pos: Balde; chute: Balde };
   /** Em que reinício o site dela está (a posição de antes da volta ao meio não vale). */
   reinicio: number;
@@ -170,6 +179,7 @@ export function criarFutebol({
             credito: ACUMULO,
             eco: 0,
             ultimoChute: 0,
+            ultimoBote: -Infinity,
             // a posição vem ~20 por segundo; o chute, uns poucos por segundo no máximo
             baldes: { pos: balde(12, 30), chute: balde(4, 6) },
             reinicio: m.reinicios,
@@ -243,6 +253,8 @@ export function criarFutebol({
             j.carga,
             j.tonto,
             j.externo ? (pessoas.get(j.id)?.eco ?? 0) : 0,
+            // o bote dos robôs (o de quem joga anda só na tela dele): 1 escorregando, 2 no chão
+            j.bote > 0 ? 1 : j.caido > 0 ? 2 : 0,
           ]),
           c: respostas,
           e: eventos.map(eventoCurto),
@@ -433,6 +445,52 @@ export function criarFutebol({
         return null;
       };
 
+      /** O BOTE de quem joga: quem dá o carrinho tem razão, pelos últimos 300 ms, como no chute. */
+      const bote = (p: Pessoa, j: Jogador, d: Record<string, unknown>): string | null => {
+        const { x, y, fx, fy, s } = d;
+        if (![x, y, fx, fy, s].every(numero)) return 'números';
+        if (!Number.isInteger(s) || (s as number) <= p.ultimoChute) return 'chute repetido';
+        p.ultimoChute = s as number;
+        if (m.pausa > 0 || m.fim) return 'pausa';
+        if (j.tonto > 0) return 'tonto';
+        // a recarga, com um pouco de folga para a rede (o relógio do site e o do servidor andam quase juntos)
+        if (m.tempo - p.ultimoBote < BOTE_RECARGA - 12) return 'recarga';
+        const u = unitario(fx as number, fy as number);
+        if (!u) return 'rumo';
+        const ex = (x as number) - j.x;
+        const ey = (y as number) - j.y;
+        if (ex * ex + ey * ey > FOLGA_POSICAO * FOLGA_POSICAO) return 'longe de si';
+        if (m.centro && j.time !== m.saida) return 'saída';
+        const b = m.bola;
+        if (b.dono === j.id) return 'com a bola';
+        if (b.dono !== 0 && m.jogadores.find((o) => o.id === b.dono)?.time === j.time) return 'do time';
+        let achou = false;
+        for (let k = historia.length - 1; k >= 0; k--) {
+          const h = historia[k];
+          if (m.tempo - h.tempo > HISTORIA_PASSOS) break;
+          if (h.versao !== b.versao) break;
+          if (h.z > ALTURA_DO_CORPO || h.dono !== b.dono) continue;
+          const bx = h.x - (x as number);
+          const by = h.y - (y as number);
+          if (bx * bx + by * by <= (BOTE_ALCANCE + FOLGA_ALCANCE) * (BOTE_ALCANCE + FOLGA_ALCANCE)) {
+            achou = true;
+            break;
+          }
+        }
+        if (!achou) return 'longe da bola';
+        p.ultimoBote = m.tempo;
+        j.x = x as number;
+        j.y = y as number;
+        prenderNoCampo(j);
+        [j.fx, j.fy] = u;
+        m.eventos = [];
+        aplicarBote(m, j);
+        eventos.push(...m.eventos);
+        m.eventos = [];
+        guardarInstante();
+        return null;
+      };
+
       relogio = intervalo(tick, PASSO_MS);
 
       const jogo: Jogo = {
@@ -475,10 +533,10 @@ export function criarFutebol({
           if (!j.externo) return null;
           if (d.tipo === 'pos') {
             if (gastar(p.baldes.pos)) ultimoMotivo = posicao(p, j, d);
-          } else if (d.tipo === 'chute') {
+          } else if (d.tipo === 'chute' || d.tipo === 'bote') {
             if (!gastar(p.baldes.chute)) ultimoMotivo = 'depressa demais';
             else {
-              ultimoMotivo = chute(p, j, d);
+              ultimoMotivo = d.tipo === 'bote' ? bote(p, j, d) : chute(p, j, d);
               if (numero(d.s)) respostas.push([quem, d.s as number, ultimoMotivo === null ? 1 : 0]);
             }
           }
@@ -517,6 +575,8 @@ function eventoCurto(e: Evento): unknown[] {
       return ['d', e.id];
     case 'roubo':
       return ['r', e.id, e.de];
+    case 'bote':
+      return ['b', e.id, e.de];
     case 'quique':
       return ['q'];
     case 'gol':

@@ -1,4 +1,4 @@
-import { Chao, HORTA, MUNDO, NEVE, PRAIA, RES, sorteio, type DefinicaoDaPista, type Pista, type Tema } from '../corrida/pista';
+import { CANION, Chao, HORTA, MUNDO, NEVE, POMAR, PRAIA, RES, sorteio, type DefinicaoDaPista, type Pista, type Tema } from '../corrida/pista';
 import { arenaPorId, centroDa, MARGEM_DO_KART, naParede, type Arena } from './sim';
 
 /**
@@ -15,6 +15,8 @@ const VISUAL: Record<string, { tema: Tema; piso: [number, number]; risco: number
   horta: { tema: HORTA.tema, piso: [rgb(170, 128, 88), rgb(162, 120, 82)], risco: rgb(146, 106, 70) },
   praia: { tema: PRAIA.tema, piso: [rgb(236, 214, 164), rgb(228, 206, 156)], risco: rgb(212, 188, 138) },
   neve: { tema: NEVE.tema, piso: [rgb(214, 222, 236), rgb(206, 214, 230)], risco: rgb(186, 196, 216) },
+  pomar: { tema: POMAR.tema, piso: [rgb(176, 134, 92), rgb(168, 126, 86)], risco: rgb(150, 110, 74) },
+  canion: { tema: CANION.tema, piso: [rgb(214, 150, 104), rgb(206, 142, 98)], risco: rgb(184, 122, 82) },
 };
 
 function rgb(r: number, g: number, b: number) {

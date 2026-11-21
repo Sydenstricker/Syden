@@ -9,7 +9,7 @@ import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
 
 const { app, fechar } = await servidorDeTeste();
 const mod = await import('../src/minijogo-cidades.js');
-const { criarCidades, CASAS, CASAS_DO_BRASIL, CARTAS, VALOR_DA_CARTA, DINHEIRO_INICIAL } = mod;
+const { criarCidades, CASAS, CASAS_DO_BRASIL, CASAS_DO_MUNDO, CARTAS, VALOR_DA_CARTA, DINHEIRO_INICIAL } = mod;
 after(fechar);
 
 let agora = 7_000_000;
@@ -217,4 +217,40 @@ test('o Brasil inteiro com 5 robôs no Solo vai até o fim, com as notícias sai
   assert.equal(e.casas.length, 40);
   for (const j of e.jogadores) assert.ok(j.pos >= 0 && j.pos < 40);
   assert.ok(vistas.size >= 10, `notícias vistas: ${vistas.size}`);
+});
+
+test('as Capitais do mundo (21/11/2026): a volta de 32 com 20 países, cada grupo um continente, e os preços da de fábrica', async () => {
+  const { readFileSync } = await import('node:fs');
+  const paises = JSON.parse(readFileSync(new URL('../assets/quiz/paises.json', import.meta.url), 'utf8')) as { id: string; regiao: string }[];
+  const regiao = new Map(paises.map((p) => [p.id, p.regiao]));
+  assert.equal(CASAS_DO_MUNDO.length, 32);
+  const cidades = CASAS_DO_MUNDO.filter((c) => c.tipo === 'cidade');
+  assert.equal(cidades.length, 20);
+  assert.equal(new Set(cidades.map((c) => c.uf)).size, 20);
+  for (const c of cidades) {
+    assert.equal(c.pais, true);
+    assert.equal(c.nome, c.uf, 'o nome é o código do país (a tela o traduz)');
+    assert.ok(regiao.has(c.uf!), `${c.uf} está na lista dos países do quiz`);
+  }
+  // cada grupo é um continente só (a Ásia em dois grupos)
+  for (let g = 0; g < 7; g++) assert.equal(new Set(cidades.filter((c) => c.grupo === g).map((c) => regiao.get(c.uf!))).size, 1, `grupo ${g}`);
+  // a mesma volta da de fábrica: os tipos, os grupos e os preços casa a casa
+  CASAS.forEach((c, i) => {
+    assert.equal(CASAS_DO_MUNDO[i].tipo, c.tipo);
+    assert.equal(CASAS_DO_MUNDO[i].grupo, c.grupo);
+    assert.equal(CASAS_DO_MUNDO[i].preco, c.preco);
+  });
+  const m = comecar({}, { tabuleiro: 'mundo' });
+  assert.equal(m.estado().tabuleiro, 'mundo');
+  assert.equal(m.estado().casas[1].uf, 'NZ');
+  assert.equal(comecar({}, { tabuleiro: 'lua' }).estado().tabuleiro, 'capitais', 'tabuleiro desconhecido: o de fábrica');
+});
+
+test('as Capitais do mundo com 3 robôs no Solo vão até o fim', () => {
+  let semente = 777;
+  const aleatorio = () => ((semente = (semente * 16807) % 2147483647) / 2147483647);
+  const m = comecar({ aleatorio, semDadosIguais: false }, { tabuleiro: 'mundo', robos: 3, modo: 'rodadas', rodadas: 20 }, [anaId], true);
+  for (let k = 0; k < 50_000 && !m.terminou(); k++) m.andar();
+  assert.ok(m.terminou());
+  assert.ok(m.estado().posses.length > 0, 'os robôs compraram países');
 });

@@ -181,6 +181,68 @@ export const ARENAS: Arena[] = [
       [512, 420], [512, 604], [360, 400], [664, 624], [664, 400], [360, 624], [240, 512], [784, 512],
     ],
   },
+  {
+    // O POMAR (21/11/2026): fileiras de laranjeiras fazendo corredores, a grama do meio que segura e dois fardos nas pontas
+    id: 'pomar',
+    retangulo: [192, 232, 832, 792],
+    circulo: null,
+    circulos: [
+      [330, 360, 9, 'arvore'],
+      [450, 360, 9, 'arvore'],
+      [574, 360, 9, 'arvore'],
+      [694, 360, 9, 'arvore'],
+      [330, 664, 9, 'arvore'],
+      [450, 664, 9, 'arvore'],
+      [574, 664, 9, 'arvore'],
+      [694, 664, 9, 'arvore'],
+      [330, 512, 9, 'arvore'],
+      [694, 512, 9, 'arvore'],
+    ],
+    muros: [
+      [492, 300, 532, 330, 'feno'],
+      [492, 694, 532, 724, 'feno'],
+    ],
+    manchas: [
+      [512, 512, 40, 'grama'],
+      [420, 436, 10, 'turbo'],
+      [604, 588, 10, 'turbo'],
+    ],
+    largadas: [
+      [242, 282], [782, 742], [782, 282], [242, 742], [512, 262], [512, 762], [232, 512], [792, 512],
+    ],
+    caixas: [
+      [512, 436], [512, 588], [390, 512], [634, 512], [390, 290], [634, 734], [634, 290], [390, 734],
+    ],
+  },
+  {
+    // O CÂNION (21/11/2026): redondo, com a rocha grande no meio, pedras em volta, cactos e dois caixotes fechando a passagem
+    id: 'canion',
+    retangulo: null,
+    circulo: [512, 512, 330],
+    circulos: [
+      [512, 512, 34, 'pedra'],
+      [400, 400, 18, 'pedra'],
+      [624, 624, 18, 'pedra'],
+      [624, 400, 14, 'pedra'],
+      [400, 624, 14, 'pedra'],
+      [300, 512, 9, 'arvore'],
+      [724, 512, 9, 'arvore'],
+    ],
+    muros: [
+      [496, 282, 528, 314, 'caixote'],
+      [496, 710, 528, 742, 'caixote'],
+    ],
+    manchas: [
+      [512, 430, 11, 'turbo'],
+      [512, 594, 11, 'turbo'],
+    ],
+    largadas: [
+      [512, 222], [512, 802], [222, 512], [802, 512], [307, 307], [717, 717], [717, 307], [307, 717],
+    ],
+    caixas: [
+      [440, 512], [584, 512], [512, 456], [512, 568], [330, 400], [694, 624], [694, 400], [330, 624],
+    ],
+  },
 ];
 
 export const arenaPorId = (id: string): Arena => ARENAS.find((a) => a.id === id) ?? ARENAS[0];

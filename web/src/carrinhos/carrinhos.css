@@ -370,3 +370,47 @@
 .carrinhos-campeonato-pontos small {
   opacity: 0.75;
 }
+
+/* O TANQUE DA RESISTÊNCIA (21/11/2026): ao lado do medidor do acelerador */
+.carrinhos-tanque {
+  position: absolute;
+  right: 36px;
+  bottom: 14px;
+  height: 34%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.carrinhos-tanque-icone {
+  font-size: 14px;
+  line-height: 1;
+}
+.carrinhos-tanque-barra {
+  flex: 1;
+  width: 12px;
+  border-radius: 6px;
+  background: rgba(40, 24, 12, 0.35);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+.carrinhos-tanque-barra > span {
+  display: block;
+  width: 100%;
+  background: #4fc3f7;
+}
+.carrinhos-tanque.baixo .carrinhos-tanque-barra > span {
+  background: #ff6b5b;
+}
+.carrinhos-tanque.enchendo .carrinhos-tanque-barra {
+  box-shadow: inset 0 0 0 2px #4fc3f7;
+}
+.carrinhos-aviso-box {
+  top: 30%;
+  font-size: calc(16px * var(--escala-do-texto, 1));
+  white-space: normal;
+  text-align: center;
+  max-width: 80%;
+}

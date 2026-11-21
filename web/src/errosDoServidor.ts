@@ -58,6 +58,11 @@ export const ERROS_TRADUZIDOS = [
   chave('A primeira pedra é outra.'),
   chave('Essa pedra não encaixa na mesa.'),
   chave('Escolha a ponta.'),
+  // os sinais do Truco e o Sudoku cooperativo (21/11/2026)
+  chave('Sinal só no jogo de quatro.'),
+  chave('Sinal desconhecido.'),
+  chave('Calma com os sinais.'),
+  chave('Essa casa já está certa.'),
   chave('Essa pedra não encaixa nessa ponta.'),
   // a Caça às pragas da horta (server/src/minijogo-caca.ts, 04/11/2026)
   chave('Tiro inválido.'),
@@ -170,6 +175,9 @@ export const ERROS_TRADUZIDOS = [
   chave('Este problema já acabou.'),
   chave('Lance inválido.'),
   chave('Escreva uma palavra de 5 letras.'),
+  // a Palavra secreta de 4 e de 6 letras (21/11/2026)
+  chave('Escreva uma palavra de 4 letras.'),
+  chave('Escreva uma palavra de 6 letras.'),
   chave('Essa palavra não está na lista.'),
   chave('Esta rodada já acabou.'),
   chave('Este prato não é o pedido.'),

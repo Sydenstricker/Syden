@@ -18,6 +18,11 @@ import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
  * resposta do outro. Com dois, a resposta só cai com AS DUAS PARTES: o outro contesta e quem escreveu aceita ("é, girafa não é
  * cor"). Sem acordo, vale: a conversa decide, e quem escreveu tem a palavra final sobre o que é dele.
  *
+ * A CONFERÊNCIA POR CATEGORIA (21/11/2026, o lote D): depois do STOP, a turma confere UMA CATEGORIA DE CADA VEZ, todo mundo na
+ * mesma, com as respostas de todos lado a lado — é ali que se contesta e se aceita. Cada categoria tem o seu tempo
+ * (CONFERINDO_POR_CATEGORIA_MS), e quando todos da sala dizem "pronto" a próxima entra na hora. A regra de quando uma resposta
+ * cai é a mesma de antes (a maioria, ou o aceite de quem escreveu); só a ordem da conversa mudou.
+ *
  * O BÔNUS DO STOP (mesma data): quem apertou STOP leva BONUS_DO_STOP a mais se, depois da conferência, TODAS as respostas dele
  * ainda valerem. Apertar STOP com uma palavra inventada para cortar os outros deixa de compensar.
  */
@@ -53,7 +58,8 @@ export const ESCREVENDO_MS = 90_000;
 export const TEMPOS_POSSIVEIS = [60_000, 90_000, 120_000, 180_000];
 /** Depois do STOP, um instante para a última palavra digitada chegar ao servidor. */
 export const PARANDO_MS = 2_000;
-export const CONFERINDO_MS = 60_000;
+/** O tempo de cada categoria na conferência (21/11/2026): o "pronto" de todos passa antes. */
+export const CONFERINDO_POR_CATEGORIA_MS = 25_000;
 export const RESULTADO_MS = 6_000;
 export const TAMANHO_DA_RESPOSTA = 40;
 /** As letras de quem não mandou nenhuma: o alfabeto latino sem as que quase não começam palavra. */
@@ -137,6 +143,8 @@ export const stop: Definicao = {
     let fase: Fase = 'escrevendo';
     let letra = sorteio[0];
     let quemParou: number | null = null;
+    /** A categoria que a turma está conferindo agora (só na fase 'conferindo'). */
+    let categoriaAtual = 0;
     const respostas = new Map<number, string[]>();
     /** `${categoria}:${alvo}` → quem contestou. */
     const contestacoes = new Map<string, Set<number>>();
@@ -188,7 +196,19 @@ export const stop: Definicao = {
 
     function conferir() {
       fase = 'conferindo';
-      ctx.agendar(CONFERINDO_MS, pontuar);
+      categoriaAtual = 0;
+      prontos.clear();
+      ctx.agendar(CONFERINDO_POR_CATEGORIA_MS, proximaCategoria);
+      ctx.avisar();
+    }
+
+    /** A próxima categoria da conferência, ou os pontos depois da última. */
+    function proximaCategoria() {
+      if (fase !== 'conferindo') return;
+      if (categoriaAtual >= categorias.length - 1) return pontuar();
+      categoriaAtual++;
+      prontos.clear();
+      ctx.agendar(CONFERINDO_POR_CATEGORIA_MS, proximaCategoria);
       ctx.avisar();
     }
 
@@ -230,6 +250,9 @@ export const stop: Definicao = {
           fase,
           letra,
           categorias,
+          // a categoria da conferência (null fora dela); o tempo de cada uma, para o relógio da tela
+          categoriaAtual: fase === 'conferindo' ? categoriaAtual : null,
+          conferindoPorCategoriaMs: CONFERINDO_POR_CATEGORIA_MS,
           quemParou,
           // Enquanto se escreve, cada um vê só as próprias respostas; dos outros, só quem já preencheu tudo.
           minhas: minhas(quem),
@@ -283,6 +306,8 @@ export const stop: Definicao = {
           const categoria = Number(corpo.categoria);
           const alvo = Number(corpo.alvo);
           if (!(categoria >= 0 && categoria < categorias.length) || !pontos.has(alvo)) return 'Resposta não encontrada.';
+          // contesta-se na categoria que a turma está conferindo
+          if (categoria !== categoriaAtual) return 'Agora não é hora de conferir.';
           if (alvo === quem) return 'Não dá para contestar a própria resposta.';
           const chave = `${categoria}:${alvo}`;
           const quemContesta = contestacoes.get(chave) ?? new Set<number>();
@@ -299,6 +324,7 @@ export const stop: Definicao = {
           if (fase !== 'conferindo') return 'Agora não é hora de conferir.';
           const categoria = Number(corpo.categoria);
           if (!(categoria >= 0 && categoria < categorias.length) || !pontos.has(quem)) return 'Resposta não encontrada.';
+          if (categoria !== categoriaAtual) return 'Agora não é hora de conferir.';
           const chave = `${categoria}:${quem}`;
           if (!(contestacoes.get(chave)?.size ?? 0)) return 'Ninguém contestou esta resposta.';
           if (aceitas.has(chave)) aceitas.delete(chave);
@@ -308,8 +334,9 @@ export const stop: Definicao = {
         }
         if (corpo.tipo === 'pronto') {
           if (fase !== 'conferindo') return 'Agora não é hora de conferir.';
+          // o "pronto" vale para a categoria de agora: com todos prontos, entra a próxima (ou os pontos, depois da última)
           prontos.add(quem);
-          if (ctx.naSala().every((id) => prontos.has(id) || !pontos.has(id))) pontuar();
+          if (ctx.naSala().every((id) => prontos.has(id) || !pontos.has(id))) proximaCategoria();
           else ctx.avisar();
           return null;
         }

@@ -118,6 +118,19 @@ export const OBJETOS: Record<string, { cm: number; medida: Medida }> = {
   caminhonete: { cm: 530, medida: 'comprimento' },
   'carro-de-corrida': { cm: 550, medida: 'comprimento' },
   caminhao: { cm: 700, medida: 'comprimento' },
+  // 21/11/2026: a fazenda e o esporte (o lote D da segunda auditoria)
+  pintinho: { cm: 7, medida: 'altura' },
+  galo: { cm: 50, medida: 'altura' },
+  ganso: { cm: 80, medida: 'altura' },
+  porco: { cm: 80, medida: 'altura' },
+  ovelha: { cm: 85, medida: 'altura' },
+  cabra: { cm: 95, medida: 'altura' },
+  'bola-de-beisebol': { cm: 7.4, medida: 'diametro' },
+  'bola-de-volei': { cm: 21, medida: 'diametro' },
+  'pedra-de-curling': { cm: 29, medida: 'diametro' },
+  'patins-de-gelo': { cm: 30, medida: 'comprimento' },
+  esqui: { cm: 170, medida: 'comprimento' },
+  'gol-de-handebol': { cm: 300, medida: 'comprimento' },
 };
 
 /**
@@ -165,6 +178,15 @@ export const CATEGORIAS: Record<string, string[]> = {
     'skate', 'patinete', 'treno', 'bicicleta', 'lambreta', 'motocicleta', 'carro', 'van', 'caminhonete', 'carro-de-corrida',
     'ambulancia', 'caminhao', 'caminhao-de-bombeiros', 'onibus', 'helicoptero', 'aviao', 'titanic',
   ],
+  // 21/11/2026: a fazenda (os bichos de pé, mais os de casa deitados) e o esporte (as bolas e o que se usa no jogo)
+  fazenda: [
+    'ovo', 'pintinho', 'galo', 'ganso', 'porco', 'ovelha', 'cabra', 'cachorro', 'vaca', 'cavalo', 'pessoa', 'trator', 'casa',
+    'abelha', 'camundongo', 'milho', 'coelho', 'gato',
+  ],
+  esportes: [
+    'bola-de-beisebol', 'bola-de-volei', 'bola-de-futebol', 'bola-de-basquete', 'pedra-de-curling', 'patins-de-gelo', 'skate',
+    'treno', 'esqui', 'bicicleta', 'gol-de-handebol', 'carro-de-corrida', 'campo-de-futebol',
+  ],
 };
 
 /**
@@ -201,7 +223,7 @@ export const CONHECIDOS = new Set([
  * trocável para o teste. Com `rodada`, tenta primeiro a faixa da curva de dificuldade (com a referência conhecida, quando
  * ela pede), depois só a faixa, e por fim qualquer par bom: a categoria pequena nunca fica sem rodada.
  */
-export function sortearPar(usados: Set<string>, ids = Object.keys(OBJETOS), aleatorio = Math.random, rodada?: number): [string, string] {
+export function sortearPar(usados: Set<string>, ids = Object.keys(OBJETOS), aleatorio = Math.random, rodada?: number, estimados?: Set<string>): [string, string] {
   const embaralhados = embaralhar([...ids], aleatorio);
   const razao = (a: string, b: string) => Math.max(OBJETOS[a].cm, OBJETOS[b].cm) / Math.min(OBJETOS[a].cm, OBJETOS[b].cm);
   const faixa = rodada === undefined ? null : faixaDaRodada(rodada);
@@ -221,6 +243,9 @@ export function sortearPar(usados: Set<string>, ids = Object.keys(OBJETOS), alea
       }
     }
   }
+  // 21/11/2026: na categoria pequena (Esportes, 13 objetos), antes de esquecer tudo, só o que já foi ESTIMADO fica de fora:
+  // a referência pode voltar, o objeto a estimar nunca repete na partida
+  if (estimados && usados.size > estimados.size) return sortearPar(new Set(estimados), ids, aleatorio, rodada, estimados);
   return usados.size > 0 ? sortearPar(new Set(), ids, aleatorio, rodada) : ['cavalo', 'girafa'];
 }
 
@@ -253,6 +278,8 @@ export const tamanho: Definicao = {
     let fase: Fase = 'estimando';
     let par: [string, string] = ['gato', 'cavalo'];
     const usados = new Set<string>();
+    /** Os objetos já estimados na partida (nunca repetem). */
+    const estimados = new Set<string>();
     const palpites = new Map<number, number>();
     const confirmaram = new Set<number>();
     /** Os pontos de cada um na última revelação. */
@@ -262,8 +289,9 @@ export const tamanho: Definicao = {
     let recorde: { antes: number | null; novo: boolean } | null = null;
 
     function novaRodada() {
-      par = sortearPar(usados, ids, Math.random, rodada);
+      par = sortearPar(usados, ids, Math.random, rodada, estimados);
       par.forEach((id) => usados.add(id));
+      estimados.add(par[1]);
       palpites.clear();
       confirmaram.clear();
       daRodada.clear();

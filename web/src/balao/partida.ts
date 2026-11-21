@@ -55,6 +55,8 @@ export interface Participante {
   avatar: number | string | null;
   /** O lugar na largada (e a cor dos balões). */
   largada: number;
+  /** AS DUPLAS (21/11/2026): o time (a cor dos balões passa a ser a dele); sem duplas, cada um por si. */
+  equipe?: number;
 }
 
 export interface KartLocal {
@@ -95,6 +97,8 @@ export interface OpcoesDaPartida {
   /** O meu kart anda pelo cérebro dos robôs (o piloto automático dos testes). */
   autopiloto?: () => boolean;
   participantes: Participante[];
+  /** As duplas: o item e a batida não pegam quem é do mesmo time, e vence o time que sobrar. */
+  duplas?: boolean;
   /** Os ids que andam AQUI, pelo cérebro do robô (o Solo). */
   robos?: number[];
   /** A dificuldade deles (só o Solo; sem ela, o médio, que é o robô de antes). */
@@ -156,6 +160,9 @@ export function criarPartida(o: OpcoesDaPartida) {
   let lidos = 0;
 
   const local = (id: number) => locais.find((k) => k.id === id);
+  const equipeDe = (id: number) => o.participantes.find((q) => q.id === id)?.equipe;
+  /** Da mesma dupla (e não é a mesma pessoa): o item e a batida não pegam. */
+  const mesmaEquipe = (a: number, b: number) => !!o.duplas && a !== b && equipeDe(a) !== undefined && equipeDe(a) === equipeDe(b);
   /** Onde alguém está no passo `m`: o kart daqui, ou o rival pelo que chegou. */
   const posicaoDe = (id: number, m: number): { x: number; y: number; a: number } | null => {
     const l = local(id);
@@ -236,14 +243,18 @@ export function criarPartida(o: OpcoesDaPartida) {
 
   const andarKart = (l: KartLocal) => {
     const k = l.kart;
-    if (!temBalao(l.id)) return;
+    /**
+     * QUEM SAIU CONTINUA (21/11/2026): sem balão, o kart vira FANTASMA. Segue andando, pega caixas e solta itens (que pegam os
+     * outros), mas não é atingido, não bate e não vence.
+     */
+    const fantasma = !temBalao(l.id);
     const auto = l === meu && (o.autopiloto?.() ?? false);
     let c: Comandos;
     if (l.memoria || auto) {
       if (!l.memoria) l.memoria = novaMemoria(0.6);
       const rivais: { x: number; y: number }[] = [];
       for (const q of o.participantes) {
-        if (q.id === l.id || !temBalao(q.id)) continue;
+        if (q.id === l.id || !temBalao(q.id) || mesmaEquipe(q.id, l.id)) continue;
         const pos = posicaoDe(q.id, n);
         if (pos) rivais.push(pos);
       }
@@ -309,6 +320,7 @@ export function criarPartida(o: OpcoesDaPartida) {
     }
     l.usavaAntes = usa;
     if (l.escudo && n >= l.escudo.n + VIDA_DA_ALFACE) l.escudo = null;
+    if (fantasma) return;
 
     if (!solo && l === meu) baterNaSala(l);
 
@@ -316,7 +328,7 @@ export function criarPartida(o: OpcoesDaPartida) {
     if (n < l.ultimoEstouro + INVULNERAVEL) return;
     lerEventos();
     for (const e of o.eventos) {
-      if ((e.tipo !== 'repolho' && e.tipo !== 'lama') || e.dono === l.id || gastos.has(e.id) || l.levados.has(e.id)) continue;
+      if ((e.tipo !== 'repolho' && e.tipo !== 'lama') || e.dono === l.id || mesmaEquipe(e.dono, l.id) || gastos.has(e.id) || l.levados.has(e.id)) continue;
       const c = e.tipo === 'repolho' ? caminhos.get(e.id) : undefined;
       const pegou = e.tipo === 'repolho' ? !!c && repolhoPegou(c, e.n, n, k.x, k.y) : lamaPegou(e.x, e.y, e.n, n, k.x, k.y);
       if (!pegou) continue;
@@ -364,7 +376,7 @@ export function criarPartida(o: OpcoesDaPartida) {
     if (n < l.ultimoEstouro + INVULNERAVEL) return;
     const k = l.kart;
     for (const q of o.participantes) {
-      if (q.id === l.id || !temBalao(q.id) || !batidaLivre(l.id, q.id)) continue;
+      if (q.id === l.id || !temBalao(q.id) || mesmaEquipe(q.id, l.id) || !batidaLivre(l.id, q.id)) continue;
       const r = o.rivais.get(q.id);
       const ali = r ? rivalEm(r.posicoes, n) : null;
       const antes = r ? rivalEm(r.posicoes, n - 4) : null;
@@ -384,7 +396,7 @@ export function criarPartida(o: OpcoesDaPartida) {
     for (let i = 0; i < locais.length; i++) {
       for (let j = i + 1; j < locais.length; j++) {
         const A = locais[i], B = locais[j];
-        if (!temBalao(A.id) || !temBalao(B.id) || !batidaLivre(A.id, B.id)) continue;
+        if (!temBalao(A.id) || !temBalao(B.id) || mesmaEquipe(A.id, B.id) || !batidaLivre(A.id, B.id)) continue;
         if (Math.hypot(A.kart.x - B.kart.x, A.kart.y - B.kart.y) >= RAIO_DA_BATIDA) continue;
         const perde = quemPerde(Math.abs(A.kart.v), Math.abs(B.kart.v));
         if (!perde) continue;
@@ -397,19 +409,38 @@ export function criarPartida(o: OpcoesDaPartida) {
     }
   };
 
-  /** O Solo acaba quando eu fico sem balão, quando os robôs ficam, ou quando o tempo acaba. */
+  /** A ordem em que cada um ficou sem balão (1 = o primeiro): quem saiu depois fica na frente. */
+  const saidas = new Map<number, number>();
+  /**
+   * `a` ficou na frente de `b`? Nas duplas, primeiro o time: o que ainda tem alguém com balão, depois o que tem mais balões e
+   * mais estouros; entre os do mesmo time (ou sem duplas), cada um: com balão na frente, mais balões, mais estouros, e quem
+   * saiu depois.
+   */
+  const naFrente = (a: number, b: number): boolean => {
+    const placar = (ids: number[]) => [ids.some(temBalao) ? 1 : 0, ids.reduce((s, id) => s + baloesDe(id), 0), ids.reduce((s, id) => s + (local(id)?.estouros ?? 0), 0)];
+    const comparar = (x: number[], y: number[]) => {
+      for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] > y[i] ? 1 : -1;
+      return 0;
+    };
+    if (o.duplas && equipeDe(a) !== equipeDe(b)) {
+      const time = (e: number | undefined) => o.participantes.filter((q) => q.equipe === e).map((q) => q.id);
+      const c = comparar(placar(time(equipeDe(a))), placar(time(equipeDe(b))));
+      if (c) return c > 0;
+    }
+    const c = comparar([...placar([a]), saidas.get(a) ?? Infinity], [...placar([b]), saidas.get(b) ?? Infinity]);
+    return c > 0;
+  };
+
+  /** O Solo acaba quando sobra um (nas duplas, um time) com balão, ou quando o tempo acaba; sem balão, eu sigo de fantasma. */
   const conferirFimDoSolo = () => {
     if (acabou || !meu || !o.aoFim) return;
+    for (const q of o.participantes) if (!temBalao(q.id) && !saidas.has(q.id)) saidas.set(q.id, saidas.size + 1);
     const vivos = o.participantes.filter((q) => temBalao(q.id));
-    const euVivo = temBalao(meu.id);
-    if (euVivo && vivos.length > 1 && n < DURACAO_PASSOS) return;
+    const lados = o.duplas ? new Set(vivos.map((q) => q.equipe)).size : vivos.length;
+    if (lados > 1 && n < DURACAO_PASSOS) return;
     acabou = true;
-    const sobra = baloesDe(meu.id);
-    // quem tem balão fica na frente de quem saiu; entre os que têm, mais balões, e depois mais estouros
-    const naFrente = euVivo
-      ? (o.robos ?? []).filter((id) => baloesDe(id) > sobra || (baloesDe(id) === sobra && (local(id)?.estouros ?? 0) > meu.estouros)).length
-      : vivos.length;
-    o.aoFim({ posicao: 1 + naFrente, total: o.participantes.length, baloes: sobra, estouros: meu.estouros, passos: Math.min(n, DURACAO_PASSOS) });
+    const frente = o.participantes.filter((q) => q.id !== meu.id && naFrente(q.id, meu.id)).length;
+    o.aoFim({ posicao: 1 + frente, total: o.participantes.length, baloes: baloesDe(meu.id), estouros: meu.estouros, passos: Math.min(n, DURACAO_PASSOS) });
   };
 
   return {
@@ -428,13 +459,16 @@ export function criarPartida(o: OpcoesDaPartida) {
     get acabou() {
       return acabou;
     },
+    mesmaEquipe,
+    naFrente,
     /** Um passo de 1/60 s. */
     passo() {
       n++;
       lerEventos();
       for (const l of locais) andarKart(l);
       if (solo) baterNoSolo();
-      if (meu && temBalao(meu.id) && n % 4 === 0) mandarPosicao(meu);
+      // o fantasma também manda a posição (os outros o veem, e o servidor confere os itens dele)
+      if (meu && n % 4 === 0) mandarPosicao(meu);
       for (const l of locais) {
         for (const [id, m] of l.previstos) {
           if (n - m <= 180) continue;

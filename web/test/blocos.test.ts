@@ -310,8 +310,8 @@ function limpaEm(e: Sim.Estado, d: number): Sim.Jogada[] | null {
   return null;
 }
 
-test('quebra-cabeça: 20 fases, cada uma sem trio no começo, que se limpa nas trocas dela e não em menos', () => {
-  assert.equal(Sim.QUEBRA_CABECAS.length, 20);
+test('quebra-cabeça: 40 fases (20 de 19/11 e 20 de 21/11/2026), cada uma sem trio no começo, que se limpa nas trocas dela e não em menos', () => {
+  assert.equal(Sim.QUEBRA_CABECAS.length, 40);
   Sim.QUEBRA_CABECAS.forEach((q, n) => {
     const e = Sim.criar(1, 0, 1, n);
     assert.equal(e.trocas, q.trocas);
@@ -339,4 +339,19 @@ test('quebra-cabeça: a pilha não sobe, o "subir" não faz nada, e acabadas as 
   }
   if (e.fim !== 'limpou') assert.equal(e.fim, 'falhou');
   assert.equal(e.trocas, 0);
+});
+
+test('o treino da cadeia (21/11/2026): em cada lição nada some sozinho, e a troca dela solta a cadeia prometida', async () => {
+  const { LICOES_DA_CADEIA, montarLicao } = await import('../src/blocos/treino.ts');
+  assert.ok(LICOES_DA_CADEIA.length >= 4);
+  LICOES_DA_CADEIA.forEach((licao, i) => {
+    const parada = montarLicao(i).e;
+    for (let k = 0; k < 30; k++) Sim.passo(parada);
+    assert.ok(parada.estado.every((s) => s !== Sim.LIMPANDO), `lição ${i + 1}: some sozinha`);
+    const { e, l, c } = montarLicao(i);
+    assert.ok(Sim.podeTrocar(e, l, c), `lição ${i + 1}: a troca não vale`);
+    Sim.passo(e, [[e.passo, 0, l, c]]);
+    estabilizar(e);
+    assert.ok(e.maiorCadeia >= licao.cadeia, `lição ${i + 1}: cadeia ${e.maiorCadeia}, prometida ${licao.cadeia}`);
+  });
 });

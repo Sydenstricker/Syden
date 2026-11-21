@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { carregarCoelho, copiarCoelho, type CoelhoCopiado, type CoresDoCoelho } from '../coelho3d';
-import { COMPRIMENTO_DA_RETA, FAIXAS, FORA_PASSOS, poseNaFaixa, trechoEm, type Peca, type Pista } from './sim';
+import { BOX_COMPRIMENTO, COMPRIMENTO_DA_RETA, FAIXAS, FORA_PASSOS, poseNaFaixa, trechoEm, type Peca, type Pista } from './sim';
 
 /**
  * A CENA DOS CARRINHOS DA TOCA (06/11/2026): a pista de sim.ts montada com as peças largas do Toy Car Kit da Kenney (CC0,
@@ -276,6 +276,42 @@ export class CenaDosCarrinhos {
   private pista: THREE.Group | null = null;
   /** A MARCA DA CURVA CHEGANDO (20/11/2026): a seta pintada na minha faixa, na entrada da próxima curva. */
   private marca: THREE.Mesh | null = null;
+  /** O BOX da resistência (21/11/2026): faixinhas no chão da faixa, no trecho antes da linha. */
+  private box: THREE.Group | null = null;
+  private faixaDoBox = -1;
+
+  /** Marca (ou tira, com null) o box na faixa: o trecho de BOX_COMPRIMENTO antes da linha de chegada. */
+  marcarBox(faixa: number | null) {
+    if (this.morta || !this.pista) return;
+    if (faixa === null) {
+      if (this.box) this.box.visible = false;
+      return;
+    }
+    if (!this.box || this.faixaDoBox !== faixa) {
+      if (this.box) {
+        this.pista.remove(this.box);
+        this.box.traverse((o) => {
+          const m = o as THREE.Mesh;
+          if (m.isMesh) m.geometry.dispose();
+        });
+      }
+      this.box = new THREE.Group();
+      this.faixaDoBox = faixa;
+      const mat = new THREE.MeshBasicMaterial({ color: '#4fc3f7', transparent: true, opacity: 0.7, depthWrite: false });
+      const volta = this.tracado.volta[faixa];
+      for (let s = volta - BOX_COMPRIMENTO + 0.25; s < volta; s += 0.5) {
+        const g = new THREE.PlaneGeometry(0.5, 0.18);
+        g.rotateX(-Math.PI / 2);
+        const m = new THREE.Mesh(g, mat);
+        const pose = poseNaFaixa(this.tracado, faixa, s);
+        m.position.set(pose.x, ALTURA_DA_PISTA + 0.025, pose.z);
+        m.rotation.set(0, -pose.rumo, 0);
+        this.box.add(m);
+      }
+      this.pista.add(this.box);
+    }
+    this.box.visible = true;
+  }
 
   /**
    * Põe (ou tira, com null) a marca da curva que vem na faixa: âmbar; vermelha quando já é hora de soltar o acelerador. Com

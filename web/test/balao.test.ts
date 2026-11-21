@@ -244,8 +244,9 @@ test('a dificuldade dos robôs do Solo: o médio é o robô de antes, o fácil e
   const estourosDos = (dificuldade: 'facil' | 'medio' | 'dificil') => {
     let total = 0;
     let aguentei = 0;
-    for (const p of arenas) {
-      for (const semente of [11, 22, 33, 44]) {
+    // as três arenas da medida de 20/11/2026 (as de 21/11 ficam no teste da partida inteira)
+    for (const p of arenas.filter((x) => ['horta', 'praia', 'neve'].includes(x.arena.id))) {
+      for (const semente of [11, 22, 33, 44, 55, 66, 77, 88]) {
         const robos = [-1, -2, -3];
         const participantes = [1, ...robos].map((id, i) => ({ id, nome: String(id), avatar: null, largada: i }));
         const eventos: EventoDoBalao[] = [];
@@ -278,4 +279,68 @@ test('a dificuldade dos robôs do Solo: o médio é o robô de antes, o fácil e
   console.log(`os meus balões estourados pelos robôs: fácil ${JSON.stringify(facil)}, médio ${JSON.stringify(medio)}, difícil ${JSON.stringify(dificil)}`);
   assert.ok(medio.total > facil.total * 1.5, `médio ${medio.total} contra fácil ${facil.total}`);
   assert.ok(dificil.aguentei < medio.aguentei, `aguentei ${dificil.aguentei} s contra o difícil e ${medio.aguentei} s contra o médio`);
+});
+
+test('as duplas no Solo (21/11/2026): o item e a batida nunca pegam o colega, e acaba quando sobra um time', () => {
+  for (const p of arenas) {
+    const eu = 1;
+    const robos = [-1, -2, -3];
+    // os lugares 0 e 2 contra 1 e 3 (equipeDaLargada em JogoBalao.tsx)
+    const participantes = [eu, ...robos].map((id, i) => ({ id, nome: String(id), avatar: null, largada: i, equipe: i % 2 }));
+    const time = new Map(participantes.map((q) => [q.id, q.equipe]));
+    const eventos: EventoDoBalao[] = [];
+    let fim: ResultadoDoSolo | null = null;
+    const partida = criarPartida({
+      arena: p,
+      comandos: { acelera: false, freia: false, vira: 0, derrapa: false },
+      eu,
+      piloto: true,
+      autopiloto: () => true,
+      participantes,
+      robos,
+      duplas: true,
+      semente: 777,
+      baloes: new Map(participantes.map((q) => [q.id, BALOES])),
+      rivais: new Map(),
+      eventos,
+      aoFim: (r) => (fim = r),
+    });
+    while (!fim && partida.n < DURACAO_PASSOS + 10) partida.passo();
+    assert.ok(fim, `${p.arena.id}: acabou`);
+    for (const e of eventos) if (e.tipo === 'estourou') assert.notEqual(time.get(e.alvo), time.get(e.dono), `${p.arena.id}: o colega estourou o balão do colega`);
+    const vivos = new Set(participantes.filter((q) => partida.temBalao(q.id)).map((q) => q.equipe));
+    assert.ok(vivos.size <= 1 || partida.n >= DURACAO_PASSOS, `${p.arena.id}: sobraram ${vivos.size} times antes do tempo`);
+  }
+});
+
+test('quem saiu continua (21/11/2026): sem balão, o meu kart segue andando de fantasma, e nada mais o pega', () => {
+  const p = arenas[0];
+  const eu = 1;
+  const robos = [-1, -2, -3];
+  const participantes = [eu, ...robos].map((id, i) => ({ id, nome: String(id), avatar: null, largada: i }));
+  const eventos: EventoDoBalao[] = [];
+  const baloes = new Map(participantes.map((q) => [q.id, BALOES]));
+  const partida = criarPartida({
+    arena: p,
+    comandos: { acelera: true, freia: false, vira: 0.3, derrapa: false },
+    eu,
+    piloto: true,
+    participantes,
+    robos,
+    semente: 5,
+    baloes,
+    rivais: new Map(),
+    eventos,
+    aoFim: () => {},
+  });
+  // os meus três balões estouram de uma vez (a partida lê o evento como o do servidor)
+  eventos.push({ tipo: 'estourou', alvo: eu, id: 'x', dono: -1, baloes: 0, n: 0 });
+  partida.passo();
+  assert.equal(partida.temBalao(eu), false);
+  const meu = partida.meu!;
+  const antes = { x: meu.kart.x, y: meu.kart.y };
+  for (let i = 0; i < 120; i++) partida.passo();
+  assert.ok(Math.hypot(meu.kart.x - antes.x, meu.kart.y - antes.y) > 30, 'o fantasma anda');
+  assert.equal(partida.acabou, false, 'a partida segue com os três robôs');
+  assert.equal(eventos.filter((e) => e.tipo === 'estourou' && e.alvo === eu).length, 1, 'nada mais estoura no fantasma');
 });

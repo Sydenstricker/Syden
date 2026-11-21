@@ -54,11 +54,50 @@ export interface EstadoNaval {
   prontos: [boolean, boolean];
   /** A variante SALVO (19/11/2026): cada vez é uma rajada, com tantos tiros quantos navios a pessoa ainda tem. */
   salvo: boolean;
-  /** A última rajada do salvo: as casas e o que cada tiro achou. */
-  rajada: { lado: Lado; tiros: { casa: number; resultado: Resultado }[] } | null;
+  /** A última rajada do salvo (ou do tiro em cruz, `arma`): as casas e o que cada tiro achou. */
+  rajada: { lado: Lado; tiros: { casa: number; resultado: Resultado }[]; arma?: 'cruz' } | null;
   /** O lado do mar (8, 10 ou 12) e a frota dele (MARES). */
   n: number;
   frota: readonly number[];
+  /** A variante das ARMAS ESPECIAIS (21/11/2026): o tiro em cruz e o sonar, uma vez por partida cada, por lado. */
+  armas?: boolean;
+  usadas?: [{ cruz: boolean; sonar: boolean }, { cruz: boolean; sonar: boolean }];
+  /** Os sonares já usados: quem usou, o centro da área de 3 × 3 e quantos navios do outro passam por ela. */
+  sonares?: { lado: Lado; centro: number; navios: number }[];
+}
+
+/**
+ * AS ARMAS ESPECIAIS (21/11/2026, o lote D da segunda auditoria), escolhidas na largada; só sem o salvo (lá cada vez já é uma
+ * rajada). Cada lado tem, UMA VEZ POR PARTIDA, as duas, no lugar do tiro da vez:
+ * - o TIRO EM CRUZ: a casa escolhida e as quatro vizinhas (em cima, embaixo e dos lados), as que ainda não levaram tiro. Caem
+ *   todas juntas, e a vez passa sempre (acertar não dá outro tiro);
+ * - o SONAR: diz quantos navios do outro passam pela área de 3 × 3 em volta da casa escolhida, sem dizer onde. Gasta a vez.
+ * O servidor confere e calcula tudo; o que o sonar diz aparece para todos (a mesa inteira vê a área e o número, como no papel
+ * em que se fala em voz alta): quem é dono do mar já sabe onde estão os navios, e quem usou já tem o número, então nenhum
+ * navio escondido aparece para ninguém que não o tivesse.
+ */
+export type Arma = 'cruz' | 'sonar';
+/** As casas da cruz em volta de `casa` (só as do mar). */
+export function casasDaCruz(casa: number, n = LADO_DO_MAR): number[] {
+  const l = Math.floor(casa / n);
+  const c = casa % n;
+  return [
+    [0, 0],
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ]
+    .filter(([dl, dc]) => l + dl >= 0 && l + dl < n && c + dc >= 0 && c + dc < n)
+    .map(([dl, dc]) => (l + dl) * n + c + dc);
+}
+/** As casas da área de 3 × 3 do sonar em volta de `casa` (só as do mar). */
+export function casasDoSonar(casa: number, n = LADO_DO_MAR): number[] {
+  const l = Math.floor(casa / n);
+  const c = casa % n;
+  const casas: number[] = [];
+  for (let dl = -1; dl <= 1; dl++) for (let dc = -1; dc <= 1; dc++) if (l + dl >= 0 && l + dl < n && c + dc >= 0 && c + dc < n) casas.push((l + dl) * n + c + dc);
+  return casas;
 }
 
 /** O que se vê de um mar: os tiros (0 nada, 1 água, 2 fogo) e os navios que quem pede pode ver. */
@@ -179,6 +218,103 @@ function rajada(e: EstadoNaval, lado: Lado, corpo: Record<string, unknown>): str
     return { proximo: lado, vencedor: lado };
   }
   return { proximo: outro };
+}
+
+/** Uma ARMA ESPECIAL de `lado` (a cruz ou o sonar), conferida aqui: a variante ligada, a arma ainda não usada, a casa no mar. */
+function usarArma(e: EstadoNaval, lado: Lado, corpo: Record<string, unknown>): string | { proximo: Lado; vencedor?: Lado } {
+  if (!e.armas || e.salvo || !e.usadas) return 'Esta partida não tem armas especiais.';
+  const arma = corpo.arma;
+  if (arma !== 'cruz' && arma !== 'sonar') return 'Arma desconhecida.';
+  if (e.usadas[lado][arma]) return 'Você já usou essa arma.';
+  const casa = Number(corpo.casa);
+  if (!Number.isInteger(casa) || casa < 0 || casa >= e.n * e.n) return 'Escolha uma casa do mar.';
+  const outro: Lado = lado === 0 ? 1 : 0;
+  const alvo = e.mares[outro];
+  if (arma === 'sonar') {
+    const area = new Set(casasDoSonar(casa, e.n));
+    const navios = alvo.navios.filter((navio) => navio.some((c) => area.has(c))).length;
+    e.usadas[lado].sonar = true;
+    (e.sonares ??= []).push({ lado, centro: casa, navios });
+    return { proximo: outro };
+  }
+  if (alvo.tiros[casa]) return 'Você já atirou nessa casa.';
+  const casas = casasDaCruz(casa, e.n).filter((c) => !alvo.tiros[c]);
+  for (const c of casas) alvo.tiros[c] = true;
+  const tiros = casas.map((c) => {
+    const navio = alvo.navios.find((x) => x.includes(c));
+    return { casa: c, resultado: (!navio ? 'agua' : afundado(alvo, navio) ? 'afundou' : 'acertou') as Resultado };
+  });
+  e.usadas[lado].cruz = true;
+  e.rajada = { lado, tiros, arma: 'cruz' };
+  // o "último" é o do meio da cruz (a coluna d'água cai nele)
+  const meio = tiros.find((x) => x.casa === casa)!;
+  e.ultimo = { lado, casa, resultado: tiros.some((x) => x.resultado === 'afundou') ? 'afundou' : tiros.some((x) => x.resultado === 'acertou') ? 'acertou' : meio.resultado };
+  if (alvo.navios.every((x) => afundado(alvo, x))) {
+    e.revelado = true;
+    return { proximo: lado, vencedor: lado };
+  }
+  return { proximo: outro };
+}
+
+/**
+ * O que o robô de `lado` tira dos SONARES que usou: as casas que um sonar de zero navios garante vazias viram água (ele nunca
+ * atira nelas), e as casas sem tiro das áreas em que o sonar achou navio, e onde ainda não há fogo, são as que ele quer.
+ */
+export function leituraDosSonares(e: EstadoNaval, lado: Lado, visto: MarPublico): { visto: MarPublico; promissoras: number[] } {
+  const meus = (e.sonares ?? []).filter((s) => s.lado === lado);
+  if (!meus.length) return { visto, promissoras: [] };
+  const tiros = visto.tiros.slice();
+  const promissoras = new Set<number>();
+  const afundadas = new Set(visto.navios.filter((x) => x.afundado).flatMap((x) => x.casas));
+  for (const s of meus) {
+    const area = casasDoSonar(s.centro, e.n);
+    // os navios já afundados que passam pela área contam como achados
+    const achados = visto.navios.filter((x) => x.afundado && x.casas.some((c) => area.includes(c))).length;
+    if (s.navios - achados <= 0) {
+      for (const c of area) if (tiros[c] === 0) tiros[c] = 1;
+    } else if (!area.some((c) => visto.tiros[c] === 2 && !afundadas.has(c))) {
+      for (const c of area) if (tiros[c] === 0) promissoras.add(c);
+    }
+  }
+  return { visto: { ...visto, tiros }, promissoras: [...promissoras].filter((c) => tiros[c] === 0) };
+}
+
+/**
+ * A jogada do ROBÔ COM AS ARMAS ESPECIAIS (21/11/2026): sem fogo de navio vivo à vista, usa o SONAR na área de 3 × 3 com mais
+ * casas sem tiro (depois de uns tiros, para não gastá-lo no escuro), e depois procura nas áreas em que o sonar achou navio; o
+ * TIRO EM CRUZ vai na casa que ele escolheria, quando ela abre quatro casas novas ou mais. O fácil usa as duas ao acaso. Ele só
+ * olha o que a pessoa no lugar dele veria (e o número do próprio sonar).
+ */
+export function jogadaDoRoboComArmas(e: EstadoNaval, lado: Lado, nivel: Nivel, sorte: () => number): Record<string, unknown> {
+  const alvo = e.mares[lado === 0 ? 1 : 0];
+  const { visto, promissoras } = leituraDosSonares(e, lado, marPublico(alvo, false));
+  const tamanhos = restam(alvo);
+  const usadas = e.usadas?.[lado] ?? { cruz: true, sonar: true };
+  const afundadas = new Set(visto.navios.filter((x) => x.afundado).flatMap((x) => x.casas));
+  const fogoVivo = visto.tiros.some((t, i) => t === 2 && !afundadas.has(i));
+  const meusTiros = alvo.tiros.filter(Boolean).length;
+  const livres = [...visto.tiros.keys()].filter((i) => visto.tiros[i] === 0);
+  const facil = nivel === 'facil';
+  if (!fogoVivo && !usadas.sonar && !promissoras.length && meusTiros >= 4 && (!facil || sorte() < 0.3)) {
+    let melhor = -1;
+    let melhorConta = -1;
+    for (const c of livres) {
+      const conta = casasDoSonar(c, e.n).filter((x) => visto.tiros[x] === 0).length + sorte() * 0.5;
+      if (conta > melhorConta) {
+        melhorConta = conta;
+        melhor = c;
+      }
+    }
+    if (melhor >= 0) return { arma: 'sonar', casa: melhor };
+  }
+  // procurar nas áreas promissoras do sonar: as outras casas livres contam como evitadas
+  const fora = !fogoVivo && promissoras.length ? livres.filter((c) => !promissoras.includes(c)) : [];
+  const casa = tiroNoNivel(visto, tamanhos, nivel, sorte, fora);
+  if (!fogoVivo && !usadas.cruz && casa >= 0 && (!facil || sorte() < 0.4)) {
+    const novas = casasDaCruz(casa, e.n).filter((c) => !alvo.tiros[c]).length;
+    if (novas >= 4) return { arma: 'cruz', casa };
+  }
+  return { casa };
 }
 
 /** Quanto tempo a montagem espera: o mesmo da jogada na mesa. */
@@ -354,7 +490,8 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
       };
       const mesa = duelo<EstadoNaval>(
         {
-          escolhas: (corpo) => ({ salvo: corpo.salvo === true, mar: ladoDoMar(corpo.mar) }),
+          // as armas especiais não se somam ao salvo (lá cada vez já é uma rajada)
+          escolhas: (corpo) => ({ salvo: corpo.salvo === true, mar: ladoDoMar(corpo.mar), armas: corpo.armas === true && corpo.salvo !== true }),
           inicio: (escolhas) =>
             (estado = {
               mares: [novoMar(ladoDoMar(escolhas.mar)), novoMar(ladoDoMar(escolhas.mar))],
@@ -366,6 +503,12 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
               rajada: null,
               n: ladoDoMar(escolhas.mar),
               frota: MARES[ladoDoMar(escolhas.mar)],
+              armas: escolhas.armas === true,
+              usadas: [
+                { cruz: false, sonar: false },
+                { cruz: false, sonar: false },
+              ],
+              sonares: [],
             }),
           // o tiro já revelou o mar: voltar seria espiar
           semVoltar: true,
@@ -403,6 +546,7 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
           },
           jogar(e, lado, corpo) {
             if (e.salvo) return rajada(e, lado, corpo);
+            if (corpo.arma !== undefined) return usarArma(e, lado, corpo);
             const casa = Number(corpo.casa);
             if (!Number.isInteger(casa) || casa < 0 || casa >= e.n * e.n) return 'Escolha uma casa do mar.';
             const outro: Lado = lado === 0 ? 1 : 0;
@@ -433,13 +577,16 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
           robo: (e, lado, sorte, nivel) => {
             const alvo = e.mares[lado === 0 ? 1 : 0];
             const visto = marPublico(alvo, false);
+            if (e.armas && !e.salvo) return jogadaDoRoboComArmas(e, lado, nivel, sorte);
             if (!e.salvo) return { casa: tiroNoNivel(visto, restam(alvo), nivel, sorte) };
             const casas: number[] = [];
             for (let k = tirosDaRajada(e, lado); k > 0; k--) casas.push(tiroNoNivel(visto, restam(alvo), nivel, sorte, casas));
             return { casas };
           },
-          descrever: (e) =>
-            e.rajada && e.salvo
+          descrever: (e, _lado, corpo) =>
+            corpo.arma === 'sonar' && e.sonares?.length
+              ? `◎${nomeDaCasaDoMar(e.sonares[e.sonares.length - 1].centro, e.n)}:${e.sonares[e.sonares.length - 1].navios}`
+              : e.rajada && (e.salvo || (corpo.arma === 'cruz' && e.rajada.arma === 'cruz'))
               ? e.rajada.tiros.map((t) => nomeDaCasaDoMar(t.casa, e.n) + SINAL[t.resultado]).join(' ')
               : e.ultimo
                 ? nomeDaCasaDoMar(e.ultimo.casa, e.n) + SINAL[e.ultimo.resultado]
@@ -454,6 +601,10 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
               mar: e.n,
               frota: e.frota,
               rajada: e.rajada,
+              // as armas especiais (21/11/2026): quais cada lado já usou, e os sonares (a área e o número, para todos)
+              armas: e.armas === true,
+              usadas: e.usadas ?? null,
+              sonares: e.sonares ?? [],
               // quantos tiros cada lado tem na próxima rajada do salvo
               tirosDaRajada: e.salvo ? [tirosDaRajada(e, 0), tirosDaRajada(e, 1)] : null,
               // a precisão de cada lado: os tiros que deu e os que acertaram (no mar do outro)

@@ -12,8 +12,9 @@ import './jogosDePalavras.css';
  * - ESCREVENDO: a letra grande e uma caixa por categoria. O que se digita vai ao servidor sozinho, um
  *   instante depois de parar de digitar — assim, quando alguém aperta STOP, a palavra de todo mundo já
  *   está lá. O STOP só acende com tudo preenchido.
- * - CONFERINDO: as respostas de todo mundo, categoria por categoria. Clicar na resposta de outra pessoa
- *   diz "não vale"; a resposta cai quando mais da metade dos outros concorda. É a parte da conversa.
+ * - CONFERINDO: as respostas de todo mundo, UMA CATEGORIA DE CADA VEZ (21/11/2026), a turma inteira na mesma, com as
+ *   respostas lado a lado. Clicar na resposta de outra pessoa diz "não vale"; a resposta cai quando mais da metade dos
+ *   outros concorda (com dois, quando quem escreveu aceita). O "Pronto" de todos passa à próxima. É a parte da conversa.
  * - RESULTADO: os pontos de cada resposta, por alguns segundos, e a rodada seguinte começa sozinha.
  */
 export function JogoStop({
@@ -52,6 +53,14 @@ export function JogoStop({
     else if (estado.fase === 'resultado' && a.fase !== 'resultado') tocar('moeda');
     antesDoSom.current = { fase: estado.fase, rodada: estado.rodada };
   }, [estado.fase, estado.rodada]);
+
+  // A conferência passou à próxima categoria (21/11/2026): um som de carta virando.
+  const categoriaAtual = (estado as { categoriaAtual?: number | null }).categoriaAtual ?? null;
+  const categoriaAntes = useRef(categoriaAtual);
+  useEffect(() => {
+    if (categoriaAtual !== null && categoriaAntes.current !== null && categoriaAtual > categoriaAntes.current) tocar('carta');
+    categoriaAntes.current = categoriaAtual;
+  }, [categoriaAtual]);
 
   // Alguém apertou STOP: manda já o que está escrito, sem esperar a pausa da digitação.
   useEffect(() => {
@@ -128,6 +137,74 @@ export function JogoStop({
   // Conferência e resultado: as respostas de todo mundo, categoria por categoria.
   const conferindo = estado.fase === 'conferindo';
   const prontoEu = estado.prontos.includes(eu);
+  const extra = estado as EstadoStop & { categoriaAtual?: number | null; conferindoPorCategoriaMs?: number };
+
+  /** O botão de uma resposta: contestar a dos outros, aceitar a minha contestada; com os pontos no resultado. */
+  const resposta = (c: number, pessoa: NonNullable<EstadoStop['respostas']>[number], classe = '') => {
+    const r = pessoa.respostas[c];
+    const minha = pessoa.userId === eu;
+    const podeContestar = conferindo && !minha && r.texto.trim() !== '';
+    // a minha resposta contestada: posso aceitar que não vale (com dois, é o que a derruba)
+    const podeAceitar = conferindo && minha && r.contra > 0;
+    const marcada = podeAceitar ? r.aceita === true : r.contestei;
+    return (
+      <button
+        type="button"
+        className={`stop-resposta${classe}${r.valida ? '' : ' nao-vale'}${marcada ? ' contestei' : ''}`}
+        disabled={!podeContestar && !podeAceitar}
+        aria-pressed={podeContestar || podeAceitar ? marcada : undefined}
+        title={podeContestar || podeAceitar ? (marcada ? t('Desfazer') : podeAceitar ? t('Aceitar que não vale') : t('Não vale')) : undefined}
+        onClick={() => {
+          tocar('clique');
+          agir(podeAceitar ? { tipo: 'aceitar', categoria: c } : { tipo: 'contestar', categoria: c, alvo: pessoa.userId });
+        }}
+      >
+        <span className="stop-quem">{pessoa.username}</span>
+        <span className="stop-texto">{r.texto.trim() || '—'}</span>
+        {r.contra > 0 && <span className="stop-contra">✕{r.contra}</span>}
+        {r.pontos !== null && <span className="stop-pontos">+{r.pontos}</span>}
+      </button>
+    );
+  };
+
+  // A CONFERÊNCIA POR CATEGORIA (21/11/2026): a de agora, grande, com as respostas lado a lado; em cima, todas as categorias,
+  // a de agora marcada e as já conferidas esmaecidas.
+  const atual = conferindo ? (extra.categoriaAtual ?? null) : null;
+  if (atual !== null && atual >= 0 && atual < estado.categorias.length) {
+    return (
+      <div className="stop">
+        <PlacarAoVivo eu={eu} linhas={estado.placar} />
+        <ol className="stop-etapas">
+          {estado.categorias.map((categoria, c) => (
+            <li key={categoria} className={c === atual ? 'atual' : c < atual ? 'feita' : ''} aria-current={c === atual ? 'step' : undefined}>
+              {nomeDaCategoriaDoStop(categoria, t)}
+            </li>
+          ))}
+        </ol>
+        <h3 className="stop-categoria-atual">
+          <span className="stop-letra-pequena">{estado.letra}</span> {nomeDaCategoriaDoStop(estado.categorias[atual], t)}
+        </h3>
+        <p className="minijogo-situacao">
+          {estado.precisaAceite
+            ? t('Toque numa resposta que não vale. Com dois, ela só cai se quem escreveu aceitar.')
+            : t('Clique numa resposta que não vale. Ela cai se mais da metade concordar.')}
+        </p>
+        <ul className="stop-lado-a-lado">
+          {(estado.respostas ?? []).map((pessoa) => (
+            <li key={pessoa.userId}>{resposta(atual, pessoa, ' carta')}</li>
+          ))}
+        </ul>
+        <Relogio restante={restante} total={extra.conferindoPorCategoriaMs ?? 25_000} />
+        <div className="stop-rodape">
+          <span className="minijogo-situacao">{t('{n} de {total} prontos.', { n: estado.prontos.length, total: jogadores })}</span>
+          <button type="button" className="btn-primary" disabled={prontoEu} onClick={() => agir({ tipo: 'pronto' })}>
+            <Check size={16} aria-hidden="true" /> {t('Pronto')}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="stop">
       <PlacarAoVivo eu={eu} linhas={estado.placar} />
@@ -148,34 +225,9 @@ export function JogoStop({
           <section key={categoria}>
             <h4>{nomeDaCategoriaDoStop(categoria, t)}</h4>
             <ul>
-              {(estado.respostas ?? []).map((pessoa) => {
-                const r = pessoa.respostas[c];
-                const minha = pessoa.userId === eu;
-                const podeContestar = conferindo && !minha && r.texto.trim() !== '';
-                // a minha resposta contestada: posso aceitar que não vale (com dois, é o que a derruba)
-                const podeAceitar = conferindo && minha && r.contra > 0;
-                const marcada = podeAceitar ? r.aceita === true : r.contestei;
-                return (
-                  <li key={pessoa.userId}>
-                    <button
-                      type="button"
-                      className={`stop-resposta${r.valida ? '' : ' nao-vale'}${marcada ? ' contestei' : ''}`}
-                      disabled={!podeContestar && !podeAceitar}
-                      aria-pressed={podeContestar || podeAceitar ? marcada : undefined}
-                      title={podeContestar || podeAceitar ? (marcada ? t('Desfazer') : podeAceitar ? t('Aceitar que não vale') : t('Não vale')) : undefined}
-                      onClick={() => {
-                        tocar('clique');
-                        agir(podeAceitar ? { tipo: 'aceitar', categoria: c } : { tipo: 'contestar', categoria: c, alvo: pessoa.userId });
-                      }}
-                    >
-                      <span className="stop-quem">{pessoa.username}</span>
-                      <span className="stop-texto">{r.texto.trim() || '—'}</span>
-                      {r.contra > 0 && <span className="stop-contra">✕{r.contra}</span>}
-                      {r.pontos !== null && <span className="stop-pontos">+{r.pontos}</span>}
-                    </button>
-                  </li>
-                );
-              })}
+              {(estado.respostas ?? []).map((pessoa) => (
+                <li key={pessoa.userId}>{resposta(c, pessoa)}</li>
+              ))}
             </ul>
           </section>
         ))}

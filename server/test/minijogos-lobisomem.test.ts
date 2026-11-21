@@ -246,3 +246,81 @@ test('a história só aparece no fim, para todos, com o ataque, a proteção, a 
   assert.equal(v.historia.find((l: { tipo: string }) => l.tipo === 'ataque').salvo, true);
   assert.ok(v.jogadores.every((j: { papel: string | null }) => j.papel), 'no fim, todos os papéis aparecem');
 });
+
+/** Leva a partida de um dia ao julgamento de `acusado`, com todos os vivos votando nele e dizendo sim. */
+function julgar(m: ReturnType<typeof montar>, acusado: number) {
+  const vivos = m.naSala.filter((id) => m.ver(id).vivo);
+  const outro = vivos.find((x) => x !== acusado)!;
+  for (const id of vivos) m.jogo.acao(id, { tipo: 'voto', alvo: id === acusado ? outro : acusado });
+  assert.equal(m.ver(1).acusado, acusado);
+  m.jogo.acao(acusado, { tipo: 'pronto' });
+  for (const id of vivos) if (id !== acusado) m.jogo.acao(id, { tipo: 'julgamento', sim: true });
+}
+
+test('os papéis novos de 21/11/2026 entram no preparo e no sorteio', () => {
+  const c = ajustar(8, { lobos: 2, especiais: ['mascara', 'amuleto', 'carapaca'] });
+  assert.deepEqual(c.especiais, ['amuleto', 'carapaca', 'mascara']);
+  assert.deepEqual(papeisPara(6, ajustar(6, { lobos: 1, especiais: ['amuleto', 'carapaca', 'mascara'] })).sort(), ['aldeao', 'aldeao', 'amuleto', 'carapaca', 'lobisomem', 'mascara']);
+});
+
+test('a Carapaça aguenta o primeiro ataque calada, e o segundo leva', () => {
+  const m = comecar(6, ['carapaca'], 8);
+  const lobo = m.com('lobisomem')[0];
+  const car = m.com('carapaca')[0];
+  m.jogo.acao(lobo, { tipo: 'noite', alvo: car });
+  assert.deepEqual(m.ver(1).mortosDaNoite, [], 'ninguém morreu');
+  assert.ok(m.ver(car).vivo);
+  assert.equal(m.ver(lobo).jogadores.find((j: { userId: number }) => j.userId === car).papel, null, 'o papel continua escondido');
+  m.tique(); // dia
+  m.tique(); // ninguém votou
+  m.tique(); // veredito → noite 2
+  assert.equal(m.ver(1).fase, 'noite');
+  m.jogo.acao(lobo, { tipo: 'noite', alvo: car });
+  assert.deepEqual(m.ver(1).mortosDaNoite, [car]);
+});
+
+test('o Amuleto: a primeira vez que a vila o tira, ele quebra, a pessoa fica e o papel abre; a segunda vez, sai', () => {
+  const m = comecar(7, ['amuleto'], 9);
+  const lobo = m.com('lobisomem')[0];
+  const am = m.com('amuleto')[0];
+  const vitima = m.com('aldeao')[0];
+  m.jogo.acao(lobo, { tipo: 'noite', alvo: vitima });
+  m.tique(); // dia
+  julgar(m, am);
+  let v = m.ver(lobo);
+  assert.equal(v.fase, 'veredito');
+  assert.equal(v.eliminado, null);
+  assert.equal(v.amuletoQuebrou, am);
+  assert.ok(m.ver(am).vivo);
+  assert.equal(v.jogadores.find((j: { userId: number }) => j.userId === am).papel, 'amuleto', 'todos veem o papel');
+  m.tique(); // noite 2
+  const outra = m.com('aldeao').find((id) => m.ver(id).vivo)!;
+  m.jogo.acao(lobo, { tipo: 'noite', alvo: outra });
+  m.tique(); // dia 2
+  if (m.terminou()) return;
+  julgar(m, am);
+  v = m.ver(lobo);
+  assert.equal(v.eliminado, am, 'quebrado, não salva mais');
+});
+
+test('a Máscara tirada pela vila vence e a partida acaba; atacada de noite, só sai', () => {
+  const m = comecar(6, ['mascara'], 10);
+  const lobo = m.com('lobisomem')[0];
+  const mas = m.com('mascara')[0];
+  const vitima = m.com('aldeao')[0];
+  m.jogo.acao(lobo, { tipo: 'noite', alvo: vitima });
+  m.tique(); // dia
+  julgar(m, mas);
+  const v = m.ver(lobo);
+  assert.equal(v.fase, 'fim');
+  assert.equal(v.vencedor, 'mascara');
+  assert.equal(v.eliminado, mas);
+  assert.ok(m.terminou());
+
+  const m2 = comecar(6, ['mascara'], 11);
+  const lobo2 = m2.com('lobisomem')[0];
+  const mas2 = m2.com('mascara')[0];
+  m2.jogo.acao(lobo2, { tipo: 'noite', alvo: mas2 });
+  assert.deepEqual(m2.ver(1).mortosDaNoite, [mas2]);
+  assert.equal(m2.ver(1).vencedor, null);
+});

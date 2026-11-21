@@ -293,3 +293,54 @@ test('com a paciência, o piloto (um prato por vez) ainda entrega a maioria e fe
     }
   }
 });
+
+// ===== 21/11/2026: as fases do Solo, com cardápio e estrelas =====
+test('as fases: cada cardápio só sorteia dele, e o piloto (um prato por vez) tira ao menos 1 estrela em todas', async () => {
+  const { FASES_DA_COZINHA, estrelasDaCozinha, faseAberta, gorjetaDe } = await import('../src/cozinha/receitas');
+  assert.equal(new Set(FASES_DA_COZINHA.map((f) => f.id)).size, FASES_DA_COZINHA.length, 'ids diferentes');
+  // sem cardápio, o sorteio é o de sempre (a mesma semente dá a mesma sequência)
+  const sem = (seed: number) => {
+    let s = seed;
+    return () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
+  };
+  assert.deepEqual(sortearPedidos(sem(5), 30), sortearPedidos(sem(5), 30, IDS_DAS_RECEITAS));
+  const DT_ = 1 / 30;
+  for (const fase of FASES_DA_COZINHA) {
+    assert.ok(fase.estrelas[0] < fase.estrelas[1] && fase.estrelas[1] < fase.estrelas[2], fase.id);
+    for (const semente of [7, 99]) {
+      const ped = sortearPedidos(sem(semente), 80, fase.cardapio);
+      assert.ok(ped.every((id) => fase.cardapio.includes(id)), `${fase.id}: só do cardápio`);
+      const k = novaCozinha(fase.planta);
+      let t = 0;
+      const entrou = new Map<number, number>([0, 1, 2, 3].map((i) => [i, 0]));
+      let fila = [0, 1, 2, 3];
+      let prox = 4;
+      let pontos = 0;
+      let atual: number | null = null;
+      const resta = (i: number) => prazoDoPedidoMs(ped[i]) / 1000 - (t - entrou.get(i)!);
+      const trocar = (i: number) => {
+        fila = fila.filter((x) => x !== i);
+        entrou.set(prox, t);
+        fila.push(prox++);
+      };
+      while (t < DURACAO_MS / 1000) {
+        for (const i of [...fila]) if (resta(i) <= 0) (trocar(i), (pontos = Math.max(0, pontos - PENA_DO_PEDIDO_PERDIDO)));
+        if (atual === null || !fila.includes(atual)) atual = fila.find((i) => resta(i) >= 25) ?? fila[0];
+        const receita = ped[atual];
+        pilotar(k, receita);
+        if (passo(k, null, DT_, (itens) => confere(receita, itens)).some((e) => e.tipo === 'entregue')) {
+          pontos += RECEITAS[receita].pontos + gorjetaDe((t - entrou.get(atual)!) * 1000);
+          trocar(atual);
+          atual = null;
+        }
+        t += DT_;
+      }
+      assert.ok(estrelasDaCozinha(fase, pontos) >= 1, `${fase.id}/${semente}: ${pontos} pontos`);
+      assert.ok(estrelasDaCozinha(fase, pontos) < 3, `${fase.id}/${semente}: 3 estrelas sem esforço (${pontos})`);
+    }
+  }
+  // a primeira está aberta; a próxima abre com 1 estrela na anterior
+  assert.equal(faseAberta(0, () => undefined), true);
+  assert.equal(faseAberta(1, () => undefined), false);
+  assert.equal(faseAberta(1, (id) => (id === FASES_DA_COZINHA[0].id ? FASES_DA_COZINHA[0].estrelas[0] : undefined)), true);
+});

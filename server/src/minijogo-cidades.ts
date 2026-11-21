@@ -49,6 +49,8 @@ export interface Casa {
   custo?: number;
   /** O pedágio. */
   valor?: number;
+  /** As Capitais do mundo (21/11/2026): o nome é o código do país, e a tela mostra o nome dele na língua de quem lê. */
+  pais?: boolean;
 }
 
 const cidade = (nome: string, uf: string, grupo: number, preco: number, custo = CUSTO_DO_PREDIO[grupo]): Casa => ({
@@ -159,8 +161,39 @@ export const CASAS_DO_BRASIL: Casa[] = [
   noBrasil('São Paulo', 'SP', 8, 520),
 ];
 
+/**
+ * AS CAPITAIS DO MUNDO (21/11/2026, o lote D da segunda auditoria): o terceiro tabuleiro da largada, a mesma volta de 32 casas
+ * e os mesmos preços da de fábrica, com 20 países em 7 grupos por continente (a Ásia em dois). Cada casa guarda o CÓDIGO do
+ * país (ISO 3166, o mesmo do quiz dos países) no nome e na sigla: a tela mostra o nome do país na língua de quem lê (o Intl,
+ * como no quiz), e a sigla é a mesma em toda língua.
+ */
+/** Os países na ordem das cidades da volta de fábrica (os grupos são os mesmos: 2 casas no primeiro, 3 nos outros). */
+export const PAISES_DO_MUNDO: [string, number][] = [
+  // Oceania
+  ['NZ', 0], ['AU', 0],
+  // África
+  ['EG', 1], ['KE', 1], ['ZA', 1],
+  // América do Sul
+  ['PE', 2], ['AR', 2], ['BR', 2],
+  // Ásia (sul e oeste)
+  ['TR', 3], ['IN', 3], ['ID', 3],
+  // Ásia (leste)
+  ['CN', 4], ['KR', 4], ['JP', 4],
+  // Europa
+  ['ES', 5], ['IT', 5], ['FR', 5],
+  // América do Norte
+  ['MX', 6], ['CA', 6], ['US', 6],
+];
+const doMundo =(pais: string, grupo: number, preco: number) => ({ ...cidade(pais, pais, grupo, preco), pais: true });
+export const CASAS_DO_MUNDO: Casa[] = CASAS.map((c, i) => {
+  if (c.tipo !== 'cidade') return c;
+  const k = CASAS.slice(0, i).filter((x) => x.tipo === 'cidade').length;
+  const [pais, grupo] = PAISES_DO_MUNDO[k];
+  return doMundo(pais, grupo, c.preco!);
+});
+
 /** Os tabuleiros, pelo id que vem da largada (`corpo.tabuleiro`). */
-export const TABULEIROS_DAS_CIDADES = { capitais: CASAS, brasil: CASAS_DO_BRASIL } as const;
+export const TABULEIROS_DAS_CIDADES = { capitais: CASAS, brasil: CASAS_DO_BRASIL, mundo: CASAS_DO_MUNDO } as const;
 export type TabuleiroDasCidades = keyof typeof TABULEIROS_DAS_CIDADES;
 export const DINHEIRO_INICIAL = 1500;
 export const SALARIO = 200;
@@ -331,7 +364,7 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
       const robos = ctx.solo ? Math.min(MAXIMO_DE_ROBOS, Math.max(0, Math.floor(Number(corpo.robos) || 0))) : 0;
       if (naSala.length + robos < 2) return 'Ainda falta gente para começar.';
       // O TABULEIRO da largada (20/11/2026): daqui em diante, CASAS e ENGARRAFAMENTO são os dele (escondem os do módulo).
-      const tabuleiro: TabuleiroDasCidades = corpo.tabuleiro === 'brasil' ? 'brasil' : 'capitais';
+      const tabuleiro: TabuleiroDasCidades = corpo.tabuleiro === 'brasil' || corpo.tabuleiro === 'mundo' ? corpo.tabuleiro : 'capitais';
       const CASAS = TABULEIROS_DAS_CIDADES[tabuleiro];
       const ENGARRAFAMENTO = CASAS.findIndex((c) => c.tipo === 'engarrafamento');
       const FERIADO = CASAS.findIndex((c) => c.tipo === 'feriado');

@@ -25,9 +25,9 @@ import { describe, it } from 'node:test';
 const PAGINAS = [
   {
     arquivo: 'termos.html',
-    data: '20 de novembro de 2026',
-    resumo: 'be2041978f917ce7',
-    traducao: { arquivo: 'en/terms.html', data: 'November 20, 2026', resumo: 'a2f3ff0f483799f1' },
+    data: '21 de novembro de 2026',
+    resumo: 'cd7cab7dd69646e6',
+    traducao: { arquivo: 'en/terms.html', data: 'November 21, 2026', resumo: '30867587b1cbb921' },
   },
   {
     arquivo: 'privacidade.html',

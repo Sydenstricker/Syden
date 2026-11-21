@@ -243,6 +243,16 @@ test('Truco no Solo: o robô responde ao truco, e a partida (1 × 1 e em duplas)
   }
 });
 
+test('Truco em duplas: o robô parceiro faz o sinal da mão logo na distribuição, e lê o da pessoa sem quebrar a partida', () => {
+  for (let s = 1; s <= 10; s++) {
+    const p = partida(criarTruco({ aleatorio: semente(s), agora: () => 1 }), { corpo: { robos: 3 } });
+    assert.ok(['zap', 'copas', 'espadas', 'ouros', 'tres', 'nada'].includes(p.ver().sinalDoParceiro?.sinal), 'o parceiro robô sinalizou');
+    assert.equal((p.jogo as Jogo).acao(anaId, { tipo: 'sinal', sinal: 'zap' }), null);
+    for (let k = 0; k < 5000 && !p.terminou(); k++) p.andar();
+    assert.ok(p.terminou());
+  }
+});
+
 test('Truco em duplas: o robô parceiro não responde pela pessoa', () => {
   for (let s = 1; s <= 30; s++) {
     const p = partida(criarTruco({ aleatorio: semente(s), agora: () => 1 }), { corpo: { robos: 3 } });

@@ -62,6 +62,10 @@ export interface Regras<T> {
   /** O segundo sentou e a vez foi sorteada: `primeiro` é quem abre (nas Damas, quem fica com as peças claras). */
   aoComecar?(estado: T, primeiro: Lado): void;
   /**
+   * Quem abre, quando não é sorteado (os finais de treino do xadrez, 21/11/2026: a pessoa, de brancas, sempre). null: sorteia.
+   */
+  quemAbre?(estado: T): Lado | null;
+  /**
    * A jogada do COMPUTADOR no lado `lado` (o Solo, 05/11/2026): o corpo da 'jogada', escolhido só com o que esse lado vê (na
    * Batalha naval, sem olhar a frota escondida), no `nivel` escolhido. O jogo sem `robo` não tem Solo contra o computador.
    */
@@ -172,7 +176,7 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random, agora: () =
       const sentar = (quem: number) => {
         lugares.push(quem);
         // Quem começa é sorteado: começar dá vantagem nos dois jogos.
-        vez = aleatorio() < 0.5 ? 0 : 1;
+        vez = regras.quemAbre?.(estado) ?? (aleatorio() < 0.5 ? 0 : 1);
         const montagem = regras.montagem;
         if (!montagem) return comecarOsLances();
         fase = 'montando';

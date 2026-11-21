@@ -270,17 +270,21 @@ export function normalizarPrato(x: unknown): Item[] | null {
  * A sequência de pedidos da partida, a mesma para todos (o servidor sorteia; cada um anda nela no próprio ritmo). Os dois
  * primeiros são dos rápidos, para a partida começar andando; depois, pelo peso de cada receita, sem três iguais seguidos.
  */
-export function sortearPedidos(aleatorio: () => number, n: number): IdDaReceita[] {
-  const rapidos: IdDaReceita[] = ['sorvete-chocolate', 'sorvete-morango', 'sorvete-baunilha', 'hamburguer', 'salada', 'cachorro-quente', 'pao-com-ovo'];
+export function sortearPedidos(aleatorio: () => number, n: number, cardapio?: readonly IdDaReceita[]): IdDaReceita[] {
+  const todos: IdDaReceita[] = ['sorvete-chocolate', 'sorvete-morango', 'sorvete-baunilha', 'hamburguer', 'salada', 'cachorro-quente', 'pao-com-ovo'];
+  // com um cardápio (as fases, 21/11/2026), só as receitas dele; os rápidos do começo, os dele (ou o cardápio inteiro)
+  const ids = cardapio && cardapio.length ? IDS_DAS_RECEITAS.filter((id) => cardapio.includes(id)) : IDS_DAS_RECEITAS;
+  const rapidosDoCardapio = todos.filter((id) => ids.includes(id));
+  const rapidos = rapidosDoCardapio.length ? rapidosDoCardapio : ids;
   const lista: IdDaReceita[] = [];
-  const total = IDS_DAS_RECEITAS.reduce((s, id) => s + RECEITAS[id].peso, 0);
+  const total = ids.reduce((s, id) => s + RECEITAS[id].peso, 0);
   while (lista.length < n) {
     let id: IdDaReceita;
     if (lista.length < 2) id = rapidos[Math.floor(aleatorio() * rapidos.length) % rapidos.length];
     else {
       let r = aleatorio() * total;
-      id = IDS_DAS_RECEITAS[IDS_DAS_RECEITAS.length - 1];
-      for (const k of IDS_DAS_RECEITAS) {
+      id = ids[ids.length - 1];
+      for (const k of ids) {
         r -= RECEITAS[k].peso;
         if (r < 0) {
           id = k;
@@ -288,8 +292,44 @@ export function sortearPedidos(aleatorio: () => number, n: number): IdDaReceita[
         }
       }
     }
-    if (lista.length >= 2 && lista[lista.length - 1] === id && lista[lista.length - 2] === id) continue;
+    // sem três iguais seguidos (num cardápio de uma receita só, não há como)
+    if (ids.length > 1 && lista.length >= 2 && lista[lista.length - 1] === id && lista[lista.length - 2] === id) continue;
     lista.push(id);
   }
   return lista;
+}
+
+/**
+ * AS FASES DO SOLO (21/11/2026, a segunda auditoria: a Cozinha não tinha meta além do recorde). Uma sequência de restaurantes,
+ * cada um com a planta e o CARDÁPIO dele (os pedidos saem só dali) e as ESTRELAS: os pontos (os do servidor, com a pena e a
+ * gorjeta) para 1, 2 e 3. A primeira está aberta; cada uma abre com 1 estrela na anterior. Medido com o piloto automático, que
+ * cozinha um prato por vez (web/test/cozinha.test.ts): ele tira sempre ao menos 1 estrela; 3 pede cozinhar duas coisas juntas.
+ * Fase nova vai no FIM (o id fica: o recorde é por fase, na variante `fase-<id>`).
+ */
+export interface FaseDaCozinha {
+  id: string;
+  planta: PlantaDaCozinha;
+  cardapio: readonly IdDaReceita[];
+  estrelas: readonly [number, number, number];
+}
+export const FASES_DA_COZINHA: readonly FaseDaCozinha[] = [
+  { id: 'sorveteria', planta: 'toca', cardapio: ['sorvete-chocolate', 'sorvete-morango', 'sorvete-baunilha', 'salada'], estrelas: [140, 210, 290] },
+  { id: 'lanchonete', planta: 'toca', cardapio: ['hamburguer', 'cachorro-quente', 'pao-com-ovo', 'salada'], estrelas: [130, 200, 280] },
+  { id: 'xis', planta: 'longe', cardapio: ['hamburguer', 'x-burguer', 'x-salada', 'x-egg'], estrelas: [50, 100, 140] },
+  { id: 'pizzaria', planta: 'estreita', cardapio: ['pizza-queijo', 'pizza-calabresa', 'pizza-cogumelo', 'salada'], estrelas: [50, 95, 135] },
+  { id: 'peixaria', planta: 'longe', cardapio: ['sushi', 'peixe-com-arroz', 'salada', 'sorvete-baunilha'], estrelas: [70, 125, 175] },
+  { id: 'cafe', planta: 'andares', cardapio: ['cafe-da-manha', 'pao-com-ovo', 'x-bacon', 'sorvete-chocolate'], estrelas: [80, 130, 180] },
+  { id: 'churrascaria', planta: 'estreita', cardapio: ['bife-com-arroz', 'bife-com-salada', 'prato-feito', 'hamburguer'], estrelas: [150, 230, 320] },
+  { id: 'banquete', planta: 'andares', cardapio: IDS_DAS_RECEITAS, estrelas: [75, 130, 185] },
+];
+export const faseDaCozinha = (id: unknown): FaseDaCozinha | undefined => FASES_DA_COZINHA.find((f) => f.id === id);
+/** Quantas estrelas valem `pontos` na fase. */
+export function estrelasDaCozinha(fase: FaseDaCozinha, pontos: number): number {
+  return fase.estrelas.filter((e) => pontos >= e).length;
+}
+/** A fase está aberta, pelos melhores pontos de cada fase (a variante do recorde → os pontos). */
+export function faseAberta(indice: number, melhores: (id: string) => number | undefined): boolean {
+  if (indice <= 0) return true;
+  const antes = FASES_DA_COZINHA[indice - 1];
+  return !!antes && estrelasDaCozinha(antes, melhores(antes.id) ?? 0) >= 1;
 }

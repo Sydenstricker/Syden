@@ -1,3 +1,4 @@
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { temWebGL } from './temWebGL';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useT } from './i18n';
@@ -10,6 +11,18 @@ const JOGADA_MS = 90_000;
 const DESENHO: Record<string, string> = { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' };
 const peca = (letra: string) => `${DESENHO[letra.toLowerCase()]}︎`;
 const nomeDaCasa = (i: number) => `${'abcdefgh'[i % 8]}${8 - Math.floor(i / 8)}`;
+
+/** As 64 casas de um FEN (só o tabuleiro), como as do servidor: '' vazia, maiúscula branca, minúscula preta, linha 0 no alto. */
+export function casasDoFen(fen: string): string[] {
+  const casas: string[] = [];
+  for (const fileira of fen.split(' ')[0].split('/')) {
+    for (const c of fileira) {
+      if (/\d/.test(c)) for (let k = 0; k < Number(c); k++) casas.push('');
+      else casas.push(c);
+    }
+  }
+  return casas;
+}
 
 /** A mesa do xadrez (server/src/minijogo-partida-de-xadrez.ts): a de duas pessoas, mais o tabuleiro e os lances da vez. */
 export interface EstadoPartidaDeXadrez {
@@ -27,6 +40,12 @@ export interface EstadoPartidaDeXadrez {
   fimPor: 'mate' | 'afogado' | 'repeticao' | 'cinquenta' | 'material' | null;
   /** Só para quem tem a vez; `promocao` no peão que chega à última fileira. */
   lances: { de: number; para: number; promocao?: true }[];
+  /** O final de treino desta partida (21/11/2026, só no Solo), o recorde dele e o resultado no fim. */
+  final?: 'dama' | 'torre' | 'bispos' | 'peao' | null;
+  recordeDoFinal?: number | null;
+  resultadoDoFinal?: { lances: number; antes: number | null; novo: boolean | null; voltou?: boolean } | null;
+  /** A revisão (21/11/2026), só no fim: a posição depois de cada lance (o primeiro é a inicial) e o de-para de cada um. */
+  revisao?: { fens: string[]; lances: { de: number; para: number }[] };
 }
 
 /**
@@ -64,6 +83,35 @@ export function JogoPartidaDeXadrez({
     setPromovendo(null);
   }, [assinatura]);
 
+  // A REVISÃO (21/11/2026): no fim, as setas andam pela partida, lance a lance. null: a posição final.
+  const revisao = estado.fase === 'fim' ? estado.revisao : undefined;
+  const totalDaRevisao = revisao ? revisao.fens.length - 1 : 0;
+  const [passo, setPasso] = useState<number | null>(null);
+  useEffect(() => setPasso(null), [totalDaRevisao]);
+  const noPasso = passo ?? totalDaRevisao;
+  const revendo = !!revisao && noPasso < totalDaRevisao;
+  const casas = revendo ? casasDoFen(revisao!.fens[noPasso]) : estado.casas;
+  const ultimoVisto = revendo ? (noPasso > 0 ? revisao!.lances[noPasso - 1] : null) : estado.ultimo;
+  const irPara = (n: number) => setPasso(Math.max(0, Math.min(totalDaRevisao, n)));
+  const irParaAgora = useRef(irPara);
+  irParaAgora.current = irPara;
+  const passoAgora = useRef(noPasso);
+  passoAgora.current = noPasso;
+  useEffect(() => {
+    if (!revisao) return;
+    // as setas do teclado andam pela revisão (fora de um campo de texto)
+    const tecla = (e: KeyboardEvent) => {
+      const alvo = e.target as HTMLElement | null;
+      if (alvo && (alvo.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(alvo.tagName))) return;
+      const salto = { ArrowLeft: -1, ArrowRight: 1, Home: -Infinity, End: Infinity }[e.key];
+      if (salto === undefined) return;
+      e.preventDefault();
+      irParaAgora.current(Number.isFinite(salto) ? passoAgora.current + salto : salto < 0 ? 0 : Infinity);
+    };
+    window.addEventListener('keydown', tecla);
+    return () => window.removeEventListener('keydown', tecla);
+  }, [revisao]);
+
   const origens = new Set(lances.map((l) => l.de));
   const destinos = escolhida === null ? [] : lances.filter((l) => l.de === escolhida).map((l) => l.para);
   const clicar = (i: number) => {
@@ -78,6 +126,8 @@ export function JogoPartidaDeXadrez({
   // o rei em xeque: o da cor de quem tem a vez
   const corDaVez = estado.vez === estado.brancas ? 'K' : 'k';
   const xequeEm = jogando && estado.xeque ? estado.casas.indexOf(corDaVez) : null;
+  const final = estado.final ?? null;
+  const resultado = estado.resultadoDoFinal ?? null;
 
   let situacao: string;
   if (estado.fase === 'esperando') situacao = sentado ? t('Esperando alguém da sala sentar do outro lado…') : t('{nome} quer jogar. Sente do outro lado!', { nome: nome(0) });
@@ -98,12 +148,12 @@ export function JogoPartidaDeXadrez({
   const tabuleiro = (
     <div className="xadrez-tabuleiro">
       {ordem.map((i) => {
-        const letra = estado.casas[i];
+        const letra = casas[i];
         const clara = (Math.floor(i / 8) + (i % 8)) % 2 === 0;
         const classes = [
           'xadrez-casa',
           clara ? 'clara' : 'escura',
-          estado.ultimo && (estado.ultimo.de === i || estado.ultimo.para === i) && 'ultimo',
+          ultimoVisto && (ultimoVisto.de === i || ultimoVisto.para === i) && 'ultimo',
           escolhida === i && 'escolhida',
           origens.has(i) && 'minha',
           destinos.includes(i) && 'destino',
@@ -141,8 +191,27 @@ export function JogoPartidaDeXadrez({
         ))}
       </div>
       <ComHistorico estado={estado as unknown as EstadoDaMesa}>
-      <Tabuleiro3D dados={{ casas: estado.casas, girado, escolhida, destinos, ultimo: estado.ultimo, xequeEm }} aoClicar={clicar} reserva={tabuleiro} />
+      <Tabuleiro3D dados={{ casas, girado, escolhida, destinos, ultimo: ultimoVisto, xequeEm: revendo ? null : xequeEm }} aoClicar={clicar} reserva={tabuleiro} />
       </ComHistorico>
+      {revisao && totalDaRevisao > 0 && (
+        <div className="xadrez-revisao" role="group" aria-label={t('Lances')}>
+          <button type="button" className="btn-secondary" aria-label={t('Primeiro lance')} title={t('Primeiro lance')} disabled={noPasso === 0} onClick={() => irPara(0)}>
+            <ChevronsLeft size={16} aria-hidden="true" />
+          </button>
+          <button type="button" className="btn-secondary" aria-label={t('Lance anterior')} title={t('Lance anterior')} disabled={noPasso === 0} onClick={() => irPara(noPasso - 1)}>
+            <ChevronLeft size={16} aria-hidden="true" />
+          </button>
+          <span className="xadrez-revisao-passo" aria-live="polite">
+            {noPasso}/{totalDaRevisao}
+          </span>
+          <button type="button" className="btn-secondary" aria-label={t('Próximo lance')} title={t('Próximo lance')} disabled={noPasso === totalDaRevisao} onClick={() => irPara(noPasso + 1)}>
+            <ChevronRight size={16} aria-hidden="true" />
+          </button>
+          <button type="button" className="btn-secondary" aria-label={t('Último lance')} title={t('Último lance')} disabled={noPasso === totalDaRevisao} onClick={() => irPara(totalDaRevisao)}>
+            <ChevronsRight size={16} aria-hidden="true" />
+          </button>
+        </div>
+      )}
       {promovendo && (
         <div className="xadrez-promocao" role="group" aria-label={t('Xadrez')}>
           {(
@@ -175,6 +244,16 @@ export function JogoPartidaDeXadrez({
       <p className={`minijogo-situacao${minhaVez ? ' minha-vez' : ''}`} role="status">
         {situacao}
       </p>
+      {/* o final de treino (21/11/2026): o recorde enquanto se joga, e no fim em quantos lances saiu o mate */}
+      {final && (
+        <p className="xadrez-final" role="status">
+          {resultado
+            ? `${t('Mate em {n} lances!', { n: resultado.lances })}${resultado.voltou ? ` ${t('Com lance voltado, não vale recorde.')}` : resultado.novo ? ` ${t('Novo recorde!')}` : resultado.antes !== null ? ` · ${t('Recorde: {n} lances', { n: resultado.antes })}` : ''}`
+            : estado.recordeDoFinal != null
+              ? t('Recorde: {n} lances', { n: estado.recordeDoFinal })
+              : null}
+        </p>
+      )}
       {jogando && !estado.solo && !(estado as unknown as EstadoDaMesa).relogio && <Relogio restante={restante} total={JOGADA_MS} />}
       {estado.fase === 'esperando' && !sentado && (
         <button type="button" className="btn-primary duelo-sentar" onClick={() => agir({ tipo: 'sentar' })}>

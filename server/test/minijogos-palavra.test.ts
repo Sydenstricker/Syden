@@ -87,3 +87,41 @@ test('Palavra secreta: a corrida — os outros veem as cores, nunca as letras, a
   s.disparar();
   assert.ok(s.terminou());
 });
+
+test('Palavra secreta de 4 e de 6 letras (21/11/2026): listas próprias, conferidas contra o VERO', async () => {
+  const { DICIONARIOS, TAMANHOS } = await import('../src/minijogo-palavra.js');
+  for (const n of TAMANHOS) {
+    const { sorteio } = DICIONARIOS[n];
+    assert.ok(sorteio.length >= 250, `${n} letras: ${sorteio.length}`);
+    assert.equal(new Set(sorteio).size, sorteio.length, `${n}: sem repetidas`);
+    for (const p of sorteio) {
+      const chave = semAcento(p).replace(/ç/g, 'c');
+      assert.match(chave, new RegExp(`^[a-z]{${n}}$`), p);
+      assert.ok(valida(chave, n), `${p} está no VERO de ${n} letras`);
+    }
+  }
+  assert.ok(valida('amor', 4) && !valida('amor') && valida('janela', 6) && !valida('janela', 4));
+  // as cores e o modo difícil valem para qualquer tamanho
+  assert.deepEqual(cores('amor', 'roma'), [1, 1, 1, 1]);
+  assert.deepEqual(cores('janela', 'canela'), [0, 2, 2, 2, 2, 2]);
+});
+
+test('Palavra secreta de 4 e de 6: a largada escolhe, o servidor confere o tamanho', () => {
+  _teste.palavras = ['amor'];
+  const s = sala([1]);
+  const jogo = palavra.comecar(s.ctx, { naSala: [1], criadaPor: 1, corpo: { letras: 4 } });
+  _teste.palavras = null;
+  assert.ok(typeof jogo !== 'string');
+  const ver = () => jogo.publico(1) as { letras: number; largada: { letras: number }; meu: { texto: string; cores: number[] }[]; acertei: boolean };
+  assert.equal(ver().letras, 4);
+  assert.equal(ver().largada.letras, 4, '"Jogar de novo" repete o tamanho');
+  assert.equal(jogo.acao(1, { tipo: 'chute', texto: 'termo' }), 'Escreva uma palavra de 4 letras.');
+  assert.equal(jogo.acao(1, { tipo: 'chute', texto: 'roma' }), null);
+  assert.deepEqual(ver().meu[0].cores, [1, 1, 1, 1]);
+  assert.equal(jogo.acao(1, { tipo: 'chute', texto: 'amor' }), null);
+  assert.ok(ver().acertei);
+  // tamanho fora da lista: a de 5, a de fábrica
+  const outro = palavra.comecar(sala([1]).ctx, { naSala: [1], criadaPor: 1, corpo: { letras: 9 } });
+  assert.ok(typeof outro !== 'string');
+  assert.equal((outro.publico(1) as { letras: number }).letras, 5);
+});

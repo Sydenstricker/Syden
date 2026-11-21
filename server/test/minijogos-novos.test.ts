@@ -139,13 +139,21 @@ test('Stop pela sala: as respostas dos outros ficam escondidas, o STOP exige tud
   const daBia = conferindo.respostas.find((r: { userId: number }) => r.userId === contaBia.user.id).respostas;
   assert.equal(daBia[1].valida, false, '"Zebra" não começa com a letra');
 
+  // A conferência é por categoria (21/11/2026): a turma está na primeira, e não se contesta noutra.
+  assert.equal(conferindo.categoriaAtual, 0);
+  assert.equal((await bia('POST', `${rota}/acao`, { tipo: 'contestar', categoria: 5, alvo: contaAna.user.id })).statusCode, 409, 'fora da categoria de agora');
+  for (let c = 0; c < 5; c++) {
+    await ana('POST', `${rota}/acao`, { tipo: 'pronto' });
+    const depois = (await bia('POST', `${rota}/acao`, { tipo: 'pronto' })).json().partida;
+    assert.equal(depois.categoriaAtual, c + 1, 'todos prontos: a próxima categoria');
+  }
   // A Bia contesta a última da Ana: com dois, o voto dela sozinho não derruba (20/11/2026); a Ana aceita, e aí cai.
   assert.equal((await ana('POST', `${rota}/acao`, { tipo: 'aceitar', categoria: 5 })).statusCode, 409, 'sem contestação, nada a aceitar');
   const contestada = (await bia('POST', `${rota}/acao`, { tipo: 'contestar', categoria: 5, alvo: contaAna.user.id })).json().partida;
   const daAna = contestada.respostas.find((r: { userId: number }) => r.userId === contaAna.user.id).respostas;
   assert.equal(daAna[5].valida, true, 'com dois, um voto só não basta');
   assert.equal(contestada.precisaAceite, true);
-  assert.equal((await ana('POST', `${rota}/acao`, { tipo: 'contestar', categoria: 0, alvo: contaAna.user.id })).statusCode, 409, 'a própria, não');
+  assert.equal((await ana('POST', `${rota}/acao`, { tipo: 'contestar', categoria: 5, alvo: contaAna.user.id })).statusCode, 409, 'a própria, não');
   assert.equal((await bia('POST', `${rota}/acao`, { tipo: 'aceitar', categoria: 5 })).statusCode, 409, 'só quem escreveu aceita');
   const aceita = (await ana('POST', `${rota}/acao`, { tipo: 'aceitar', categoria: 5 })).json().partida;
   assert.equal(aceita.respostas.find((r: { userId: number }) => r.userId === contaAna.user.id).respostas[5].valida, false, 'as duas partes: cai');

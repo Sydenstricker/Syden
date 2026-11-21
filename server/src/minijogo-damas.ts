@@ -44,12 +44,17 @@ export const LANCES_PARA_EMPATE = 20;
 
 export const corDa = (peca: number): Cor | null => (peca === VAZIA ? null : peca <= DAMA_CLARA ? 0 : 1);
 export const eDama = (peca: number) => peca === DAMA_CLARA || peca === DAMA_ESCURA;
-const linhaDe = (i: number) => Math.floor(i / 8);
-const colunaDe = (i: number) => i % 8;
-const dentro = (l: number, c: number) => l >= 0 && l < 8 && c >= 0 && c < 8;
+/**
+ * O LADO DO TABULEIRO (21/11/2026, o lote D da segunda auditoria): 8 nas brasileiras (as de fábrica) e 10 nas INTERNACIONAIS,
+ * escolhidas na largada. As internacionais têm a MESMA regra das brasileiras (comer para trás, a lei da maioria, a dama voadora,
+ * coroar só terminando na última fileira); muda só o tabuleiro, de 100 casas, com 20 peças de cada lado nas quatro primeiras
+ * fileiras. As contas tiram o lado do próprio tabuleiro (`casas.length`): 64 ou 100.
+ */
+export const ladoDasDamas = (v: unknown): 8 | 10 => (v === 10 ? 10 : 8);
+const ladoDe = (casas: number[]) => (casas.length === 100 ? 10 : 8);
 /** Para onde a pedra de cada cor anda: as claras sobem (para a linha 0), as escuras descem. */
 const frente = (cor: Cor) => (cor === 0 ? -1 : 1);
-const ultimaLinha = (cor: Cor) => (cor === 0 ? 0 : 7);
+const ultimaLinha = (cor: Cor, n = 8) => (cor === 0 ? 0 : n - 1);
 const DIRECOES = [
   [-1, -1],
   [-1, 1],
@@ -57,11 +62,13 @@ const DIRECOES = [
   [1, 1],
 ] as const;
 
-export function posicaoInicial(): number[] {
-  return Array.from({ length: 64 }, (_, i) => {
-    const l = linhaDe(i);
-    if ((l + colunaDe(i)) % 2 === 0) return VAZIA;
-    return l <= 2 ? PEDRA_ESCURA : l >= 5 ? PEDRA_CLARA : VAZIA;
+export function posicaoInicial(n: 8 | 10 = 8): number[] {
+  // as fileiras de cada lado: 3 no de 8, 4 no de 10 (sobram duas fileiras vazias no meio)
+  const fileiras = n === 10 ? 4 : 3;
+  return Array.from({ length: n * n }, (_, i) => {
+    const l = Math.floor(i / n);
+    if ((l + (i % n)) % 2 === 0) return VAZIA;
+    return l < fileiras ? PEDRA_ESCURA : l >= n - fileiras ? PEDRA_CLARA : VAZIA;
   });
 }
 
@@ -73,6 +80,8 @@ function capturasDaPeca(casas: number[], de: number, saida: Lance[], paraTras = 
   const peca = casas[de];
   const cor = corDa(peca)!;
   const dama = eDama(peca);
+  const n = ladoDe(casas);
+  const dentro = (l: number, c: number) => l >= 0 && l < n && c >= 0 && c < n;
   // A casa de onde a peça saiu fica vazia durante o lance (a dama pode passar por ela, ou pousar nela).
   const tab = casas.slice();
   tab[de] = VAZIA;
@@ -83,25 +92,25 @@ function capturasDaPeca(casas: number[], de: number, saida: Lance[], paraTras = 
     let continuou = false;
     for (const [dl, dc] of DIRECOES) {
       if (!dama && !paraTras && dl !== frente(cor)) continue;
-      let l = linhaDe(pos) + dl;
-      let c = colunaDe(pos) + dc;
+      let l = Math.floor(pos / n) + dl;
+      let c = (pos % n) + dc;
       if (dama) {
-        while (dentro(l, c) && tab[l * 8 + c] === VAZIA) {
+        while (dentro(l, c) && tab[l * n + c] === VAZIA) {
           l += dl;
           c += dc;
         }
       }
       if (!dentro(l, c)) continue;
-      const alvo = l * 8 + c;
+      const alvo = l * n + c;
       // Só se come peça do outro, e uma vez só: a já comida continua ali, e bloqueia.
       if (corDa(tab[alvo]) !== 1 - cor || comidas.includes(alvo)) continue;
       let l2 = l + dl;
       let c2 = c + dc;
-      while (dentro(l2, c2) && tab[l2 * 8 + c2] === VAZIA) {
+      while (dentro(l2, c2) && tab[l2 * n + c2] === VAZIA) {
         continuou = true;
         comidas.push(alvo);
-        caminho.push(l2 * 8 + c2);
-        buscar(l2 * 8 + c2);
+        caminho.push(l2 * n + c2);
+        buscar(l2 * n + c2);
         comidas.pop();
         caminho.pop();
         if (!dama) break;
@@ -119,22 +128,24 @@ function capturasDaPeca(casas: number[], de: number, saida: Lance[], paraTras = 
  * em que a pedra não come para trás (20/11/2026).
  */
 export function lancesDe(casas: number[], cor: Cor, paraTras = true): Lance[] {
+  const n = ladoDe(casas);
+  const dentro = (l: number, c: number) => l >= 0 && l < n && c >= 0 && c < n;
   const capturas: Lance[] = [];
-  for (let i = 0; i < 64; i++) if (corDa(casas[i]) === cor) capturasDaPeca(casas, i, capturas, paraTras);
+  for (let i = 0; i < casas.length; i++) if (corDa(casas[i]) === cor) capturasDaPeca(casas, i, capturas, paraTras);
   if (capturas.length) {
     const maximo = Math.max(...capturas.map((x) => x.comidas.length));
     return capturas.filter((x) => x.comidas.length === maximo);
   }
   const simples: Lance[] = [];
-  for (let i = 0; i < 64; i++) {
+  for (let i = 0; i < casas.length; i++) {
     if (corDa(casas[i]) !== cor) continue;
     const dama = eDama(casas[i]);
     for (const [dl, dc] of DIRECOES) {
       if (!dama && dl !== frente(cor)) continue;
-      let l = linhaDe(i) + dl;
-      let c = colunaDe(i) + dc;
-      while (dentro(l, c) && casas[l * 8 + c] === VAZIA) {
-        simples.push({ de: i, caminho: [l * 8 + c], comidas: [] });
+      let l = Math.floor(i / n) + dl;
+      let c = (i % n) + dc;
+      while (dentro(l, c) && casas[l * n + c] === VAZIA) {
+        simples.push({ de: i, caminho: [l * n + c], comidas: [] });
         if (!dama) break;
         l += dl;
         c += dc;
@@ -151,7 +162,8 @@ export function aplicar(casas: number[], lance: Lance) {
   casas[lance.de] = VAZIA;
   for (const i of lance.comidas) casas[i] = VAZIA;
   const fim = lance.caminho[lance.caminho.length - 1];
-  if (!eDama(peca) && linhaDe(fim) === ultimaLinha(cor)) peca = cor === 0 ? DAMA_CLARA : DAMA_ESCURA;
+  const n = ladoDe(casas);
+  if (!eDama(peca) && Math.floor(fim / n) === ultimaLinha(cor, n)) peca = cor === 0 ? DAMA_CLARA : DAMA_ESCURA;
   casas[fim] = peca;
 }
 
@@ -174,6 +186,8 @@ export interface EstadoDasDamas {
    * regra de fábrica continua a brasileira, em que a pedra come também para trás.
    */
   paraTras: boolean;
+  /** O lado do tabuleiro (21/11/2026): 8 as brasileiras, 10 as internacionais. Sem ele (partida de antes), 8. */
+  n?: 8 | 10;
 }
 
 /** A REPETIÇÃO TRIPLA (19/11/2026): a mesma posição, com a mesma cor na vez, pela terceira vez empata a partida. */
@@ -190,9 +204,10 @@ const ladoDaCor = (e: EstadoDasDamas, cor: Cor): Lado => (cor === 0 ? e.claras :
 const contar = (casas: number[], cor: Cor) => casas.filter((p) => corDa(p) === cor).length;
 
 export const regrasDasDamas: Regras<EstadoDasDamas> = {
-  escolhas: (corpo) => ({ paraTras: corpo.paraTras !== false }),
+  escolhas: (corpo) => ({ paraTras: corpo.paraTras !== false, tamanho: ladoDasDamas(corpo.tamanho) }),
   inicio(escolhas) {
-    const casas = posicaoInicial();
+    const n = ladoDasDamas(escolhas.tamanho);
+    const casas = posicaoInicial(n);
     const paraTras = escolhas.paraTras !== false;
     return {
       casas,
@@ -204,6 +219,7 @@ export const regrasDasDamas: Regras<EstadoDasDamas> = {
       semCaptura: 0,
       vistas: { [chaveDaPosicao(casas, 0)]: 1 },
       paraTras,
+      n,
     };
   },
   aoComecar(estado, primeiro) {
@@ -249,6 +265,7 @@ export const regrasDasDamas: Regras<EstadoDasDamas> = {
       // o empate pela regra: a mesma posição pela terceira vez
       repetida: Object.values(estado.vistas ?? {}).some((n) => n >= REPETICOES_PARA_EMPATE),
       paraTras: estado.paraTras !== false,
+      tamanho: estado.n ?? 8,
       lances: daVez ? estado.lances : [],
     };
   },
@@ -262,12 +279,13 @@ export const PROFUNDIDADE_DAS_DAMAS = 4;
  * virar dama).
  */
 function valorDaPosicao(casas: number[], cor: Cor): number {
+  const n = ladoDe(casas);
   let v = 0;
-  for (let i = 0; i < 64; i++) {
+  for (let i = 0; i < casas.length; i++) {
     const p = casas[i];
     const dona = corDa(p);
     if (dona === null) continue;
-    const avanco = dona === 0 ? 7 - linhaDe(i) : linhaDe(i);
+    const avanco = dona === 0 ? n - 1 - Math.floor(i / n) : Math.floor(i / n);
     const pedaco = eDama(p) ? 3 : 1 + avanco * 0.04;
     v += dona === cor ? pedaco : -pedaco;
   }
@@ -325,11 +343,21 @@ export const NIVEL_DAS_DAMAS: Record<Nivel, { profundidade: number; ruido: numbe
   dificil: { profundidade: 6, ruido: 0.01 },
 };
 
+/**
+ * No tabuleiro de 10 (21/11/2026) há mais lances por vez, e a conta roda na thread do servidor: medido, o difícil de 6 lances
+ * levava até ~1 s por jogada, e o de 5, ~0,7 s. Lá cada nível olha um pouco menos (o difícil, 4: até ~0,1 s).
+ */
+export const NIVEL_DAS_DAMAS_10: Record<Nivel, { profundidade: number; ruido: number }> = {
+  facil: { profundidade: 2, ruido: 0.9 },
+  normal: { profundidade: 3, ruido: 0.05 },
+  dificil: { profundidade: 4, ruido: 0.01 },
+};
+
 export const damas = duelo<EstadoDasDamas>({
   ...regrasDasDamas,
   // o tabuleiro das damas é aberto: o robô vê o mesmo que a pessoa
   robo: (estado, _lado, aleatorio, nivel) => {
-    const { profundidade, ruido } = NIVEL_DAS_DAMAS[nivel];
+    const { profundidade, ruido } = (estado.n === 10 ? NIVEL_DAS_DAMAS_10 : NIVEL_DAS_DAMAS)[nivel];
     return { lance: lanceDoRobo(estado.casas, estado.vezDaCor, aleatorio, profundidade, ruido, estado.paraTras !== false) };
   },
 });

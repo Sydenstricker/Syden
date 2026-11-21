@@ -452,3 +452,38 @@ test('a paciência (20/11/2026): o pedido vence no prazo pelo relógio do servid
   p.andar();
   assert.ok(p.estado(anaId).meu!.pontos >= 0);
 });
+
+test('as fases do Solo (21/11/2026): só a primeira abre de fábrica, os pedidos saem do cardápio, e o fim dá as estrelas e o recorde da fase', async () => {
+  const caio = await criarConta(app, 'caio-cozinha');
+  const caioId = await idDe(caio.token);
+  const [primeira, segunda] = receitas.FASES_DA_COZINHA;
+  // a segunda ainda está fechada: pedida na largada, vira a escolha de sempre
+  const fechada = comecar([caioId], { solo: true, corpo: { fase: segunda.id } });
+  assert.equal(fechada.estado(caioId).fase, 'escolhendo');
+  assert.equal(fechada.jogo.acao(caioId, { tipo: 'fase', fase: segunda.id }), 'Ação desconhecida.');
+  // a primeira, pela escolha: a planta e o cardápio dela
+  const p = comecar([caioId], { solo: true, corpo: {} });
+  assert.equal(p.jogo.acao(caioId, { tipo: 'fase', fase: primeira.id }), null);
+  const e = p.estado(caioId) as unknown as { faseDoSolo: string; planta: string; meu: { fila: { receita: IdDaReceita }[] } };
+  assert.equal(e.faseDoSolo, primeira.id);
+  assert.equal(e.planta, primeira.planta);
+  p.andar();
+  const largou = agora;
+  while (agora - largou < 170_000) {
+    assert.ok(primeira.cardapio.includes(p.estado(caioId).meu!.fila[0].receita), 'só do cardápio');
+    assert.equal(entregarCerto(p, caioId).erro, null);
+    agora += 1_500;
+  }
+  p.andar();
+  const fim = p.estado(caioId) as unknown as { estrelas: number; meu: { pontos: number } };
+  assert.equal(fim.estrelas, receitas.estrelasDaCozinha(primeira, fim.meu.pontos));
+  assert.ok(fim.estrelas >= 1, `${fim.meu.pontos} pontos`);
+  assert.equal(db.recordeDoSolo(caioId, 'cozinha-paciencia', `fase-${primeira.id}`)!.valor, fim.meu.pontos);
+  // com a estrela, a segunda abre
+  const q = comecar([caioId], { solo: true, corpo: { fase: segunda.id } });
+  assert.equal(q.estado(caioId).fase, 'preparando');
+  assert.equal((q.estado(caioId) as unknown as { planta: string }).planta, segunda.planta);
+  // na sala, fase nenhuma
+  const sala = comecar([anaId, biaId], { corpo: { fase: primeira.id } });
+  assert.equal((sala.estado(anaId) as unknown as { faseDoSolo: string | null }).faseDoSolo, null);
+});

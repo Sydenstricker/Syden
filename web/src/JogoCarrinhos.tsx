@@ -22,6 +22,7 @@ import {
   gravador,
   IDS_DAS_PISTAS,
   leitor,
+  noBox,
   novoCarro,
   passo,
   PASSO,
@@ -59,7 +60,7 @@ export interface EstadoCarrinhos {
   /** A pista: o id (pronta, ou "p-…" do editor) e o traçado, que o site monta com a mesma regra. */
   pista?: string;
   tracado?: string;
-  /** No Solo: os meus tempos nas pistas prontas (a chave do recorde: o id, com "@20" na resistência). */
+  /** No Solo: os meus tempos nas pistas prontas (a chave do recorde: o id, com "@20c" na resistência). */
   meusTempos?: Record<string, number>;
   // o Solo
   recordes?: { userId: number; nome: string; avatar: number | string | null; tempoMs: number }[];
@@ -148,6 +149,9 @@ interface Painel {
   fora: boolean;
   contagem: number | null;
   ordem: { id: string; nome: string; eu: boolean }[];
+  /** O tanque (de 0 a 1) na resistência, e se estou parado no box enchendo; null nas corridas de 5 voltas. */
+  combustivel: number | null;
+  enchendo: boolean;
 }
 
 /** Um rival da sala: as posições que o servidor repassou, pelo passo da corrida dele. */
@@ -347,6 +351,8 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
         ];
         const curva = eu && !eu.chegou && eu.fora === 0 && contagem === 0 ? curvaAFrente(eu) : null;
         cena.marcarCurva(curva && eu ? { faixa: eu.faixa, s: curva.s, solte: curva.solte, calmo } : null);
+        // O BOX da resistência (21/11/2026): o trecho antes da linha, marcado na minha faixa enquanto o tanque não está cheio
+        cena.marcarBox(eu && eu.combustivel !== null && !eu.chegou && eu.combustivel < 0.999 ? eu.faixa : null);
         cena.desenhar(quadros, dt);
         motor?.ajustar(eu && !eu.chegou && eu.fora === 0 && contagem === 0 ? eu.v / VMAX : 0);
         if (agora - ultimoPainel > 90) {
@@ -359,6 +365,8 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
             fora: !!eu && eu.fora > 0,
             contagem: contagem > 0 ? Math.ceil(contagem / 60) : null,
             ordem: ordemFinal ?? ordem(),
+            combustivel: eu && !eu.chegou ? eu.combustivel : null,
+            enchendo: !!eu && eu.combustivel !== null && eu.v === 0 && noBox(eu) && eu.combustivel < 1 && contagem === 0,
           });
         }
         if (eu?.chegou && !mandou) {
@@ -451,8 +459,17 @@ function Corrida({
               <span className={`carrinhos-medidor${painel.derrapa ? ' no-limite' : ''}`}>
                 <span style={{ height: `${(painel.acelerador / ACELERADOR_MAXIMO) * 100}%` }} />
               </span>
+              {painel.combustivel !== null && (
+                <span className={`carrinhos-tanque${painel.combustivel < 0.2 ? ' baixo' : ''}${painel.enchendo ? ' enchendo' : ''}`}>
+                  <span className="carrinhos-tanque-icone">⛽</span>
+                  <span className="carrinhos-tanque-barra">
+                    <span style={{ height: `${painel.combustivel * 100}%` }} />
+                  </span>
+                </span>
+              )}
             </>
           )}
+          {piloto && painel.combustivel !== null && painel.combustivel < 0.2 && !painel.enchendo && <span className="carrinhos-aviso carrinhos-aviso-box">{t('Pare no box, antes da linha, para encher o tanque.')}</span>}
           {painel.ordem.length > 1 && !chegou && (
             <ol className="carrinhos-ordem">
               {painel.ordem.map((l, i) => (

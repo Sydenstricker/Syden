@@ -48,6 +48,10 @@ export interface EstadoTruco {
   onze: 0 | 1 | null;
   decidoOnze: boolean;
   pontos: [number, number];
+  /** Os sinais ao parceiro (21/11/2026, só em quatro): o do parceiro chega só a mim, e o meu volta para eu ver qual fiz. */
+  possoSinalizar?: boolean;
+  sinalDoParceiro?: { sinal: SinalDoTruco; id: number } | null;
+  meuSinal?: { sinal: SinalDoTruco; id: number } | null;
   vencedor: 0 | 1 | null;
   interrompida: boolean;
   ultimo:
@@ -62,6 +66,14 @@ export interface EstadoTruco {
 }
 
 const TEMPO_DA_DECISAO = 30_000;
+
+/**
+ * OS SINAIS (21/11/2026, server/src/minijogo-truco.ts): as caras da mesa de verdade, uma por carta forte. Só figura; o nome vai
+ * no title e no leitor de tela.
+ */
+export type SinalDoTruco = 'zap' | 'copas' | 'espadas' | 'ouros' | 'tres' | 'nada';
+const CARA_DO_SINAL: Record<SinalDoTruco, string> = { zap: '😉', copas: '🤨', espadas: '😏', ouros: '😛', tres: '😬', nada: '😐' };
+const SINAIS: SinalDoTruco[] = ['zap', 'copas', 'espadas', 'ouros', 'tres', 'nada'];
 const NAIPE: Record<string, string> = { o: '♦', e: '♠', c: '♥', p: '♣' };
 const VERMELHO = new Set(['o', 'c']);
 type Posicao = 'baixo' | 'direita' | 'cima' | 'esquerda';
@@ -200,6 +212,15 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
   const gritos: Record<number, string> = Object.fromEntries(valores.slice(1).map((v, i) => [v, nomes[i]]));
   const mineiro = estado.variante === 'mineiro';
   const minhaVez = jogador && estado.fase === 'jogando' && estado.vez === eu;
+  const nomeDoSinal: Record<SinalDoTruco, string> = {
+    zap: t('Zap'),
+    copas: t('Copas'),
+    espadas: t('Espadas'),
+    ouros: t('Ouros'),
+    tres: t('Um 3'),
+    nada: t('Nada'),
+  };
+  const sinalDoParceiro = estado.sinalDoParceiro ?? null;
   const outro = (1 - nosso) as 0 | 1;
   const fim = estado.fase === 'fim';
 
@@ -250,6 +271,12 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
               className={`truco-lugar ${pos} time-${l.time === nosso ? 'nos' : 'eles'}${estado.vezLugar === l.lugar ? ' na-vez' : ''}${l.presente ? '' : ' ausente'}`}
             >
               <span className="truco-lugar-nome minijogo-nome">{l.username}</span>
+              {/* o sinal do parceiro, em cima dele: só eu o recebo */}
+              {pos === 'cima' && n === 4 && sinalDoParceiro && (
+                <span key={sinalDoParceiro.id} className="truco-sinal" role="img" aria-label={nomeDoSinal[sinalDoParceiro.sinal]} title={nomeDoSinal[sinalDoParceiro.sinal]}>
+                  {CARA_DO_SINAL[sinalDoParceiro.sinal]}
+                </span>
+              )}
               {pos !== 'baixo' && (
                 <span className="truco-lugar-cartas">
                   {Array.from({ length: l.cartas }, (_, i) => (
@@ -385,6 +412,24 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
           </>
         )}
       </div>
+
+      {jogador && estado.possoSinalizar && (
+        <div className="truco-sinais" role="group" aria-label={t('Sinal ao parceiro')}>
+          {SINAIS.map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={`truco-sinal-botao${estado.meuSinal?.sinal === s ? ' feito' : ''}`}
+              aria-label={nomeDoSinal[s]}
+              title={nomeDoSinal[s]}
+              aria-pressed={estado.meuSinal?.sinal === s}
+              onClick={() => agir({ tipo: 'sinal', sinal: s })}
+            >
+              {CARA_DO_SINAL[s]}
+            </button>
+          ))}
+        </div>
+      )}
 
       {jogador && estado.mao.length > 0 && (
         <div className={`truco-mao${coberta && estado.possoCobrir ? ' cobrindo' : ''}${cena !== 'falhou' ? ' mesa3d-truco-mao' : ''}`}>

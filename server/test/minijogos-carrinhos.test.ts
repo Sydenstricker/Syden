@@ -161,7 +161,7 @@ test('a sala: cada um na sua faixa, o verde do servidor, as posições conferida
 
 test('as pistas (19/11/2026): no Solo, cada pista e cada número de voltas tem o seu recorde; a Toca em cinco é a chave de antes', () => {
   assert.equal(chaveDoRecorde(sim.PISTA_PADRAO, sim.VOLTAS), PISTA_DOS_CARRINHOS, 'os recordes de antes continuam valendo');
-  assert.equal(chaveDoRecorde(sim.PISTAS['zigue-1'], sim.VOLTAS_DA_RESISTENCIA), 'zigue-1@20');
+  assert.equal(chaveDoRecorde(sim.PISTAS['zigue-1'], sim.VOLTAS_DA_RESISTENCIA), 'zigue-1@20c');
   const { ctx } = contexto([caioId], { solo: true });
   const jogo = carrinhos.comecar(ctx, { naSala: [caioId], criadaPor: caioId, corpo: {} });
   assert.ok(typeof jogo !== 'string');
@@ -179,9 +179,9 @@ test('as pistas (19/11/2026): no Solo, cada pista e cada número de voltas tem o
   assert.equal(jogo.acao(caioId, { tipo: 'chegada', entradas: corrida(sim.FAIXA_DO_RECORDE).entradas }), 'Corrida inválida.');
   assert.equal(jogo.acao(caioId, { tipo: 'chegada', entradas: longa.entradas }), null);
   assert.equal(pub().resultado?.tempoMs, Math.round((longa.passos * 1000) / 60));
-  assert.equal(db.recordeDosCarrinhos(caioId, 'caracol-1@20')?.tempoMs, pub().resultado?.tempoMs);
+  assert.equal(db.recordeDosCarrinhos(caioId, 'caracol-1@20c')?.tempoMs, pub().resultado?.tempoMs);
   assert.equal(db.recordeDosCarrinhos(caioId, 'caracol-1'), null, 'as cinco voltas são outro recorde');
-  assert.equal(pub().meusTempos['caracol-1@20'], pub().resultado?.tempoMs);
+  assert.equal(pub().meusTempos['caracol-1@20c'], pub().resultado?.tempoMs);
 });
 
 test('o editor: o servidor confere o código colado, refaz a corrida sobre ele e guarda o recorde pelo código', () => {
@@ -224,5 +224,5 @@ test('a sala: a pista do editor e a resistência vão a todos; código que não 
   assert.equal(jogo.acao(anaId, { tipo: 'chegada', entradas: a.entradas }), null);
   const ana = (jogo.publico(anaId) as { pilotos: { userId: number; tempoMs: number | null }[] }).pilotos.find((x) => x.userId === anaId)!;
   assert.equal(ana.tempoMs, Math.round((a.passos * 1000) / 60));
-  assert.equal(db.recordeDosCarrinhos(anaId, sim.codigoDaPista(tracado) + '@20'), null, 'a corrida da sala não vira recorde');
+  assert.equal(db.recordeDosCarrinhos(anaId, sim.codigoDaPista(tracado) + '@20c'), null, 'a corrida da sala não vira recorde');
 });

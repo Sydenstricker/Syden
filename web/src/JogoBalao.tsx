@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
-import { BotoesDosRobos, cadaUmPorSi } from './EscolhaDosRobos';
+import { BotoesDosRobos, cadaUmPorSi, type OpcaoDeRobos } from './EscolhaDosRobos';
 import { chave, useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { Placar } from './Minijogo';
@@ -33,6 +33,8 @@ export interface JogadorDoBalao {
   username: string;
   avatar: number | string | null;
   largada: number;
+  /** As duplas (21/11/2026): o time. */
+  equipe?: number;
   baloes: number;
   estouros: number;
   vivo: boolean;
@@ -45,6 +47,8 @@ export interface EstadoBalao {
   partidaId: string;
   // na sala
   arena?: string;
+  /** A sala em duplas (21/11/2026). */
+  duplas?: boolean;
   semente?: number;
   decorridoMs?: number | null;
   duracaoMs?: number;
@@ -68,6 +72,16 @@ type Props = {
 const ARENA_GUARDADA = 'syden:balaoArena';
 const ROBOS_GUARDADOS = 'syden:balaoRobos';
 const DIFICULDADE_GUARDADA = 'syden:balaoDificuldade';
+/**
+ * AS DUPLAS NO SOLO (21/11/2026): eu e um robô de parceiro contra os outros, em times de dois. A opção leva o número de robôs
+ * NEGATIVO (o mesmo 3 de "cada um por si" seria outra mesa), e a figura mostra os times.
+ */
+const DUPLAS_DO_SOLO: OpcaoDeRobos[] = [
+  { robos: -3, lados: [['eu', 'robo'], ['robo', 'robo']], rotulo: '2 × 2' },
+  { robos: -5, lados: [['eu', 'robo'], ['robo', 'robo'], ['robo', 'robo']], rotulo: '2 × 2 × 2' },
+];
+/** O time de cada lugar na largada, nas duplas: `total / 2` times, um a cada lugar (os dois de um time largam do mesmo lado). */
+export const equipeDaLargada = (i: number, total: number) => i % Math.max(1, Math.floor(total / 2));
 const NOME_DA_DIFICULDADE: Record<DificuldadeDoBalao, string> = { facil: chave('Fácil'), medio: chave('Médio'), dificil: chave('Difícil') };
 
 const lerGuardado = (chave: string, padrao: string) => {
@@ -87,7 +101,7 @@ const guardar = (chave: string, valor: string) => {
 
 export function JogoBalao({ estado, eu, jogador, agir, socket = null, channelId = 0 }: Props) {
   const fim = estado.terminada || estado.fase === 'fim';
-  const [escolha, setEscolha] = useState<{ arena: string; robos: number; dificuldade: DificuldadeDoBalao } | null>(null);
+  const [escolha, setEscolha] = useState<{ arena: string; robos: number; dificuldade: DificuldadeDoBalao; duplas: boolean } | null>(null);
   if (fim) return <TelaDoFim estado={estado} eu={eu} />;
   if (estado.solo) {
     if (!escolha) return <EscolhaDoSolo aoEscolher={setEscolha} />;
@@ -97,6 +111,7 @@ export function JogoBalao({ estado, eu, jogador, agir, socket = null, channelId 
         arena={escolha.arena}
         quantos={escolha.robos}
         dificuldade={escolha.dificuldade}
+        duplas={escolha.duplas}
         eu={eu}
         nome={estado.username ?? ''}
         avatar={estado.avatar ?? null}
@@ -149,14 +164,23 @@ function MapaDaArena({ id, lado }: { id: string; lado: number }) {
 }
 
 /** A escolha da arena da sala (para quem começa a partida: `aoEscolher` vai com o id, que o servidor recebe em `arena`). */
-export function EscolhaDaArena({ aoEscolher, aoVoltar }: { aoEscolher: (arena: string) => void; aoVoltar: () => void }) {
+export function EscolhaDaArena({ aoEscolher, aoVoltar }: { aoEscolher: (arena: string, extra?: { duplas: boolean }) => void; aoVoltar: () => void }) {
   const t = useT();
+  const [duplas, setDuplas] = useState(false);
   return (
     <div className="corrida-escolha">
+      <div className="minijogo-abas corrida-dificuldade" role="radiogroup">
+        {[false, true].map((d) => (
+          <button key={String(d)} type="button" role="radio" aria-checked={duplas === d} className={duplas === d ? 'ativa' : undefined} onClick={() => setDuplas(d)}>
+            {d ? t('Em duplas') : t('Cada um por si')}
+          </button>
+        ))}
+      </div>
+      {duplas && <p className="settings-hint">{t('Em duplas, com 4, 6 ou 8 pessoas: o item não pega o colega.')}</p>}
       <ul className="corrida-pistas">
         {ARENAS.map((a) => (
           <li key={a.id}>
-            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(a.id)}>
+            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(a.id, { duplas })}>
               <MapaDaArena id={a.id} lado={72} />
               <strong>{t(NOMES_DAS_ARENAS[a.id] ?? a.id)}</strong>
             </button>
@@ -172,13 +196,17 @@ export function EscolhaDaArena({ aoEscolher, aoVoltar }: { aoEscolher: (arena: s
   );
 }
 
-function EscolhaDoSolo({ aoEscolher }: { aoEscolher: (e: { arena: string; robos: number; dificuldade: DificuldadeDoBalao }) => void }) {
+function EscolhaDoSolo({ aoEscolher }: { aoEscolher: (e: { arena: string; robos: number; dificuldade: DificuldadeDoBalao; duplas: boolean }) => void }) {
   const t = useT();
   const [arena, setArena] = useState(() => {
     const g = lerGuardado(ARENA_GUARDADA, 'horta');
     return ARENAS.some((a) => a.id === g) ? g : 'horta';
   });
-  const [robos, setRobos] = useState(() => Math.min(5, Math.max(1, Number(lerGuardado(ROBOS_GUARDADOS, '3')) || 3)));
+  // o número de robôs; negativo, as duplas (DUPLAS_DO_SOLO)
+  const [robos, setRobos] = useState(() => {
+    const g = Number(lerGuardado(ROBOS_GUARDADOS, '3')) || 3;
+    return g === -3 || g === -5 ? g : Math.min(5, Math.max(1, g));
+  });
   const [dificuldade, setDificuldade] = useState<DificuldadeDoBalao>(() => {
     const g = lerGuardado(DIFICULDADE_GUARDADA, 'medio');
     return (DIFICULDADES_DO_BALAO as string[]).includes(g) ? (g as DificuldadeDoBalao) : 'medio';
@@ -188,7 +216,7 @@ function EscolhaDoSolo({ aoEscolher }: { aoEscolher: (e: { arena: string; robos:
     guardar(ROBOS_GUARDADOS, String(robos));
     guardar(DIFICULDADE_GUARDADA, dificuldade);
     tocar('clique');
-    aoEscolher({ arena, robos, dificuldade });
+    aoEscolher({ arena, robos: Math.abs(robos), dificuldade, duplas: robos < 0 });
   };
   return (
     <div className="balao-escolha">
@@ -207,7 +235,7 @@ function EscolhaDoSolo({ aoEscolher }: { aoEscolher: (e: { arena: string; robos:
           </li>
         ))}
       </ul>
-      <BotoesDosRobos opcoes={[1, 2, 3, 4, 5].map(cadaUmPorSi)} escolhida={robos} aoEscolher={setRobos} pergunta={t('Quantos adversários do computador?')} />
+      <BotoesDosRobos opcoes={[...[1, 2, 3, 4, 5].map(cadaUmPorSi), ...DUPLAS_DO_SOLO]} escolhida={robos} aoEscolher={setRobos} pergunta={t('Quantos adversários do computador?')} />
       <div className="minijogo-abas corrida-dificuldade" role="radiogroup" aria-label={t('Computador')}>
         {DIFICULDADES_DO_BALAO.map((d) => (
           <button key={d} type="button" role="radio" aria-checked={dificuldade === d} className={dificuldade === d ? 'ativa' : undefined} onClick={() => setDificuldade(d)}>
@@ -372,8 +400,11 @@ function MeuPainel({ quantos, cor, item }: { quantos: number; cor: string; item:
   );
 }
 
-/** Os balões de cada um, no canto: o nome e as bolinhas da cor dele. */
-function BaloesDeTodos({ participantes, baloes, eu }: { participantes: Participante[]; baloes: Map<number, number>; eu: number }) {
+/** A cor dos balões de alguém: a do lugar na largada, ou, nas duplas, a do time. */
+const corDe = (q: Participante | undefined, duplas: boolean) => corDoBalao(q ? (duplas && q.equipe !== undefined ? q.equipe : q.largada) : 0);
+
+/** Os balões de cada um, no canto: o nome e as bolinhas da cor dele (nas duplas, a do time). */
+function BaloesDeTodos({ participantes, baloes, eu, duplas = false }: { participantes: Participante[]; baloes: Map<number, number>; eu: number; duplas?: boolean }) {
   const t = useT();
   const ordem = [...participantes].sort((a, b) => (baloes.get(b.id) ?? BALOES) - (baloes.get(a.id) ?? BALOES));
   return (
@@ -384,7 +415,7 @@ function BaloesDeTodos({ participantes, baloes, eu }: { participantes: Participa
           <li key={q.id} className={`${q.id === eu ? 'eu' : ''}${n === 0 ? ' fora' : ''}`}>
             <span className="balao-bolinhas" aria-label={String(n)}>
               {Array.from({ length: BALOES }, (_, i) => (
-                <i key={i} style={i < n ? { background: corDoBalao(q.largada) } : undefined} />
+                <i key={i} style={i < n ? { background: corDe(q, duplas) } : undefined} />
               ))}
             </span>
             <span className="balao-nome">{q.nome}</span>
@@ -416,6 +447,7 @@ function PartidaSolo({
   arena,
   quantos,
   dificuldade,
+  duplas,
   eu,
   nome,
   avatar,
@@ -425,6 +457,7 @@ function PartidaSolo({
   arena: string;
   quantos: number;
   dificuldade: DificuldadeDoBalao;
+  duplas: boolean;
   eu: number;
   nome: string;
   avatar: number | string | null;
@@ -441,10 +474,12 @@ function PartidaSolo({
   const [item, setItem] = useState<ItemDoBalao | null>(null);
   const [restante, setRestante] = useState({ restanteMs: 0, pausado: false });
   const [baloes, setBaloes] = useState(new Map<number, number>());
-  const participantes = useRef<Participante[]>([
-    { id: eu, nome, avatar, largada: 0 },
-    ...robos.slice(0, quantos).map((r, i) => ({ id: r.userId, nome: r.username, avatar: (((i * 5 + 3) % 16) + 1) as number, largada: i + 1 })),
-  ]);
+  const participantes = useRef<Participante[]>(
+    [
+      { id: eu, nome, avatar, largada: 0 },
+      ...robos.slice(0, quantos).map((r, i) => ({ id: r.userId, nome: r.username, avatar: (((i * 5 + 3) % 16) + 1) as number, largada: i + 1 })),
+    ].map((q, _, todos) => (duplas ? { ...q, equipe: equipeDaLargada(q.largada, todos.length) } : q)),
+  );
   useEffect(() => {
     if (!canvas.current) return;
     tela.current?.focus();
@@ -459,6 +494,7 @@ function PartidaSolo({
       participantes: lista,
       robos: lista.filter((q) => q.id !== eu).map((q) => q.id),
       dificuldade,
+      duplas,
       semente: Math.floor(Math.random() * 2 ** 31),
       verdeEm: performance.now() + 3000,
       baloes: new Map(lista.map((q) => [q.id, BALOES])),
@@ -493,7 +529,8 @@ function PartidaSolo({
           <span />
           <span className="corrida-relogio">{relogio(restante.restanteMs)}</span>
         </div>
-        <BaloesDeTodos participantes={participantes.current} baloes={baloes} eu={eu} />
+        <BaloesDeTodos participantes={participantes.current} baloes={baloes} eu={eu} duplas={duplas} />
+        {!acabou && (baloes.get(eu) ?? BALOES) === 0 && <p className="balao-aviso">{t('Sem balões: você segue de fantasma, soltando itens.')}</p>}
         {!acabou && <MeuPainel quantos={baloes.get(eu) ?? BALOES} cor={corDoBalao(0)} item={item} />}
         {!acabou && <BotoesDeToque controles={controles} item={item} />}
           {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
@@ -523,11 +560,13 @@ function PartidaNaSala({
   const [item, setItem] = useState<ItemDoBalao | null>(null);
   const [restante, setRestante] = useState({ restanteMs: 0, pausado: false });
   const jogadores = estado.jogadores ?? [];
-  const participantes = useRef<Participante[]>(jogadores.map((j) => ({ id: j.userId, nome: j.username, avatar: j.avatar, largada: j.largada })));
+  const duplas = !!estado.duplas;
+  const participantes = useRef<Participante[]>(jogadores.map((j) => ({ id: j.userId, nome: j.username, avatar: j.avatar, largada: j.largada, equipe: j.equipe })));
   const baloesVerdade = useRef(new Map(jogadores.map((j) => [j.userId, j.baloes])));
   const [baloes, setBaloes] = useState(new Map(baloesVerdade.current));
   const euVivo = piloto && (baloes.get(eu) ?? 0) > 0;
-  const controles = useControles(euVivo);
+  // sem balão, o kart segue de fantasma (21/11/2026): os controles continuam
+  const controles = useControles(piloto);
   const rivais = useRef(new Map<number, Rival>());
   const eventos = useRef<EventoDoBalao[]>([]);
 
@@ -587,6 +626,7 @@ function PartidaNaSala({
       eu,
       piloto,
       participantes: participantes.current,
+      duplas,
       semente: estado.semente ?? 0,
       verdeEm,
       baloes: baloesVerdade.current,
@@ -617,14 +657,12 @@ function PartidaNaSala({
           <span />
           <span className="corrida-relogio">{relogio(restante.restanteMs)}</span>
         </div>
-        <BaloesDeTodos participantes={participantes.current} baloes={baloes} eu={eu} />
-        {piloto && !euVivo && <p className="balao-aviso">{t('Sem balões: agora é assistir. ◀ ▶ trocam de quem.')}</p>}
-        {euVivo && (
-          <MeuPainel quantos={baloes.get(eu) ?? 0} cor={corDoBalao(participantes.current.find((q) => q.id === eu)?.largada ?? 0)} item={item} />
-        )}
-        {euVivo && <BotoesDeToque controles={controles} item={item} />}
+        <BaloesDeTodos participantes={participantes.current} baloes={baloes} eu={eu} duplas={duplas} />
+        {piloto && !euVivo && <p className="balao-aviso">{t('Sem balões: você segue de fantasma, soltando itens.')}</p>}
+        {piloto && <MeuPainel quantos={baloes.get(eu) ?? 0} cor={corDe(participantes.current.find((q) => q.id === eu), duplas)} item={item} />}
+        {piloto && <BotoesDeToque controles={controles} item={item} />}
       </div>
-      <Comandos_ piloto={euVivo} />
+      <Comandos_ piloto={piloto} />
       {euVivo && <p className="settings-hint corrida-dica">{t('Pegue as caixas e estoure os balões dos outros. Quem fica sem balão sai.')}</p>}
     </div>
   );

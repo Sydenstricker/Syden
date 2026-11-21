@@ -40,6 +40,8 @@ export type TipoDeColuna =
 export interface Coluna {
   id: string;
   tipo: TipoDeColuna;
+  /** Na coluna de distância: até quantos km fica amarelo (PERTO_KM, se não disser; nos estados do Brasil, menos). */
+  perto?: number;
 }
 
 export interface ItemDoQuiz {
@@ -120,7 +122,7 @@ export function comparar(coluna: Coluna, chute: unknown, secreto: unknown): Vere
     }
     case 'distancia': {
       const { km, rumo } = distanciaERumo(chute as [number, number], secreto as [number, number]);
-      return km === 0 ? { cor: 2, km: 0 } : { cor: km <= PERTO_KM ? 1 : 0, km, rumo };
+      return km === 0 ? { cor: 2, km: 0 } : { cor: km <= (coluna.perto ?? PERTO_KM) ? 1 : 0, km, rumo };
     }
     case 'parentes': {
       const a = chute as string[];
@@ -251,6 +253,65 @@ export const TEMAS: Record<string, Tema> = {
     },
   },
 };
+
+/**
+ * OS TEMAS DO LOTE D (21/11/2026, a segunda auditoria dos mini-games): elementos químicos, dinossauros, estados do Brasil e
+ * animais. Como a mitologia, a lista e as colunas são NOSSAS, escritas nos scripts (server/scripts/quiz-<tema>.mjs), e o nome de
+ * cada item em cada idioma vem do Wikidata (CC0); dos estados, também o ponto, a população e a área.
+ */
+Object.assign(TEMAS, {
+  /** OS ELEMENTOS: os 118 da tabela periódica. Saem até o plutônio (94); os sintéticos de depois são só chute. */
+  elementos: {
+    itens: lerItens('elementos.json'),
+    pista: 'familia',
+    colunas: [
+      { id: 'familia', tipo: 'igual' },
+      { id: 'estado', tipo: 'igual' },
+      { id: 'periodo', tipo: 'ordem' },
+      { id: 'grupo', tipo: 'ordem' },
+      { id: 'numero', tipo: 'ordem' },
+    ],
+    sorteavel: (e) => Number(e.numero) <= 94,
+  },
+  /** OS DINOSSAUROS: gêneros conhecidos. Os marcados como raros (achados só em artigo) são só chute. */
+  dinossauros: {
+    itens: lerItens('dinossauros.json'),
+    pista: 'grupo',
+    colunas: [
+      { id: 'periodo', tipo: 'ordem' },
+      { id: 'dieta', tipo: 'igual' },
+      { id: 'grupo', tipo: 'igual' },
+      { id: 'comprimento', tipo: 'ordem' },
+      { id: 'continentes', tipo: 'conjunto' },
+    ],
+    sorteavel: (d) => d.raro !== true,
+  },
+  /** OS ESTADOS DO BRASIL (o Worldle do país): as 27 unidades. O amarelo da distância é o vizinho, até 900 km (o centro de dois estados vizinhos fica de 300 a 1.350 km). */
+  estados: {
+    itens: lerItens('estados.json'),
+    pista: 'regiao',
+    colunas: [
+      { id: 'local', tipo: 'distancia', perto: 900 },
+      { id: 'regiao', tipo: 'igual' },
+      { id: 'populacao', tipo: 'ordem' },
+      { id: 'area', tipo: 'ordem' },
+      { id: 'litoral', tipo: 'igual' },
+      { id: 'fronteira', tipo: 'igual' },
+    ],
+  },
+  /** OS ANIMAIS: bichos selvagens conhecidos, dos cinco continentes e dos mares. */
+  animais: {
+    itens: lerItens('animais.json'),
+    pista: 'classe',
+    colunas: [
+      { id: 'classe', tipo: 'igual' },
+      { id: 'dieta', tipo: 'igual' },
+      { id: 'habitat', tipo: 'conjunto' },
+      { id: 'continentes', tipo: 'conjunto' },
+      { id: 'peso', tipo: 'ordem' },
+    ],
+  },
+} satisfies Record<string, Tema>);
 
 /** O nome de um item na língua de quem lê: a exata, a base ("pt" de "pt-BR"), o inglês, ou o primeiro que houver. */
 export function nomeDoItem(item: ItemDoQuiz, idioma: string): string {

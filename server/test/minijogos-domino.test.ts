@@ -5,7 +5,7 @@
  */
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { criarDomino, PONTOS_PARA_VENCER, TEMPO_DA_VEZ, TEMPO_DO_AUSENTE, TEMPO_DO_RESULTADO, todasAsPedras, type OpcoesDoDomino, type Pedra } from '../src/minijogo-domino.js';
+import { arredondarACinco, criarDomino, jogadaDoRoboNoDomino, PONTOS_PARA_VENCER, PONTOS_PARA_VENCER_NOS_PONTOS, somaDasPontas, TEMPO_DA_VEZ, TEMPO_DO_AUSENTE, TEMPO_DO_RESULTADO, todasAsPedras, type OpcoesDoDomino, type Pedra } from '../src/minijogo-domino.js';
 
 type Lugar = { userId: number; username: string; lado: number; pedras: number; presente: boolean };
 type Estado = {
@@ -34,7 +34,7 @@ type Estado = {
 /** 0,9999 deixa o embaralhar como entrou: os lugares ficam na ordem da sala. */
 const identidade = () => 0.9999;
 
-function comecar({ ids = [1, 2], distribuir, aleatorio = identidade }: { ids?: number[]; distribuir?: OpcoesDoDomino['distribuir']; aleatorio?: () => number } = {}) {
+function comecar({ ids = [1, 2], distribuir, aleatorio = identidade, corpo = {}, solo = false }: { ids?: number[]; distribuir?: OpcoesDoDomino['distribuir']; aleatorio?: () => number; corpo?: Record<string, unknown>; solo?: boolean } = {}) {
   const sala = { ids: [...ids] };
   const relogio: { ms: number; depois: () => void }[] = [];
   let terminou = false;
@@ -49,8 +49,9 @@ function comecar({ ids = [1, 2], distribuir, aleatorio = identidade }: { ids?: n
     naSala: () => sala.ids,
     nome: (id: number) => `p${id}`,
     comunidade: 7,
+    solo,
   };
-  const jogo = criarDomino({ agora: () => 1000, aleatorio, distribuir }).comecar(ctx, { naSala: ids, criadaPor: ids[0], corpo: {} });
+  const jogo = criarDomino({ agora: () => 1000, aleatorio, distribuir }).comecar(ctx, { naSala: ids, criadaPor: ids[0], corpo });
   assert.ok(typeof jogo !== 'string');
   return {
     jogo,
@@ -419,4 +420,86 @@ test('partidas inteiras jogadas pelo relógio, com 2, 3 e 4: as 28 pedras se con
       assert.ok(j.estado().placar.some((p) => p.pontos >= PONTOS_PARA_VENCER));
     }
   }
+});
+
+/** Um sorteio que se repete. */
+function semente(s: number) {
+  return () => (s = (s * 1103515245 + 12345) % 2147483648) / 2147483648;
+}
+
+test('o dominó de pontos: a soma das pontas (a carroça conta as duas metades), e o arredondamento das mãos', () => {
+  assert.equal(somaDasPontas([]), 0);
+  assert.equal(somaDasPontas([P(5, 5)]), 10, 'a primeira pedra sozinha conta inteira');
+  assert.equal(somaDasPontas([P(3, 2)]), 5);
+  assert.equal(somaDasPontas([P(0, 5), P(5, 5)]), 10, 'a carroça na ponta conta 5 + 5');
+  assert.equal(somaDasPontas([P(6, 6), P(6, 4)]), 16);
+  assert.equal(somaDasPontas([P(1, 6), P(6, 6), P(6, 4)]), 5);
+  assert.equal(arredondarACinco(23), 20);
+  assert.equal(arredondarACinco(25), 25);
+});
+
+test('o dominó de pontos: marca na hora quem deixa as pontas em múltiplo de 5, e a partida vai a 150', () => {
+  const j = comecar({
+    corpo: { pontos: true },
+    distribuir: () => ({
+      maos: [
+        [P(5, 5), P(1, 2), P(1, 3), P(2, 3)],
+        [P(0, 5), P(1, 4), P(2, 4), P(3, 4)],
+      ],
+      dorme: [P(6, 6)],
+    }),
+  });
+  assert.equal((j.estado() as unknown as { alvo: number }).alvo, PONTOS_PARA_VENCER_NOS_PONTOS);
+  j.jogo.acao(1, { tipo: 'jogar', pedra: [5, 5] });
+  assert.deepEqual(j.estado().placar.map((p) => p.pontos), [10, 0], 'a carroça sozinha: 10');
+  assert.equal((j.estado().ultimo as { pontos?: number }).pontos, 10);
+  j.jogo.acao(2, { tipo: 'jogar', pedra: [0, 5] });
+  assert.deepEqual(j.estado().placar.map((p) => p.pontos), [10, 10], 'o 0 e a carroça na outra ponta: 0 + 10');
+  // sem a opção, nada se marca no meio da mão
+  const comum = comecar({ distribuir: () => ({ maos: [[P(5, 5), P(1, 2)], [P(0, 5), P(1, 4)]], dorme: [P(6, 6)] }) });
+  comum.jogo.acao(1, { tipo: 'jogar', pedra: [5, 5] });
+  assert.deepEqual(comum.estado().placar.map((p) => p.pontos), [0, 0]);
+});
+
+test('o dominó de pontos: a batida leva a soma dos outros arredondada de 5 em 5', () => {
+  const j = comecar({ corpo: { pontos: true }, distribuir: () => ({ maos: [[P(6, 6)], [P(6, 5), P(4, 4), P(0, 1)]], dorme: [] }) });
+  j.jogo.acao(1, { tipo: 'jogar', pedra: [6, 6] });
+  // 12 na mesa (marca 0, não é múltiplo de 5), e a batida: 11 + 8 + 1 = 20
+  const r = j.estado().resultado!;
+  assert.equal(r.tipo, 'batida');
+  assert.equal(r.pontos, 20);
+});
+
+test('o robô que conta: no difícil, deixa nas pontas o número que o adversário mostrou não ter', () => {
+  const visao = {
+    mao: [P(4, 3), P(4, 1)],
+    mesa: [P(2, 4)],
+    jogaveis: [
+      { pedra: P(4, 3), pontas: ['direita' as const] },
+      { pedra: P(4, 1), pontas: ['direita' as const] },
+    ],
+    faltaAosOutros: [new Set([1, 2])],
+    faltaAoParceiro: null,
+    pontos: false,
+    especiais: false,
+  };
+  assert.deepEqual(jogadaDoRoboNoDomino(visao, 'normal', () => 0.5).pedra, [4, 3], 'o normal livra a mais pesada');
+  assert.deepEqual(jogadaDoRoboNoDomino(visao, 'dificil', () => 0.5).pedra, [4, 1], 'o difícil prende o adversário');
+});
+
+test('os níveis do robô no Solo: o difícil ganha mais que o fácil da mesma pessoa', () => {
+  const vitorias: Record<string, number> = {};
+  const N = 120;
+  for (const nivel of ['facil', 'normal', 'dificil']) {
+    vitorias[nivel] = 0;
+    for (let k = 0; k < N; k++) {
+      const j = comecar({ ids: [1], solo: true, corpo: { robos: 1, nivel, pontos: k % 2 === 1 }, aleatorio: semente(1000 + k) });
+      for (let passos = 0; passos < 5000 && !j.terminou(); passos++) j.andar();
+      assert.equal(j.terminou(), true);
+      const e = j.estado();
+      if (e.vencedor && !e.vencedor.membros.includes(1)) vitorias[nivel]++;
+    }
+  }
+  console.log('vitórias do robô em', N, vitorias);
+  assert.ok(vitorias.dificil > vitorias.facil, JSON.stringify(vitorias));
 });

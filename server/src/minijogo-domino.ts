@@ -38,6 +38,8 @@ export type Pedra = [number, number];
 export type Ponta = 'esquerda' | 'direita';
 
 export const PONTOS_PARA_VENCER = 50;
+/** No dominó de pontos (21/11/2026), a partida vai mais longe: os pontos das pontas somam rápido. */
+export const PONTOS_PARA_VENCER_NOS_PONTOS = 150;
 export const PEDRAS_NA_MAO = 7;
 export const TEMPO_DA_VEZ = 30_000;
 /** A vez de quem saiu da sala: jogada pelo Syden nesse tempo. */
@@ -59,7 +61,7 @@ const mesma = (p: Pedra, q: Pedra) => (p[0] === q[0] && p[1] === q[1]) || (p[0] 
 const maisAlta = (p: Pedra, q: Pedra) => p[0] + p[1] - (q[0] + q[1]) || Math.max(...p) - Math.max(...q);
 
 export type Lance =
-  | { id: number; tipo: 'jogou'; userId: number; pedra: Pedra; ponta: Ponta | null; sozinho: boolean }
+  | { id: number; tipo: 'jogou'; userId: number; pedra: Pedra; ponta: Ponta | null; sozinho: boolean; pontos?: number }
   | { id: number; tipo: 'comprou'; userId: number; sozinho: boolean }
   | { id: number; tipo: 'passou'; userId: number }
   | { id: number; tipo: 'bateu'; userId: number }
@@ -97,6 +99,119 @@ export function batidaEspecial(pedra: Pedra, pontas: { esquerda: number; direita
   return pontas.esquerda !== pontas.direita && naEsquerda && naDireita ? 'la-e-lo' : null;
 }
 
+/**
+ * O DOMINÓ DE PONTOS (21/11/2026, o lote D da segunda auditoria), uma opção da largada: depois de cada pedra, se a soma das
+ * pontas da mesa é múltiplo de 5, quem jogou (ou a dupla dele) marca essa soma na hora. A carroça na ponta conta as DUAS metades
+ * (o 6-6 na ponta vale 12), e a primeira pedra sozinha conta inteira. Na batida e no trancado, os pontos das mãos dos outros
+ * entram arredondados para baixo, de 5 em 5. A partida vai até PONTOS_PARA_VENCER_NOS_PONTOS, e quem chega no meio da mão já
+ * ganha. A regra de fábrica continua a de sempre.
+ */
+export function somaDasPontas(mesa: Pedra[]): number {
+  if (!mesa.length) return 0;
+  if (mesa.length === 1) return mesa[0][0] + mesa[0][1];
+  const ponta = (p: Pedra, n: number) => (p[0] === p[1] ? 2 * n : n);
+  const primeira = mesa[0];
+  const ultima = mesa[mesa.length - 1];
+  return ponta(primeira, primeira[0]) + ponta(ultima, ultima[1]);
+}
+/** O que a mesa marca no dominó de pontos (0: não marca). */
+export const pontosDaMesa = (mesa: Pedra[]) => {
+  const soma = somaDasPontas(mesa);
+  return soma > 0 && soma % 5 === 0 ? soma : 0;
+};
+/** Os pontos das mãos, no dominó de pontos: para baixo, de 5 em 5. */
+export const arredondarACinco = (n: number) => Math.floor(n / 5) * 5;
+
+/** O nível dos robôs do Solo (21/11/2026): o normal é o robô de antes; o difícil CONTA as pedras. */
+export type NivelDoDomino = 'facil' | 'normal' | 'dificil';
+export const NIVEIS_DO_DOMINO: readonly NivelDoDomino[] = ['facil', 'normal', 'dificil'];
+
+/** O que o robô sabe na hora de jogar: só o que uma pessoa naquele lugar saberia. */
+export interface VisaoDoRobo {
+  mao: Pedra[];
+  mesa: Pedra[];
+  /** As jogadas possíveis (a pedra e as pontas onde serve). */
+  jogaveis: { pedra: Pedra; pontas: (Ponta | null)[] }[];
+  /** Os números que cada ADVERSÁRIO mostrou não ter (passou com eles nas pontas). */
+  faltaAosOutros: Set<number>[];
+  /** Os números que o PARCEIRO mostrou não ter (só em duplas). */
+  faltaAoParceiro: Set<number> | null;
+  pontos: boolean;
+  especiais: boolean;
+}
+
+/** A mesa depois da jogada (para a conta das pontas). */
+export function mesaDepois(mesa: Pedra[], p: Pedra, ponta: Ponta | null): Pedra[] {
+  if (!mesa.length) return [[p[0], p[1]]];
+  const esquerda = mesa[0][0];
+  const direita = mesa[mesa.length - 1][1];
+  if (ponta === 'esquerda') return [p[1] === esquerda ? [p[0], p[1]] : [p[1], p[0]], ...mesa];
+  return [...mesa, p[0] === direita ? [p[0], p[1]] : [p[1], p[0]]];
+}
+
+/**
+ * A ESCOLHA DO ROBÔ, por nível. FÁCIL: quase ao acaso (só prefere um pouco a pedra pesada). NORMAL (o de antes): a pedra que
+ * livra mais pontos, a carroça, e a que deixa na mesa uma ponta que ele ainda tem; no dominó de pontos, o que marca. DIFÍCIL, O
+ * ROBÔ QUE CONTA: tudo isso, e mais o que viu — as pedras na mesa e na mão dele dizem quantas de cada número ainda faltam
+ * aparecer, e quem passou mostrou os números que não tem. Ele prefere deixar nas pontas o que os adversários não têm (eles
+ * passam ou compram), evita fechar o parceiro, e prefere a ponta de número que já saiu quase todo.
+ */
+export function jogadaDoRoboNoDomino(v: VisaoDoRobo, nivel: NivelDoDomino, aleatorio: () => number): { pedra: Pedra; ponta: Ponta | null } {
+  let melhor: { pedra: Pedra; ponta: Ponta | null; valor: number } | null = null;
+  /** Quantas das 7 pedras com o número n eu já vejo (na mesa e na minha mão). */
+  const vistas = (n: number) => {
+    let k = 0;
+    for (const q of v.mesa) if (q[0] === n || q[1] === n) k++;
+    for (const q of v.mao) if (q[0] === n || q[1] === n) k++;
+    return k;
+  };
+  for (const { pedra: p, pontas } of v.jogaveis) {
+    for (const ponta of pontas) {
+      const resto = v.mao.filter((q) => !(q[0] === p[0] && q[1] === p[1]));
+      const depois = mesaDepois(v.mesa, p, ponta);
+      const fica = depois.length === 1 ? [p[0], p[1]] : [depois[0][0], depois[depois.length - 1][1]];
+      const tenho = resto.filter((q) => fica.some((n) => q[0] === n || q[1] === n)).length;
+      const marca = v.pontos ? pontosDaMesa(depois) : 0;
+      let valor: number;
+      if (nivel === 'facil') valor = (p[0] + p[1]) * 0.3 + marca * 0.2 + aleatorio() * 8;
+      else {
+        // com as batidas especiais, guardar uma carroça para bater com ela vale um pouco
+        const guardaCarroca = v.especiais && resto.length === 1 && resto[0][0] === resto[0][1] ? 3 : 0;
+        valor = p[0] + p[1] + (p[0] === p[1] ? 4 : 0) + Math.min(tenho, 2) * 3 + guardaCarroca + marca * 1.5;
+        if (nivel === 'dificil') {
+          const numeros = [...new Set(fica)];
+          // os adversários que ficam sem jogo nas pontas
+          for (const falta of v.faltaAosOutros) {
+            const presos = numeros.filter((n) => falta.has(n)).length;
+            valor += presos === numeros.length ? 6 : presos * 1.5;
+          }
+          if (v.faltaAoParceiro && numeros.every((n) => v.faltaAoParceiro!.has(n))) valor -= 4;
+          // a ponta de número que já saiu quase todo é difícil para quem vem depois
+          for (const n of numeros) valor += vistas(n) * 0.6;
+          // no dominó de pontos, o que o próximo pode marcar com as pedras que ainda não apareceram (a média, por pedra)
+          if (v.pontos) {
+            const vi = (q: Pedra) => v.mesa.some((m) => mesma(m, q)) || v.mao.some((m) => mesma(m, q));
+            const ocultas = todasAsPedras().filter((q) => !vi(q));
+            const e0 = depois[0][0];
+            const e1 = depois[depois.length - 1][1];
+            let risco = 0;
+            for (const q of ocultas) {
+              let maior = 0;
+              if (q[0] === e0 || q[1] === e0) maior = Math.max(maior, pontosDaMesa(mesaDepois(depois, q, 'esquerda')));
+              if (q[0] === e1 || q[1] === e1) maior = Math.max(maior, pontosDaMesa(mesaDepois(depois, q, 'direita')));
+              risco += maior;
+            }
+            if (ocultas.length) valor -= (risco / ocultas.length) * 3;
+          }
+          valor += aleatorio() * 0.3;
+        } else valor += aleatorio();
+      }
+      if (!melhor || valor > melhor.valor) melhor = { pedra: p, ponta, valor };
+    }
+  }
+  return { pedra: melhor!.pedra, ponta: melhor!.ponta };
+}
+
 export interface OpcoesDoDomino {
   agora?: () => number;
   aleatorio?: () => number;
@@ -123,6 +238,10 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
       const duplas = ordem.length === 4;
       const ladoDe = (lugar: number) => (duplas ? lugar % 2 : lugar);
       const lados = duplas ? 2 : ordem.length;
+      // o dominó de pontos (21/11/2026) e o nível dos robôs do Solo
+      const dePontos = corpo?.pontos === true;
+      const alvo = dePontos ? PONTOS_PARA_VENCER_NOS_PONTOS : PONTOS_PARA_VENCER;
+      const nivel: NivelDoDomino = robos.length && NIVEIS_DO_DOMINO.includes(corpo?.nivel as NivelDoDomino) ? (corpo.nivel as NivelDoDomino) : 'normal';
       const membros = (lado: number) => ordem.filter((_, i) => ladoDe(i) === lado);
       const pontos = new Array<number>(lados).fill(0);
       const partidaId = `domino-${ctx.comunidade ?? 0}-${agora()}`;
@@ -144,6 +263,8 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
       let interrompida = false;
       /** O relógio de agora é o de quem saiu da sala (2 s)? */
       let relogioDoAusente = false;
+      /** Os números que cada lugar mostrou não ter nesta mão (passou com eles nas pontas): o robô difícil conta. */
+      let faltas: Set<number>[] = [];
       const historico: Lance[] = [];
       let idDoLance = 0;
       const contar = (l: SemId<Lance>) => {
@@ -185,6 +306,7 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
           dorme = pedras.slice(ordem.length * PEDRAS_NA_MAO);
         }
         mesa = [];
+        faltas = ordem.map(() => new Set<number>());
         resultado = null;
         obrigatoria = null;
         if (numeroDaMao === 1) {
@@ -209,21 +331,28 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
           pontos[r.lado] += r.pontos;
           if (r.userId !== null) iniciador = ordem.indexOf(r.userId);
         }
-        const campeao = pontos.findIndex((n) => n >= PONTOS_PARA_VENCER && n === Math.max(...pontos));
-        if (campeao >= 0) {
-          vencedor = campeao;
-          fase = 'fim';
-          ctx.terminar(true);
-          return;
-        }
+        if (chegou()) return;
         fase = 'resultado';
         ctx.agendar(TEMPO_DO_RESULTADO, novaMao);
         ctx.avisar();
       };
 
+      /** Alguém chegou ao alvo: a partida acaba (no dominó de pontos, pode ser no meio da mão). */
+      function chegou() {
+        const campeao = pontos.findIndex((n) => n >= alvo && n === Math.max(...pontos));
+        if (campeao < 0) return false;
+        vencedor = campeao;
+        fase = 'fim';
+        ctx.terminar(true);
+        return true;
+      }
+
       const maosAbertas = () => ordem.map((userId, i) => ({ userId, pedras: maos[i].map((p) => [...p] as Pedra), soma: somaDe(maos[i]) }));
       /** A soma dos adversários de um lado. */
-      const somaDosOutros = (lado: number) => ordem.reduce((n, _, i) => (ladoDe(i) === lado ? n : n + somaDe(maos[i])), 0);
+      const somaDosOutros = (lado: number) => {
+        const soma = ordem.reduce((n, _, i) => (ladoDe(i) === lado ? n : n + somaDe(maos[i])), 0);
+        return dePontos ? arredondarACinco(soma) : soma;
+      };
 
       const bater = (lugar: number, pedra: Pedra, antes: { esquerda: number; direita: number } | null) => {
         contar({ tipo: 'bateu', userId: ordem[lugar] });
@@ -260,7 +389,7 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
           if (fase !== 'jogando') return;
           if (estaTrancado()) return trancar();
           if (!podeJogar(vez) && !podeComprar()) {
-            contar({ tipo: 'passou', userId: ordem[vez] });
+            passou(vez);
             vez = (vez + 1) % ordem.length;
             continue;
           }
@@ -279,6 +408,13 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
         trancar();
       };
 
+      /** Quem passa mostra que não tem os números das pontas. */
+      function passou(lugar: number) {
+        const e = pontas();
+        if (e) faltas[lugar].add(e.esquerda).add(e.direita);
+        contar({ tipo: 'passou', userId: ordem[lugar] });
+      }
+
       const proximaVez = () => {
         vez = (vez + 1) % ordem.length;
         comecarVez();
@@ -294,13 +430,20 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
         else if (ponta === 'esquerda') mesa.unshift(b === e.esquerda ? [a, b] : [b, a]);
         else mesa.push(a === e.direita ? [a, b] : [b, a]);
         obrigatoria = null;
-        contar({ tipo: 'jogou', userId: ordem[lugar], pedra: [a, b], ponta: e ? ponta : null, sozinho });
+        const marcou = dePontos ? pontosDaMesa(mesa) : 0;
+        contar({ tipo: 'jogou', userId: ordem[lugar], pedra: [a, b], ponta: e ? ponta : null, sozinho, ...(marcou ? { pontos: marcou } : {}) });
+        if (marcou) {
+          pontos[ladoDe(lugar)] += marcou;
+          if (chegou()) return;
+        }
         if (mao.length === 0) return bater(lugar, [a, b], e);
         proximaVez();
       };
 
       const comprar = (lugar: number, sozinho: boolean) => {
         maos[lugar].push(dorme.pop()!);
+        // a pedra comprada ninguém viu: o que se sabia do que falta a ele não vale mais
+        faltas[lugar].clear();
         contar({ tipo: 'comprou', userId: ordem[lugar], sozinho });
       };
 
@@ -311,7 +454,7 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
         while (!podeJogar(lugar) && podeComprar()) comprar(lugar, true);
         const jogaveis = maos[lugar].filter((p) => ondeServe(p).length > 0).sort((p, q) => maisAlta(q, p));
         if (!jogaveis.length) {
-          contar({ tipo: 'passou', userId: ordem[lugar] });
+          passou(lugar);
           return proximaVez();
         }
         jogar(lugar, jogaveis[0], ondeServe(jogaveis[0])[0], true);
@@ -345,22 +488,21 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
           ctx.agendar(PAUSA_DO_ROBO / 2, () => vezDoRobo(quem));
           return;
         }
-        const e = pontas();
-        let melhor: { pedra: Pedra; ponta: Ponta | null; valor: number } | null = null;
-        for (const p of maos[lugar]) {
-          for (const ponta of ondeServe(p)) {
-            const resto = maos[lugar].filter((q) => q !== p);
-            // a ponta que fica na mesa depois desta pedra (na mesa vazia, as duas metades)
-            const encaixe = !e ? null : ponta === 'esquerda' ? e.esquerda : e.direita;
-            const fica = encaixe === null ? [p[0], p[1]] : [p[0] === encaixe ? p[1] : p[0]];
-            const tenho = resto.filter((q) => fica.some((n) => q[0] === n || q[1] === n)).length;
-            // com as batidas especiais, guardar uma carroça para bater com ela vale um pouco
-            const guardaCarroca = especiais && resto.length === 1 && resto[0][0] === resto[0][1] ? 3 : 0;
-            const valor = p[0] + p[1] + (p[0] === p[1] ? 4 : 0) + Math.min(tenho, 2) * 3 + guardaCarroca + aleatorio();
-            if (!melhor || valor > melhor.valor) melhor = { pedra: p, ponta, valor };
-          }
-        }
-        jogo.acao(quem, { tipo: 'jogar', pedra: melhor!.pedra, ponta: melhor!.ponta });
+        const lado = ladoDe(lugar);
+        const escolha = jogadaDoRoboNoDomino(
+          {
+            mao: maos[lugar],
+            mesa,
+            jogaveis: maos[lugar].map((p) => ({ pedra: p, pontas: ondeServe(p) })).filter((j) => j.pontas.length > 0),
+            faltaAosOutros: ordem.flatMap((_, i) => (ladoDe(i) !== lado ? [faltas[i]] : [])),
+            faltaAoParceiro: duplas ? faltas[(lugar + 2) % 4] : null,
+            pontos: dePontos,
+            especiais,
+          },
+          nivel,
+          aleatorio,
+        );
+        jogo.acao(quem, { tipo: 'jogar', pedra: escolha.pedra, ponta: escolha.ponta });
       }
 
       novaMao();
@@ -375,7 +517,10 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
             fase,
             partidaId,
             duplas,
-            alvo: PONTOS_PARA_VENCER,
+            alvo,
+            pontos: dePontos,
+            somaDasPontas: dePontos ? somaDasPontas(mesa) : null,
+            nivel: robos.length ? nivel : null,
             mao: numeroDaMao,
             lugares: ordem.map((userId, i) => ({
               userId,
@@ -423,7 +568,7 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
           if (tipo === 'passar') {
             if (podeJogar(lugar)) return 'Você tem uma pedra que serve.';
             if (podeComprar()) return 'Compre uma pedra antes de passar.';
-            contar({ tipo: 'passou', userId: quem });
+            passou(lugar);
             proximaVez();
             return null;
           }

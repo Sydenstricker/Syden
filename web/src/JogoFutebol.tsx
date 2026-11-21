@@ -414,9 +414,11 @@ interface Entrada {
   alto: boolean;
   /** Trocar de jogador (Q, só no Solo), até o próximo passo usar. */
   trocar: boolean;
+  /** O bote (E ou V, 21/11/2026), até o próximo passo usar. */
+  bote: boolean;
 }
 
-const entradaVazia = (): Entrada => ({ esquerda: false, direita: false, cima: false, baixo: false, chute: false, passe: false, toque: null, alto: false, trocar: false });
+const entradaVazia = (): Entrada => ({ esquerda: false, direita: false, cima: false, baixo: false, chute: false, passe: false, toque: null, alto: false, trocar: false, bote: false });
 
 function useEntrada(ativo: boolean) {
   const entrada = useRef<Entrada>(entradaVazia());
@@ -437,6 +439,8 @@ function useEntrada(ativo: boolean) {
       else if (k === 'c') c.alto = apertada;
       else if (k === 'q') {
         if (apertada && !e.repeat) c.trocar = true;
+      } else if (k === 'e' || k === 'v') {
+        if (apertada && !e.repeat) c.bote = true;
       } else if (k === 'x' || k === 'z') {
         if (apertada && !e.repeat) c.passe = true;
       } else usou = false;
@@ -472,8 +476,10 @@ function comandoDa(e: Entrada): Comando {
   }
   const passe = e.passe;
   e.passe = false;
+  const bote = e.bote;
+  e.bote = false;
   // o chute alto se carrega segurando o C (ou o Espaço com o C junto)
-  return { dx, dy, chute: e.chute || e.alto, passe, alto: e.alto };
+  return { dx, dy, chute: e.chute || e.alto, passe, alto: e.alto, bote };
 }
 
 const ehToque = () => typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
@@ -524,6 +530,9 @@ function ControlesDeToque({ entrada, solo = false }: { entrada: React.RefObject<
         <button type="button" onPointerDown={() => (entrada.current.passe = true)}>
           {t('Passe')}
         </button>
+        <button type="button" className="bote" onPointerDown={() => (entrada.current.bote = true)}>
+          {t('Bote')}
+        </button>
         <button
           type="button"
           onPointerDown={(e) => {
@@ -561,6 +570,7 @@ function Comandos({ solo = false }: { solo?: boolean }) {
         { teclas: ['espaco'], toque: 'toque-segurar', rotulo: t('Chutar (segure para mais força)') },
         { teclas: ['c'], toque: 'toque-segurar', rotulo: t('Chute alto (passa por cima)') },
         { teclas: ['x', 'z'], toque: 'toque', rotulo: t('Passe') },
+        { teclas: ['e'], toque: 'toque', rotulo: t('Bote (o carrinho que tira a bola)') },
         ...(solo ? [{ teclas: ['q' as const], toque: 'toque' as const, rotulo: t('Trocar de jogador') }, comandoDaPausa(t)] : []),
       ]}
     />
@@ -767,6 +777,8 @@ function desenharMundo(
     vel: Math.sqrt(j.vx * j.vx + j.vy * j.vy),
     carga: j.carga,
     tonto: j.tonto,
+    bote: j.bote > 0,
+    caido: j.caido > 0,
     ...quem(j),
   }));
   // quem está mais embaixo, por cima
@@ -790,6 +802,10 @@ function somDoEvento(e: Evento | EventoDaTela, meuTime: 0 | 1 | null, nome: (id:
       break;
     case 'roubo':
       tocar('soco');
+      break;
+    case 'bote':
+      tocar('desliza');
+      tocar('impacto');
       break;
     case 'gol':
       tocar(meuTime === null ? 'acerto' : e.time === meuTime ? 'combo' : 'erro');

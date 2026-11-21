@@ -38,7 +38,7 @@ import * as db from './db.js';
 import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
 import { comecarRelampago } from './minijogo-festa-relampago.js';
 import { comRobos, idsDosRobos, quantosRobos } from './minijogo-robos.js';
-import { microjogosPara, PONTOS_FESTA, RODADAS_FESTA, rodadaDeFesta, type Microjogo, type RodadaDeFesta } from './festa/rodada.js';
+import { MICROJOGOS, microjogoDe, microjogosPara, PONTOS_FESTA, RODADAS_FESTA, rodadaDeFesta, type Microjogo, type RodadaDeFesta } from './festa/rodada.js';
 
 export * from './festa/rodada.js';
 // O que os outros arquivos e os testes usam continua saindo daqui.
@@ -74,6 +74,13 @@ export const RODADAS_DA_FESTA = [5, 10, 15] as const;
  */
 export const varianteDaFesta = (rodadas: number, robos: number) => `r${rodadas}-${robos}`;
 
+/**
+ * O TREINO (21/11/2026, o lote D): no Solo, escolhe-se UM microjogo e joga-se à vontade, rodada atrás de rodada, sem placar,
+ * sem recorde e sem troféu. O microjogo de 2 ou mais ganha os robôs que faltam (os de sempre, minijogo-robos.ts). A partida tem
+ * TREINO_RODADAS rodadas, e sai-se dela quando quiser.
+ */
+export const TREINO_RODADAS = 20;
+
 export const festa: Definicao = criarFesta();
 
 export interface OpcoesDaFesta {
@@ -89,16 +96,21 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
     comecar(ctxDaSala, { naSala, corpo }) {
       // o modo Relâmpago (19/11/2026), escolhido na largada: outra partida, em minijogo-festa-relampago.ts
       if (corpo?.modo === 'relampago') return comecarRelampago(ctxDaSala, naSala, { agora, aleatorio });
-      // os robôs, só no Solo (quantosRobos devolve 0 na sala)
-      const robos = idsDosRobos(quantosRobos(ctxDaSala, corpo ?? {}));
+      // o treino (21/11/2026): só no Solo, um microjogo que existe
+      const treino = corpo?.modo === 'treino';
+      if (treino && (!ctxDaSala.solo || !MICROJOGOS.includes(String(corpo?.microjogo)))) return 'Ação desconhecida.';
+      // os robôs, só no Solo (quantosRobos devolve 0 na sala); no treino, os que o microjogo pede
+      const robos = idsDosRobos(treino ? Math.max(0, (microjogoDe(String(corpo.microjogo)).minimo ?? 1) - naSala.length) : quantosRobos(ctxDaSala, corpo ?? {}));
       const ctx = comRobos(ctxDaSala, robos);
       const inscritos = [...naSala, ...robos];
       const pedidas = Math.floor(Number(corpo?.rodadas));
       const rodadas = (RODADAS_DA_FESTA as readonly number[]).includes(pedidas) ? pedidas : RODADAS_FESTA;
       // o empurra-empurra (lote 5) pede 2 ou mais: sozinho, sem robôs, fica de fora do sorteio
-      const ordem = ordemDoTeste ?? embaralhar([...microjogosPara(inscritos.length)], aleatorio).slice(0, rodadas);
-      /** O recorde do Solo: de quem joga, contra 1 ou mais robôs. */
-      const soloDe = robos.length > 0 && naSala.length === 1 && naSala[0] > 0 ? naSala[0] : null;
+      const ordem =
+        ordemDoTeste ??
+        (treino ? Array<Microjogo>(TREINO_RODADAS).fill(String(corpo.microjogo)) : embaralhar([...microjogosPara(inscritos.length)], aleatorio).slice(0, rodadas));
+      /** O recorde do Solo: de quem joga, contra 1 ou mais robôs (no treino, nenhum). */
+      const soloDe = !treino && robos.length > 0 && naSala.length === 1 && naSala[0] > 0 ? naSala[0] : null;
       const variante = varianteDaFesta(ordem.length, robos.length);
       let recordeAntes: number | null = null;
       if (soloDe !== null) {
@@ -117,7 +129,7 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
       /** Quantas rodadas cada um venceu (o prêmio bônus). */
       const vitorias = new Map<number, number>(inscritos.map((id) => [id, 0]));
       let premio: { ganhadores: number[]; valor: number; pontos: number } | null = null;
-      const ultima = () => rodada === ordem.length && ordem.length > 1;
+      const ultima = () => !treino && rodada === ordem.length && ordem.length > 1;
       /** Quem estava na sala em TODAS as revelações: só eles são "a turma" do pódio (revisão de 03/11/2026: quem ficava
        * sozinho ganhava o troféu, e quem tinha saído também). */
       let ficaram: Set<number> | null = null;
@@ -150,7 +162,7 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
         // o prêmio bônus: quem venceu mais rodadas (entre quem ainda está na partida)
         const candidatos = inscritos.filter((id) => (ficaram ?? new Set(inscritos)).has(id));
         const maior = Math.max(0, ...candidatos.map((id) => vitorias.get(id) ?? 0));
-        if (maior > 0 && inscritos.length > 1) {
+        if (maior > 0 && inscritos.length > 1 && !treino) {
           const ganhadores = candidatos.filter((id) => vitorias.get(id) === maior);
           for (const id of ganhadores) pontos.set(id, (pontos.get(id) ?? 0) + PREMIO_DA_FESTA);
           premio = { ganhadores, valor: maior, pontos: PREMIO_DA_FESTA };
@@ -167,7 +179,7 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
         // O PÓDIO, com 2 pessoas ou mais que ficaram até o fim: até o 3º lugar (empatados dividem), e só quem fez algum ponto.
         // Contra o computador, nenhum (o troféu é um registro entre amigos).
         const turma = ficaram ?? new Set<number>();
-        if (turma.size >= 2 && !robos.length) {
+        if (turma.size >= 2 && !robos.length && !treino) {
           const ordemFinal = placar(new Map([...pontos].filter(([id]) => turma.has(id))), ctx.nome);
           for (const l of ordemFinal) {
             const posicao = 1 + ordemFinal.filter((o) => o.pontos > l.pontos).length;
@@ -214,6 +226,8 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
             fase: terminada ? 'fim' : r.fase,
             rodada,
             rodadas: ordem.length,
+            // o treino (21/11/2026): a tela esconde o placar
+            ...(treino ? { treino: true } : {}),
             // os robôs do Solo (20/11/2026): quantos, e o recorde (o de antes, e no fim os pontos feitos e se virou recorde)
             robos: robos.length,
             ...(soloDe !== null ? { recordeAntes, recorde: terminada ? recorde : null } : {}),

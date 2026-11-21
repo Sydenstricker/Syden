@@ -288,7 +288,26 @@ export type Evento =
   | { t: 'troca'; dono: Dono; de: Recurso; para: Recurso; ganho: number }
   | { t: 'fim'; vencedor: Dono; motivo: Motivo };
 
-export type Motivo = 'centro' | 'maravilha' | 'tempo';
+export type Motivo = 'centro' | 'maravilha' | 'tempo' | 'desafio';
+
+/**
+ * OS DESAFIOS DO SOLO (21/11/2026, a segunda auditoria, lote D): cenários curtos, cada um com um objetivo e um recorde próprio
+ * (a tabela comum do Solo, variante `desafio-<id>`). Só no Solo (o 1×1 contra o computador); sem desafio, a partida é a de
+ * sempre (o lockstep da sala não muda).
+ *  - cerco: aguentar 10 minutos contra um computador que ataca cedo e sem parar (o recorde são os pontos no fim);
+ *  - maravilha: a Maravilha já de pé, e um exército chegando; ela precisa ficar de pé 5 minutos (o recorde é a vida dela, em %);
+ *  - relampago: um exército pronto, e derrubar o centro do computador fácil em até 8 minutos (o recorde é o tempo);
+ *  - colheita: colher `meta` recursos, sem ninguém atacar, em até 15 minutos (o recorde é o tempo).
+ */
+export type Desafio = 'cerco' | 'maravilha' | 'relampago' | 'colheita';
+export const LISTA_DE_DESAFIOS: Desafio[] = ['cerco', 'maravilha', 'relampago', 'colheita'];
+export const DESAFIOS: Record<Desafio, { limite: number; meta?: number; menorMelhor: boolean }> = {
+  cerco: { limite: 10 * 60 * PASSOS_POR_SEGUNDO, menorMelhor: false },
+  maravilha: { limite: 5 * 60 * PASSOS_POR_SEGUNDO, menorMelhor: false },
+  relampago: { limite: 8 * 60 * PASSOS_POR_SEGUNDO, menorMelhor: true },
+  colheita: { limite: 15 * 60 * PASSOS_POR_SEGUNDO, meta: 2500, menorMelhor: true },
+};
+export const ehDesafio = (v: unknown): v is Desafio => typeof v === 'string' && (LISTA_DE_DESAFIOS as string[]).includes(v);
 
 export type Comando =
   | { t: 'mover'; ids: number[]; x: number; y: number; atacando?: boolean }
@@ -351,6 +370,8 @@ export interface Sim {
   quatro: boolean;
   /** Onde nasceu o centro da vila de cada dono. */
   centros: { gx: number; gy: number }[];
+  /** O desafio do Solo (null: a partida de sempre). */
+  desafio: Desafio | null;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -392,7 +413,7 @@ export const CENTROS_DO_2X2: { gx: number; gy: number }[] = [
   { gx: TAMANHO - 6 - 3, gy: 34 },
 ];
 
-export function novaPartida(semente: number, opcoes: { mapa?: TipoDoMapa; quatro?: boolean } = {}): Sim {
+export function novaPartida(semente: number, opcoes: { mapa?: TipoDoMapa; quatro?: boolean; desafio?: Desafio | null } = {}): Sim {
   const vazio = () => new Uint8Array(TAMANHO * TAMANHO);
   const jog = (): Jogador => ({
     recursos: { comida: 200, madeira: 200, ouro: 100 },
@@ -431,6 +452,7 @@ export function novaPartida(semente: number, opcoes: { mapa?: TipoDoMapa; quatro
     historico: [],
     quatro,
     centros: quatro ? CENTROS_DO_2X2 : CENTRO_DE,
+    desafio: !quatro && ehDesafio(opcoes.desafio) ? opcoes.desafio : null,
   };
   if (quatro) gerarMapaDe4(sim);
   else gerarMapa(sim);
@@ -446,9 +468,92 @@ export function novaPartida(semente: number, opcoes: { mapa?: TipoDoMapa; quatro
       novaUnidade(sim, d, 'trabalhador', lugar.x + 0.5, lugar.y + 0.5);
     }
   }
+  if (sim.desafio) montarDesafio(sim, sim.desafio);
   verNevoa(sim);
   amostrar(sim);
   return sim;
+}
+
+/** O que cada desafio põe na partida antes do primeiro passo (a Maravilha e o relâmpago mudam o começo). */
+function montarDesafio(sim: Sim, desafio: Desafio) {
+  const somar = (r: Record<Recurso, number>, c: Custo) => {
+    for (const k of RECURSOS) r[k] += c[k] ?? 0;
+  };
+  if (desafio === 'relampago') {
+    // um exército da era 2 já pronto, ao lado do centro
+    sim.jogadores[0].era = 2;
+    const c = sim.centros[0];
+    const tropa: TipoUnidade[] = ['lanceiro', 'lanceiro', 'lanceiro', 'lanceiro', 'arqueiro', 'arqueiro', 'arqueiro', 'arqueiro', 'cavaleiro', 'cavaleiro', 'catapulta', 'catapulta'];
+    tropa.forEach((t, i) => {
+      const k = casaLivrePerto(sim, c.gx, c.gy, PREDIOS.centro.tam, 0, i * 2 + 1);
+      novaUnidade(sim, 0, t, k.x + 0.5, k.y + 0.5);
+    });
+    return;
+  }
+  if (desafio !== 'maravilha') return;
+  // a Maravilha de pé, perto do centro, na era 2, com uma guarda pequena e um troco para reforçar
+  const eu = sim.jogadores[0];
+  eu.era = 2;
+  somar(eu.recursos, { comida: 300, madeira: 400, ouro: 250 });
+  const c = sim.centros[0];
+  // atrás do centro (do lado de longe do meio do mapa), para o exército chegar primeiro na vila
+  const meio = TAMANHO / 2;
+  const lugar = lugarLivre(sim, c.gx - Math.sign(meio - c.gx) * 5, c.gy - Math.sign(meio - c.gy) * 5, PREDIOS.maravilha.tam)
+    ?? lugarLivre(sim, c.gx - Math.sign(meio - c.gx) * 5, c.gy - Math.sign(meio - c.gy) * 5, PREDIOS.maravilha.tam, 0)
+    ?? lugarLivre(sim, c.gx, c.gy, PREDIOS.maravilha.tam);
+  if (lugar) {
+    const m = novoPredio(sim, 0, 'maravilha', lugar.x, lugar.y);
+    m.pronto = true;
+    m.progresso = PREDIOS.maravilha.tempo;
+    m.vida = m.vidaMax;
+    const guarda: TipoUnidade[] = ['lanceiro', 'lanceiro', 'lanceiro', 'lanceiro', 'arqueiro', 'arqueiro', 'arqueiro', 'arqueiro', 'cavaleiro', 'cavaleiro'];
+    guarda.forEach((t, i) => {
+      const k = casaLivrePerto(sim, m.gx, m.gy, m.tam, 0, i * 3);
+      novaUnidade(sim, 0, t, k.x + 0.5, k.y + 0.5);
+    });
+  }
+  // o computador já chega com o exército pronto
+  const ele = sim.jogadores[1];
+  ele.era = 2;
+  somar(ele.recursos, { comida: 800, madeira: 800, ouro: 600 });
+  const o = sim.centros[1];
+  const exercito: TipoUnidade[] = ['lanceiro', 'lanceiro', 'lanceiro', 'lanceiro', 'arqueiro', 'arqueiro', 'arqueiro', 'arqueiro', 'cavaleiro', 'cavaleiro', 'catapulta', 'catapulta'];
+  exercito.forEach((t, i) => {
+    const k = casaLivrePerto(sim, o.gx, o.gy, PREDIOS.centro.tam, 1, i * 2 + 1);
+    novaUnidade(sim, 1, t, k.x + 0.5, k.y + 0.5);
+  });
+}
+
+/** O canto de um retângulo livre de `tam` × `tam` (com uma casa de folga em volta) mais perto de (gx, gy), em anéis. */
+function lugarLivre(sim: Sim, gx: number, gy: number, tam: number, folga = 1): { x: number; y: number } | null {
+  for (let anel = 0; anel < 16; anel++) {
+    for (let dy = -anel; dy <= anel; dy++)
+      for (let dx = -anel; dx <= anel; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== anel) continue;
+        const x = gx + dx;
+        const y = gy + dy;
+        if (x < 1 || y < 1 || x + tam > TAMANHO - 1 || y + tam > TAMANHO - 1) continue;
+        let livre = true;
+        for (let yy = y - folga; yy < y + tam + folga && livre; yy++) for (let xx = x - folga; xx < x + tam + folga && livre; xx++) if (sim.grade[ind(xx, yy)] !== 0) livre = false;
+        if (livre) return { x, y };
+      }
+  }
+  return null;
+}
+
+/** Quanto tempo (em passos) a Maravilha precisa ficar de pé para vencer (no desafio da Maravilha, o limite dele). */
+export function passosDaMaravilha(sim: Sim): number {
+  return sim.desafio === 'maravilha' ? DESAFIOS.maravilha.limite : PASSOS_DA_MARAVILHA;
+}
+
+/** O número do recorde de um desafio vencido: os pontos (cerco), a vida da Maravilha em % (maravilha), ou o tempo em ms. */
+export function valorDoDesafio(sim: Sim): number {
+  if (sim.desafio === 'cerco') return pontos(sim, 0);
+  if (sim.desafio === 'maravilha') {
+    const m = sim.predios.find((p) => p.dono === 0 && p.tipo === 'maravilha');
+    return m ? Math.round((m.vida / m.vidaMax) * 100) : 0;
+  }
+  return sim.passo * 100;
 }
 
 /** Uma amostra do gráfico do fim (o que cada um já colheu e o tamanho do exército). */
@@ -2121,8 +2226,15 @@ function conferirFim(sim: Sim) {
     const j = sim.jogadores[d];
     if (sim.predios.some((p) => p.dono === d && p.tipo === 'maravilha' && p.pronto)) {
       j.maravilha++;
-      if (j.maravilha >= PASSOS_DA_MARAVILHA) return terminar(equipeDe(d), 'maravilha');
+      if (j.maravilha >= passosDaMaravilha(sim)) return terminar(equipeDe(d), 'maravilha');
     } else j.maravilha = 0;
+  }
+  const des = sim.desafio;
+  if (des) {
+    if (des === 'maravilha' && !sim.predios.some((p) => p.dono === 0 && p.tipo === 'maravilha')) return terminar(1, 'desafio');
+    if (des === 'colheita' && sim.colhido[0] >= DESAFIOS.colheita.meta!) return terminar(0, 'desafio');
+    // (a Maravilha vence pelo contador dela, logo acima)
+    if (des !== 'maravilha' && sim.passo + 1 >= DESAFIOS[des].limite) return terminar(des === 'cerco' ? 0 : 1, 'desafio');
   }
   if (sim.passo + 1 >= PASSOS_MAX) {
     const a = pontosDaEquipe(sim, 0);

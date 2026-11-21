@@ -352,6 +352,7 @@ export function PainelDoMinijogo({
       {!partida && escolhendo !== null && JOGOS_COM_ESCOLHA_DE_PALAVRAS.has(escolhendo) && (
         <EscolhaDosJogosDePalavras
           jogo={escolhendo}
+          solo={aba === 'solo'}
           aoEscolher={(corpo) => tentar(() => aoComecar(escolhendo, corpo, aba === 'solo').then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
@@ -435,7 +436,7 @@ export function PainelDoMinijogo({
       )}
       {!partida && escolhendo === 'balao' && (
         <EscolhaDaArena
-          aoEscolher={(arena) => tentar(() => aoComecar('balao', { arena }, false).then(() => setEscolhendo(null)))}
+          aoEscolher={(arena, extra) => tentar(() => aoComecar('balao', { arena, ...extra }, false).then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -1005,7 +1006,14 @@ export function PainelDoMinijogo({
                           { minutos: partida.minutos, golDeOuro: partida.golDeOuro === true }
                         : ROBOS_NO_SOLO[partida.jogo]
                           ? // a variante do Dominó e do Truco (20/11/2026) volta junto
-                            { robos: partida.robos, especiais: partida.especiais === true, variante: partida.variante }
+                            {
+                              robos: partida.robos,
+                              especiais: partida.especiais === true,
+                              variante: partida.variante,
+                              // o dominó de pontos e o nível dos robôs (21/11/2026)
+                              ...(partida.pontos === true ? { pontos: true } : {}),
+                              ...(typeof partida.nivel === 'string' ? { nivel: partida.nivel } : {}),
+                            }
                           : {},
                   partida.solo === true,
                 ),

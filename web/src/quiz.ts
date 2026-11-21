@@ -6,7 +6,7 @@ import { type LinhaDoPlacar, primeiraForma } from './minijogos';
  * os valores CRUS de cada coluna ("dragon", 4, ["walk","fly"]); aqui eles viram texto traduzido. Tema novo: o id em
  * QUIZZES, os rótulos em ROTULOS e, se a fonte pedir crédito, a linha dela nos termos (seção 10, "Créditos").
  */
-export const QUIZZES = ['monstros', 'mitologia', 'paises'] as const;
+export const QUIZZES = ['monstros', 'mitologia', 'paises', 'elementos', 'dinossauros', 'estados', 'animais'] as const;
 export type IdDoQuiz = (typeof QUIZZES)[number];
 export const ehQuiz = (jogo: string): jogo is IdDoQuiz => (QUIZZES as readonly string[]).includes(jogo);
 
@@ -67,7 +67,7 @@ interface Rotulos {
 
 const FRACOES: Record<number, string> = { 0.125: '1/8', 0.25: '1/4', 0.5: '1/2' };
 
-export const ROTULOS: Record<IdDoQuiz, Rotulos> = {
+const ROTULOS_DE_ANTES: Record<'monstros' | 'mitologia' | 'paises', Rotulos> = {
   monstros: {
     colunas: {
       tipo: chave('Tipo'),
@@ -250,6 +250,161 @@ export const ROTULOS: Record<IdDoQuiz, Rotulos> = {
     numero: { populacao: (v) => new Intl.NumberFormat(idiomaAtual(), { notation: 'compact', maximumFractionDigits: 1 }).format(v) },
   },
 };
+
+/** "12 m", "1,5 kg", "300 g": o número no formato do idioma de quem lê, com a unidade (que é a mesma em toda língua). */
+const comUnidade = (v: number, unidade: string, maximo = 1) => `${new Intl.NumberFormat(idiomaAtual(), { maximumFractionDigits: maximo }).format(v)} ${unidade}`;
+const compacto = (v: number) => new Intl.NumberFormat(idiomaAtual(), { notation: 'compact', maximumFractionDigits: 1 }).format(v);
+/** O peso dos animais: em toneladas, quilos, gramas ou miligramas, o que der um número legível. */
+export function pesoLegivel(kg: number): string {
+  if (kg >= 1000) return comUnidade(kg / 1000, 't');
+  if (kg >= 1) return comUnidade(kg, 'kg');
+  if (kg >= 0.001) return comUnidade(kg * 1000, 'g');
+  return comUnidade(kg * 1_000_000, 'mg');
+}
+
+/** A dieta, igual nos dinossauros e nos animais (o masculino é o do bicho, nunca o de quem lê). */
+const DIETAS: Record<string, string> = {
+  carnivoro: chave('Carnívoro'),
+  herbivoro: chave('Herbívoro'),
+  onivoro: chave('Onívoro'),
+  insetivoro: chave('Insetívoro'),
+};
+
+/**
+ * OS TEMAS DO LOTE D (21/11/2026): os rótulos dos elementos, dos dinossauros, dos estados do Brasil e dos animais. Os nomes
+ * dos continentes e das regiões são os mesmos textos dos países.
+ */
+const ROTULOS_NOVOS = {
+  elementos: {
+    colunas: {
+      familia: chave('Família'),
+      estado: chave('Estado físico'),
+      periodo: chave('Período'),
+      grupo: chave('Grupo'),
+      numero: chave('Número atômico'),
+    },
+    valores: {
+      familia: {
+        'metal-alcalino': chave('Metal alcalino'),
+        'alcalino-terroso': chave('Metal alcalinoterroso'),
+        transicao: chave('Metal de transição'),
+        'pos-transicao': chave('Outro metal'),
+        semimetal: chave('Semimetal'),
+        'nao-metal': chave('Não metal'),
+        halogenio: chave('Halogênio'),
+        'gas-nobre': chave('Gás nobre'),
+        lantanideo: chave('Lantanídeo'),
+        actinideo: chave('Actinídeo'),
+      },
+      estado: {
+        solido: chave('Sólido'),
+        liquido: chave('Líquido'),
+        gas: chave('Gasoso'),
+      },
+    },
+  },
+  dinossauros: {
+    colunas: {
+      periodo: chave('Período'),
+      dieta: chave('Dieta'),
+      grupo: chave('Grupo'),
+      comprimento: chave('Comprimento'),
+      continentes: chave('Continentes'),
+    },
+    valores: {
+      // de ORDEM no servidor (1, 2, 3: a seta diz se o secreto é mais antigo ou mais novo)
+      periodo: { 1: chave('Triássico'), 2: chave('Jurássico'), 3: chave('Cretáceo') },
+      dieta: DIETAS,
+      grupo: {
+        teropode: chave('Terópode'),
+        sauropode: chave('Saurópode'),
+        prossauropode: chave('Prossaurópode'),
+        ornitopode: chave('Ornitópode'),
+        ceratopsiano: chave('Ceratopsiano'),
+        estegossauro: chave('Estegossauro'),
+        anquilossauro: chave('Anquilossauro'),
+        paquicefalossauro: chave('Paquicefalossauro'),
+      },
+      continentes: {
+        'america-do-norte': chave('América do Norte'),
+        'america-do-sul': chave('América do Sul'),
+        europa: chave('Europa'),
+        africa: chave('África'),
+        asia: chave('Ásia'),
+        oceania: chave('Oceania'),
+        antartida: chave('Antártida'),
+      },
+    },
+    numero: { comprimento: (v) => comUnidade(v, 'm') },
+  },
+  estados: {
+    colunas: {
+      local: chave('Distância'),
+      regiao: chave('Região'),
+      populacao: chave('População'),
+      area: chave('Área'),
+      litoral: chave('Litoral'),
+      fronteira: chave('Fronteira com outro país'),
+    },
+    valores: {
+      regiao: {
+        norte: chave('Norte'),
+        nordeste: chave('Nordeste'),
+        'centro-oeste': chave('Centro-Oeste'),
+        sudeste: chave('Sudeste'),
+        sul: chave('Sul'),
+      },
+      litoral: { sim: chave('Sim'), nao: chave('Não') },
+      fronteira: { sim: chave('Sim'), nao: chave('Não') },
+    },
+    numero: { populacao: compacto, area: (v) => `${compacto(v)} km²` },
+  },
+  animais: {
+    colunas: {
+      classe: chave('Classe'),
+      dieta: chave('Dieta'),
+      habitat: chave('Habitat'),
+      continentes: chave('Continentes'),
+      peso: chave('Peso'),
+    },
+    valores: {
+      classe: {
+        mamifero: chave('Mamífero'),
+        ave: chave('Ave'),
+        reptil: chave('Réptil'),
+        anfibio: chave('Anfíbio'),
+        peixe: chave('Peixe'),
+        inseto: chave('Inseto'),
+        aracnideo: chave('Aracnídeo'),
+        crustaceo: chave('Crustáceo'),
+        molusco: chave('Molusco'),
+      },
+      dieta: DIETAS,
+      habitat: {
+        floresta: chave('Floresta'),
+        savana: chave('Savana'),
+        campo: chave('Campo'),
+        deserto: chave('Deserto'),
+        montanha: chave('Montanha'),
+        gelo: chave('Gelo'),
+        oceano: chave('Oceano'),
+        rio: chave('Rio'),
+        pantano: chave('Pântano'),
+      },
+      continentes: {
+        africa: chave('África'),
+        americas: chave('Américas'),
+        asia: chave('Ásia'),
+        europa: chave('Europa'),
+        oceania: chave('Oceania'),
+        antartida: chave('Antártida'),
+      },
+    },
+    numero: { peso: pesoLegivel },
+  },
+} satisfies Record<Exclude<IdDoQuiz, 'monstros' | 'mitologia' | 'paises'>, Rotulos>;
+
+export const ROTULOS: Record<IdDoQuiz, Rotulos> = { ...ROTULOS_DE_ANTES, ...ROTULOS_NOVOS };
 
 /** O texto de um valor, já traduzido. Lista vira "A pé, Voo"; lista vazia, o rótulo de ''. */
 export function textoDoValor(tema: IdDoQuiz, coluna: string, valor: unknown, traduzir: (chave: string) => string): string {
