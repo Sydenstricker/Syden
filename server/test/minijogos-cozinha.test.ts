@@ -386,7 +386,7 @@ test('o recorde do Solo: por planta, com os pontos do servidor, e só quando mel
   const feitos = ze.estado(biaId).meu!.pontos;
   assert.ok(feitos > 0);
   assert.deepEqual(ze.estado(biaId).recorde, { antes: null, novo: true });
-  assert.equal(db.recordeDoSolo(biaId, 'cozinha', 'toca')!.valor, feitos);
+  assert.equal(db.recordeDoSolo(biaId, 'cozinha-paciencia', 'toca')!.valor, feitos);
   // de novo, com menos: não vira recorde, e a tela recebe o de antes
   const de2 = comecar([biaId], { solo: true, corpo: { planta: 'toca' } });
   de2.andar();

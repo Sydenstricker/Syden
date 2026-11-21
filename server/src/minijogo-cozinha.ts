@@ -62,6 +62,9 @@ import {
 import * as db from './db.js';
 import type { Definicao } from './minijogo-motor.js';
 
+/** O recorde do Solo RECOMEÇOU em 21/11/2026 (decisão dele): desde a paciência do pedido (lote C), os pedidos vencem e o
+ * jogo ficou mais difícil. Os recordes de antes continuam guardados em 'cozinha' (e no "Levar seus dados"), sem comparar. */
+export const JOGO_DO_RECORDE = 'cozinha-paciencia';
 /** O "prepare-se" antes de valer. */
 export const PREPARO_MS = 3000;
 /** Um prato a cada isto, no máximo. */
@@ -194,8 +197,8 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
         if (solo) {
           const quem = inscritos[0];
           const c = cozinheiros.get(quem)!;
-          if (turma.has(quem) && c.pontos > 0) recorde = db.guardarRecordeDoSolo(quem, 'cozinha', planta, c.pontos, false, { pratos: c.pratos });
-          else recorde = { antes: db.recordeDoSolo(quem, 'cozinha', planta)?.valor ?? null, novo: false };
+          if (turma.has(quem) && c.pontos > 0) recorde = db.guardarRecordeDoSolo(quem, JOGO_DO_RECORDE, planta, c.pontos, false, { pratos: c.pratos });
+          else recorde = { antes: db.recordeDoSolo(quem, JOGO_DO_RECORDE, planta)?.valor ?? null, novo: false };
         }
         if (!solo && turma.size >= 2) {
           for (const l of placar()) {
@@ -296,7 +299,7 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
             /** No Solo, na escolha: o recorde de cada planta. */
             recordes:
               solo && fase === 'escolhendo' && quem === inscritos[0]
-                ? Object.fromEntries(db.recordesDoSolo(quem, 'cozinha').map((r) => [r.variante, r.valor]))
+                ? Object.fromEntries(db.recordesDoSolo(quem, JOGO_DO_RECORDE).map((r) => [r.variante, r.valor]))
                 : null,
             recorde,
             partidaId: evento,
