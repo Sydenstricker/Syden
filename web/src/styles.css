@@ -5382,6 +5382,46 @@ textarea {
   margin-left: -12px;
 }
 
+/* O registro de moderação da comunidade (RegistroDeModeracao.tsx): o ícone da ação, a frase e o "há quanto tempo". */
+.registro-de-moderacao {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.registro-linha {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 2px;
+  border-bottom: 1px solid var(--bg-raised);
+  font-size: calc(13px * var(--escala-do-texto));
+  line-height: 1.5;
+}
+
+.registro-linha:last-child {
+  border-bottom: 0;
+}
+
+.registro-icone {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+}
+
+.registro-frase {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.registro-quando {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
 .auditoria-linha small {
   display: block;
   margin-top: 2px;

@@ -39,6 +39,7 @@ export function registerBanidosRoutes(app: FastifyInstance, io: IOServer) {
         actor: request.user,
         action: 'membro.banido',
         target: db.findUserById(alvoId)?.username ?? String(alvoId),
+        targetId: alvoId,
         communityId,
         detail: community.name,
       });
@@ -72,6 +73,7 @@ export function registerBanidosRoutes(app: FastifyInstance, io: IOServer) {
         actor: request.user,
         action: 'membro.desbanido',
         target: db.findUserById(alvoId)?.username ?? String(alvoId),
+        targetId: alvoId,
         communityId,
         detail: db.findCommunity(communityId)?.name ?? '',
       });

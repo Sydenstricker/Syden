@@ -2393,6 +2393,17 @@ mensagem, status da sala de voz, membro marcar evento. **Feitos no mesmo dia:**
   advertência o cresciam por dentro e os botões ficavam abaixo da tela.
 Testes: `server/test/banir-e-fixar.test.ts`, `e2e/banir-e-fixar.mjs` (passaram).
 
+**O registro de moderação da comunidade (23/11/2026, o próximo da fila):** em Configurações → Ferramentas → "Registro de
+moderação", só para quem administra (`GET /api/communities/:id/registro`, 50 por vez, `?antes=<id>` para as mais antigas;
+`registro-routes.ts`, `registroDaComunidade` em db.ts). É a MESMA tabela da auditoria de quem cuida do Syden (`audit_log`, que
+ganhou `target_id`), filtrada pela comunidade e pelas ações de `ACOES_DO_REGISTRO`: remover, banir, desbanir, advertir, silenciar,
+dar e tirar administrador e cargo, travar o microfone, cortar a transmissão, apagar a mensagem de OUTRA pessoa, fixar e desafixar,
+criar, renomear, apagar e restaurar canal, o modo lento, as regras da moderação automática e a troca do convite. **Os nomes são lidos
+na hora pelos números** (quem excluiu a conta vira "Conta excluída"; o nome por extenso fica só na auditoria geral); da mensagem
+apagada, só de quem era e o canal, NUNCA o texto; o motivo da advertência e as palavras proibidas não vão ao registro (moram nas telas
+delas). A mensagem apagada por quem cuida do Syden aparece como "Quem cuida do Syden", sem o nome. Ação nova de moderação: uma linha em
+`ACOES_DO_REGISTRO` e a frase em `RegistroDeModeracao.tsx`. Teste: `server/test/registro-de-moderacao.test.ts`.
+
 ## Trazer a estrutura de um servidor do Discord: canais e cargos, nunca permissões
 
 **Feito em 23/11/2026, pedido dele ("eles copiam a estrutura de uma comunidade do Discord e transferem para o novo app").** Ao

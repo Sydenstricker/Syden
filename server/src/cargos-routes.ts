@@ -152,9 +152,22 @@ export function registerCargosRoutes(app: FastifyInstance, io: IOServer) {
         const userId = Number(request.params.userId);
         if (!db.memberRole(communityId, userId)) return reply.code(404).send({ error: 'Essa pessoa não participa da comunidade.' });
         const cargoId = Number(request.params.cargoId);
-        if (!db.acharCargo(communityId, cargoId)) return reply.code(404).send({ error: 'Cargo não encontrado.' });
+        const cargo = db.acharCargo(communityId, cargoId);
+        if (!cargo) return reply.code(404).send({ error: 'Cargo não encontrado.' });
+        const tinha = db.cargosDosMembros(communityId).get(userId)?.includes(cargoId) ?? false;
         if (dar) db.darCargo(communityId, userId, cargoId);
         else db.tirarCargo(communityId, userId, cargoId);
+        // Para o registro de moderação, só o que mudou de fato (o PUT e o DELETE podem se repetir).
+        if (tinha !== dar) {
+          db.registrarAuditoria({
+            actor: request.user,
+            action: dar ? 'cargo.dado' : 'cargo.tirado',
+            target: db.findUserById(userId)?.username ?? String(userId),
+            targetId: userId,
+            communityId,
+            detail: cargo.nome,
+          });
+        }
         return avisarMembro(communityId, userId);
       };
     authed.put<{ Params: { id: string; userId: string; cargoId: string } }>(

@@ -44,7 +44,19 @@ export function registerFixadasRoutes(app: FastifyInstance, io: IOServer) {
         }
         db.fixarMensagem(message.id, channel.id, request.user.id);
       } else {
+        if (!db.estaFixada(message.id)) return { ok: true };
         db.desafixarMensagem(message.id);
+      }
+      // Na comunidade, vai ao registro de moderação: de quem era a mensagem e em que canal, nunca o texto.
+      if (channel.communityId !== null) {
+        db.registrarAuditoria({
+          actor: request.user,
+          action: fixar ? 'mensagem.fixada' : 'mensagem.desafixada',
+          target: `mensagem ${message.id}`,
+          targetId: message.userId,
+          communityId: channel.communityId,
+          detail: channel.name,
+        });
       }
       const fixadaEm = fixar ? new Date().toISOString() : null;
       io.to(channelRoom(channel)).emit('mensagem:fixada', { channelId: channel.id, messageId: message.id, fixadaEm });

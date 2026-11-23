@@ -2058,14 +2058,17 @@ export function registrarAuditoria(entrada: {
   actor: { id: number; username: string };
   action: string;
   target?: string;
+  /** O número de quem (ou do canal) sofreu a ação: o registro da comunidade lê o nome por ele, na hora. */
+  targetId?: number | null;
   communityId?: number | null;
   detail?: string;
 }) {
-  db.prepare('INSERT INTO audit_log (actor_id, actor_name, action, target, community_id, detail) VALUES (?, ?, ?, ?, ?, ?)').run(
+  db.prepare('INSERT INTO audit_log (actor_id, actor_name, action, target, target_id, community_id, detail) VALUES (?, ?, ?, ?, ?, ?, ?)').run(
     entrada.actor.id,
     entrada.actor.username,
     entrada.action,
     entrada.target ?? null,
+    entrada.targetId ?? null,
     entrada.communityId ?? null,
     entrada.detail ?? null,
   );
@@ -2078,6 +2081,121 @@ export function lerAuditoria(limite = 200): LinhaDeAuditoria[] {
        FROM audit_log ORDER BY id DESC LIMIT ?`,
     )
     .all(Math.min(Math.max(limite, 1), 500)) as unknown as LinhaDeAuditoria[];
+}
+
+// ---------------------------------------------------------------------------------------------------
+// O REGISTRO DE MODERAÇÃO DA COMUNIDADE (23/11/2026, pelo mapa das permissões do Discord: o "registro de auditoria" dele)
+//
+// É a mesma tabela da auditoria de quem cuida do Syden, filtrada pela comunidade e só nas ações de moderação dela. O que
+// quem administra vê: quem fez, o quê, sobre quem ou o quê, e quando. Os NOMES são lidos na hora pelos números (o
+// target_id), como na estante de troféus: quem excluiu a conta aparece como "Conta excluída", e o nome guardado por
+// extenso fica só na auditoria geral. Nunca o texto de uma mensagem apagada: só de quem era e em que canal.
+// ---------------------------------------------------------------------------------------------------
+
+addColumnIfMissing('audit_log', 'target_id', 'INTEGER');
+db.exec('CREATE INDEX IF NOT EXISTS idx_audit_comunidade ON audit_log(community_id, id DESC)');
+
+/** As ações que entram no registro da comunidade, e se o alvo é uma PESSOA (o nome lido pelo número) ou um canal. */
+export const ACOES_DO_REGISTRO: Record<string, 'pessoa' | 'canal' | 'nada'> = {
+  'membro.removido': 'pessoa',
+  'membro.banido': 'pessoa',
+  'membro.desbanido': 'pessoa',
+  'membro.advertido': 'pessoa',
+  'membro.silenciado': 'pessoa',
+  'membro.silencio-tirado': 'pessoa',
+  'membro.admin-dado': 'pessoa',
+  'membro.admin-tirado': 'pessoa',
+  'cargo.dado': 'pessoa',
+  'cargo.tirado': 'pessoa',
+  'microfone.travado': 'pessoa',
+  'microfone.liberado': 'pessoa',
+  'transmissao.cortada': 'pessoa',
+  'mensagem.apagada': 'pessoa',
+  'moderacao.mensagem': 'pessoa',
+  'mensagem.fixada': 'pessoa',
+  'mensagem.desafixada': 'pessoa',
+  'canal.criado': 'canal',
+  'canal.renomeado': 'canal',
+  'canal.apagado': 'canal',
+  'canal.restaurado': 'canal',
+  'canal.modo-lento': 'canal',
+  'automod.regras': 'nada',
+  'convite.trocado': 'nada',
+};
+
+/** Quantas entradas o registro manda por vez. */
+export const REGISTRO_POR_PAGINA = 50;
+
+export interface PessoaDoRegistro {
+  id: number;
+  nome: string;
+}
+
+export interface EntradaDoRegistro {
+  id: number;
+  at: string;
+  acao: string;
+  /** Null: a conta foi excluída (ou a ação foi de quem cuida do Syden, ver peloSyden). */
+  quem: PessoaDoRegistro | null;
+  /** A ação veio de quem cuida do Syden, e não de alguém da comunidade: o nome não aparece. */
+  peloSyden: boolean;
+  /** Sobre quem foi a ação (nas ações de pessoa). Null: a conta foi excluída. */
+  alvo: PessoaDoRegistro | null;
+  /** O nome do canal (nas ações de canal e de mensagem). No renomear, o nome de antes. */
+  canal: string | null;
+  /** O que mais a ação diz: o nome novo do canal, os minutos do silêncio, os segundos do modo lento, o nome do cargo. */
+  detalhe: string | null;
+}
+
+const ACOES_DE_MENSAGEM = ['mensagem.apagada', 'mensagem.fixada', 'mensagem.desafixada'];
+const ACOES_COM_DETALHE = ['canal.renomeado', 'canal.modo-lento', 'membro.silenciado', 'cargo.dado', 'cargo.tirado'];
+
+/** As ações de moderação desta comunidade, da mais nova para a mais antiga; `antes` pagina pelo id. */
+export function registroDaComunidade(communityId: number, antes?: number): EntradaDoRegistro[] {
+  const acoes = Object.keys(ACOES_DO_REGISTRO);
+  const linhas = db
+    .prepare(
+      `SELECT id, at, actor_id AS actorId, action, target, target_id AS targetId, detail FROM audit_log
+       WHERE community_id = ? AND action IN (${acoes.map(() => '?').join(', ')}) ${antes ? 'AND id < ?' : ''}
+         AND NOT (action = 'moderacao.mensagem' AND target_id IS NULL) -- as de antes não diziam de quem era a mensagem
+       ORDER BY id DESC LIMIT ?`,
+    )
+    .all(communityId, ...acoes, ...(antes ? [antes] : []), REGISTRO_POR_PAGINA) as unknown as {
+    id: number;
+    at: string;
+    actorId: number | null;
+    action: string;
+    target: string | null;
+    targetId: number | null;
+    detail: string | null;
+  }[];
+  const porId = db.prepare('SELECT id, COALESCE(nome_exibicao, username) AS nome FROM users WHERE id = ?');
+  // As linhas de antes do registro (sem target_id) guardavam o nome de usuário: a conta é achada por ele, se ainda existe.
+  const porNome = db.prepare('SELECT id, COALESCE(nome_exibicao, username) AS nome FROM users WHERE username = ?');
+  const pessoa = (id: number | null) => (id === null ? null : ((porId.get(id) as PessoaDoRegistro | undefined) ?? null));
+  return linhas.map((l) => {
+    const tipo = ACOES_DO_REGISTRO[l.action];
+    const peloSyden = l.action === 'moderacao.mensagem';
+    let alvo: PessoaDoRegistro | null = null;
+    if (tipo === 'pessoa') {
+      if (l.targetId !== null) alvo = pessoa(l.targetId);
+      else if (l.target) alvo = (porNome.get(l.target) as PessoaDoRegistro | undefined) ?? null;
+    }
+    let detalhe = ACOES_COM_DETALHE.includes(l.action) ? l.detail : null;
+    // O silêncio guarda "30 min" (é o que a auditoria geral mostra): o registro manda só o número.
+    if (l.action === 'membro.silenciado' && detalhe) detalhe = detalhe.replace(/\D.*$/, '');
+    return {
+      id: l.id,
+      at: l.at,
+      acao: l.action,
+      quem: peloSyden ? null : pessoa(l.actorId),
+      peloSyden,
+      alvo: alvo ? { id: alvo.id, nome: alvo.nome } : null,
+      // Canal: o nome (o de antes, no renomear) mora no target. Mensagem: o canal mora no detail.
+      canal: tipo === 'canal' ? l.target : ACOES_DE_MENSAGEM.includes(l.action) ? l.detail : null,
+      detalhe,
+    };
+  });
 }
 
 // ---------------------------------------------------------------------------------------------------
