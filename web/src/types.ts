@@ -277,6 +277,8 @@ export interface Message {
   suggestion: { id: number; accepted: boolean } | null;
   /** A mensagem a que esta responde; null quando não é resposta. Pode faltar em mensagem de servidor antigo. */
   replyTo?: Citacao | null;
+  /** Quando foi fixada no canal; null ou ausente quando não está (ver FixadasDoCanal.tsx). */
+  fixadaEm?: string | null;
 }
 
 /** O pedacinho da original em cima da resposta. `id` nulo: a original não existe mais para quem lê. */

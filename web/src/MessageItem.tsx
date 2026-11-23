@@ -1,4 +1,4 @@
-import { Download, FileText, Flag, MessageSquarePlus, MessagesSquare, Reply, SmilePlus, ThumbsUp, Trash2, Check } from 'lucide-react';
+import { Download, FileText, Flag, MessageSquarePlus, MessagesSquare, Pin, PinOff, Reply, SmilePlus, ThumbsUp, Trash2, Check } from 'lucide-react';
 import { useBloqueados } from './bloqueios';
 import { abrirConviteNoSyden } from './linkDeConvite';
 import { DialogoDeDenuncia } from './Denuncia';
@@ -363,6 +363,7 @@ export function MessageItem({
   onAcolher,
   onReply,
   meuId,
+  onFixar,
 }: {
   message: Message;
   grouped: boolean;
@@ -380,6 +381,8 @@ export function MessageItem({
   onReply?: (message: Message) => void;
   /** Quem está lendo: a mensagem dos outros ganha o "Denunciar" (a própria, não). */
   meuId?: number;
+  /** Fixar e desafixar (ver FixadasDoCanal.tsx). Ausente para quem não pode, e dentro de um tópico. */
+  onFixar?: (message: Message, fixar: boolean) => void;
 }) {
   const t = useT();
   const [denunciando, setDenunciando] = useState(false);
@@ -417,6 +420,16 @@ export function MessageItem({
       )}
       <AddReactionButton onPick={(emoji) => void reactWith(emoji)} />
       <BotaoDeLembrete messageId={message.id} />
+      {onFixar && (
+        <button
+          className={`message-action${message.fixadaEm ? ' ativa' : ''}`}
+          title={message.fixadaEm ? t('Desafixar mensagem') : t('Fixar mensagem')}
+          aria-label={message.fixadaEm ? t('Desafixar mensagem') : t('Fixar mensagem')}
+          onClick={() => onFixar(message, !message.fixadaEm)}
+        >
+          {message.fixadaEm ? <PinOff size={16} /> : <Pin size={16} />}
+        </button>
+      )}
       {onAcolher && message.suggestion && !message.suggestion.accepted && (
         <button
           className="message-action acolher"
@@ -488,6 +501,7 @@ export function MessageItem({
         <div className="message-meta">
           <AutorNome id={message.author.id} nome={message.author.username} nomeDeExibicao={message.author.nomeDeExibicao} app={message.author.app} />
           <time dateTime={message.createdAt}>{formatTime(message.createdAt)}</time>
+          {message.fixadaEm && <Pin size={12} className="mensagem-fixada" aria-label={t('Fixada')} role="img" />}
         </div>
         {body}
       </div>

@@ -75,6 +75,7 @@ export function registerAulaRoutes(app: FastifyInstance, io: IOServer) {
       const aula = db.aulaPeloToken(request.params.token);
       if (!aula) return reply.code(404).send({ error: 'Este link não vale mais. Peça um novo a quem mandou.' });
       if (!db.memberRole(aula.communityId, request.user.id)) {
+        if (db.estaBanido(aula.communityId, request.user.id)) return reply.code(403).send({ error: 'Quem administra esta comunidade baniu a sua conta, e por isso não dá para entrar.' });
         if (db.countMembers(aula.communityId) >= config.maxMembersPerCommunity) return reply.code(409).send({ error: 'A comunidade está cheia.' });
         db.addMember(aula.communityId, request.user.id);
         joinCommunityRoom(io, request.user.id, aula.communityId);

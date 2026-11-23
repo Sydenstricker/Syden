@@ -1034,6 +1034,10 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       if (db.memberRole(community.id, request.user.id)) {
         return reply.code(409).send({ error: 'Você já participa desta comunidade.' });
       }
+      // Banido não volta por convite nenhum (banidos-routes.ts). A frase não diz quem baniu nem quando.
+      if (db.estaBanido(community.id, request.user.id)) {
+        return reply.code(403).send({ error: 'Quem administra esta comunidade baniu a sua conta, e por isso não dá para entrar.' });
+      }
       if (db.countMembers(community.id) >= config.maxMembersPerCommunity) {
         return reply.code(409).send({ error: 'Esta comunidade já está cheia.' });
       }
@@ -1312,6 +1316,9 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       db.removeMember(access.community.id, targetId);
       leaveCommunityRoom(io, targetId, access.community.id);
       io.to(communityRoom(access.community.id)).emit('member:removed', { communityId: access.community.id, userId: targetId });
+      // A pessoa removida já saiu da sala da comunidade: o aviso vai direto a ela (23/11/2026, achado pelo e2e do banir:
+      // sem isto, a comunidade ficava na tela dela até recarregar).
+      emitToUser(io, targetId, 'member:removed', { communityId: access.community.id, userId: targetId });
       return { ok: true };
     });
 

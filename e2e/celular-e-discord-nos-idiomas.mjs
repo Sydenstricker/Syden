@@ -37,7 +37,7 @@ const NOVOS = [
   'O celular e o computador precisam estar na mesma rede Wi-Fi.', 'Ligando o celular ao computador…',
   'A câmera do celular está na chamada.', 'O celular saiu.', 'Abrindo a câmera…', 'Este código já foi usado ou venceu. Peça outro no computador.',
   'Pronto. Pode fechar esta página.', 'Trazer de um servidor do Discord', 'Link do modelo do servidor', 'Ver o que vem',
-  'Esse link não é de um modelo de servidor do Discord.',
+  'Esse link não é de um modelo de servidor do Discord.', 'Mensagens fixadas', 'Nenhuma mensagem fixada.',
   // (Parar, Fechar e Cancelar ficam de fora: são a mesma palavra em espanhol e em outras línguas.)
 ];
 
@@ -130,8 +130,15 @@ for (const idioma of IDIOMAS) {
     await p.keyboard.press('Escape');
     if (await p.locator('form.dialog').isVisible().catch(() => false)) await p.locator('.dialog-backdrop').first().click({ position: { x: 5, y: 5 } });
 
-    // 2. A chamada, o Mais e o QR code.
+    // 1b. O painel das mensagens fixadas (o alfinete do cabeçalho), vazio, no canal de texto.
     await icone.click();
+    await p.locator('.channel-name').first().click();
+    await p.locator('.fixadas-botao').click();
+    await p.locator('.fixadas-painel .fixadas-vazio').waitFor({ timeout: 10000 });
+    await medir(p, idioma, '.fixadas-painel', 'painel das fixadas');
+    await p.keyboard.press('Escape');
+
+    // 2. A chamada, o Mais e o QR code.
     await p.locator('.channel-name', { hasText: /^Sala 1$/ }).first().click();
     await p.locator('.stage-controls').waitFor({ timeout: 30000 });
     await p.locator('.stage-controls .mais-anchor > button').first().click();

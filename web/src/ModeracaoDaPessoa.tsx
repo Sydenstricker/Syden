@@ -1,5 +1,5 @@
 import { nomeDe } from './directory';
-import { Clock, MessageSquareWarning, TimerOff } from 'lucide-react';
+import { Ban, Clock, MessageSquareWarning, TimerOff } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
 import { idiomaAtual, useT } from './i18n';
@@ -54,6 +54,7 @@ export function ModeracaoDaPessoa({
   const [motivo, setMotivo] = useState('');
   const [anteriores, setAnteriores] = useState<Advertencia[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [banindo, setBanindo] = useState(false);
   const idioma = idiomaAtual();
   const silenciado = silencioVale(membro.silenciadoAte) ? membro.silenciadoAte : null;
   const base = `/api/communities/${communityId}/members/${membro.id}`;
@@ -142,6 +143,27 @@ export function ModeracaoDaPessoa({
             ))}
           </select>
         </label>
+      )}
+      {/* BANIR (banidos-routes.ts): a confirmação fica no próprio menu, como a advertência, porque o que se perde é grande. */}
+      {banindo ? (
+        <div className="person-menu-nota">
+          <span>{t('{pessoa} sai da comunidade e das chamadas dela na hora, e só volta se alguém que administra desbanir.', { pessoa: nomeDe(membro) })}</span>
+          <div className="person-menu-nota-rodape">
+            <button className="link-button" onClick={() => setBanindo(false)}>
+              {t('Cancelar')}
+            </button>
+            <button className="link-button danger" onClick={() => void fazer(`${base}/banir`, 'POST', {})}>
+              {t('Banir')}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button className="person-menu-item danger" role="menuitem" onClick={() => setBanindo(true)}>
+          <span className="person-menu-icone" aria-hidden="true">
+            <Ban size={16} />
+          </span>
+          <span className="person-menu-texto">{t('Banir da comunidade…')}</span>
+        </button>
       )}
       {erro && <p className="form-error small">{erro}</p>}
     </div>

@@ -231,6 +231,14 @@ export const ERROS_TRADUZIDOS = [
   chave('Esta conta já está ligada a um responsável.'),
   chave('Sua conta tem uma pendência. Abra o Syden de novo para ver o que fazer.'),
   chave('Transmissão não encontrada.'),
+  // Banir da comunidade e fixar mensagens (23/11/2026; banidos-routes.ts e fixadas-routes.ts)
+  chave('Quem administra esta comunidade baniu a sua conta, e por isso não dá para entrar.'),
+  chave('Só quem administra a comunidade pode banir alguém.'),
+  chave('Só quem administra a comunidade pode desbanir alguém.'),
+  chave('Essa pessoa não está banida.'),
+  chave('Só quem administra a comunidade fixa mensagens.'),
+  chave('Só as mensagens do canal podem ser fixadas, não as de um tópico.'),
+  chave('Este canal já tem 50 mensagens fixadas. Desafixe uma antes.'),
 ] as const;
 
 /**

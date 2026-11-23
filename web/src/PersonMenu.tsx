@@ -283,12 +283,22 @@ export function PersonMenu({
   // ela muda conforme o que cada um pode fazer (moderar, mover de sala, anotar…) — antes era um número
   // fixo no código, e o menu do administrador vazava pelo rodapé.
   useLayoutEffect(() => {
-    const caixa = ref.current?.getBoundingClientRect();
-    if (!caixa) return;
-    setLugar({
-      left: Math.max(8, Math.min(target.x, window.innerWidth - caixa.width - 8)),
-      top: Math.max(8, Math.min(target.y, window.innerHeight - caixa.height - 8)),
-    });
+    const el = ref.current;
+    if (!el) return;
+    const posicionar = () => {
+      const caixa = el.getBoundingClientRect();
+      const lugarNovo = {
+        left: Math.max(8, Math.min(target.x, window.innerWidth - caixa.width - 8)),
+        top: Math.max(8, Math.min(target.y, window.innerHeight - caixa.height - 8)),
+      };
+      setLugar((antes) => (antes.left === lugarNovo.left && antes.top === lugarNovo.top ? antes : lugarNovo));
+    };
+    posicionar();
+    // E de novo sempre que o menu muda de tamanho: a confirmação do banir e o campo da advertência (que moram em
+    // ModeracaoDaPessoa) crescem o menu por dentro, e sem isto os botões deles ficavam abaixo da borda da tela.
+    const observador = new ResizeObserver(posicionar);
+    observador.observe(el);
+    return () => observador.disconnect();
   }, [target.x, target.y, anotando, apelidando, aberto, novoGrupo]); // (aberto: as listas de Cargo e Mover para crescem o menu)
 
   useEffect(() => {

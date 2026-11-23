@@ -246,6 +246,8 @@ export interface Message {
   suggestion: { id: number; accepted: boolean } | null;
   /** A mensagem a que esta responde, resumida; null quando não é resposta. Ver a tabela `respostas`. */
   replyTo: Citacao | null;
+  /** Quando foi fixada no canal (ver fixadas-routes.ts); null quando não está. */
+  fixadaEm: string | null;
 }
 
 /**
@@ -3507,11 +3509,13 @@ interface MessageRow {
   username: string;
   nomeDeExibicao: string | null;
   sistema: number;
+  fixadaEm: string | null;
 }
 
 const messageSelect = `
   SELECT m.id, m.channel_id AS channelId, m.content, m.created_at AS createdAt, m.thread_id AS threadId,
-         u.id AS userId, u.username, u.nome_exibicao AS nomeDeExibicao, u.sistema
+         u.id AS userId, u.username, u.nome_exibicao AS nomeDeExibicao, u.sistema,
+         (SELECT fx.fixada_em FROM fixadas fx WHERE fx.message_id = m.id) AS fixadaEm
   FROM messages m JOIN users u ON u.id = m.user_id`;
 
 function toMessage(row: MessageRow): Message {
@@ -3529,6 +3533,7 @@ function toMessage(row: MessageRow): Message {
     reactions: [],
     suggestion: null,
     replyTo: null,
+    fixadaEm: row.fixadaEm ?? null,
   };
 }
 
@@ -8394,4 +8399,72 @@ export function jogadoresDaPartida(partidaId: number): number[] {
   return (db.prepare('SELECT user_id AS id FROM minijogo_jogadores WHERE partida_id = ? AND user_id > 0').all(partidaId) as { id: number }[]).map(
     (l) => l.id,
   );
+}
+
+// ---------- Banidos da comunidade e mensagens fixadas (23/11/2026; ver banidos-routes.ts e fixadas-routes.ts) ----------
+
+db.exec(`
+  -- Quem foi banido de uma comunidade: não volta por convite nenhum até ser desbanido. Some com a conta da pessoa.
+  CREATE TABLE IF NOT EXISTS banidos_da_comunidade (
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    -- Quem baniu. Some com a conta dessa pessoa, mas o banimento fica.
+    banido_por   INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    banido_em    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (community_id, user_id)
+  );
+  -- As mensagens fixadas de cada canal. Apagar a mensagem (ou o canal) a tira daqui.
+  CREATE TABLE IF NOT EXISTS fixadas (
+    message_id INTEGER PRIMARY KEY REFERENCES messages(id) ON DELETE CASCADE,
+    channel_id INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+    fixada_por INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    fixada_em  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+  CREATE INDEX IF NOT EXISTS fixadas_do_canal ON fixadas(channel_id);
+`);
+
+export function banirDaComunidade(communityId: number, userId: number, porId: number) {
+  db.prepare('INSERT OR IGNORE INTO banidos_da_comunidade (community_id, user_id, banido_por) VALUES (?, ?, ?)').run(communityId, userId, porId);
+}
+
+export function desbanirDaComunidade(communityId: number, userId: number): boolean {
+  return Number(db.prepare('DELETE FROM banidos_da_comunidade WHERE community_id = ? AND user_id = ?').run(communityId, userId).changes) > 0;
+}
+
+export function estaBanido(communityId: number, userId: number): boolean {
+  return db.prepare('SELECT 1 FROM banidos_da_comunidade WHERE community_id = ? AND user_id = ?').get(communityId, userId) !== undefined;
+}
+
+export function banidosDaComunidade(communityId: number) {
+  return db
+    .prepare(
+      `SELECT b.user_id AS id, u.username, u.nome_exibicao AS nomeDeExibicao, p.username AS por, b.banido_em AS em
+       FROM banidos_da_comunidade b JOIN users u ON u.id = b.user_id LEFT JOIN users p ON p.id = b.banido_por
+       WHERE b.community_id = ? ORDER BY b.banido_em DESC`,
+    )
+    .all(communityId) as unknown as { id: number; username: string; nomeDeExibicao: string | null; por: string | null; em: string }[];
+}
+
+export function fixarMensagem(messageId: number, channelId: number, porId: number) {
+  db.prepare('INSERT OR IGNORE INTO fixadas (message_id, channel_id, fixada_por) VALUES (?, ?, ?)').run(messageId, channelId, porId);
+}
+
+export function desafixarMensagem(messageId: number) {
+  db.prepare('DELETE FROM fixadas WHERE message_id = ?').run(messageId);
+}
+
+export function estaFixada(messageId: number): boolean {
+  return db.prepare('SELECT 1 FROM fixadas WHERE message_id = ?').get(messageId) !== undefined;
+}
+
+export function quantasFixadas(channelId: number): number {
+  return (db.prepare('SELECT COUNT(*) AS n FROM fixadas WHERE channel_id = ?').get(channelId) as { n: number }).n;
+}
+
+/** As fixadas do canal, da fixada mais recente para a mais antiga, do jeito que `viewerId` pode vê-las. */
+export function mensagensFixadas(channelId: number, viewerId: number): Message[] {
+  const rows = db
+    .prepare(`${messageSelect} JOIN fixadas f ON f.message_id = m.id WHERE f.channel_id = ? AND ${visivelParaQuemLe} ORDER BY f.fixada_em DESC`)
+    .all(channelId, viewerId) as unknown as MessageRow[];
+  return hydrate(rows.map(toMessage), viewerId);
 }

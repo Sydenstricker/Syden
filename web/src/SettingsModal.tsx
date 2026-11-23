@@ -22,7 +22,7 @@ import { Accessibility, Languages,
   Trash2,
   UserX,
   Users,
-  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown, CircleOff, Focus, Eraser, Image as ImageIcon, VideoOff } from 'lucide-react';
+  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown, CircleOff, Focus, Eraser, Image as ImageIcon, VideoOff, Ban } from 'lucide-react';
 import {
   type EfeitoDoFundo,
   fundoDaCameraDisponivel,
@@ -83,6 +83,7 @@ import { TicketsSection } from './Tickets';
 import { CargosAutomaticosSection } from './CargosAutomaticos';
 import { DestaquesSection } from './Destaques';
 import { ConfirmDialog } from './ConfirmDialog';
+import { BanidosDaComunidade } from './BanidosDaComunidade';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { NOME_DO_MOTOR, aoMudarMotor, lerEstadoDaSupressao, supressaoPrevista, type EstadoDaSupressao } from './microfone';
 import { nomeDaConta, nomeDe, useDirectory } from './directory';
@@ -1333,6 +1334,9 @@ function MembersSection({ user, community }: { user: User; community: Community 
   const t = useT();
   const { members: directory } = useDirectory();
   const [removing, setRemoving] = useState<CommunityMember | null>(null);
+  const [banindo, setBanindo] = useState<CommunityMember | null>(null);
+  // Muda a cada banimento feito aqui, para a lista dos banidos (embaixo) ler de novo.
+  const [vezDosBanidos, setVezDosBanidos] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
@@ -1355,6 +1359,20 @@ function MembersSection({ user, community }: { user: User; community: Community 
     } catch (e) {
       setRoleError((e as Error).message);
     }
+  }
+
+  async function confirmarBanimento() {
+    if (!banindo) return;
+    setBusy(true);
+    try {
+      await api(`/api/communities/${community.id}/members/${banindo.id}/banir`, { method: 'POST' });
+      setBanindo(null);
+      setError(null);
+      setVezDosBanidos((v) => v + 1);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+    setBusy(false);
   }
 
   async function confirmRemove() {
@@ -1420,6 +1438,11 @@ function MembersSection({ user, community }: { user: User; community: Community 
               </button>
             )}
             {canRemove(member) && (
+              <button className="icon-plain expression-delete" title={t('Banir {pessoa}', { pessoa: nomeDe(member) })} aria-label={t('Banir {pessoa}', { pessoa: nomeDe(member) })} onClick={() => setBanindo(member)}>
+                <Ban size={16} />
+              </button>
+            )}
+            {canRemove(member) && (
               <button className="icon-plain expression-delete" title={`Remover ${nomeDe(member)}`} aria-label={`Remover ${nomeDe(member)}`} onClick={() => setRemoving(member)}>
                 <UserX size={16} />
               </button>
@@ -1427,6 +1450,22 @@ function MembersSection({ user, community }: { user: User; community: Community 
           </div>
         ))}
       </div>
+      {canManage && <BanidosDaComunidade key={vezDosBanidos} communityId={community.id} />}
+      {banindo && (
+        <ConfirmDialog
+          title={t('Banir da comunidade')}
+          confirmLabel={t('Banir')}
+          busy={busy}
+          error={error}
+          onConfirm={confirmarBanimento}
+          onCancel={() => {
+            setBanindo(null);
+            setError(null);
+          }}
+        >
+          {t('{pessoa} sai da comunidade e das chamadas dela na hora, e só volta se alguém que administra desbanir.', { pessoa: nomeDe(banindo) })}
+        </ConfirmDialog>
+      )}
       {removing && (
         <ConfirmDialog
           title={t('Remover membro')}

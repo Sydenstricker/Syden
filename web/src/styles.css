@@ -21250,3 +21250,69 @@ body.arrastando-barra {
 .camera-do-celular-botoes button.parar {
   background: #e5484d;
 }
+
+/* AS MENSAGENS FIXADAS (FixadasDoCanal.tsx): o alfinete no cabeçalho e a lista que ele abre. */
+.fixadas-ancora {
+  position: relative;
+  margin-left: auto;
+  display: flex;
+}
+.fixadas-ancora .header-toggle {
+  margin-left: 0;
+}
+.fixadas-painel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 60;
+  width: min(380px, calc(100vw - 32px));
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--bg-main);
+  box-shadow: 0 8px 28px var(--shadow);
+  font-weight: normal;
+}
+.fixadas-painel h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+.fixadas-painel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fixada {
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  background: var(--bg-active);
+}
+.fixada-meta {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 0.85rem;
+}
+.fixada-meta time {
+  color: var(--text-muted);
+}
+.fixada-acoes {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+.fixadas-vazio {
+  color: var(--text-muted);
+}
+.message-meta .mensagem-fixada {
+  color: var(--text-muted);
+  align-self: center;
+}
+.message-action.ativa {
+  color: var(--accent);
+}

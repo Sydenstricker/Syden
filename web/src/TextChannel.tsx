@@ -11,6 +11,7 @@ import { MessageItem, MessageText } from './MessageItem';
 import { isolar, nomeDeCanal } from './bidi';
 import { QuemDigita } from './QuemDigita';
 import { MobileBackButton } from './MobileBackButton';
+import { FixadasDoCanal } from './FixadasDoCanal';
 import {
   applyReactionUpdate,
   applyTally,
@@ -108,7 +109,13 @@ export function TextChannel({
     socket.on('thread:created', onThread);
     socket.on('thread:updated', onThread);
     socket.on('thread:deleted', onThreadDeleted);
+    // Fixar e desafixar (fixadas-routes.ts): só o alfinete da mensagem muda.
+    const onFixada = (d: { channelId: number; messageId: number; fixadaEm: string | null }) => {
+      if (d.channelId === channel.id) setMessages((list) => list.map((m) => (m.id === d.messageId ? { ...m, fixadaEm: d.fixadaEm } : m)));
+    };
+    socket.on('mensagem:fixada', onFixada);
     return () => {
+      socket.off('mensagem:fixada', onFixada);
       socket.off('message:new', onMessage);
       socket.off('message:deleted', onDeleted);
       socket.off('attachment:removed', onAnexoRetirado);
@@ -152,6 +159,16 @@ export function TextChannel({
    * O joinha nas ideias que chegam pela tela inicial: marca que aquilo entrou no Syden. Do outro lado
    * cai confete e a pessoa ganha a medalha; aqui a mensagem só troca de cara, sem recarregar nada.
    */
+  // Quem fixa: quem administra a comunidade; na conversa privada, quem está nela (fixadas-routes.ts).
+  const podeFixar = privada || role === 'owner' || role === 'admin';
+  async function fixar(message: Message, sim: boolean) {
+    try {
+      await api(`/api/messages/${message.id}/fixar`, { method: 'POST', body: { fixar: sim } });
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
   async function acolherIdeia(message: Message) {
     if (!message.suggestion) return;
     try {
@@ -191,6 +208,7 @@ export function TextChannel({
         <header className="main-header">
           <MobileBackButton onBack={onMobileBack} />
           {privada ? <AtSign size={22} className="muted-icon" /> : <Hash size={22} className="muted-icon" />} {channel.name}
+          <FixadasDoCanal channelId={channel.id} socket={socket} podeFixar={podeFixar} />
           {acoesDoCabecalho}
         </header>
 
@@ -240,6 +258,7 @@ export function TextChannel({
                 onAcolher={user.isOwner ? acolherIdeia : undefined}
                 onReply={setRespondendo}
                 meuId={user.id}
+                onFixar={podeFixar ? (m, sim) => void fixar(m, sim) : undefined}
               />
             );
           })}

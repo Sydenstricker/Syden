@@ -2370,6 +2370,29 @@ não virar um jeito de baixar arquivo de ninguém. A vassoura de órfãos e a re
 tela, com o resto desfocado atrás, e fechado fica a faixa (clicar nela reabre). "Uma vez" é por aparelho (`syden.avisoVisto`, a marca
 texto|sha): voltar a cada abertura seria insistir. É a exceção escolhida por ele ao "não interrompa", e só para o recado de quem cuida do Syden.
 
+## As permissões do Discord: o mapa, e o que já entrou
+
+**Mapeado em 23/11/2026, a pedido dele** (as 52 permissões da documentação do Discord contra as funções do Syden; o relatório
+foi entregue na conversa). O modelo continua o do Syden: **cargo é identidade, não poder**, e quem administra pode tudo.
+Permissão por cargo, se vier, é um interruptor fixo e pequeno ("pode moderar a conversa"), como o "Pode arrumar o salão";
+canal escondido para alguns cargos é o caro e arriscado (todo caminho que leva conteúdo teria de filtrar, e esquecer um
+vaza), e a sobreposição completa do Discord não entra. Fora, pelas regras daqui: assinatura de cargo, webhooks e apps de
+terceiros, tópico privado, TTS. **Achado no caminho: o Syden não tem EDITAR MENSAGEM.** Os próximos da fila, pela ordem do
+mapa: canal de avisos e "pode moderar" no cargo, registro de moderação para quem administra, convites com validade, editar
+mensagem, status da sala de voz, membro marcar evento. **Feitos no mesmo dia:**
+- **Banir da comunidade** (`server/src/banidos-routes.ts`, `banidos_da_comunidade`): tira como a remoção e TODA porta de
+  entrada confere (o convite e o link de aula com conta); desbanir só libera a volta. A regra de quem age sobre quem é a da
+  remoção. Pelo botão direito (a confirmação no próprio menu, como a advertência) e em Configurações → Membros, com a lista
+  "Pessoas banidas" e o desbanir. A pessoa não é avisada (como na remoção); a recusa do convite diz que quem administra
+  baniu a conta, sem dizer quem. **Achado pelo e2e:** quem era removido não recebia o `member:removed` (ia à sala da
+  comunidade DEPOIS de tirá-lo dela), e a comunidade ficava na tela dele; agora vai direto a ele também.
+- **Fixar mensagens** (`server/src/fixadas-routes.ts`, `fixadas`, `FixadasDoCanal.tsx`): na comunidade quem administra, na
+  conversa privada os dois; só mensagem do canal (não de tópico); teto de 50 por canal; apagar a mensagem a tira. O alfinete
+  no cabeçalho abre a lista; o "Ir até a mensagem" só aparece se ela está carregada na conversa.
+- O menu da pessoa passou a se reposicionar a cada mudança de tamanho (ResizeObserver): a confirmação do banir e o campo da
+  advertência o cresciam por dentro e os botões ficavam abaixo da tela.
+Testes: `server/test/banir-e-fixar.test.ts`, `e2e/banir-e-fixar.mjs` (passaram).
+
 ## Trazer a estrutura de um servidor do Discord: canais e cargos, nunca permissões
 
 **Feito em 23/11/2026, pedido dele ("eles copiam a estrutura de uma comunidade do Discord e transferem para o novo app").** Ao
