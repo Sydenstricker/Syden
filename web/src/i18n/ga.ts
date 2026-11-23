@@ -4724,4 +4724,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Leadóg",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Tabhair anall ó fhreastalaí Discord",
+  "Link do modelo do servidor": "Nasc theimpléad an fhreastalaí",
+  "Ver o que vem": "Féach cad a thiocfaidh anall",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Ar Discord, cruthaíonn an té a ritheann an freastalaí an nasc i Socruithe an fhreastalaí → Teimpléad freastalaí. Tagann na cainéil agus na róil (ainm agus dath) anall, gan na teachtaireachtaí.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Thar theorainn Syden: fágtar {n} amuigh.",
+  "Esse link não é de um modelo de servidor do Discord.": "Ní teimpléad freastalaí Discord é an nasc seo.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Níl an teimpléad seo ar Discord. Iarr nasc nua ar an té a ritheann an freastalaí.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Níor fhreagair Discord. Bain triail eile as i gceann tamaillín.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Úsáid an fón mar cheamara",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Dírigh ceamara an fhóin ar an gcód agus oscail an seoladh a thaispeánfar.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Caithfidh an fón agus an ríomhaire a bheith ar an líonra Wi-Fi céanna.",
+  "Não deu para abrir o código agora. Tente de novo.": "Níorbh fhéidir an cód a thaispeáint anois. Bain triail eile as.",
+  "Ligando o celular ao computador…": "Ag ceangal an fhóin leis an ríomhaire…",
+  "A câmera do celular está na chamada.": "Tá ceamara an fhóin sa ghlao.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Níorbh fhéidir an fón a cheangal leis an ríomhaire. Caithfidh an dá cheann a bheith ar an líonra Wi-Fi céanna.",
+  "O celular saiu.": "Dícheanglaíodh an fón.",
+  "Abrindo a câmera…": "Ag oscailt an cheamara…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Níor lig an brabhsálaí don cheamara oscailt. Ceadaigh an ceamara don suíomh seo agus oscail an cód arís.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Úsáideadh an cód seo cheana nó tá sé imithe in éag. Iarr ceann eile ar an ríomhaire.",
+  "Pronto. Pode fechar esta página.": "Déanta. Is féidir leat an leathanach seo a dhúnadh.",
 } satisfies Record<string, string>;

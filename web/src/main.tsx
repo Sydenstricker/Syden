@@ -5,6 +5,8 @@ import './fontesDaMarca.gerado.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { PaginaDoCelular } from './PaginaDoCelular';
+import { parDoEndereco } from './cameraDoCelular';
 import { ErroGeral } from './ErroGeral';
 import { iniciarIdioma } from './i18n';
 import { aplicarLarguras, lerLarguras } from './larguras';
@@ -36,10 +38,12 @@ aplicarLarguras(lerLarguras());
 vigiarFocoDaJanela();
 
 instalarToqueLongo();
+// O celular aberto pelo QR code do "celular como câmera" (cameraDoCelular.ts): a página dele, sem conta e sem o resto do Syden.
+const parDoCelular = parDoEndereco();
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErroGeral>
-      <App />
+      {parDoCelular ? <PaginaDoCelular par={parDoCelular} /> : <App />}
     </ErroGeral>
   </StrictMode>,
 );

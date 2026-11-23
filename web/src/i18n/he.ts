@@ -4771,4 +4771,26 @@ export default {
   "Zap": "זאפ",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "טניס",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "להביא את המבנה משרת Discord",
+  "Link do modelo do servidor": "קישור לתבנית השרת",
+  "Ver o que vem": "לראות מה יועבר",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "ב-Discord, מי שמנהל את השרת יוצר את הקישור בהגדרות השרת ← תבנית שרת. יועברו הערוצים והתפקידים (שם וצבע), בלי ההודעות.",
+  "Passou do limite do Syden: {n} ficam de fora.": "חריגה מהמגבלה של Syden: {n} לא יועברו.",
+  "Esse link não é de um modelo de servidor do Discord.": "הקישור הזה אינו של תבנית שרת ב-Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "התבנית הזאת לא קיימת ב-Discord. אפשר לבקש קישור חדש ממי שמנהל את השרת.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord לא הגיב. אפשר לנסות שוב עוד מעט.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "שימוש בטלפון כמצלמה",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "יש לכוון את מצלמת הטלפון אל הקוד ולפתוח את הכתובת שתופיע.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "הטלפון והמחשב צריכים להיות באותה רשת Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "לא ניתן היה להציג את הקוד כרגע. אפשר לנסות שוב.",
+  "Ligando o celular ao computador…": "מתבצע חיבור של הטלפון למחשב…",
+  "A câmera do celular está na chamada.": "מצלמת הטלפון נמצאת בשיחה.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "לא ניתן היה לחבר את הטלפון למחשב. שניהם צריכים להיות באותה רשת Wi-Fi.",
+  "O celular saiu.": "הטלפון התנתק.",
+  "Abrindo a câmera…": "המצלמה נפתחת…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "הדפדפן לא אישר לפתוח את המצלמה. יש לאשר את המצלמה לאתר הזה ולפתוח את הקוד שוב.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "הקוד הזה כבר נוצל או שפג תוקפו. אפשר לבקש קוד אחר במחשב.",
+  "Pronto. Pode fechar esta página.": "זהו. אפשר לסגור את הדף הזה.",
 } satisfies Record<string, string>;

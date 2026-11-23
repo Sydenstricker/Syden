@@ -4787,4 +4787,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Teniska",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Ka keen qaabka server-ka Discord",
+  "Link do modelo do servidor": "Xiriirka qaabka server-ka",
+  "Ver o que vem": "Arag waxa iman doona",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord-ka, qofka maamula server-ka ayaa xiriirka ka sameeya Dejinta server-ka → Qaabka server-ka. Waxaa iman doona kanaallada iyo doorarka (magaca iyo midabka), fariimaha la'aantood.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Wuxuu dhaafay xadka Syden: {n} ayaa banaanka ka haray.",
+  "Esse link não é de um modelo de servidor do Discord.": "Xiriirkani maaha qaab server Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Qaabkan kuma jiro Discord. Ka codso xiriir cusub qofka maamula server-ka.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord ma jawaabin. Mar kale isku day wax yar kadib.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Taleefanka u isticmaal kamarad ahaan",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Kamaradda taleefanka ku toosi koodhka, kadibna fur ciwaanka soo baxa.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Taleefanka iyo kombiyuutarku waa inay ku jiraan isla shabakadda Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Hadda lama tusi karin koodhka. Mar kale isku day.",
+  "Ligando o celular ao computador…": "Taleefanka waxaa lagu xirayaa kombiyuutarka…",
+  "A câmera do celular está na chamada.": "Kamaradda taleefanku waxay ku jirtaa wicitaanka.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Taleefanka laguma xiri karin kombiyuutarka. Labaduba waa inay ku jiraan isla shabakadda Wi-Fi.",
+  "O celular saiu.": "Taleefanku wuu go'ay.",
+  "Abrindo a câmera…": "Kamaradda waa la furayaa…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Daalacuhu ma oggolaan in kamaradda la furo. U oggolow kamaradda goobtan, kadibna mar kale fur koodhka.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Koodhkan horay ayaa loo isticmaalay ama wuu dhacay. Mid kale ka codso kombiyuutarka.",
+  "Pronto. Pode fechar esta página.": "Waa diyaar. Waad xiri kartaa boggan.",
 } satisfies Record<string, string>;

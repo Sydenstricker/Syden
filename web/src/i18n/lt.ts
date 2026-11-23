@@ -4789,4 +4789,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenisas",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Perkelti iš Discord serverio",
+  "Link do modelo do servidor": "Serverio šablono nuoroda",
+  "Ver o que vem": "Žiūrėti, kas bus perkelta",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord'e nuorodą sukuria serverį tvarkantis žmogus, skiltyje Serverio nustatymai → Serverio šablonas. Perkeliami kanalai ir vaidmenys (pavadinimas ir spalva), be žinučių.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Viršytas Syden limitas: {n} lieka už borto.",
+  "Esse link não é de um modelo de servidor do Discord.": "Ši nuoroda nėra Discord serverio šablonas.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Tokio šablono Discord'e nėra. Paprašyk naujos nuorodos serverį tvarkančio žmogaus.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord neatsakė. Pabandyk dar kartą po truputėlio.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Naudoti telefoną kaip kamerą",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Nukreipk telefono kamerą į kodą ir atidaryk pasirodžiusį adresą.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Telefonas ir kompiuteris turi būti tame pačiame Wi-Fi tinkle.",
+  "Não deu para abrir o código agora. Tente de novo.": "Dabar nepavyko parodyti kodo. Bandyk dar kartą.",
+  "Ligando o celular ao computador…": "Telefonas jungiamas prie kompiuterio…",
+  "A câmera do celular está na chamada.": "Telefono kamera yra skambutyje.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Nepavyko prijungti telefono prie kompiuterio. Abu turi būti tame pačiame Wi-Fi tinkle.",
+  "O celular saiu.": "Telefonas atsijungė.",
+  "Abrindo a câmera…": "Atidaroma kamera…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Naršyklė neleido atidaryti kameros. Leisk šiai svetainei naudoti kamerą ir vėl atidaryk kodą.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Šis kodas jau panaudotas arba nebegalioja. Kompiuteryje paprašyk kito.",
+  "Pronto. Pode fechar esta página.": "Baigta. Gali uždaryti šį puslapį.",
 } satisfies Record<string, string>;

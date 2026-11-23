@@ -4779,4 +4779,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Sill nga një server Discord",
+  "Link do modelo do servidor": "Lidhja e shabllonit të serverit",
+  "Ver o que vem": "Shiko çfarë vjen",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Në Discord, lidhjen e krijon kush e menaxhon serverin, te Cilësimet e serverit → Shablloni i serverit. Vijnë kanalet dhe rolet (emri dhe ngjyra), pa mesazhet.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Mbi kufirin e Syden: {n} mbeten jashtë.",
+  "Esse link não é de um modelo de servidor do Discord.": "Kjo lidhje nuk është shabllon serveri Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Ky shabllon nuk ekziston në Discord. Kërkoji një lidhje të re kujt e menaxhon serverin.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord nuk u përgjigj. Provo sërish pas pak.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Përdor telefonin si kamerë",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Drejtoje kamerën e telefonit te kodi dhe hap adresën që shfaqet.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Telefoni dhe kompjuteri duhet të jenë në të njëjtin rrjet Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Kodi nuk u shfaq dot tani. Provo sërish.",
+  "Ligando o celular ao computador…": "Po lidhet telefoni me kompjuterin…",
+  "A câmera do celular está na chamada.": "Kamera e telefonit është në telefonatë.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Telefoni nuk u lidh dot me kompjuterin. Të dy duhet të jenë në të njëjtin rrjet Wi-Fi.",
+  "O celular saiu.": "Telefoni u shkëput.",
+  "Abrindo a câmera…": "Po hapet kamera…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Shfletuesi nuk e lejoi hapjen e kamerës. Lejoje kamerën për këtë sajt dhe hape sërish kodin.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Ky kod është përdorur tashmë ose ka skaduar. Kërko një tjetër në kompjuter.",
+  "Pronto. Pode fechar esta página.": "Gati. Mund ta mbyllësh këtë faqe.",
 } satisfies Record<string, string>;

@@ -4787,4 +4787,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Tuo Discord-palvelimelta",
+  "Link do modelo do servidor": "Palvelinmallin linkki",
+  "Ver o que vem": "Katso, mitä tulee mukana",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discordissa palvelinta ylläpitävä luo linkin kohdassa Palvelimen asetukset → Palvelinmalli. Mukana tulevat kanavat ja roolit (nimi ja väri), ilman viestejä.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Sydenin raja ylittyi: {n} jää pois.",
+  "Esse link não é de um modelo de servidor do Discord.": "Tämä linkki ei ole Discordin palvelinmalli.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Tätä mallia ei ole Discordissa. Pyydä uusi linkki palvelinta ylläpitävältä.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord ei vastannut. Yritä hetken päästä uudelleen.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Käytä puhelinta kamerana",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Suuntaa puhelimen kamera koodiin ja avaa näkyviin tuleva osoite.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Puhelimen ja tietokoneen täytyy olla samassa Wi-Fi-verkossa.",
+  "Não deu para abrir o código agora. Tente de novo.": "Koodia ei voitu näyttää juuri nyt. Yritä uudelleen.",
+  "Ligando o celular ao computador…": "Yhdistetään puhelinta tietokoneeseen…",
+  "A câmera do celular está na chamada.": "Puhelimen kamera on puhelussa.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Puhelinta ei voitu yhdistää tietokoneeseen. Molempien täytyy olla samassa Wi-Fi-verkossa.",
+  "O celular saiu.": "Puhelimen yhteys katkesi.",
+  "Abrindo a câmera…": "Avataan kameraa…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Selain ei sallinut kameran avaamista. Salli kamera tälle sivustolle ja avaa koodi uudelleen.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Tämä koodi on jo käytetty tai vanhentunut. Pyydä uusi tietokoneelta.",
+  "Pronto. Pode fechar esta página.": "Valmista. Voit sulkea tämän sivun.",
 } satisfies Record<string, string>;

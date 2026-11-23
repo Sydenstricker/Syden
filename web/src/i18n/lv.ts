@@ -4789,4 +4789,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Teniss",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Pārnest no Discord servera",
+  "Link do modelo do servidor": "Servera veidnes saite",
+  "Ver o que vem": "Skatīt, kas tiks pārnests",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord serverī saiti izveido tas, kurš pārvalda serveri, sadaļā Servera iestatījumi → Servera veidne. Tiek pārnesti kanāli un lomas (nosaukums un krāsa), bez ziņām.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Pārsniegts Syden ierobežojums: {n} paliek ārpusē.",
+  "Esse link não é de um modelo de servidor do Discord.": "Šī saite nav Discord servera veidne.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Šāda veidne Discord nepastāv. Palūdz jaunu saiti tam, kurš pārvalda serveri.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord neatbildēja. Mēģini vēlreiz pēc brīža.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Izmantot tālruni kā kameru",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Pavērs tālruņa kameru pret kodu un atver adresi, kas parādās.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Tālrunim un datoram jābūt vienā Wi-Fi tīklā.",
+  "Não deu para abrir o código agora. Tente de novo.": "Kodu šobrīd neizdevās parādīt. Mēģini vēlreiz.",
+  "Ligando o celular ao computador…": "Tālrunis tiek savienots ar datoru…",
+  "A câmera do celular está na chamada.": "Tālruņa kamera ir zvanā.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Neizdevās savienot tālruni ar datoru. Abiem jābūt vienā Wi-Fi tīklā.",
+  "O celular saiu.": "Tālrunis atvienojās.",
+  "Abrindo a câmera…": "Kamera tiek atvērta…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Pārlūks neļāva atvērt kameru. Atļauj kameru šai vietnei un atver kodu vēlreiz.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Šis kods jau ir izmantots vai vairs nav derīgs. Palūdz citu datorā.",
+  "Pronto. Pode fechar esta página.": "Gatavs. Vari aizvērt šo lapu.",
 } satisfies Record<string, string>;

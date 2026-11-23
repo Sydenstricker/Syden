@@ -8,6 +8,7 @@ import { apagarSeVazia } from './salas-temporarias.js';
 import { pontuarMensagem, pontuarMinutoDeVoz } from './niveis.js';
 import { barreiraDe, hojeEmBrasilia, podeConversarNoParticular, podeVerVideo, regrasDe } from './protecao.js';
 import { motivoDoSilencio } from './silencio-do-jogo.js';
+import { eventosDaCameraDoCelular, ligarCameraDoCelular } from './camera-do-celular.js';
 
 /** Os gêneros que a TV do salão sabe desenhar (a mesma lista de web/src/generoDoJogo.ts). */
 const GENEROS_DE_JOGO = new Set(['moba', 'tiro', 'futebol', 'corrida', 'luta', 'aventura', 'construcao', 'fazenda', 'estrategia', 'cartas', 'terror', 'plataforma', 'festa', 'espaco', 'quebracabeca', 'esportes', 'voo', 'turnos', 'historia', 'ritmo']);
@@ -555,9 +556,12 @@ export function setupRealtime(io: IOServer) {
   }, USAGE_HEARTBEAT_MS).unref();
   // A rede de segurança do vídeo dos menores (ver vigiarVideoDosMenores), mais curta que o minuto.
   setInterval(() => void vigiarVideoDosMenores(), 10_000).unref();
+  // O celular como câmera tem o namespace dele (/celular), fora do da conta (ver camera-do-celular.ts).
+  ligarCameraDoCelular(io);
 
   io.on('connection', (socket: Socket) => {
     const user = socket.data.user as db.User;
+    eventosDaCameraDoCelular(socket, user.id);
 
     // Nova aba de quem já estava online mantém o status escolhido; a primeira conexão começa "online".
     const online = onlineSockets.get(user.id) ?? { username: user.username, sockets: new Set<string>(), status: 'online' as PresenceStatus };

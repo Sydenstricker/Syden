@@ -4710,4 +4710,26 @@ export default {
   "Zap": "زاپ",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "ٹینس",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord سرور سے ڈھانچہ لائیں",
+  "Link do modelo do servidor": "سرور ٹیمپلیٹ کا لنک",
+  "Ver o que vem": "دیکھیں کیا آئے گا",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord میں سرور چلانے والا شخص لنک سرور کی ترتیبات ← سرور ٹیمپلیٹ میں بناتا ہے۔ چینل اور کردار (نام اور رنگ) آتے ہیں، پیغامات نہیں۔",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden کی حد سے زیادہ: {n} باہر رہ جاتے ہیں۔",
+  "Esse link não é de um modelo de servidor do Discord.": "یہ لنک Discord سرور ٹیمپلیٹ کا نہیں ہے۔",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "یہ ٹیمپلیٹ Discord پر موجود نہیں۔ براہِ کرم سرور چلانے والے شخص سے نیا لنک مانگیں۔",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord نے جواب نہیں دیا۔ براہِ کرم تھوڑی دیر بعد دوبارہ کوشش کریں۔",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "فون کو کیمرے کے طور پر استعمال کریں",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "فون کا کیمرہ کوڈ کی طرف کریں اور جو پتا ظاہر ہو اسے کھولیں۔",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "فون اور کمپیوٹر کا ایک ہی Wi-Fi نیٹ ورک پر ہونا ضروری ہے۔",
+  "Não deu para abrir o código agora. Tente de novo.": "ابھی کوڈ نہیں دکھایا جا سکا۔ دوبارہ کوشش کریں۔",
+  "Ligando o celular ao computador…": "فون کو کمپیوٹر سے جوڑا جا رہا ہے…",
+  "A câmera do celular está na chamada.": "فون کا کیمرہ کال میں ہے۔",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "فون کو کمپیوٹر سے نہیں جوڑا جا سکا۔ دونوں کا ایک ہی Wi-Fi نیٹ ورک پر ہونا ضروری ہے۔",
+  "O celular saiu.": "فون کا رابطہ منقطع ہو گیا۔",
+  "Abrindo a câmera…": "کیمرہ کھولا جا رہا ہے…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "براؤزر نے کیمرہ کھولنے نہیں دیا۔ اس سائٹ کے لیے کیمرے کی اجازت دیں اور کوڈ دوبارہ کھولیں۔",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "یہ کوڈ پہلے ہی استعمال ہو چکا ہے یا اس کی میعاد ختم ہو گئی ہے۔ کمپیوٹر پر دوسرا کوڈ مانگیں۔",
+  "Pronto. Pode fechar esta página.": "ہو گیا۔ اب یہ صفحہ بند کیا جا سکتا ہے۔",
 } satisfies Record<string, string>;

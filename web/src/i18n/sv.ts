@@ -4779,4 +4779,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Hämta från en Discord-server",
+  "Link do modelo do servidor": "Länk till servermallen",
+  "Ver o que vem": "Se vad som följer med",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "På Discord skapar den som sköter servern länken under Serverinställningar → Servermall. Kanalerna och rollerna (namn och färg) följer med, utan meddelandena.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Över Sydens gräns: {n} lämnas utanför.",
+  "Esse link não é de um modelo de servidor do Discord.": "Den här länken är inte en Discord-servermall.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Den här mallen finns inte på Discord. Be den som sköter servern om en ny länk.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord svarade inte. Försök igen om en liten stund.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Använd mobilen som kamera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Rikta mobilens kamera mot koden och öppna adressen som visas.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Mobilen och datorn måste vara på samma wifi-nätverk.",
+  "Não deu para abrir o código agora. Tente de novo.": "Det gick inte att visa koden just nu. Försök igen.",
+  "Ligando o celular ao computador…": "Ansluter mobilen till datorn…",
+  "A câmera do celular está na chamada.": "Mobilens kamera är med i samtalet.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Det gick inte att ansluta mobilen till datorn. Båda måste vara på samma wifi-nätverk.",
+  "O celular saiu.": "Mobilen kopplades från.",
+  "Abrindo a câmera…": "Öppnar kameran…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Webbläsaren lät inte kameran öppnas. Tillåt kameran för den här webbplatsen och öppna koden igen.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Den här koden har redan använts eller har gått ut. Be om en ny på datorn.",
+  "Pronto. Pode fechar esta página.": "Klart. Du kan stänga den här sidan.",
 } satisfies Record<string, string>;

@@ -149,10 +149,13 @@ export function CommunityDialog({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const creating = mode === 'create';
+  // A estrutura de um servidor do Discord (ver modelo-do-discord.ts no servidor): só vai ao criar depois da prévia.
+  const [modelo, setModelo] = useState<{ link: string; previa: PreviaDoModelo } | null>(null);
 
   function escolher(proximo: CommunityDialogMode) {
     setValue('');
     setError(null);
+    setModelo(null);
     setMode(proximo);
   }
 
@@ -197,7 +200,11 @@ export function CommunityDialog({
         ? await api<Community>('/api/communities', {
             method: 'POST',
             // Os canais iniciais nascem no idioma de quem cria (eram sempre geral, jogos, Sala 1 e Sala 2).
-            body: { name: value, canais: [t('geral'), t('jogos'), t('Sala 1'), t('Sala 2')] },
+            body: {
+              name: value,
+              canais: [t('geral'), t('jogos'), t('Sala 1'), t('Sala 2')],
+              ...(modelo && { modeloDoDiscord: modelo.link }),
+            },
           })
         : await api<Community>('/api/communities/join', { method: 'POST', body: { code: value } });
       onDone(community);
@@ -226,6 +233,16 @@ export function CommunityDialog({
             required
           />
         </label>
+        {creating && (
+          <ModeloDoDiscord
+            modelo={modelo}
+            aoMudar={(novo) => {
+              setModelo(novo);
+              // O nome do servidor de lá vira a sugestão, se a pessoa ainda não escreveu um.
+              if (novo && !value.trim()) setValue(novo.previa.nome);
+            }}
+          />
+        )}
         {error && <p className="form-error">{error}</p>}
         <div className="dialog-actions">
           <button
@@ -240,6 +257,140 @@ export function CommunityDialog({
           </button>
         </div>
       </form>
+    </div>
+  );
+}
+
+/** Um endereço, não uma frase: não se traduz. */
+const EXEMPLO_DO_LINK = 'https://discord.new/…';
+
+interface PreviaDoModelo {
+  nome: string;
+  canais: { name: string; type: 'text' | 'voice' }[];
+  cargos: { nome: string; cor: string }[];
+  cortados: number;
+}
+
+/**
+ * TRAZER A ESTRUTURA DE UM SERVIDOR DO DISCORD (23/11/2026): fechado, é só um link discreto embaixo do nome, para não
+ * atrapalhar quem só quer criar. Aberto, a pessoa cola o link do modelo de servidor e vê a PRÉVIA (os canais de texto, os de
+ * voz e os cargos, com os nomes) antes de criar. Quem fala com o Discord é o servidor.
+ */
+function ModeloDoDiscord({
+  modelo,
+  aoMudar,
+}: {
+  modelo: { link: string; previa: PreviaDoModelo } | null;
+  aoMudar: (modelo: { link: string; previa: PreviaDoModelo } | null) => void;
+}) {
+  const t = useT();
+  const [aberto, setAberto] = useState(false);
+  const [link, setLink] = useState('');
+  const [buscando, setBuscando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+
+  if (!aberto && !modelo) {
+    return (
+      <button type="button" className="link-button" style={{ alignSelf: 'flex-start', padding: 0 }} onClick={() => setAberto(true)}>
+        {t('Trazer de um servidor do Discord')}
+      </button>
+    );
+  }
+
+  async function verPrevia() {
+    const pedido = link.trim();
+    if (!pedido) return;
+    setBuscando(true);
+    setErro(null);
+    try {
+      const previa = await api<PreviaDoModelo>('/api/modelo-do-discord', { method: 'POST', body: { link: pedido } });
+      aoMudar({ link: pedido, previa });
+    } catch (e) {
+      setErro((e as Error).message);
+    } finally {
+      setBuscando(false);
+    }
+  }
+
+  if (modelo) {
+    const { previa } = modelo;
+    const texto = previa.canais.filter((c) => c.type === 'text');
+    const voz = previa.canais.filter((c) => c.type === 'voice');
+    const lista = { display: 'flex', flexWrap: 'wrap', gap: 4, maxHeight: 96, overflowY: 'auto', margin: '2px 0 8px' } as const;
+    const pilula = { fontSize: 12, padding: '1px 8px', borderRadius: 999, background: 'var(--bg-input)' } as const;
+    return (
+      <div aria-live="polite">
+        <strong>{t('Trazer de um servidor do Discord')}</strong>
+        {[
+          [t('Canais de texto'), texto.map((c) => '#' + c.name)],
+          [t('Canais de voz'), voz.map((c) => c.name)],
+        ].map(([titulo, nomes]) => (
+          <div key={titulo as string}>
+            <small>
+              {titulo} ({(nomes as string[]).length})
+            </small>
+            <div style={lista}>
+              {(nomes as string[]).map((nome, i) => (
+                <span key={i} style={pilula}>
+                  {nome}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+        <small>
+          {t('Cargos')} ({previa.cargos.length})
+        </small>
+        <div style={lista}>
+          {previa.cargos.map((cargo, i) => (
+            <span key={i} style={{ ...pilula, color: cargo.cor }}>
+              {cargo.nome}
+            </span>
+          ))}
+        </div>
+        {previa.cortados > 0 && <small>{t('Passou do limite do Syden: {n} ficam de fora.', { n: previa.cortados })}</small>}
+        <div>
+          <button type="button" className="link-button" style={{ padding: 0 }} onClick={() => aoMudar(null)}>
+            {t('Tirar')}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <label>
+        {t('Link do modelo do servidor')}
+        <input
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+          onKeyDown={(e) => {
+            // Enter aqui busca a prévia, e não cria a comunidade sem ela.
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              void verPrevia();
+            }
+          }}
+          placeholder={EXEMPLO_DO_LINK}
+          inputMode="url"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck={false}
+        />
+      </label>
+      <small className="dialog-body">
+        {t('No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.')}
+      </small>
+      {erro && <p className="form-error">{erro}</p>}
+      <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
+        <button type="button" className="btn-secondary" disabled={buscando || !link.trim()} onClick={() => void verPrevia()}>
+          {buscando ? t('Aguarde…') : t('Ver o que vem')}
+        </button>
+        <button type="button" className="link-button" onClick={() => { setAberto(false); setErro(null); }}>
+          {t('Cancelar')}
+        </button>
+      </div>
     </div>
   );
 }

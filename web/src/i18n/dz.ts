@@ -4800,4 +4800,26 @@ export default {
   "Zap": "ཛཱཔ",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "ཊེ་ནིས་",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord སར་བར་ནང་ལས་ བཀོད་པ་ལེན།",
+  "Link do modelo do servidor": "སར་བར་ཊེམ་པེལེཊི་གི་འབྲེལ་ལམ།",
+  "Ver o que vem": "ག་ཅི་འོང་ནི་ཨིན་ན་བལྟ།",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord ནང་ སར་བར་འཛིན་སྐྱོང་འཐབ་མི་གིས་ སར་བར་སྒྲིག་སྟངས་ → སར་བར་ཊེམ་པེལེཊི་ནང་ འབྲེལ་ལམ་བཟོཝ་ཨིན། རྒྱུ་ལམ་དང་ ལས་འགན་ (མིང་དང་ཚོས་གཞི་) འོང་ནི་ཨིན་ འཕྲིན་དོན་ མི་འོང་།",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden གི་ཚད་གཞི་ལས་ལྷག་ཡི: {n} ཕྱི་ཁར་ལུསཔ་ཨིན།",
+  "Esse link não é de um modelo de servidor do Discord.": "འབྲེལ་ལམ་འདི་ Discord སར་བར་ཊེམ་པེལེཊི་མེན།",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "ཊེམ་པེལེཊི་འདི་ Discord ནང་མེད། སར་བར་འཛིན་སྐྱོང་འཐབ་མི་ལུ་ འབྲེལ་ལམ་གསརཔ་ཞུ།",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord གིས་ ལན་མ་བྱིན། ཕྲང་ཅིག་ལས་ ལོག་སྟེ་འབད་རྩོལ་བསྐྱེད།",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "ཁ་པར་འདི་ ཀེ་མ་ར་སྦེ་ལག་ལེན་འཐབ།",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "ཁ་པར་གྱི་ཀེ་མ་ར་ ཨང་རྟགས་ཀྱི་ཁ་ཕྱོགས་ལུ་སྟོན་ཞིནམ་ལས་ འཐོན་འོང་མི་ཁ་བྱང་འདི་ཁ་ཕྱེ།",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "ཁ་པར་དང་གློག་རིག་ Wi-Fi ཡོངས་འབྲེལ་གཅིག་ནང་ལུ་ དགོཔ་ཨིན།",
+  "Não deu para abrir o código agora. Tente de novo.": "ད་ལྟོ་ ཨང་རྟགས་སྟོན་མ་ཚུགས། ལོག་སྟེ་འབད་རྩོལ་བསྐྱེད།",
+  "Ligando o celular ao computador…": "ཁ་པར་ གློག་རིག་དང་མཐུད་དོ…",
+  "A câmera do celular está na chamada.": "ཁ་པར་གྱི་ཀེ་མ་ར་ སྐད་འབོད་ནང་ཡོད།",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "ཁ་པར་ གློག་རིག་དང་མཐུད་མ་ཚུགས། གཉིས་ཆ་རང་ Wi-Fi ཡོངས་འབྲེལ་གཅིག་ནང་ལུ་ དགོཔ་ཨིན།",
+  "O celular saiu.": "ཁ་པར་གྱི་མཐུད་ལམ་ཆད་སོ།",
+  "Abrindo a câmera…": "ཀེ་མ་ར་ཁ་ཕྱེ་དོ…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "བརྡ་འཚོལ་ཆས་ཀྱིས་ ཀེ་མ་ར་ཁ་ཕྱེ་བཅུག་མ་བཅུག། ཡིག་ཐོག་ས་འདི་གི་དོན་ལུ་ ཀེ་མ་ར་ལུ་གནང་བ་བྱིན་ཞིནམ་ལས་ ཨང་རྟགས་ལོག་སྟེ་ཁ་ཕྱེ།",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "ཨང་རྟགས་འདི་ ཧེ་མ་ལས་ལག་ལེན་འཐབ་ཡི་ ཡང་ན་ དུས་ཚོད་ཡོལ་ཡི། གློག་རིག་ནང་ གཞན་ཅིག་ཞུ།",
+  "Pronto. Pode fechar esta página.": "ཚར་ཡི། ཤོག་ལེབ་འདི་ཁ་བསྡམ་ཆོག།",
 } satisfies Record<string, string>;

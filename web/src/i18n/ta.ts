@@ -4703,4 +4703,26 @@ export default {
   "Zap": "ஜாப்",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "டென்னிஸ்",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord சர்வரிலிருந்து அமைப்பைக் கொண்டுவாருங்கள்",
+  "Link do modelo do servidor": "சர்வர் டெம்ப்ளேட் இணைப்பு",
+  "Ver o que vem": "என்ன வரும் என்று பாருங்கள்",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord-இல் சர்வரை நடத்துபவர் சர்வர் அமைப்புகள் → சர்வர் டெம்ப்ளேட் பகுதியில் இணைப்பை உருவாக்குவார். சேனல்களும் பாத்திரங்களும் (பெயர், நிறம்) வரும், செய்திகள் வராது.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden வரம்பைத் தாண்டியது: {n} விடுபடும்.",
+  "Esse link não é de um modelo de servidor do Discord.": "இந்த இணைப்பு Discord சர்வர் டெம்ப்ளேட் அல்ல.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "இந்த டெம்ப்ளேட் Discord-இல் இல்லை. சர்வரை நடத்துபவரிடம் புதிய இணைப்பைக் கேளுங்கள்.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord பதிலளிக்கவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயலுங்கள்.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "கைபேசியைக் கேமராவாகப் பயன்படுத்துங்கள்",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "கைபேசியின் கேமராவைக் குறியீட்டை நோக்கிக் காட்டி, தோன்றும் முகவரியைத் திறங்கள்.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "கைபேசியும் கணினியும் ஒரே Wi-Fi வலையமைப்பில் இருக்க வேண்டும்.",
+  "Não deu para abrir o código agora. Tente de novo.": "இப்போது குறியீட்டைக் காட்ட முடியவில்லை. மீண்டும் முயலுங்கள்.",
+  "Ligando o celular ao computador…": "கைபேசியைக் கணினியுடன் இணைக்கிறது…",
+  "A câmera do celular está na chamada.": "கைபேசியின் கேமரா அழைப்பில் உள்ளது.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "கைபேசியைக் கணினியுடன் இணைக்க முடியவில்லை. இரண்டும் ஒரே Wi-Fi வலையமைப்பில் இருக்க வேண்டும்.",
+  "O celular saiu.": "கைபேசியின் இணைப்பு துண்டிக்கப்பட்டது.",
+  "Abrindo a câmera…": "கேமராவைத் திறக்கிறது…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "உலாவி கேமராவைத் திறக்க அனுமதிக்கவில்லை. இந்தத் தளத்துக்குக் கேமராவை அனுமதித்து, குறியீட்டை மீண்டும் திறங்கள்.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "இந்தக் குறியீடு ஏற்கெனவே பயன்படுத்தப்பட்டது அல்லது காலாவதியானது. கணினியில் வேறொன்றைக் கேளுங்கள்.",
+  "Pronto. Pode fechar esta página.": "முடிந்தது. இந்தப் பக்கத்தை மூடலாம்.",
 } satisfies Record<string, string>;

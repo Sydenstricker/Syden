@@ -4688,4 +4688,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Quần vợt",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Mang từ máy chủ Discord sang",
+  "Link do modelo do servidor": "Liên kết mẫu máy chủ",
+  "Ver o que vem": "Xem những gì được mang sang",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Trên Discord, người quản lý máy chủ tạo liên kết trong Cài đặt máy chủ → Mẫu máy chủ. Các kênh và vai trò (tên và màu) được mang sang, không kèm tin nhắn.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Vượt giới hạn của Syden: {n} bị bỏ ra ngoài.",
+  "Esse link não é de um modelo de servidor do Discord.": "Liên kết này không phải mẫu máy chủ Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Mẫu này không có trên Discord. Hãy xin liên kết mới từ người quản lý máy chủ.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord không phản hồi. Thử lại sau một chút nhé.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Dùng điện thoại làm camera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Hướng camera điện thoại vào mã và mở địa chỉ hiện ra.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Điện thoại và máy tính phải dùng chung một mạng Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Hiện chưa hiển thị được mã. Hãy thử lại.",
+  "Ligando o celular ao computador…": "Đang kết nối điện thoại với máy tính…",
+  "A câmera do celular está na chamada.": "Camera điện thoại đã vào cuộc gọi.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Không kết nối được điện thoại với máy tính. Cả hai phải dùng chung một mạng Wi-Fi.",
+  "O celular saiu.": "Điện thoại đã ngắt kết nối.",
+  "Abrindo a câmera…": "Đang mở camera…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Trình duyệt không cho mở camera. Hãy cho phép camera với trang này rồi mở lại mã.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Mã này đã được dùng hoặc đã hết hạn. Hãy xin mã khác trên máy tính.",
+  "Pronto. Pode fechar esta página.": "Xong. Bạn có thể đóng trang này.",
 } satisfies Record<string, string>;

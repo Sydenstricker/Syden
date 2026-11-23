@@ -4720,4 +4720,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Wasan tanis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Kawo tsarin sabar Discord",
+  "Link do modelo do servidor": "Mahaɗar samfurin sabar",
+  "Ver o que vem": "Duba abin da zai zo",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "A Discord, mai kula da sabar ne ke ƙirƙirar mahaɗar a Saitunan sabar → Samfurin sabar. Tasoshi da matsayi (suna da launi) za su zo, ba tare da saƙonni ba.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Ya wuce iyakar Syden: {n} ba za su zo ba.",
+  "Esse link não é de um modelo de servidor do Discord.": "Wannan mahaɗar ba ta samfurin sabar Discord ba ce.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Babu wannan samfurin a Discord. Ku nemi sabuwar mahaɗa daga mai kula da sabar.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord bai amsa ba. Ku sake gwadawa nan da ɗan lokaci.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Yi amfani da waya a matsayin kyamara",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Ku nuna kyamarar waya ga lambar, sannan ku buɗe adireshin da ya bayyana.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Dole waya da kwamfuta su kasance a kan Wi-Fi ɗaya.",
+  "Não deu para abrir o código agora. Tente de novo.": "Ba a iya nuna lambar yanzu ba. Ku sake gwadawa.",
+  "Ligando o celular ao computador…": "Ana haɗa waya da kwamfuta…",
+  "A câmera do celular está na chamada.": "Kyamarar waya tana cikin kiran.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Ba a iya haɗa waya da kwamfuta ba. Dole duka biyun su kasance a kan Wi-Fi ɗaya.",
+  "O celular saiu.": "Waya ta katse.",
+  "Abrindo a câmera…": "Ana buɗe kyamara…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Mai bincike bai bari a buɗe kyamara ba. Ku ba wannan shafin izinin kyamara, sannan ku sake buɗe lambar.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "An riga an yi amfani da wannan lambar ko ta ƙare. Ku nemi wata a kwamfuta.",
+  "Pronto. Pode fechar esta página.": "An gama. Kuna iya rufe wannan shafin.",
 } satisfies Record<string, string>;

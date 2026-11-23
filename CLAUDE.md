@@ -2370,6 +2370,22 @@ não virar um jeito de baixar arquivo de ninguém. A vassoura de órfãos e a re
 tela, com o resto desfocado atrás, e fechado fica a faixa (clicar nela reabre). "Uma vez" é por aparelho (`syden.avisoVisto`, a marca
 texto|sha): voltar a cada abertura seria insistir. É a exceção escolhida por ele ao "não interrompa", e só para o recado de quem cuida do Syden.
 
+## Trazer a estrutura de um servidor do Discord: canais e cargos, nunca permissões
+
+**Feito em 23/11/2026, pedido dele ("eles copiam a estrutura de uma comunidade do Discord e transferem para o novo app").** Ao
+criar uma comunidade, um link discreto embaixo do nome ("Trazer de um servidor do Discord") abre o campo do link do MODELO DE
+SERVIDOR (discord.new/CODIGO ou discord.com/template/CODIGO, que o dono gera em Configurações do servidor → Modelo de servidor),
+e "Ver o que vem" mostra a PRÉVIA (os canais de texto, os de voz e os cargos, com os nomes) antes de criar; o nome do servidor
+vira a sugestão de nome. **Quem fala com o Discord é o servidor** (`server/src/modelo-do-discord.ts`, a rota pública
+`/guilds/templates/{code}`, sem conta), só com o código, com 8 s de prazo, 2 MB no máximo e o teto de links por pessoa
+(`muitosLinks`); a resposta fica 10 min na memória, e o "Criar" não pede de novo. Texto, anúncios, fórum e mídia viram canal de
+texto; voz e palco, de voz. **O Syden não tem categoria**: elas são achatadas como o Discord mostra (os sem categoria primeiro,
+depois cada categoria pela posição; dentro de cada uma, texto antes de voz). Até 100 canais (o Syden não tinha teto de canais:
+o número é meu, a confirmar com ele) e os 50 cargos de sempre. **Cargo vem só com NOME e COR**: permissões não, porque cargo é
+identidade (db.ts); o @everyone e os cargos de robô ficam de fora; sem cor, o cinza. Mensagens não vêm (o modelo não as tem).
+Sem canal de texto no modelo, entra o primeiro inicial. A comunidade nasce numa transação só (erro do Discord não deixa
+comunidade pela metade). Na política, `#modelo-do-discord`. Teste: `server/test/modelo-do-discord.test.ts` (sem rede).
+
 ## O bolão é uma pergunta com palpite de dia e hora, não uma tabela de jogos
 
 **Refeito em 15/11/2026, pelo relato dele ao ver a primeira versão:** eu tinha entendido "bolão" como o de futebol (jogos,
@@ -2558,6 +2574,12 @@ dele é o oposto do da sobreposição: status que ninguém atualiza vira enfeite
 na hora (`jogos:mudou`). Contra o enfeite morto, a marca SOME SOZINHA: 4 horas depois de marcada, ou quando a pessoa
 fica sem o Syden aberto por duas varreduras seguidas (recarregar não apaga). Mora só na memória do servidor
 (`server/src/jogando-agora.ts`), como quem está em chamada. Teste de tela: `e2e/jogando-agora.mjs`.
+
+## Controlar o computador de outra pessoa: nunca
+
+**Decidido em 23/11/2026, pelo Sydenstricker, vendo o "jogar no PC do amigo" da Salinha:** "é uma brecha muito grande de
+segurança". O Syden não oferece controle remoto (teclado, mouse ou controle de um mandando no computador de outro), nem para
+jogo. Transmitir continua sendo só mostrar.
 
 ## O som da transmissão pega o Discord junto, e isso não é defeito do Syden
 
@@ -2892,6 +2914,36 @@ pelo RUÍDO, não pela falta de luz**: clarear a entrada piora; a média dos qua
 Leve. A regra "câmera escura vai ao Leve" fica; o que decide o próximo passo é medir uma webcam de verdade num quarto escuro. **A troca de
 modelo não se vê** (`e2e/fundo-da-camera-luz.mjs`, a luz acendendo e apagando como um interruptor, no app): a máscara muda até 0,9% no
 quadro da troca, contra até 1,7% da própria luz mudando e 0,4% parada; desce ao Leve ~0,7 s depois de apagar e volta em ~0,3 s.
+
+## O celular como câmera: o celular não entra na chamada
+
+**Pedido dele em 23/11/2026, visto no Trivo.** Na chamada, Mais → "Usar o celular como câmera" mostra um QR code; o celular
+abre a página (sem conta) e a câmera dele vira a câmera da pessoa, no lugar da webcam. O botão da câmera, aceso, desliga o celular.
+- **O celular manda a imagem DIRETO ao computador** (WebRTC de aparelho para aparelho), e o computador a publica como a câmera
+  dele. Por isso a cifra de ponta a ponta não mudou (uma pessoa, um aparelho, uma chave por sala), o fundo da câmera vale também
+  para ela, e o celular não ouve nem vê nada da chamada.
+- **O servidor só emite o par e repassa o aperto de mão** (`server/src/camera-do-celular.ts`, namespace `/celular`, fora do da
+  conta): um token de uso único que vale 10 minutos, um par por pessoa, tudo na memória. **O QR leva um SEGREDO depois do #**,
+  que nunca chega a servidor nenhum, e cada mensagem do aperto de mão vai assinada com ele (HMAC, sentido e número que só sobe):
+  o servidor não troca a impressão digital da conexão (`web/src/cameraDoCelular.ts`). O celular tira o segredo da barra de
+  endereço ao abrir.
+- **Sem STUN nem TURN** (nada de terceiro sabendo o endereço de ninguém): só funciona com os dois na MESMA REDE, e a tela diz
+  isso quando não liga em 20 s. Funcionar pelo 4G pede um TURN nosso: decisão dele.
+- Parar no celular de propósito só apaga a câmera, sem janela no computador; a conexão que cai mostra "O celular saiu.".
+- Testes: `server/test/camera-do-celular.test.ts` e `e2e/celular-como-camera.mjs` (passaram; "celular" é outro navegador com a
+  câmera falsa, na mesma máquina). Ninguém testou com um celular de verdade.
+
+## O app de Android: medido, ainda não começado
+
+**Medido em 23/11/2026, a pedido dele ("transmitir a tela do celular é uma funcionalidade importante").** O Chrome do Android não
+tem `getDisplayMedia`: só um app transmite. O caminho recomendado: uma WebView nossa com o site, e um serviço nativo (o SDK de
+Android do LiveKit, MediaProjection) que entra na sala como um SEGUNDO participante da pessoa (`<id>:tela`), só publicando a tela,
+com uma chave de mídia que a página entrega por dentro do celular e distribui pelo embrulho de hoje. O maior risco é a cifra do
+SDK de Android casar com a do navegador (o `setKey` dele só aceita texto): é o primeiro dia de qualquer protótipo, e mexe no
+protocolo da cifra (pede revisão de fora). O preço escondido: o servidor e o site leem a identity como "o número da pessoa" em
+dezenas de lugares, e a regra dos menores precisa valer para `<id>:tela`. Estimativa: protótipo 10 a 13 dias; publicável 37 a
+50 dias; mais 14 dias de teste fechado com 12 testadores (conta pessoal nova). Decisões dele em aberto: conta pessoal ou de empresa
+na Play, push (Firebase, terceiro novo), Android mínimo (10, pelo som), e se o app é só para transmitir ou vira o Syden do celular.
 
 ## Fonte de terceiro: embutir é REDISTRIBUIR, e quase nenhuma "grátis" permite isso
 

@@ -1523,14 +1523,42 @@ export function defaultCommunity() {
   return db.prepare(`SELECT ${communityColumns} FROM communities ORDER BY id LIMIT 1`).get() as Community | undefined;
 }
 
-export function createCommunity(name: string, ownerId: number, inviteCode: string, nomesDosCanais: (string | null)[] = []): Community {
-  const result = db
-    .prepare('INSERT INTO communities (name, invite_code, created_by) VALUES (?, ?, ?)')
-    .run(name, inviteCode, ownerId);
-  const id = Number(result.lastInsertRowid);
-  addMember(id, ownerId, 'owner');
-  seedChannels(id, nomesDosCanais);
-  return findCommunity(id)!;
+/**
+ * `doModelo` é a estrutura trazida de um modelo de servidor do Discord (modelo-do-discord.ts): os canais na ordem e os
+ * cargos (só nome e cor: cargo é identidade, não poder). Com ela, os canais dela tomam o lugar dos iniciais — menos
+ * quando não há nenhum de texto, e então o primeiro inicial vem na frente, para a comunidade ter onde conversar.
+ */
+export function createCommunity(
+  name: string,
+  ownerId: number,
+  inviteCode: string,
+  nomesDosCanais: (string | null)[] = [],
+  doModelo?: { canais: { name: string; type: ChannelType }[]; cargos: { nome: string; cor: string }[] },
+): Community {
+  db.exec('BEGIN');
+  try {
+    const result = db
+      .prepare('INSERT INTO communities (name, invite_code, created_by) VALUES (?, ?, ?)')
+      .run(name, inviteCode, ownerId);
+    const id = Number(result.lastInsertRowid);
+    addMember(id, ownerId, 'owner');
+    if (doModelo && doModelo.canais.length > 0) {
+      const canais = doModelo.canais.some((c) => c.type === 'text')
+        ? doModelo.canais
+        : [{ name: nomesDosCanais[0] ?? CANAIS_INICIAIS[0].name, type: 'text' as ChannelType }, ...doModelo.canais];
+      const insert = db.prepare('INSERT INTO channels (community_id, name, type, position) VALUES (?, ?, ?, ?)');
+      canais.forEach((canal, i) => insert.run(id, canal.name, canal.type, i));
+    } else {
+      seedChannels(id, nomesDosCanais);
+    }
+    const insertCargo = db.prepare('INSERT INTO cargos (community_id, nome, cor, separado, posicao) VALUES (?, ?, ?, 0, ?)');
+    (doModelo?.cargos ?? []).slice(0, MAXIMO_DE_CARGOS).forEach((cargo, i) => insertCargo.run(id, cargo.nome, cargo.cor, i));
+    db.exec('COMMIT');
+    return findCommunity(id)!;
+  } catch (erro) {
+    db.exec('ROLLBACK');
+    throw erro;
+  }
 }
 
 export function renameCommunity(id: number, name: string) {

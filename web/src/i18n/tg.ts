@@ -4797,4 +4797,26 @@ export default {
   "Zap": "Зап",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Теннис",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Аз сервери Discord овардан",
+  "Link do modelo do servidor": "Пайванди қолаби сервер",
+  "Ver o que vem": "Дидани он чи меояд",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Дар Discord пайвандро касе, ки серверро идора мекунад, дар Танзимоти сервер → Қолаби сервер месозад. Каналҳо ва нақшҳо (ном ва ранг) меоянд, бе паёмҳо.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Аз ҳадди Syden гузашт: {n} берун мемонанд.",
+  "Esse link não é de um modelo de servidor do Discord.": "Ин пайванд қолаби сервери Discord нест.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Чунин қолаб дар Discord нест. Лутфан аз касе, ки серверро идора мекунад, пайванди нав пурсед.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord ҷавоб надод. Лутфан баъди каме дубора кӯшиш кунед.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Истифодаи телефон ҳамчун камера",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Камераи телефонро ба код равона кунед ва суроғаеро, ки пайдо мешавад, кушоед.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Телефон ва компютер бояд дар як шабакаи Wi-Fi бошанд.",
+  "Não deu para abrir o código agora. Tente de novo.": "Ҳоло кодро нишон додан муяссар нашуд. Лутфан дубора кӯшиш кунед.",
+  "Ligando o celular ao computador…": "Телефон ба компютер пайваст мешавад…",
+  "A câmera do celular está na chamada.": "Камераи телефон дар занг аст.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Телефонро ба компютер пайваст кардан муяссар нашуд. Ҳарду бояд дар як шабакаи Wi-Fi бошанд.",
+  "O celular saiu.": "Пайвасти телефон қатъ шуд.",
+  "Abrindo a câmera…": "Камера кушода мешавад…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Браузер иҷозат надод, ки камера кушода шавад. Ба ин сомона иҷозати камераро диҳед ва кодро дубора кушоед.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Ин код аллакай истифода шудааст ё мӯҳлаташ гузаштааст. Дар компютер коди дигар талаб кунед.",
+  "Pronto. Pode fechar esta página.": "Тайёр. Шумо метавонед ин саҳифаро пӯшед.",
 } satisfies Record<string, string>;

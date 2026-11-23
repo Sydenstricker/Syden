@@ -4700,4 +4700,26 @@ export default {
   "Zap": "జాప్",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "టెన్నిస్",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord సర్వర్ నుండి నిర్మాణాన్ని తీసుకురండి",
+  "Link do modelo do servidor": "సర్వర్ టెంప్లేట్ లింక్",
+  "Ver o que vem": "ఏమి వస్తుందో చూడండి",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discordలో సర్వర్ నడిపే వ్యక్తి సర్వర్ సెట్టింగ్‌లు → సర్వర్ టెంప్లేట్‌లో లింక్‌ను సృష్టిస్తారు. ఛానెల్‌లు, పాత్రలు (పేరు, రంగు) వస్తాయి, సందేశాలు రావు.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden పరిమితి దాటింది: {n} బయటే ఉంటాయి.",
+  "Esse link não é de um modelo de servidor do Discord.": "ఈ లింక్ Discord సర్వర్ టెంప్లేట్ కాదు.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "ఈ టెంప్లేట్ Discordలో లేదు. సర్వర్ నడిపే వ్యక్తిని కొత్త లింక్ అడగండి.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord స్పందించలేదు. కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "ఫోన్‌ను కెమెరాగా ఉపయోగించండి",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "ఫోన్ కెమెరాను కోడ్ వైపు చూపించి, కనిపించే చిరునామాను తెరవండి.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "ఫోన్, కంప్యూటర్ ఒకే Wi-Fi నెట్‌వర్క్‌లో ఉండాలి.",
+  "Não deu para abrir o código agora. Tente de novo.": "ఇప్పుడు కోడ్‌ను చూపించలేకపోయాం. మళ్లీ ప్రయత్నించండి.",
+  "Ligando o celular ao computador…": "ఫోన్‌ను కంప్యూటర్‌కు కలుపుతోంది…",
+  "A câmera do celular está na chamada.": "ఫోన్ కెమెరా కాల్‌లో ఉంది.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "ఫోన్‌ను కంప్యూటర్‌కు కలపలేకపోయాం. రెండూ ఒకే Wi-Fi నెట్‌వర్క్‌లో ఉండాలి.",
+  "O celular saiu.": "ఫోన్ కనెక్షన్ తెగిపోయింది.",
+  "Abrindo a câmera…": "కెమెరాను తెరుస్తోంది…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "బ్రౌజర్ కెమెరాను తెరవనివ్వలేదు. ఈ సైట్‌కు కెమెరాను అనుమతించి, కోడ్‌ను మళ్లీ తెరవండి.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "ఈ కోడ్ ఇప్పటికే వాడబడింది లేదా గడువు ముగిసింది. కంప్యూటర్‌లో మరొకటి అడగండి.",
+  "Pronto. Pode fechar esta página.": "అయిపోయింది. ఈ పేజీని మూసివేయవచ్చు.",
 } satisfies Record<string, string>;

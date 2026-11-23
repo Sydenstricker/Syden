@@ -4797,4 +4797,26 @@ export default {
   "Zap": "ޒެޕް",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "ޓެނިސް",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord ސާވަރަކުން އޮނިގަނޑު ގެނައުން",
+  "Link do modelo do servidor": "ސާވަރ ޓެމްޕްލޭޓްގެ ލިންކް",
+  "Ver o que vem": "އަންނާނެ އެއްޗެހި ބެލުން",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord ގައި ސާވަރ ހިންގާ މީހާ ލިންކް ހަދަނީ ސާވަރ ސެޓިންގްސް → ސާވަރ ޓެމްޕްލޭޓް އިންނެވެ. ޗެނަލްތަކާއި ރޯލްތައް (ނަމާއި ކުލަ) އަންނާނެ، މެސެޖްތައް ނާންނާނެ.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden ގެ ހައްދު ފަހަނައަޅައިފި: {n} ބޭރުގައި ބާކީ ވާނެ.",
+  "Esse link não é de um modelo de servidor do Discord.": "މި ލިންކަކީ Discord ސާވަރ ޓެމްޕްލޭޓެއް ނޫން.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "މި ޓެމްޕްލޭޓް Discord ގައި ނެތް. ސާވަރ ހިންގާ މީހާއަށް އާ ލިންކެއް އެދޭށެވެ.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord އިން ޖަވާބެއް ނުދެއެވެ. ކުޑަކޮށް ފަހުން އަލުން މަސައްކަތް ކުރޭ.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "ފޯނު ކެމެރާއެއްގެ ގޮތުގައި ބޭނުންކުރޭ",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "ފޯނުގެ ކެމެރާ ކޯޑާ ދިމާކޮށް، ފެންނަ އެޑްރެސް ހުޅުވާ.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "ފޯނާއި ކޮމްޕިއުޓަރު ހުންނަން ޖެހޭނީ އެއް Wi-Fi ނެޓްވޯކެއްގައި.",
+  "Não deu para abrir o código agora. Tente de novo.": "މިހާރު ކޯޑު ދައްކައެއް ނުލެވުނު. އަލުން މަސައްކަތް ކުރޭ.",
+  "Ligando o celular ao computador…": "ފޯނު ކޮމްޕިއުޓަރާ ގުޅުވަނީ…",
+  "A câmera do celular está na chamada.": "ފޯނުގެ ކެމެރާ ކޯލުގައި އެބަހުރި.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "ފޯނު ކޮމްޕިއުޓަރާ ގުޅުވައެއް ނުލެވުނު. ދެތަކެތި ވެސް ހުންނަން ޖެހޭނީ އެއް Wi-Fi ނެޓްވޯކެއްގައި.",
+  "O celular saiu.": "ފޯނުގެ ގުޅުން ކެނޑިއްޖެ.",
+  "Abrindo a câmera…": "ކެމެރާ ހުޅުވަނީ…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "ބްރައުޒަރުން ކެމެރާ ހުޅުވަން ހުއްދަ ނުދިން. މި ސައިޓަށް ކެމެރާގެ ހުއްދަ ދީފައި ކޯޑު އަލުން ހުޅުވާ.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "މި ކޯޑު ބޭނުންކުރެވިފައި ނުވަތަ މުއްދަތު ހަމަވެފައި. ކޮމްޕިއުޓަރުން އެހެން ކޯޑެއް ހޯދާ.",
+  "Pronto. Pode fechar esta página.": "ނިމުނީ. މި ޞަފްޙާ ބަންދުކުރެވޭނެ.",
 } satisfies Record<string, string>;

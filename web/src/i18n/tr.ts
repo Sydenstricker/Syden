@@ -4720,4 +4720,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Bir Discord sunucusundan aktar",
+  "Link do modelo do servidor": "Sunucu şablonu bağlantısı",
+  "Ver o que vem": "Neyin geleceğini gör",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord'da bağlantıyı sunucuyu yöneten kişi Sunucu Ayarları → Sunucu Şablonu bölümünden oluşturur. Kanallar ve roller (ad ve renk) gelir, mesajlar gelmez.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden sınırı aşıldı: {n} dışarıda kalıyor.",
+  "Esse link não é de um modelo de servidor do Discord.": "Bu bağlantı bir Discord sunucu şablonu değil.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Bu şablon Discord'da yok. Sunucuyu yöneten kişiden yeni bir bağlantı iste.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord yanıt vermedi. Biraz sonra yeniden dene.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Telefonu kamera olarak kullan",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Telefonun kamerasını koda tut ve çıkan adresi aç.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Telefon ve bilgisayar aynı Wi-Fi ağında olmalı.",
+  "Não deu para abrir o código agora. Tente de novo.": "Kod şu an gösterilemedi. Yeniden dene.",
+  "Ligando o celular ao computador…": "Telefon bilgisayara bağlanıyor…",
+  "A câmera do celular está na chamada.": "Telefonun kamerası aramada.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Telefon bilgisayara bağlanamadı. İkisi de aynı Wi-Fi ağında olmalı.",
+  "O celular saiu.": "Telefonun bağlantısı koptu.",
+  "Abrindo a câmera…": "Kamera açılıyor…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Tarayıcı kameranın açılmasına izin vermedi. Bu site için kameraya izin ver ve kodu yeniden aç.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Bu kod zaten kullanılmış ya da süresi dolmuş. Bilgisayardan başka bir tane iste.",
+  "Pronto. Pode fechar esta página.": "Tamam. Bu sayfayı kapatabilirsin.",
 } satisfies Record<string, string>;

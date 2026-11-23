@@ -4699,4 +4699,26 @@ export default {
   "Zap": "ザップ",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "テニス",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discordサーバーから持ってくる",
+  "Link do modelo do servidor": "サーバーテンプレートのリンク",
+  "Ver o que vem": "持ってくる内容を見る",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discordでは、サーバーを管理している人が「サーバー設定 → サーバーテンプレート」でリンクを作ります。チャンネルとロール(名前と色)が来ます。メッセージは来ません。",
+  "Passou do limite do Syden: {n} ficam de fora.": "Sydenの上限を超えています:{n}件は入りません。",
+  "Esse link não é de um modelo de servidor do Discord.": "このリンクはDiscordのサーバーテンプレートではありません。",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "このテンプレートはDiscordにありません。サーバーを管理している人に新しいリンクを頼んでください。",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discordが応答しませんでした。少し待ってからもう一度試してください。",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "スマートフォンをカメラとして使う",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "スマートフォンのカメラをコードに向けて、表示されたアドレスを開いてください。",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "スマートフォンとパソコンを同じWi-Fiネットワークにつないでおく必要があります。",
+  "Não deu para abrir o código agora. Tente de novo.": "今はコードを表示できませんでした。もう一度試してください。",
+  "Ligando o celular ao computador…": "スマートフォンをパソコンに接続しています…",
+  "A câmera do celular está na chamada.": "スマートフォンのカメラが通話に参加しています。",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "スマートフォンをパソコンに接続できませんでした。両方を同じWi-Fiネットワークにつないでください。",
+  "O celular saiu.": "スマートフォンの接続が切れました。",
+  "Abrindo a câmera…": "カメラを起動しています…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "ブラウザがカメラの使用を許可しませんでした。このサイトにカメラを許可して、もう一度コードを開いてください。",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "このコードは使用済みか、期限切れです。パソコンで新しいコードをもらってください。",
+  "Pronto. Pode fechar esta página.": "完了しました。このページは閉じてかまいません。",
 } satisfies Record<string, string>;

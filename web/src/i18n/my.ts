@@ -4756,4 +4756,26 @@ export default {
   "Zap": "ဇက်ပ်",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "တင်းနစ်",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord ဆာဗာမှ ဖွဲ့စည်းပုံ ယူလာရန်",
+  "Link do modelo do servidor": "ဆာဗာ ပုံစံခွက်၏ လင့်ခ်",
+  "Ver o que vem": "ဘာတွေ ပါလာမလဲ ကြည့်ရန်",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord တွင် ဆာဗာကို စီမံသူက ဆာဗာ ဆက်တင်များ → ဆာဗာ ပုံစံခွက် ထဲတွင် လင့်ခ်ကို ဖန်တီးသည်။ ချန်နယ်များနှင့် အခန်းကဏ္ဍများ (အမည်နှင့် အရောင်) ပါလာမည်၊ မက်ဆေ့ချ်များ မပါ။",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden ကန့်သတ်ချက် ကျော်သွားသည်: {n} ခု ချန်ထားခဲ့မည်။",
+  "Esse link não é de um modelo de servidor do Discord.": "ဤလင့်ခ်သည် Discord ဆာဗာ ပုံစံခွက် မဟုတ်ပါ။",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "ဤပုံစံခွက် Discord တွင် မရှိပါ။ ဆာဗာကို စီမံသူထံ လင့်ခ်အသစ် တောင်းပါ။",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord က မတုံ့ပြန်ပါ။ ခဏနေမှ ထပ်စမ်းကြည့်ပါ။",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "ဖုန်းကို ကင်မရာအဖြစ် သုံးမယ်",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "ဖုန်းကင်မရာကို ကုဒ်ဆီ ချိန်ပြီး ပေါ်လာတဲ့ လိပ်စာကို ဖွင့်ပါ။",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "ဖုန်းနဲ့ ကွန်ပျူတာဟာ Wi-Fi ကွန်ရက် တစ်ခုတည်းမှာ ရှိရပါမယ်။",
+  "Não deu para abrir o código agora. Tente de novo.": "ကုဒ်ကို အခု ပြလို့ မရပါ။ ထပ်စမ်းကြည့်ပါ။",
+  "Ligando o celular ao computador…": "ဖုန်းကို ကွန်ပျူတာနဲ့ ချိတ်ဆက်နေတယ်…",
+  "A câmera do celular está na chamada.": "ဖုန်းကင်မရာ ခေါ်ဆိုမှုထဲ ရောက်နေပါပြီ။",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "ဖုန်းကို ကွန်ပျူတာနဲ့ ချိတ်ဆက်လို့ မရပါ။ နှစ်ခုလုံး Wi-Fi ကွန်ရက် တစ်ခုတည်းမှာ ရှိရပါမယ်။",
+  "O celular saiu.": "ဖုန်း ချိတ်ဆက်မှု ပြတ်သွားပါပြီ။",
+  "Abrindo a câmera…": "ကင်မရာ ဖွင့်နေတယ်…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "ဘရောက်ဇာက ကင်မရာ ဖွင့်ခွင့် မပေးပါ။ ဒီဆိုက်အတွက် ကင်မရာကို ခွင့်ပြုပြီး ကုဒ်ကို ပြန်ဖွင့်ပါ။",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "ဒီကုဒ်ကို သုံးပြီးသား ဒါမှမဟုတ် သက်တမ်းကုန်သွားပြီ။ ကွန်ပျူတာမှာ နောက်တစ်ခု တောင်းပါ။",
+  "Pronto. Pode fechar esta página.": "ပြီးပါပြီ။ ဒီစာမျက်နှာကို ပိတ်လို့ရပါပြီ။",
 } satisfies Record<string, string>;

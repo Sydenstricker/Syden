@@ -4801,4 +4801,26 @@ export default {
   "Zap": "Зап",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Теннис",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord серверээс авчрах",
+  "Link do modelo do servidor": "Серверийн загварын холбоос",
+  "Ver o que vem": "Юу ирэхийг харах",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord дээр серверийг удирддаг хүн Серверийн тохиргоо → Серверийн загвар хэсэгт холбоосыг үүсгэдэг. Сувгууд болон үүргүүд (нэр ба өнгө) ирнэ, мессежүүд ирэхгүй.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden-ийн хязгаараас хэтэрсэн: {n} орхигдоно.",
+  "Esse link não é de um modelo de servidor do Discord.": "Энэ холбоос Discord серверийн загвар биш.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Ийм загвар Discord дээр байхгүй. Серверийг удирддаг хүнээс шинэ холбоос гуй.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord хариу өгсөнгүй. Түр хүлээгээд дахин оролд.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Утсаа камер болгон ашиглах",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Утасныхаа камерыг код руу чиглүүлээд гарч ирэх хаягийг нээ.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Утас, компьютер хоёр нэг Wi-Fi сүлжээнд байх ёстой.",
+  "Não deu para abrir o código agora. Tente de novo.": "Кодыг одоо харуулж чадсангүй. Дахин оролд.",
+  "Ligando o celular ao computador…": "Утсыг компьютерт холбож байна…",
+  "A câmera do celular está na chamada.": "Утасны камер дуудлагад орсон байна.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Утсыг компьютерт холбож чадсангүй. Хоёулаа нэг Wi-Fi сүлжээнд байх ёстой.",
+  "O celular saiu.": "Утасны холболт тасарлаа.",
+  "Abrindo a câmera…": "Камерыг нээж байна…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Хөтөч камерыг нээхийг зөвшөөрсөнгүй. Энэ сайтад камерыг зөвшөөрөөд кодыг дахин нээ.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Энэ код аль хэдийн ашиглагдсан эсвэл хугацаа нь дууссан. Компьютер дээрээс өөр код ав.",
+  "Pronto. Pode fechar esta página.": "Боллоо. Энэ хуудсыг хааж болно.",
 } satisfies Record<string, string>;

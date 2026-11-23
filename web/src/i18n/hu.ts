@@ -4789,4 +4789,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenisz",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Átvétel egy Discord-szerverről",
+  "Link do modelo do servidor": "A szerversablon linkje",
+  "Ver o que vem": "Nézd meg, mi jön át",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "A Discordon a szerver kezelője hozza létre a linket a Szerverbeállítások → Szerversablon menüben. Átjönnek a csatornák és a rangok (név és szín), az üzenetek nélkül.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Túl a Syden korlátján: {n} kimarad.",
+  "Esse link não é de um modelo de servidor do Discord.": "Ez a link nem Discord-szerversablon.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Ez a sablon nem létezik a Discordon. Kérj új linket a szerver kezelőjétől.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "A Discord nem válaszolt. Próbáld újra egy kicsit később.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Telefon használata kameraként",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Irányítsd a telefon kameráját a kódra, és nyisd meg a megjelenő címet.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "A telefonnak és a számítógépnek ugyanazon a Wi-Fi-hálózaton kell lennie.",
+  "Não deu para abrir o código agora. Tente de novo.": "A kódot most nem sikerült megjeleníteni. Próbáld újra.",
+  "Ligando o celular ao computador…": "A telefon csatlakoztatása a számítógéphez…",
+  "A câmera do celular está na chamada.": "A telefon kamerája a hívásban van.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Nem sikerült a telefont a számítógéphez csatlakoztatni. Mindkettőnek ugyanazon a Wi-Fi-hálózaton kell lennie.",
+  "O celular saiu.": "A telefon kapcsolata megszakadt.",
+  "Abrindo a câmera…": "A kamera megnyitása…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "A böngésző nem engedte megnyitni a kamerát. Engedélyezd a kamerát ennél az oldalnál, és nyisd meg újra a kódot.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Ezt a kódot már felhasználták, vagy lejárt. Kérj másikat a számítógépen.",
+  "Pronto. Pode fechar esta página.": "Kész. Ezt az oldalt bezárhatod.",
 } satisfies Record<string, string>;

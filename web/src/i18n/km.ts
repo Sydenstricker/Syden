@@ -4786,4 +4786,26 @@ export default {
   "Zap": "ហ្សាប",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "កីឡាវាយកូនបាល់",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "នាំរចនាសម្ព័ន្ធពីម៉ាស៊ីនមេ Discord",
+  "Link do modelo do servidor": "តំណគំរូម៉ាស៊ីនមេ",
+  "Ver o que vem": "មើលថាអ្វីខ្លះនឹងមក",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "នៅលើ Discord អ្នកគ្រប់គ្រងម៉ាស៊ីនមេបង្កើតតំណនៅក្នុង ការកំណត់ម៉ាស៊ីនមេ → គំរូម៉ាស៊ីនមេ។ ឆានែល និងតួនាទី (ឈ្មោះ និងពណ៌) នឹងមក ដោយគ្មានសារ។",
+  "Passou do limite do Syden: {n} ficam de fora.": "លើសដែនកំណត់របស់ Syden៖ {n} នៅខាងក្រៅ។",
+  "Esse link não é de um modelo de servidor do Discord.": "តំណនេះមិនមែនជាគំរូម៉ាស៊ីនមេ Discord ទេ។",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "គំរូនេះមិនមាននៅលើ Discord ទេ។ សុំតំណថ្មីពីអ្នកគ្រប់គ្រងម៉ាស៊ីនមេ។",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord មិនបានឆ្លើយតបទេ។ សាកម្ដងទៀតបន្តិចក្រោយ។",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "ប្រើទូរស័ព្ទជាកាមេរ៉ា",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "តម្រង់កាមេរ៉ាទូរស័ព្ទទៅកូដ ហើយបើកអាសយដ្ឋានដែលលេចឡើង។",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "ទូរស័ព្ទ និងកុំព្យូទ័រត្រូវនៅលើបណ្ដាញ Wi-Fi តែមួយ។",
+  "Não deu para abrir o código agora. Tente de novo.": "មិនអាចបង្ហាញកូដបានទេឥឡូវនេះ។ សាកម្ដងទៀត។",
+  "Ligando o celular ao computador…": "កំពុងភ្ជាប់ទូរស័ព្ទទៅកុំព្យូទ័រ…",
+  "A câmera do celular está na chamada.": "កាមេរ៉ាទូរស័ព្ទកំពុងនៅក្នុងការហៅ។",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "មិនអាចភ្ជាប់ទូរស័ព្ទទៅកុំព្យូទ័របានទេ។ ទាំងពីរត្រូវនៅលើបណ្ដាញ Wi-Fi តែមួយ។",
+  "O celular saiu.": "ទូរស័ព្ទបានផ្ដាច់។",
+  "Abrindo a câmera…": "កំពុងបើកកាមេរ៉ា…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "កម្មវិធីរុករកមិនបានអនុញ្ញាតឱ្យបើកកាមេរ៉ាទេ។ អនុញ្ញាតកាមេរ៉ាសម្រាប់គេហទំព័រនេះ ហើយបើកកូដម្ដងទៀត។",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "កូដនេះត្រូវបានប្រើរួចហើយ ឬផុតកំណត់។ សុំកូដផ្សេងនៅលើកុំព្យូទ័រ។",
+  "Pronto. Pode fechar esta página.": "រួចរាល់។ អ្នកអាចបិទទំព័រនេះបាន។",
 } satisfies Record<string, string>;

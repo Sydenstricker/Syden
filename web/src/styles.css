@@ -21176,3 +21176,77 @@ body.arrastando-barra {
     padding: 0;
   }
 }
+
+/* O CELULAR COMO CÂMERA (cameraDoCelular.ts): o QR code no computador e a página do celular. */
+.dialog.celular-como-camera {
+  max-width: 380px;
+  text-align: center;
+}
+.celular-qr {
+  display: block;
+  width: min(260px, 70vw);
+  height: auto;
+  margin: 8px auto 12px;
+  border-radius: 8px;
+}
+.celular-nota {
+  opacity: 0.75;
+  font-size: 0.9em;
+}
+.celular-estado {
+  margin: 16px 0;
+}
+.camera-do-celular {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  background: #000;
+  color: #fff;
+  text-align: center;
+}
+.camera-do-celular video {
+  width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #111;
+}
+.camera-do-celular video.espelhado {
+  transform: scaleX(-1);
+}
+.camera-do-celular-estado {
+  max-width: 32em;
+  margin: 0;
+}
+.camera-do-celular-estado.ao-vivo::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: #e5484d;
+  vertical-align: middle;
+}
+.camera-do-celular-botoes {
+  display: flex;
+  gap: 16px;
+}
+.camera-do-celular-botoes button {
+  min-width: 56px;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 24px;
+  background: #2a2a2e;
+  color: #fff;
+  font: inherit;
+}
+.camera-do-celular-botoes button.parar {
+  background: #e5484d;
+}

@@ -4742,4 +4742,26 @@ export default {
   "Zap": "زاب",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "التنس",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "جلب البنية من خادم Discord",
+  "Link do modelo do servidor": "رابط قالب الخادم",
+  "Ver o que vem": "عرض ما سيُنقل",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "في Discord، يُنشئ مَن يدير الخادم الرابط من إعدادات الخادم ← قالب الخادم. تُنقل القنوات والأدوار (الاسم واللون)، من دون الرسائل.",
+  "Passou do limite do Syden: {n} ficam de fora.": "تجاوز حدّ Syden: سيُستبعد {n}.",
+  "Esse link não é de um modelo de servidor do Discord.": "هذا الرابط ليس لقالب خادم على Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "هذا القالب غير موجود على Discord. يُرجى طلب رابط جديد ممّن يدير الخادم.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "لم يستجب Discord. يُرجى المحاولة مرة أخرى بعد قليل.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "استخدام الهاتف ككاميرا",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "يُرجى توجيه كاميرا الهاتف نحو الرمز وفتح العنوان الذي يظهر.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "يجب أن يكون الهاتف والحاسوب على شبكة Wi-Fi نفسها.",
+  "Não deu para abrir o código agora. Tente de novo.": "تعذّر عرض الرمز الآن. يُرجى المحاولة مرة أخرى.",
+  "Ligando o celular ao computador…": "جارٍ ربط الهاتف بالحاسوب…",
+  "A câmera do celular está na chamada.": "كاميرا الهاتف في المكالمة.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "تعذّر ربط الهاتف بالحاسوب. يجب أن يكون الجهازان على شبكة Wi-Fi نفسها.",
+  "O celular saiu.": "انقطع اتصال الهاتف.",
+  "Abrindo a câmera…": "جارٍ فتح الكاميرا…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "لم يسمح المتصفح بفتح الكاميرا. يُرجى السماح بالكاميرا لهذا الموقع وفتح الرمز من جديد.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "هذا الرمز استُخدم من قبل أو انتهت صلاحيته. يُرجى طلب رمز آخر من الحاسوب.",
+  "Pronto. Pode fechar esta página.": "تمّ. يمكن إغلاق هذه الصفحة الآن.",
 } satisfies Record<string, string>;

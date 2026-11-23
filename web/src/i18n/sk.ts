@@ -4787,4 +4787,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Prevziať zo servera na Discorde",
+  "Link do modelo do servidor": "Odkaz na šablónu servera",
+  "Ver o que vem": "Pozrieť, čo sa prevezme",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Na Discorde vytvorí odkaz ten, kto server spravuje, v Nastaveniach servera → Šablóna servera. Prevezmú sa kanály a roly (názov a farba), bez správ.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Nad limitom Sydenu: {n} zostáva vonku.",
+  "Esse link não é de um modelo de servidor do Discord.": "Tento odkaz nie je šablóna servera na Discorde.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Táto šablóna na Discorde neexistuje. Požiadaj toho, kto server spravuje, o nový odkaz.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord neodpovedal. Skús to znova o chvíľu.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Použiť telefón ako kameru",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Nasmeruj kameru telefónu na kód a otvor adresu, ktorá sa zobrazí.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Telefón a počítač musia byť v rovnakej sieti Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Kód sa teraz nepodarilo zobraziť. Skús to znova.",
+  "Ligando o celular ao computador…": "Pripájanie telefónu k počítaču…",
+  "A câmera do celular está na chamada.": "Kamera telefónu je v hovore.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Telefón sa nepodarilo pripojiť k počítaču. Oba musia byť v rovnakej sieti Wi-Fi.",
+  "O celular saiu.": "Telefón sa odpojil.",
+  "Abrindo a câmera…": "Otváranie kamery…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Prehliadač nepovolil otvoriť kameru. Povoľ kameru pre túto stránku a otvor kód znova.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Tento kód už bol použitý alebo vypršal. Požiadaj na počítači o iný.",
+  "Pronto. Pode fechar esta página.": "Hotovo. Túto stránku môžeš zavrieť.",
 } satisfies Record<string, string>;

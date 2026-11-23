@@ -4706,4 +4706,26 @@ export default {
   "Zap": "자프",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "테니스",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord 서버에서 가져오기",
+  "Link do modelo do servidor": "서버 템플릿 링크",
+  "Ver o que vem": "가져올 내용 보기",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord에서 서버를 관리하는 사람이 서버 설정 → 서버 템플릿에서 링크를 만들어요. 채널과 역할(이름과 색)이 오고, 메시지는 오지 않아요.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden 한도를 넘었어요: {n}개는 빠져요.",
+  "Esse link não é de um modelo de servidor do Discord.": "이 링크는 Discord 서버 템플릿이 아니에요.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "이 템플릿은 Discord에 없어요. 서버를 관리하는 사람에게 새 링크를 부탁하세요.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord가 응답하지 않았어요. 잠시 후 다시 시도해 보세요.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "휴대폰을 카메라로 쓰기",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "휴대폰 카메라를 코드에 비추고 나타나는 주소를 열어 주세요.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "휴대폰과 컴퓨터가 같은 Wi-Fi 네트워크에 있어야 해요.",
+  "Não deu para abrir o código agora. Tente de novo.": "지금은 코드를 보여 줄 수 없었어요. 다시 시도해 보세요.",
+  "Ligando o celular ao computador…": "휴대폰을 컴퓨터에 연결하는 중…",
+  "A câmera do celular está na chamada.": "휴대폰 카메라가 통화에 들어와 있어요.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "휴대폰을 컴퓨터에 연결하지 못했어요. 둘 다 같은 Wi-Fi 네트워크에 있어야 해요.",
+  "O celular saiu.": "휴대폰 연결이 끊겼어요.",
+  "Abrindo a câmera…": "카메라를 여는 중…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "브라우저가 카메라를 열지 못하게 했어요. 이 사이트에 카메라를 허용하고 코드를 다시 열어 주세요.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "이미 사용했거나 만료된 코드예요. 컴퓨터에서 새 코드를 받아 주세요.",
+  "Pronto. Pode fechar esta página.": "완료했어요. 이 페이지를 닫아도 돼요.",
 } satisfies Record<string, string>;

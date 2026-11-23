@@ -4782,4 +4782,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Przenieś z serwera Discord",
+  "Link do modelo do servidor": "Link do szablonu serwera",
+  "Ver o que vem": "Zobacz, co zostanie przeniesione",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Na Discordzie osoba zarządzająca serwerem tworzy link w Ustawieniach serwera → Szablon serwera. Przenoszone są kanały i role (nazwa i kolor), bez wiadomości.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Przekroczono limit Sydena: {n} zostaje pominiętych.",
+  "Esse link não é de um modelo de servidor do Discord.": "Ten link nie jest szablonem serwera Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Ten szablon nie istnieje na Discordzie. Poproś osobę zarządzającą serwerem o nowy link.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord nie odpowiedział. Spróbuj ponownie za chwilę.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Użyj telefonu jako kamery",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Skieruj kamerę telefonu na kod i otwórz adres, który się pojawi.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Telefon i komputer muszą być w tej samej sieci Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Nie udało się teraz wyświetlić kodu. Spróbuj ponownie.",
+  "Ligando o celular ao computador…": "Łączenie telefonu z komputerem…",
+  "A câmera do celular está na chamada.": "Kamera telefonu jest w rozmowie.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Nie udało się połączyć telefonu z komputerem. Oba muszą być w tej samej sieci Wi-Fi.",
+  "O celular saiu.": "Telefon się rozłączył.",
+  "Abrindo a câmera…": "Otwieranie kamery…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Przeglądarka nie pozwoliła otworzyć kamery. Zezwól tej stronie na kamerę i otwórz kod ponownie.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Ten kod został już użyty albo wygasł. Poproś o nowy na komputerze.",
+  "Pronto. Pode fechar esta página.": "Gotowe. Możesz zamknąć tę stronę.",
 } satisfies Record<string, string>;

@@ -4781,4 +4781,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Hent fra en Discord-server",
+  "Link do modelo do servidor": "Link til serverskabelonen",
+  "Ver o que vem": "Se, hvad der kommer med",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "På Discord opretter den, der styrer serveren, linket under Serverindstillinger → Serverskabelon. Kanalerne og rollerne (navn og farve) kommer med, uden beskederne.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Over Sydens grænse: {n} bliver udeladt.",
+  "Esse link não é de um modelo de servidor do Discord.": "Dette link er ikke en Discord-serverskabelon.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Denne skabelon findes ikke på Discord. Bed den, der styrer serveren, om et nyt link.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord svarede ikke. Prøv igen om lidt.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Brug mobilen som kamera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Ret mobilens kamera mod koden, og åbn den adresse, der vises.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Mobilen og computeren skal være på det samme Wi-Fi-netværk.",
+  "Não deu para abrir o código agora. Tente de novo.": "Koden kunne ikke vises lige nu. Prøv igen.",
+  "Ligando o celular ao computador…": "Forbinder mobilen med computeren…",
+  "A câmera do celular está na chamada.": "Mobilens kamera er med i opkaldet.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Mobilen kunne ikke forbindes med computeren. De skal begge være på det samme Wi-Fi-netværk.",
+  "O celular saiu.": "Mobilen afbrød forbindelsen.",
+  "Abrindo a câmera…": "Åbner kameraet…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Browseren tillod ikke at åbne kameraet. Tillad kameraet for dette websted, og åbn koden igen.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Denne kode er allerede brugt eller udløbet. Bed om en ny på computeren.",
+  "Pronto. Pode fechar esta página.": "Færdig. Du kan lukke denne side.",
 } satisfies Record<string, string>;

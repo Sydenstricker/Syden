@@ -4711,4 +4711,26 @@ export default {
   "Zap": "زاپ",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "تنیس",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "آوردن ساختار از سرور Discord",
+  "Link do modelo do servidor": "پیوند قالب سرور",
+  "Ver o que vem": "دیدن آنچه منتقل می‌شود",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "در Discord، کسی که سرور را اداره می‌کند پیوند را در تنظیمات سرور ← قالب سرور می‌سازد. کانال‌ها و نقش‌ها (نام و رنگ) منتقل می‌شوند، بدون پیام‌ها.",
+  "Passou do limite do Syden: {n} ficam de fora.": "بیش از حد Syden: {n} کنار می‌مانند.",
+  "Esse link não é de um modelo de servidor do Discord.": "این پیوند قالب سرور Discord نیست.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "این قالب در Discord وجود ندارد. لطفاً از کسی که سرور را اداره می‌کند پیوند تازه‌ای بخواهید.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord پاسخ نداد. لطفاً کمی بعد دوباره امتحان کنید.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "استفاده از گوشی به‌عنوان دوربین",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "دوربین گوشی را به سمت کد بگیرید و نشانی‌ای را که ظاهر می‌شود باز کنید.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "گوشی و رایانه باید به یک شبکهٔ Wi-Fi وصل باشند.",
+  "Não deu para abrir o código agora. Tente de novo.": "نمایش کد اکنون ممکن نشد. دوباره امتحان کنید.",
+  "Ligando o celular ao computador…": "در حال وصل کردن گوشی به رایانه…",
+  "A câmera do celular está na chamada.": "دوربین گوشی در تماس است.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "وصل کردن گوشی به رایانه ممکن نشد. هر دو باید به یک شبکهٔ Wi-Fi وصل باشند.",
+  "O celular saiu.": "اتصال گوشی قطع شد.",
+  "Abrindo a câmera…": "در حال باز کردن دوربین…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "مرورگر اجازهٔ باز کردن دوربین را نداد. به این سایت اجازهٔ دسترسی به دوربین بدهید و کد را دوباره باز کنید.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "این کد قبلاً استفاده شده یا منقضی شده است. از رایانه کد دیگری بخواهید.",
+  "Pronto. Pode fechar esta página.": "تمام شد. می‌توانید این صفحه را ببندید.",
 } satisfies Record<string, string>;

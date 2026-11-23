@@ -4705,4 +4705,26 @@ export default {
   "Zap": "扎普",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "网球",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "从 Discord 服务器导入",
+  "Link do modelo do servidor": "服务器模板链接",
+  "Ver o que vem": "看看会导入什么",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "在 Discord 上,管理服务器的人在「服务器设置 → 服务器模板」里生成链接。会导入频道和身份组(名称和颜色),不包括消息。",
+  "Passou do limite do Syden: {n} ficam de fora.": "超出 Syden 的上限:{n} 个不会导入。",
+  "Esse link não é de um modelo de servidor do Discord.": "这个链接不是 Discord 服务器模板。",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Discord 上没有这个模板。请向管理服务器的人要一个新链接。",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord 没有响应。请稍后再试。",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "把手机当摄像头用",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "用手机摄像头对准二维码，然后打开出现的网址。",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "手机和电脑需要连接同一个 Wi-Fi 网络。",
+  "Não deu para abrir o código agora. Tente de novo.": "暂时无法显示二维码。请再试一次。",
+  "Ligando o celular ao computador…": "正在把手机连接到电脑…",
+  "A câmera do celular está na chamada.": "手机摄像头已加入通话。",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "无法把手机连接到电脑。两者需要连接同一个 Wi-Fi 网络。",
+  "O celular saiu.": "手机已断开连接。",
+  "Abrindo a câmera…": "正在打开摄像头…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "浏览器不允许打开摄像头。请允许此网站使用摄像头，然后重新打开二维码。",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "此二维码已被使用或已过期。请在电脑上重新获取。",
+  "Pronto. Pode fechar esta página.": "完成。可以关闭此页面了。",
 } satisfies Record<string, string>;

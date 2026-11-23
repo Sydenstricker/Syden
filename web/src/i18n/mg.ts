@@ -4787,4 +4787,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenisy",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Hitondra avy amin'ny mpizara Discord",
+  "Link do modelo do servidor": "Rohy modelin'ny mpizara",
+  "Ver o que vem": "Jereo izay ho entina",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Ao amin'ny Discord, izay mitantana ny mpizara no mamorona ny rohy ao amin'ny Fikirakiran'ny mpizara → Modelin'ny mpizara. Tonga ny fantsona sy ny andraikitra (anarana sy loko), tsy misy ny hafatra.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Mihoatra ny fetran'i Syden: {n} no tavela any ivelany.",
+  "Esse link não é de um modelo de servidor do Discord.": "Tsy modelin'ny mpizara Discord ity rohy ity.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Tsy misy ao amin'ny Discord ity modely ity. Mangataha rohy vaovao amin'izay mitantana ny mpizara.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Tsy namaly ny Discord. Andramo indray rehefa afaka kelikely.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Ampiasao ho fakan-tsary ny finday",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Atodiho mankany amin'ny kaody ny fakan-tsarin'ny finday, ary sokafy ny adiresy miseho.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Tokony ho ao amin'ny tambajotra Wi-Fi iray ihany ny finday sy ny ordinatera.",
+  "Não deu para abrir o código agora. Tente de novo.": "Tsy afaka naseho ny kaody izao. Andramo indray.",
+  "Ligando o celular ao computador…": "Ampifandraisina amin'ny ordinatera ny finday…",
+  "A câmera do celular está na chamada.": "Ao anatin'ny antso ny fakan-tsarin'ny finday.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Tsy nety nampifandraisina tamin'ny ordinatera ny finday. Tokony ho ao amin'ny tambajotra Wi-Fi iray ihany izy roa.",
+  "O celular saiu.": "Tapaka ny finday.",
+  "Abrindo a câmera…": "Sokafana ny fakan-tsary…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Tsy navelan'ny mpitety tranonkala hisokatra ny fakan-tsary. Omeo alalana hampiasa fakan-tsary ity tranonkala ity, ary sokafy indray ny kaody.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Efa nampiasaina na lany daty ity kaody ity. Mangataha hafa amin'ny ordinatera.",
+  "Pronto. Pode fechar esta página.": "Vita. Afaka manidy ity pejy ity ianao.",
 } satisfies Record<string, string>;

@@ -4787,4 +4787,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Hent fra en Discord-server",
+  "Link do modelo do servidor": "Lenke til servermalen",
+  "Ver o que vem": "Se hva som blir med",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "På Discord lager den som styrer serveren lenken under Serverinnstillinger → Servermal. Kanalene og rollene (navn og farge) blir med, uten meldingene.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Over grensen til Syden: {n} blir utelatt.",
+  "Esse link não é de um modelo de servidor do Discord.": "Denne lenken er ikke en Discord-servermal.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Denne malen finnes ikke på Discord. Be den som styrer serveren om en ny lenke.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord svarte ikke. Prøv igjen om litt.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Bruk mobilen som kamera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Rett mobilkameraet mot koden og åpne adressen som vises.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Mobilen og datamaskinen må være på samme Wi-Fi-nett.",
+  "Não deu para abrir o código agora. Tente de novo.": "Kunne ikke vise koden nå. Prøv igjen.",
+  "Ligando o celular ao computador…": "Kobler mobilen til datamaskinen…",
+  "A câmera do celular está na chamada.": "Mobilkameraet er med i samtalen.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Kunne ikke koble mobilen til datamaskinen. Begge må være på samme Wi-Fi-nett.",
+  "O celular saiu.": "Mobilen koblet fra.",
+  "Abrindo a câmera…": "Åpner kameraet…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Nettleseren lot ikke kameraet åpnes. Tillat kameraet for dette nettstedet og åpne koden på nytt.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Denne koden er allerede brukt eller utløpt. Be om en ny på datamaskinen.",
+  "Pronto. Pode fechar esta página.": "Ferdig. Du kan lukke denne siden.",
 } satisfies Record<string, string>;

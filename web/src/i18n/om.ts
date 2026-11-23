@@ -4757,4 +4757,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Teenisii",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Server Discord irraa caasaa fidi",
+  "Link do modelo do servidor": "Liinkii fakkeenya server",
+  "Ver o que vem": "Maal akka dhufu ilaali",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord irratti, namni server bulchu liinkii Qindaa'ina server → Fakkeenya server keessatti uuma. Chaanaloonni fi gaheewwan (maqaa fi halluu) ni dhufu, ergaawwan malee.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Daangaa Syden darbeera: {n} alatti hafu.",
+  "Esse link não é de um modelo de servidor do Discord.": "Liinkiin kun fakkeenya server Discord miti.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Fakkeenyi kun Discord irra hin jiru. Nama server bulchu liinkii haaraa gaafadhu.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord hin deebisne. Yeroo xiqqoo booda irra deebi'ii yaali.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Bilbila harkaa akka kaameraatti fayyadami",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Kaameraa bilbila harkaa koodii irratti qajeelchiitii teessoo mul'atu bani.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Bilbilli harkaa fi kompiitarri neetworkii Wi-Fi tokko irra jiraachuu qabu.",
+  "Não deu para abrir o código agora. Tente de novo.": "Amma koodicha agarsiisuun hin danda'amne. Irra deebi'ii yaali.",
+  "Ligando o celular ao computador…": "Bilbila harkaa kompiitaratti walqabsiisaa jira…",
+  "A câmera do celular está na chamada.": "Kaameraan bilbila harkaa bilbilicha keessa jira.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Bilbila harkaa kompiitaratti walqabsiisuun hin danda'amne. Lamaanuu neetworkii Wi-Fi tokko irra jiraachuu qabu.",
+  "O celular saiu.": "Bilbilli harkaa addaan citeera.",
+  "Abrindo a câmera…": "Kaameraa banaa jira…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Barbaaduun kaameraa banuu hin hayyamne. Marsariitii kanaaf kaameraa hayyamiitii koodicha irra deebi'ii bani.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Koodiin kun duraan itti fayyadamameera ykn yeroon isaa darbeera. Kompiitara irratti kan biraa gaafadhu.",
+  "Pronto. Pode fechar esta página.": "Xumurameera. Fuula kana cufuu dandeessa.",
 } satisfies Record<string, string>;

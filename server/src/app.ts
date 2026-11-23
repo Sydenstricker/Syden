@@ -41,6 +41,7 @@ import { registerAgendadasRoutes } from './agendadas-routes.js';
 import { registerAniversariosRoutes } from './aniversarios-routes.js';
 import { registerIdiomasRoutes } from './idiomas-routes.js';
 import { registerMedirEnvioRoutes } from './medir-envio-routes.js';
+import { registerModeloDoDiscordRoutes } from './modelo-do-discord.js';
 import { registerSorteiosRoutes } from './sorteios-routes.js';
 import { registerDestaquesRoutes } from './destaques-routes.js';
 import { registerSalasTemporariasRoutes } from './salas-temporarias.js';
@@ -108,6 +109,7 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
   registerAniversariosRoutes(app);
   registerIdiomasRoutes(app);
   registerMedirEnvioRoutes(app);
+  registerModeloDoDiscordRoutes(app);
   registerSorteiosRoutes(app, io);
   registerDestaquesRoutes(app);
   registerSalasTemporariasRoutes(app, io);

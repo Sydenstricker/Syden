@@ -4788,4 +4788,26 @@ export default {
   "Zap": "ແຊັບ",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "ເທນນິດ",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "ນຳໂຄງສ້າງມາຈາກເຊີບເວີ Discord",
+  "Link do modelo do servidor": "ລິ້ງແມ່ແບບເຊີບເວີ",
+  "Ver o que vem": "ເບິ່ງວ່າຈະມີຫຍັງມາ",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "ໃນ Discord ຜູ້ດູແລເຊີບເວີສ້າງລິ້ງໄດ້ທີ່ ການຕັ້ງຄ່າເຊີບເວີ → ແມ່ແບບເຊີບເວີ. ຊ່ອງ ແລະ ບົດບາດ (ຊື່ ແລະ ສີ) ຈະມານຳ ແຕ່ບໍ່ມີຂໍ້ຄວາມ.",
+  "Passou do limite do Syden: {n} ficam de fora.": "ເກີນຂີດຈຳກັດຂອງ Syden: {n} ຈະບໍ່ຖືກນຳມາ.",
+  "Esse link não é de um modelo de servidor do Discord.": "ລິ້ງນີ້ບໍ່ແມ່ນແມ່ແບບເຊີບເວີຂອງ Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "ບໍ່ມີແມ່ແບບນີ້ໃນ Discord. ຂໍລິ້ງໃໝ່ຈາກຜູ້ດູແລເຊີບເວີ.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord ບໍ່ຕອບສະໜອງ. ລອງໃໝ່ອີກຈັກໜ່ອຍ.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "ໃຊ້ໂທລະສັບເປັນກ້ອງ",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "ຫັນກ້ອງໂທລະສັບໄປຫາລະຫັດ ແລະ ເປີດທີ່ຢູ່ທີ່ປາກົດຂຶ້ນ.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "ໂທລະສັບ ແລະ ຄອມພິວເຕີຕ້ອງຢູ່ໃນເຄືອຂ່າຍ Wi-Fi ດຽວກັນ.",
+  "Não deu para abrir o código agora. Tente de novo.": "ບໍ່ສາມາດສະແດງລະຫັດໄດ້ໃນຕອນນີ້. ລອງໃໝ່.",
+  "Ligando o celular ao computador…": "ກຳລັງເຊື່ອມຕໍ່ໂທລະສັບກັບຄອມພິວເຕີ…",
+  "A câmera do celular está na chamada.": "ກ້ອງໂທລະສັບຢູ່ໃນການໂທແລ້ວ.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "ບໍ່ສາມາດເຊື່ອມຕໍ່ໂທລະສັບກັບຄອມພິວເຕີໄດ້. ທັງສອງຕ້ອງຢູ່ໃນເຄືອຂ່າຍ Wi-Fi ດຽວກັນ.",
+  "O celular saiu.": "ໂທລະສັບຕັດການເຊື່ອມຕໍ່ແລ້ວ.",
+  "Abrindo a câmera…": "ກຳລັງເປີດກ້ອງ…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "ບຣາວເຊີບໍ່ອະນຸຍາດໃຫ້ເປີດກ້ອງ. ອະນຸຍາດກ້ອງສຳລັບເວັບໄຊນີ້ ແລ້ວເປີດລະຫັດອີກຄັ້ງ.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "ລະຫັດນີ້ຖືກໃຊ້ແລ້ວ ຫຼື ໝົດອາຍຸ. ຂໍລະຫັດອື່ນຢູ່ຄອມພິວເຕີ.",
+  "Pronto. Pode fechar esta página.": "ສຳເລັດແລ້ວ. ເຈົ້າປິດໜ້ານີ້ໄດ້.",
 } satisfies Record<string, string>;

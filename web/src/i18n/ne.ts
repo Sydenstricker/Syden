@@ -4789,4 +4789,26 @@ export default {
   "Zap": "ज्याप",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "टेनिस",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord सर्भरबाट संरचना ल्याउनुहोस्",
+  "Link do modelo do servidor": "सर्भर टेम्प्लेटको लिङ्क",
+  "Ver o que vem": "के आउँछ हेर्नुहोस्",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord मा सर्भर चलाउने व्यक्तिले सर्भर सेटिङ → सर्भर टेम्प्लेटमा लिङ्क बनाउँछ। च्यानल र भूमिका (नाम र रङ) आउँछन्, सन्देश आउँदैनन्।",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden को सीमा नाघ्यो: {n} बाहिर रहन्छन्।",
+  "Esse link não é de um modelo de servidor do Discord.": "यो लिङ्क Discord सर्भर टेम्प्लेटको होइन।",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "यो टेम्प्लेट Discord मा छैन। सर्भर चलाउने व्यक्तिसँग नयाँ लिङ्क माग्नुहोस्।",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord ले जवाफ दिएन। केही बेरपछि फेरि प्रयास गर्नुहोस्।",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "मोबाइललाई क्यामेराको रूपमा प्रयोग गर्नुहोस्",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "मोबाइलको क्यामेरा कोडतिर फर्काउनुहोस् र देखिने ठेगाना खोल्नुहोस्।",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "मोबाइल र कम्प्युटर एउटै Wi-Fi नेटवर्कमा हुनुपर्छ।",
+  "Não deu para abrir o código agora. Tente de novo.": "अहिले कोड देखाउन सकिएन। फेरि प्रयास गर्नुहोस्।",
+  "Ligando o celular ao computador…": "मोबाइललाई कम्प्युटरसँग जोड्दै…",
+  "A câmera do celular está na chamada.": "मोबाइलको क्यामेरा कलमा छ।",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "मोबाइललाई कम्प्युटरसँग जोड्न सकिएन। दुवै एउटै Wi-Fi नेटवर्कमा हुनुपर्छ।",
+  "O celular saiu.": "मोबाइलको जडान टुट्यो।",
+  "Abrindo a câmera…": "क्यामेरा खोल्दै…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "ब्राउजरले क्यामेरा खोल्न दिएन। यो साइटका लागि क्यामेरा अनुमति दिनुहोस् र कोड फेरि खोल्नुहोस्।",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "यो कोड पहिले नै प्रयोग भइसकेको छ वा म्याद सकियो। कम्प्युटरमा अर्को माग्नुहोस्।",
+  "Pronto. Pode fechar esta página.": "सकियो। तपाईं यो पेज बन्द गर्न सक्नुहुन्छ।",
 } satisfies Record<string, string>;

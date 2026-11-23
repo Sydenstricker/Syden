@@ -4742,4 +4742,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Von einem Discord-Server übernehmen",
+  "Link do modelo do servidor": "Link zur Servervorlage",
+  "Ver o que vem": "Ansehen, was übernommen wird",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Auf Discord erstellt, wer den Server verwaltet, den Link unter Servereinstellungen → Servervorlage. Übernommen werden die Kanäle und Rollen (Name und Farbe), ohne die Nachrichten.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Über dem Limit von Syden: {n} bleiben draußen.",
+  "Esse link não é de um modelo de servidor do Discord.": "Dieser Link ist keine Discord-Servervorlage.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Diese Vorlage gibt es auf Discord nicht. Bitte die Person, die den Server verwaltet, um einen neuen Link.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord hat nicht geantwortet. Versuch es gleich noch einmal.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Handy als Kamera verwenden",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Richte die Kamera des Handys auf den Code und öffne die Adresse, die erscheint.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Handy und Computer müssen im selben WLAN sein.",
+  "Não deu para abrir o código agora. Tente de novo.": "Der Code konnte gerade nicht angezeigt werden. Versuch es noch einmal.",
+  "Ligando o celular ao computador…": "Handy wird mit dem Computer verbunden…",
+  "A câmera do celular está na chamada.": "Die Handykamera ist im Anruf.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Das Handy konnte nicht mit dem Computer verbunden werden. Beide müssen im selben WLAN sein.",
+  "O celular saiu.": "Das Handy ist nicht mehr verbunden.",
+  "Abrindo a câmera…": "Kamera wird geöffnet…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Der Browser hat die Kamera nicht freigegeben. Erlaube die Kamera für diese Seite und öffne den Code noch einmal.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Dieser Code wurde schon benutzt oder ist abgelaufen. Fordere am Computer einen neuen an.",
+  "Pronto. Pode fechar esta página.": "Fertig. Du kannst diese Seite schließen.",
 } satisfies Record<string, string>;

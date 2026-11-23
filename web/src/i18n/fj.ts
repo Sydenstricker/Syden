@@ -4717,4 +4717,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenisi",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Kauta mai na ivakarau ni sava ni Discord",
+  "Link do modelo do servidor": "Isema ni ivakarau ni sava",
+  "Ver o que vem": "Raica na ka ena lako mai",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Ena Discord, o koya e qarava na sava e buliva na isema ena iVakatulewa ni sava → iVakarau ni sava. Era lako mai na sala kei na itavi (yaca kei na roka), ia sega na itukutuku.",
+  "Passou do limite do Syden: {n} ficam de fora.": "E sivia na iyalayala i Syden: {n} era vo tu i tuba.",
+  "Esse link não é de um modelo de servidor do Discord.": "Na isema oqo e sega ni ivakarau ni sava ni Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Na ivakarau oqo e sega ena Discord. Kerea e dua na isema vou vei koya e qarava na sava.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "E sega ni sauma na Discord. Tovolea tale ni oti vakalailai.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Vakayagataka na talevoni me kamera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Vakadodonutaka na kamera ni talevoni ki na kode, qai dolava na itikotiko e basika.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Me rau tiko ena dua ga na Wi-Fi na talevoni kei na kompiuta.",
+  "Não deu para abrir o código agora. Tente de novo.": "E sega ni rawa ni vakaraitaki na kode ena gauna oqo. Tovolea tale.",
+  "Ligando o celular ao computador…": "Vakasemati tiko na talevoni ki na kompiuta…",
+  "A câmera do celular está na chamada.": "Na kamera ni talevoni e tiko ena veiqiri.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "E sega ni rawa ni vakasemati na talevoni ki na kompiuta. Me rau tiko ruarua ena dua ga na Wi-Fi.",
+  "O celular saiu.": "Sa musu na isema ni talevoni.",
+  "Abrindo a câmera…": "Dolavi tiko na kamera…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "E sega ni vakatara na browser me dolavi na kamera. Vakatara na kamera ena site oqo qai dolava tale na kode.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Sa vakayagataki oti se sa oti na gauna ni kode oqo. Kerea e dua tale ena kompiuta.",
+  "Pronto. Pode fechar esta página.": "Sa oti. O rawa ni sogota na tabana oqo.",
 } satisfies Record<string, string>;

@@ -4726,4 +4726,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Wete ihe site na sava Discord",
+  "Link do modelo do servidor": "Njikọ ndebiri sava",
+  "Ver o que vem": "Hụ ihe ga-abịa",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Na Discord, onye na-elekọta sava na-emepụta njikọ ahụ na Ntọala sava → Ndebiri sava. Ọwa na ọrụ (aha na agba) ga-abịa, na-enweghị ozi.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Ọ gafere oke Syden: {n} ga-anọ n'èzí.",
+  "Esse link não é de um modelo de servidor do Discord.": "Njikọ a abụghị ndebiri sava Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Ndebiri a adịghị na Discord. Rịọ onye na-elekọta sava ka o nye gị njikọ ọhụrụ.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord azaghị. Nwaa ọzọ n'oge na-adịghị anya.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Jiri ekwentị mee igwefoto",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Chee igwefoto ekwentị ahụ n'akụkụ koodu ahụ, mepee adreesị pụtara.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Ekwentị na kọmputa ga-anọrịrị n'otu netwọk Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Enweghị ike igosi koodu ahụ ugbu a. Nwaa ọzọ.",
+  "Ligando o celular ao computador…": "Na-ejikọ ekwentị na kọmputa…",
+  "A câmera do celular está na chamada.": "Igwefoto ekwentị nọ n'oku ahụ.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Enweghị ike ijikọ ekwentị na kọmputa. Ha abụọ ga-anọrịrị n'otu netwọk Wi-Fi.",
+  "O celular saiu.": "Ekwentị ahụ akwụsịla njikọ.",
+  "Abrindo a câmera…": "Na-emepe igwefoto…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Ihe nchọgharị ekweghị ka igwefoto meghee. Kwe ka saịtị a jiri igwefoto, ma mepee koodu ahụ ọzọ.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Ejirila koodu a mee ihe ma ọ bụ oge ya agafeela. Rịọ nke ọzọ na kọmputa.",
+  "Pronto. Pode fechar esta página.": "Emechaala. Ị nwere ike imechi peeji a.",
 } satisfies Record<string, string>;

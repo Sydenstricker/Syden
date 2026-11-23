@@ -4720,4 +4720,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Jogu ténis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Lori husi servidór Discord",
+  "Link do modelo do servidor": "Ligasaun modelu servidór nian",
+  "Ver o que vem": "Haree saida mak sei mai",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Iha Discord, ema ne'ebé jere servidór mak kria ligasaun iha Konfigurasaun servidór → Modelu servidór. Kanál no knaar sira (naran no kór) mai, la ho mensajen sira.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Liu limite Syden nian: {n} hela iha li'ur.",
+  "Esse link não é de um modelo de servidor do Discord.": "Ligasaun ne'e la'ós modelu servidór Discord nian.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Modelu ne'e la iha Discord. Husu ligasaun foun ba ema ne'ebé jere servidór.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord la hatán. Koko fali iha tempu badak.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Uza selulár hanesan kámara",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Hatudu kámara selulár nian ba kódigu no loke enderesu ne'ebé mosu.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Selulár no komputadór tenke iha rede Wi-Fi hanesan.",
+  "Não deu para abrir o código agora. Tente de novo.": "La konsege hatudu kódigu agora. Koko fali.",
+  "Ligando o celular ao computador…": "Halo ligasaun selulár ho komputadór…",
+  "A câmera do celular está na chamada.": "Kámara selulár nian iha xamada ona.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "La konsege liga selulár ho komputadór. Rua ne'e tenke iha rede Wi-Fi hanesan.",
+  "O celular saiu.": "Selulár diskonekta ona.",
+  "Abrindo a câmera…": "Loke hela kámara…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Navegadór la husik loke kámara. Permite kámara ba site ne'e no loke fali kódigu.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Kódigu ne'e uza tiha ona ka liu ona prazu. Husu seluk iha komputadór.",
+  "Pronto. Pode fechar esta página.": "Prontu. Ó bele taka pájina ne'e.",
 } satisfies Record<string, string>;

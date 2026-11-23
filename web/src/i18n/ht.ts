@@ -4797,4 +4797,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Match tenis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Pote soti nan yon sèvè Discord",
+  "Link do modelo do servidor": "Lyen modèl sèvè a",
+  "Ver o que vem": "Gade sa k ap vini",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Sou Discord, moun ki jere sèvè a kreye lyen an nan Paramèt sèvè → Modèl sèvè. Chanèl yo ak wòl yo (non ak koulè) vini, san mesaj yo.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Depase limit Syden: {n} rete deyò.",
+  "Esse link não é de um modelo de servidor do Discord.": "Lyen sa a se pa yon modèl sèvè Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Modèl sa a pa egziste sou Discord. Mande moun ki jere sèvè a yon nouvo lyen.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord pa reponn. Eseye ankò nan yon ti moman.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Sèvi ak telefòn lan kòm kamera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Vize kamera telefòn lan sou kòd la epi louvri adrès ki parèt la.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Telefòn lan ak òdinatè a dwe sou menm rezo Wi-Fi a.",
+  "Não deu para abrir o código agora. Tente de novo.": "Nou pa t ka montre kòd la kounye a. Eseye ankò.",
+  "Ligando o celular ao computador…": "N ap konekte telefòn lan ak òdinatè a…",
+  "A câmera do celular está na chamada.": "Kamera telefòn lan nan apèl la.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Nou pa t ka konekte telefòn lan ak òdinatè a. Tou de dwe sou menm rezo Wi-Fi a.",
+  "O celular saiu.": "Telefòn lan dekonekte.",
+  "Abrindo a câmera…": "N ap louvri kamera a…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Navigatè a pa t kite kamera a louvri. Pèmèt kamera a pou sit sa a epi louvri kòd la ankò.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Kòd sa a deja sèvi oswa li ekspire. Mande yon lòt sou òdinatè a.",
+  "Pronto. Pode fechar esta página.": "Fini. Ou ka fèmen paj sa a.",
 } satisfies Record<string, string>;

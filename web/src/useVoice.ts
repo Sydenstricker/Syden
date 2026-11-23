@@ -2,7 +2,7 @@ import {
   ConnectionState,
   DisconnectReason,
   type LocalParticipant,
-  type LocalVideoTrack,
+  LocalVideoTrack,
   type Participant,
   type RemoteParticipant,
   Room,
@@ -19,6 +19,7 @@ import {
 } from 'livekit-client';
 import { clipeCruLigado } from './clipeCru/gravador';
 import { ChamadaCifrada, ChavesDaChamada } from './chaveDaChamada';
+import { type EstadoDoReceptor, ReceptorDoCelular } from './cameraDoCelular';
 import { t } from './i18n';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { avisarChamada } from './VersaoNova';
@@ -1601,8 +1602,78 @@ export function useVoice(socket: Socket | null) {
     [aplicarFundo],
   );
 
+  /**
+   * O CELULAR COMO CÂMERA (ver cameraDoCelular.ts): a imagem do celular chega por uma conexão direta e é publicada como a
+   * câmera desta pessoa, cifrada como qualquer outra. Ela toma o lugar da webcam enquanto dura, e o botão da câmera a desliga.
+   */
+  const receptorRef = useRef<ReceptorDoCelular | null>(null);
+  const faixaDoCelularRef = useRef<LocalVideoTrack | null>(null);
+  const [celular, setCelular] = useState<EstadoDoReceptor | null>(null);
+  const tirarFaixaDoCelular = useCallback(async () => {
+    const faixa = faixaDoCelularRef.current;
+    faixaDoCelularRef.current = null;
+    if (!faixa) return;
+    await room.localParticipant.unpublishTrack(faixa).catch(() => {});
+    faixa.stop();
+    setMedia(readLocalMedia(room.localParticipant));
+  }, [room]);
+  const fecharCelular = useCallback(() => {
+    receptorRef.current?.fechar();
+    receptorRef.current = null;
+    setCelular(null);
+    void tirarFaixaDoCelular();
+  }, [tirarFaixaDoCelular]);
+  const abrirCelular = useCallback(() => {
+    const socket = socketRef.current;
+    if (!socket) return;
+    receptorRef.current?.fechar();
+    const receptor = new ReceptorDoCelular(
+      socket,
+      (estado) => {
+        if (receptorRef.current !== receptor) return;
+        // Parou de propósito no celular: só apaga a câmera, sem janela nenhuma na frente.
+        if (estado.fase === 'parou') return fecharCelular();
+        setCelular(estado);
+        if (estado.fase !== 'ao-vivo') void tirarFaixaDoCelular();
+      },
+      (faixaCrua) => {
+        void (async () => {
+          if (receptorRef.current !== receptor) return faixaCrua.stop();
+          await tirarFaixaDoCelular();
+          const lp = room.localParticipant;
+          // A webcam sai: são duas câmeras da mesma pessoa, e quem assiste só vê uma.
+          if (lp.isCameraEnabled) await lp.setCameraEnabled(false).catch(() => {});
+          const antiga = lp.getTrackPublication(Track.Source.Camera)?.track;
+          if (antiga) await lp.unpublishTrack(antiga).catch(() => {});
+          const faixa = new LocalVideoTrack(faixaCrua, undefined, true);
+          faixaDoCelularRef.current = faixa;
+          try {
+            await lp.publishTrack(faixa, { source: Track.Source.Camera });
+          } catch (e) {
+            console.error(e);
+            faixaDoCelularRef.current = null;
+            reportProblem('câmera', `celular como câmera: ${e instanceof Error ? e.message : String(e)}`.slice(0, 200));
+          }
+          setMedia(readLocalMedia(lp));
+        })();
+      },
+    );
+    receptorRef.current = receptor;
+    setCelular({ fase: 'conectando' });
+    void receptor.abrir();
+  }, [room, tirarFaixaDoCelular, fecharCelular]);
+  useEffect(() => {
+    // Saiu da chamada: o celular vai junto.
+    room.on(RoomEvent.Disconnected, fecharCelular);
+    return () => {
+      room.off(RoomEvent.Disconnected, fecharCelular);
+    };
+  }, [room, fecharCelular]);
+
   const toggleCamera = useCallback(async () => {
     const lp = room.localParticipant;
+    // Com o celular de câmera, o botão desliga o celular (e não liga a webcam por cima dele).
+    if (faixaDoCelularRef.current || receptorRef.current) return fecharCelular();
     try {
       await lp.setCameraEnabled(!lp.isCameraEnabled);
     } catch (e) {
@@ -1611,7 +1682,7 @@ export function useVoice(socket: Socket | null) {
       setError(message);
       reportProblem('câmera', message);
     }
-  }, [room]);
+  }, [room, fecharCelular]);
 
   /**
    * Som da transmissão pelo caminho do app de desktop: o Windows entrega o som do computador sem o do
@@ -2383,6 +2454,10 @@ export function useVoice(socket: Socket | null) {
     toggleMute,
     toggleDeafen,
     toggleCamera,
+    /** O celular como câmera: o passo de agora (null sem celular), abrir o QR code e fechar. */
+    celular,
+    abrirCelular,
+    fecharCelular,
     setFundoDaCamera,
     shareScreen,
     stopScreen,

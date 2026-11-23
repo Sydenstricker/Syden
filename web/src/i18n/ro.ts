@@ -4718,4 +4718,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Adu de pe un server Discord",
+  "Link do modelo do servidor": "Linkul șablonului de server",
+  "Ver o que vem": "Vezi ce se aduce",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Pe Discord, linkul îl generează cine administrează serverul, în Setări server → Șablon de server. Vin canalele și rolurile (nume și culoare), fără mesaje.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Peste limita Syden: {n} rămân pe dinafară.",
+  "Esse link não é de um modelo de servidor do Discord.": "Acest link nu este un șablon de server Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Acest șablon nu există pe Discord. Cere un link nou de la cine administrează serverul.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord nu a răspuns. Încearcă din nou puțin mai târziu.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Folosește telefonul drept cameră",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Îndreaptă camera telefonului spre cod și deschide adresa care apare.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Telefonul și calculatorul trebuie să fie în aceeași rețea Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Codul nu a putut fi afișat acum. Încearcă din nou.",
+  "Ligando o celular ao computador…": "Se conectează telefonul la calculator…",
+  "A câmera do celular está na chamada.": "Camera telefonului este în apel.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Telefonul nu a putut fi conectat la calculator. Amândouă trebuie să fie în aceeași rețea Wi-Fi.",
+  "O celular saiu.": "Telefonul s-a deconectat.",
+  "Abrindo a câmera…": "Se deschide camera…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Browserul nu a permis deschiderea camerei. Permite camera pentru acest site și deschide din nou codul.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Acest cod a fost deja folosit sau a expirat. Cere altul de pe calculator.",
+  "Pronto. Pode fechar esta página.": "Gata. Poți închide această pagină.",
 } satisfies Record<string, string>;

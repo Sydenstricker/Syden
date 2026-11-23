@@ -4806,4 +4806,26 @@ export default {
   "Zap": "Զապ",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Թենիս",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Բերել Discord սերվերից",
+  "Link do modelo do servidor": "Սերվերի ձևանմուշի հղումը",
+  "Ver o que vem": "Տեսնել՝ ինչ կգա",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord-ում հղումը ստեղծում է սերվերը կառավարողը՝ Սերվերի կարգավորումներ → Սերվերի ձևանմուշ բաժնում։ Գալիս են ալիքներն ու դերերը (անուն և գույն), առանց հաղորդագրությունների։",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden-ի սահմանից ավելի է՝ {n}-ը դուրս է մնում։",
+  "Esse link não é de um modelo de servidor do Discord.": "Այս հղումը Discord սերվերի ձևանմուշ չէ։",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Այս ձևանմուշը Discord-ում չկա։ Նոր հղում խնդրիր սերվերը կառավարողից։",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord-ը չպատասխանեց։ Մի քիչ հետո նորից փորձիր։",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Օգտագործել հեռախոսը որպես տեսախցիկ",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Հեռախոսի տեսախցիկն ուղղիր կոդին և բացիր հայտնված հասցեն։",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Հեռախոսը և համակարգիչը պետք է լինեն նույն Wi-Fi ցանցում։",
+  "Não deu para abrir o código agora. Tente de novo.": "Այս պահին չհաջողվեց ցույց տալ կոդը։ Նորից փորձիր։",
+  "Ligando o celular ao computador…": "Հեռախոսը միացվում է համակարգչին…",
+  "A câmera do celular está na chamada.": "Հեռախոսի տեսախցիկը զանգի մեջ է։",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Չհաջողվեց հեռախոսը միացնել համակարգչին։ Երկուսն էլ պետք է լինեն նույն Wi-Fi ցանցում։",
+  "O celular saiu.": "Հեռախոսն անջատվեց։",
+  "Abrindo a câmera…": "Տեսախցիկը բացվում է…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Դիտարկիչը թույլ չտվեց բացել տեսախցիկը։ Թույլատրիր տեսախցիկն այս կայքի համար և նորից բացիր կոդը։",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Այս կոդն արդեն օգտագործվել է կամ ժամկետն անցել է։ Համակարգչում նորը խնդրիր։",
+  "Pronto. Pode fechar esta página.": "Պատրաստ է։ Կարող ես փակել այս էջը։",
 } satisfies Record<string, string>;

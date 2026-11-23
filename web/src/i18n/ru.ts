@@ -4736,4 +4736,26 @@ export default {
   "Zap": "Зап",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Теннис",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Перенести с сервера Discord",
+  "Link do modelo do servidor": "Ссылка на шаблон сервера",
+  "Ver o que vem": "Посмотреть, что перенесётся",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "В Discord ссылку создаёт тот, кто управляет сервером: Настройки сервера → Шаблон сервера. Переносятся каналы и роли (название и цвет), без сообщений.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Больше лимита Syden: {n} не перенесутся.",
+  "Esse link não é de um modelo de servidor do Discord.": "Эта ссылка — не шаблон сервера Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Такого шаблона в Discord нет. Попроси новую ссылку у того, кто управляет сервером.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord не ответил. Попробуй ещё раз чуть позже.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Использовать телефон как камеру",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Наведи камеру телефона на код и открой адрес, который появится.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Телефон и компьютер должны быть в одной сети Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Сейчас не получилось показать код. Попробуй ещё раз.",
+  "Ligando o celular ao computador…": "Подключаем телефон к компьютеру…",
+  "A câmera do celular está na chamada.": "Камера телефона в звонке.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Не получилось подключить телефон к компьютеру. Оба должны быть в одной сети Wi-Fi.",
+  "O celular saiu.": "Телефон отключился.",
+  "Abrindo a câmera…": "Открываем камеру…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Браузер не дал открыть камеру. Разреши камеру для этого сайта и открой код ещё раз.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Этот код уже использован или истёк. Запроси другой на компьютере.",
+  "Pronto. Pode fechar esta página.": "Готово. Эту страницу можно закрыть.",
 } satisfies Record<string, string>;

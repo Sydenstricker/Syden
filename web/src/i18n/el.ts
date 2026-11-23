@@ -4724,4 +4724,26 @@ export default {
   "Zap": "Ζαπ",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Τένις",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Μεταφορά από διακομιστή Discord",
+  "Link do modelo do servidor": "Σύνδεσμος προτύπου διακομιστή",
+  "Ver o que vem": "Δες τι θα μεταφερθεί",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Στο Discord, ο σύνδεσμος δημιουργείται από όποιον διαχειρίζεται τον διακομιστή, στις Ρυθμίσεις διακομιστή → Πρότυπο διακομιστή. Μεταφέρονται τα κανάλια και οι ρόλοι (όνομα και χρώμα), χωρίς τα μηνύματα.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Πάνω από το όριο του Syden: {n} μένουν εκτός.",
+  "Esse link não é de um modelo de servidor do Discord.": "Αυτός ο σύνδεσμος δεν είναι πρότυπο διακομιστή Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Αυτό το πρότυπο δεν υπάρχει στο Discord. Ζήτα νέο σύνδεσμο από όποιον διαχειρίζεται τον διακομιστή.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Το Discord δεν απάντησε. Δοκίμασε ξανά σε λίγο.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Χρήση του κινητού ως κάμερα",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Στρέψε την κάμερα του κινητού στον κωδικό και άνοιξε τη διεύθυνση που θα εμφανιστεί.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Το κινητό και ο υπολογιστής πρέπει να είναι στο ίδιο δίκτυο Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Δεν ήταν δυνατή η εμφάνιση του κωδικού τώρα. Δοκίμασε ξανά.",
+  "Ligando o celular ao computador…": "Σύνδεση του κινητού με τον υπολογιστή…",
+  "A câmera do celular está na chamada.": "Η κάμερα του κινητού είναι στην κλήση.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Δεν ήταν δυνατή η σύνδεση του κινητού με τον υπολογιστή. Πρέπει και τα δύο να είναι στο ίδιο δίκτυο Wi-Fi.",
+  "O celular saiu.": "Το κινητό αποσυνδέθηκε.",
+  "Abrindo a câmera…": "Άνοιγμα της κάμερας…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Το πρόγραμμα περιήγησης δεν επέτρεψε το άνοιγμα της κάμερας. Επίτρεψε την κάμερα για αυτόν τον ιστότοπο και άνοιξε ξανά τον κωδικό.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Αυτός ο κωδικός έχει ήδη χρησιμοποιηθεί ή έχει λήξει. Ζήτα άλλον από τον υπολογιστή.",
+  "Pronto. Pode fechar esta página.": "Έτοιμο. Μπορείς να κλείσεις αυτή τη σελίδα.",
 } satisfies Record<string, string>;

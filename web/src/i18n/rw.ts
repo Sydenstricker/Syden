@@ -4729,4 +4729,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenisi",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Zana imiterere ya seriveri ya Discord",
+  "Link do modelo do servidor": "Ihuza ry'icyitegererezo cya seriveri",
+  "Ver o que vem": "Reba ibizaza",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Kuri Discord, uyobora seriveri ni we ukora ihuza muri Igenamiterere rya seriveri → Icyitegererezo cya seriveri. Hazaza imiyoboro n'inshingano (izina n'ibara), nta butumwa.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Birenze urugero rwa Syden: {n} bisigara hanze.",
+  "Esse link não é de um modelo de servidor do Discord.": "Iri huza si icyitegererezo cya seriveri ya Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Iki cyitegererezo ntikiri kuri Discord. Saba ihuza rishya uyobora seriveri.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord ntiyasubije. Ongera ugerageze mu kanya gato.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Koresha telefoni nka kamera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Erekeza kamera ya telefoni kuri kode, hanyuma ufungure aderesi igaragara.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Telefoni na mudasobwa bigomba kuba ku murongo umwe wa Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Ntibyashobotse kwerekana kode ubu. Ongera ugerageze.",
+  "Ligando o celular ao computador…": "Turimo guhuza telefoni na mudasobwa…",
+  "A câmera do celular está na chamada.": "Kamera ya telefoni iri mu ihamagara.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Ntibyashobotse guhuza telefoni na mudasobwa. Byombi bigomba kuba ku murongo umwe wa Wi-Fi.",
+  "O celular saiu.": "Telefoni yavuyeho.",
+  "Abrindo a câmera…": "Turimo gufungura kamera…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Mushakisha ntiyemeye ko kamera ifunguka. Emerera uru rubuga gukoresha kamera, hanyuma wongere ufungure kode.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Iyi kode yamaze gukoreshwa cyangwa yararangiye. Saba indi kuri mudasobwa.",
+  "Pronto. Pode fechar esta página.": "Byarangiye. Ushobora gufunga iyi paji.",
 } satisfies Record<string, string>;

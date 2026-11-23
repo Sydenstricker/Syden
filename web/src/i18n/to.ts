@@ -4724,4 +4724,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenisi",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "'Omai mei ha sēva Discord",
+  "Link do modelo do servidor": "Fehokotaki 'o e sīpinga 'o e sēva",
+  "Ver o que vem": "Sio pe ko e hā 'e ha'u",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "'I he Discord, ko e tokotaha 'oku ne pule'i 'a e sēvá 'okú ne fa'u 'a e fehokotakí 'i he Ngaahi Fokotu'utu'u 'o e sēva → Sīpinga 'o e sēva. 'E ha'u 'a e ngaahi sanolo mo e ngaahi fatongia (hingoa mo e lanu), ka 'oku 'ikai ha ngaahi pōpoaki.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Kuo laka 'i he fakangatangata 'o Syden: {n} 'oku nofo 'i tu'a.",
+  "Esse link não é de um modelo de servidor do Discord.": "Ko e fehokotaki ko 'ení 'oku 'ikai ko ha sīpinga sēva Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "'Oku 'ikai 'i he Discord 'a e sīpinga ko 'ení. Kole ha fehokotaki fo'ou mei he tokotaha 'oku ne pule'i 'a e sēvá.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Na'e 'ikai tali mai 'a Discord. Toe feinga 'i ha ki'i taimi si'i.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Ngāueʻaki ʻa e telefoní ko ha kāmeli",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Fakahanga ʻa e kāmeli ʻo e telefoní ki he koutí pea fakaava ʻa e tuʻasila ʻe hā mai.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Kuo pau ke ʻi he netiueka Wi-Fi tatau pē ʻa e telefoní mo e komipiutá.",
+  "Não deu para abrir o código agora. Tente de novo.": "Naʻe ʻikai lava ke fakahā ʻa e koutí he taimí ni. Toe feinga.",
+  "Ligando o celular ao computador…": "ʻOku fakahoko ʻa e telefoní ki he komipiutá…",
+  "A câmera do celular está na chamada.": "ʻOku ʻi he uí ʻa e kāmeli ʻo e telefoní.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Naʻe ʻikai lava ke fakahoko ʻa e telefoní ki he komipiutá. Kuo pau ke na ʻi he netiueka Wi-Fi tatau pē.",
+  "O celular saiu.": "Kuo motu ʻa e telefoní.",
+  "Abrindo a câmera…": "ʻOku fakaava ʻa e kāmelí…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Naʻe ʻikai tuku ʻe he polokalama vakaiʻangá ke fakaava ʻa e kāmelí. Tuku ke ngāueʻaki ʻa e kāmelí ki he uepisaiti ko ʻení pea toe fakaava ʻa e koutí.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Kuo ʻosi ngāueʻaki ʻa e kouti ko ʻení pe kuo ʻosi hono taimí. Kole ha toe taha ʻi he komipiutá.",
+  "Pronto. Pode fechar esta página.": "Kuo ʻosi. ʻE lava ke ke tāpuni ʻa e peesi ko ʻení.",
 } satisfies Record<string, string>;

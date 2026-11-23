@@ -4717,4 +4717,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenisi",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Leta kutoka seva ya Discord",
+  "Link do modelo do servidor": "Kiungo cha kiolezo cha seva",
+  "Ver o que vem": "Ona kitakachokuja",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Kwenye Discord, anayesimamia seva huunda kiungo katika Mipangilio ya Seva → Kiolezo cha Seva. Chaneli na majukumu (jina na rangi) huja, bila jumbe.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Imezidi kikomo cha Syden: {n} vinabaki nje.",
+  "Esse link não é de um modelo de servidor do Discord.": "Kiungo hiki si kiolezo cha seva ya Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Kiolezo hiki hakipo kwenye Discord. Omba kiungo kipya kwa anayesimamia seva.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord haikujibu. Jaribu tena baada ya muda mfupi.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Tumia simu ya mkononi kama kamera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Elekeza kamera ya simu ya mkononi kwenye msimbo, kisha ufungue anwani itakayotokea.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Simu ya mkononi na kompyuta lazima ziwe kwenye mtandao mmoja wa Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Imeshindikana kuonyesha msimbo sasa. Jaribu tena.",
+  "Ligando o celular ao computador…": "Inaunganisha simu ya mkononi na kompyuta…",
+  "A câmera do celular está na chamada.": "Kamera ya simu ya mkononi imeingia kwenye simu.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Imeshindikana kuunganisha simu ya mkononi na kompyuta. Zote mbili lazima ziwe kwenye mtandao mmoja wa Wi-Fi.",
+  "O celular saiu.": "Simu ya mkononi imetenganishwa.",
+  "Abrindo a câmera…": "Inafungua kamera…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Kivinjari hakikuruhusu kamera ifunguke. Ruhusu kamera kwa tovuti hii kisha ufungue msimbo tena.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Msimbo huu umeshatumika au muda wake umeisha. Omba mwingine kwenye kompyuta.",
+  "Pronto. Pode fechar esta página.": "Tayari. Unaweza kufunga ukurasa huu.",
 } satisfies Record<string, string>;

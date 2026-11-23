@@ -4787,4 +4787,26 @@ export default {
   "Zap": "Зап",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Тенис",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Пренеси од Discord сервер",
+  "Link do modelo do servidor": "Линк до шаблонот на серверот",
+  "Ver o que vem": "Види што ќе се пренесе",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "На Discord, линкот го прави тој што управува со серверот, во Поставки на серверот → Шаблон на серверот. Се пренесуваат каналите и улогите (име и боја), без пораките.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Над ограничувањето на Syden: {n} остануваат надвор.",
+  "Esse link não é de um modelo de servidor do Discord.": "Овој линк не е шаблон на Discord сервер.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Овој шаблон не постои на Discord. Побарај нов линк од тој што управува со серверот.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord не одговори. Обиди се повторно за малку.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Користи го телефонот како камера",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Насочи ја камерата на телефонот кон кодот и отвори ја адресата што ќе се појави.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Телефонот и компјутерот мора да се на иста Wi-Fi мрежа.",
+  "Não deu para abrir o código agora. Tente de novo.": "Кодот не можеше да се прикаже сега. Обиди се повторно.",
+  "Ligando o celular ao computador…": "Поврзување на телефонот со компјутерот…",
+  "A câmera do celular está na chamada.": "Камерата на телефонот е во повикот.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Телефонот не можеше да се поврзе со компјутерот. Двата мора да се на иста Wi-Fi мрежа.",
+  "O celular saiu.": "Телефонот се исклучи.",
+  "Abrindo a câmera…": "Отворање на камерата…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Прелистувачот не дозволи да се отвори камерата. Дозволи ја камерата за оваа страница и отвори го кодот повторно.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Овој код е веќе искористен или е истечен. Побарај друг на компјутерот.",
+  "Pronto. Pode fechar esta página.": "Готово. Можеш да ја затвориш оваа страница.",
 } satisfies Record<string, string>;

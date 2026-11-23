@@ -4781,4 +4781,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Bring oor van 'n Discord-bediener",
+  "Link do modelo do servidor": "Skakel na die bedienersjabloon",
+  "Ver o que vem": "Kyk wat oorkom",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Op Discord skep wie die bediener bestuur die skakel in Bedienerinstellings → Bedienersjabloon. Die kanale en rolle (naam en kleur) kom oor, sonder die boodskappe.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Oor Syden se limiet: {n} val uit.",
+  "Esse link não é de um modelo de servidor do Discord.": "Hierdie skakel is nie 'n Discord-bedienersjabloon nie.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Hierdie sjabloon bestaan nie op Discord nie. Vra wie die bediener bestuur vir 'n nuwe skakel.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord het nie geantwoord nie. Probeer weer oor 'n rukkie.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Gebruik die foon as kamera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Rig die foon se kamera op die kode en maak die adres oop wat verskyn.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Die foon en die rekenaar moet op dieselfde Wi-Fi-netwerk wees.",
+  "Não deu para abrir o código agora. Tente de novo.": "Kon nie die kode nou wys nie. Probeer weer.",
+  "Ligando o celular ao computador…": "Koppel tans die foon aan die rekenaar…",
+  "A câmera do celular está na chamada.": "Die foon se kamera is in die oproep.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Kon nie die foon aan die rekenaar koppel nie. Albei moet op dieselfde Wi-Fi-netwerk wees.",
+  "O celular saiu.": "Die foon het ontkoppel.",
+  "Abrindo a câmera…": "Maak tans die kamera oop…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Die blaaier het nie toegelaat dat die kamera oopgaan nie. Laat die kamera toe vir hierdie webwerf en maak die kode weer oop.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Hierdie kode is reeds gebruik of het verval. Vra 'n ander een op die rekenaar.",
+  "Pronto. Pode fechar esta página.": "Klaar. Jy kan hierdie bladsy toemaak.",
 } satisfies Record<string, string>;

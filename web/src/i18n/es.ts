@@ -4713,4 +4713,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Partido de tenis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Traer desde un servidor de Discord",
+  "Link do modelo do servidor": "Enlace de la plantilla del servidor",
+  "Ver o que vem": "Ver qué se trae",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "En Discord, quien administra el servidor genera el enlace en Ajustes del servidor → Plantilla de servidor. Vienen los canales y los roles (nombre y color), sin los mensajes.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Se pasó del límite de Syden: {n} quedan fuera.",
+  "Esse link não é de um modelo de servidor do Discord.": "Este enlace no es de una plantilla de servidor de Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Esta plantilla no existe en Discord. Pide un enlace nuevo a quien administra el servidor.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord no respondió. Vuelve a intentarlo en un rato.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Usar el celular como cámara",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Apunta la cámara del celular al código y abre la dirección que aparezca.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "El celular y la computadora tienen que estar en la misma red Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "No se pudo mostrar el código ahora. Inténtalo de nuevo.",
+  "Ligando o celular ao computador…": "Conectando el celular a la computadora…",
+  "A câmera do celular está na chamada.": "La cámara del celular está en la llamada.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "No se pudo conectar el celular a la computadora. Los dos tienen que estar en la misma red Wi-Fi.",
+  "O celular saiu.": "El celular se desconectó.",
+  "Abrindo a câmera…": "Abriendo la cámara…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "El navegador no dejó abrir la cámara. Permite la cámara para este sitio y abre el código de nuevo.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Este código ya se usó o venció. Pide otro en la computadora.",
+  "Pronto. Pode fechar esta página.": "Listo. Puedes cerrar esta página.",
 } satisfies Record<string, string>;

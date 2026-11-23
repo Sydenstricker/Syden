@@ -67,6 +67,10 @@ export const ERROS_TRADUZIDOS = [
   // a Caça às pragas da horta (server/src/minijogo-caca.ts, 04/11/2026)
   chave('Tiro inválido.'),
   chave('Acabou a munição desta onda.'),
+  // trazer a estrutura de um servidor do Discord (server/src/modelo-do-discord.ts, 23/11/2026)
+  chave('Esse link não é de um modelo de servidor do Discord.'),
+  chave('Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.'),
+  chave('O Discord não respondeu. Tente de novo daqui a pouco.'),
   // o avatar por link (server/src/buscarImagem.ts, 04/11/2026)
   chave('Essa página não tem uma imagem para usar. Copie o link da imagem.'),
   chave('Muitos links seguidos. Tente de novo daqui a pouco.'),

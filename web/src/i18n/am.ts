@@ -4718,4 +4718,26 @@ export default {
   "Zap": "ዛፕ",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "ቴኒስ",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "ከDiscord አገልጋይ መዋቅሩን ማምጣት",
+  "Link do modelo do servidor": "የአገልጋይ አብነት ማገናኛ",
+  "Ver o que vem": "ምን እንደሚመጣ ማየት",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "በDiscord ውስጥ አገልጋዩን የሚያስተዳድረው ሰው ማገናኛውን በአገልጋይ ቅንብሮች → የአገልጋይ አብነት ውስጥ ይፈጥራል። ቻናሎቹና ሚናዎቹ (ስምና ቀለም) ይመጣሉ፤ መልእክቶቹ ግን አይመጡም።",
+  "Passou do limite do Syden: {n} ficam de fora.": "ከSyden ገደብ አልፏል፦ {n} አይመጡም።",
+  "Esse link não é de um modelo de servidor do Discord.": "ይህ ማገናኛ የDiscord አገልጋይ አብነት አይደለም።",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "ይህ አብነት በDiscord ላይ የለም። እባክዎ አገልጋዩን የሚያስተዳድረውን ሰው አዲስ ማገናኛ ይጠይቁ።",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord መልስ አልሰጠም። እባክዎ ትንሽ ቆይተው እንደገና ይሞክሩ።",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "ስልኩን እንደ ካሜራ መጠቀም",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "የስልኩን ካሜራ ወደ ኮዱ ያቅኑ እና የሚታየውን አድራሻ ይክፈቱ።",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "ስልኩና ኮምፒውተሩ በአንድ የWi-Fi አውታረ መረብ ላይ መሆን አለባቸው።",
+  "Não deu para abrir o código agora. Tente de novo.": "ኮዱን አሁን ማሳየት አልተቻለም። እባክዎ እንደገና ይሞክሩ።",
+  "Ligando o celular ao computador…": "ስልኩን ከኮምፒውተሩ ጋር በማገናኘት ላይ…",
+  "A câmera do celular está na chamada.": "የስልኩ ካሜራ በጥሪው ውስጥ ነው።",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "ስልኩን ከኮምፒውተሩ ጋር ማገናኘት አልተቻለም። ሁለቱም በአንድ የWi-Fi አውታረ መረብ ላይ መሆን አለባቸው።",
+  "O celular saiu.": "የስልኩ ግንኙነት ተቋርጧል።",
+  "Abrindo a câmera…": "ካሜራውን በመክፈት ላይ…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "አሳሹ ካሜራውን ለመክፈት አልፈቀደም። ለዚህ ጣቢያ ካሜራውን ይፍቀዱ እና ኮዱን እንደገና ይክፈቱ።",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "ይህ ኮድ ቀድሞ ጥቅም ላይ ውሏል ወይም ጊዜው አልፎበታል። በኮምፒውተሩ ላይ ሌላ ይጠይቁ።",
+  "Pronto. Pode fechar esta página.": "ተጠናቋል። ይህን ገጽ መዝጋት ይችላሉ።",
 } satisfies Record<string, string>;

@@ -49,6 +49,7 @@ import * as prefs from './preferencias.js';
 import { lerDiagnosticoHost } from './diagnostico-host.js';
 import * as gifs from './gifs.js';
 import { salaParaEntrar } from './salas-temporarias.js';
+import { modeloParaCriar, type ModeloConvertido } from './modelo-do-discord.js';
 import { conferirSelo, CORES, ICONES, MARCOS, marcosAlcancados, podeUsarSelo } from './selos.js';
 import { disponibilidade } from './uptime.js';
 import { usageSummary } from './usage.js';
@@ -981,7 +982,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.get('/api/communities', async (request) => db.listCommunitiesForUser(request.user.id));
 
-    authed.post<{ Body: { name?: string; canais?: unknown } }>('/api/communities', async (request, reply) => {
+    authed.post<{ Body: { name?: string; canais?: unknown; modeloDoDiscord?: unknown } }>('/api/communities', async (request, reply) => {
       if (barrarTemporario(request, reply)) return reply;
       const name = communityName(request.body?.name);
       if (!name) return reply.code(400).send({ error: 'O nome da comunidade deve ter de 2 a 40 caracteres.' });
@@ -995,7 +996,14 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const nomesDosCanais = db.CANAIS_INICIAIS.map((canal, i) =>
         typeof pedidos[i] === 'string' ? channelName(pedidos[i] as string, canal.type) : null,
       );
-      const community = db.createCommunity(name, request.user.id, db.newInviteCode(), nomesDosCanais);
+      // A estrutura de um servidor do Discord, se quem cria colou o link do modelo (ver modelo-do-discord.ts).
+      let doModelo: ModeloConvertido | undefined;
+      if (request.body?.modeloDoDiscord) {
+        const resultado = await modeloParaCriar(request.user.id, request.body.modeloDoDiscord);
+        if ('erro' in resultado) return reply.code(resultado.status).send({ error: resultado.erro });
+        doModelo = resultado;
+      }
+      const community = db.createCommunity(name, request.user.id, db.newInviteCode(), nomesDosCanais, doModelo);
       seedExpressions(community.id);
       joinCommunityRoom(io, request.user.id, community.id);
       return db.listCommunitiesForUser(request.user.id).find((c) => c.id === community.id);

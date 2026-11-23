@@ -4783,4 +4783,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Portar des d'un servidor de Discord",
+  "Link do modelo do servidor": "Enllaç de la plantilla del servidor",
+  "Ver o que vem": "Veure què s'hi porta",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "A Discord, qui administra el servidor genera l'enllaç a Configuració del servidor → Plantilla de servidor. Vénen els canals i els rols (nom i color), sense els missatges.",
+  "Passou do limite do Syden: {n} ficam de fora.": "S'ha passat del límit de Syden: {n} queden fora.",
+  "Esse link não é de um modelo de servidor do Discord.": "Aquest enllaç no és d'una plantilla de servidor de Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Aquesta plantilla no existeix a Discord. Demana un enllaç nou a qui administra el servidor.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord no ha respost. Torna-ho a provar d'aquí a una estona.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Fer servir el mòbil com a càmera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Apunta la càmera del mòbil al codi i obre l'adreça que aparegui.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "El mòbil i l'ordinador han d'estar a la mateixa xarxa Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Ara no s'ha pogut mostrar el codi. Torna-ho a provar.",
+  "Ligando o celular ao computador…": "Connectant el mòbil a l'ordinador…",
+  "A câmera do celular está na chamada.": "La càmera del mòbil és a la trucada.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "No s'ha pogut connectar el mòbil a l'ordinador. Tots dos han d'estar a la mateixa xarxa Wi-Fi.",
+  "O celular saiu.": "El mòbil s'ha desconnectat.",
+  "Abrindo a câmera…": "Obrint la càmera…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "El navegador no ha deixat obrir la càmera. Permet la càmera per a aquest lloc i torna a obrir el codi.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Aquest codi ja s'ha fet servir o ha caducat. Demana'n un altre a l'ordinador.",
+  "Pronto. Pode fechar esta página.": "Fet. Ja pots tancar aquesta pàgina.",
 } satisfies Record<string, string>;

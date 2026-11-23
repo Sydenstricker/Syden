@@ -4715,4 +4715,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Bawa dari server Discord",
+  "Link do modelo do servidor": "Tautan templat server",
+  "Ver o que vem": "Lihat apa yang ikut",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Di Discord, orang yang mengelola server membuat tautannya di Pengaturan Server → Templat Server. Saluran dan peran (nama dan warna) ikut, tanpa pesan.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Melebihi batas Syden: {n} tertinggal.",
+  "Esse link não é de um modelo de servidor do Discord.": "Tautan ini bukan templat server Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Templat ini tidak ada di Discord. Minta tautan baru ke orang yang mengelola server.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord tidak menjawab. Coba lagi sebentar lagi.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Gunakan ponsel sebagai kamera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Arahkan kamera ponsel ke kode dan buka alamat yang muncul.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Ponsel dan komputer harus berada di jaringan Wi-Fi yang sama.",
+  "Não deu para abrir o código agora. Tente de novo.": "Kode tidak bisa ditampilkan sekarang. Coba lagi.",
+  "Ligando o celular ao computador…": "Menghubungkan ponsel ke komputer…",
+  "A câmera do celular está na chamada.": "Kamera ponsel sudah ada di panggilan.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Ponsel tidak bisa dihubungkan ke komputer. Keduanya harus berada di jaringan Wi-Fi yang sama.",
+  "O celular saiu.": "Ponsel terputus.",
+  "Abrindo a câmera…": "Membuka kamera…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Browser tidak mengizinkan kamera dibuka. Izinkan kamera untuk situs ini lalu buka kodenya lagi.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Kode ini sudah dipakai atau kedaluwarsa. Minta yang lain di komputer.",
+  "Pronto. Pode fechar esta página.": "Selesai. Kamu bisa menutup halaman ini.",
 } satisfies Record<string, string>;

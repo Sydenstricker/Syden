@@ -4722,4 +4722,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenisi",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Aumai mai se 'auaunaga Discord",
+  "Link do modelo do servidor": "So'oga o le fa'ata'ita'iga o le 'auaunaga",
+  "Ver o que vem": "Va'ai po o le a le mea e sau",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "I luga o Discord, o lē o lo'o pulea le 'auaunaga e faia le so'oga i Fa'atulagaga o le 'auaunaga → Fa'ata'ita'iga o le 'auaunaga. E sau ala ma matafaioi (igoa ma lanu), e aunoa ma fe'au.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Ua sili atu i le tapula'a o Syden: {n} e tu'ua i fafo.",
+  "Esse link não é de um modelo de servidor do Discord.": "O lenei so'oga e lē o se fa'ata'ita'iga o le 'auaunaga Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "E leai lenei fa'ata'ita'iga i Discord. Fesili i lē o lo'o pulea le 'auaunaga mo se so'oga fou.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "E le'i tali mai Discord. Toe taumafai i se taimi itiiti.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Faʻaaogā le telefoni o se meapueata",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Faasino le meapueata a le telefoni i le kota, ona tatala lea o le tuatusi e aliali mai.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "E tatau ona i ai le telefoni ma le komepiuta i le fesoʻotaʻiga Wi-Fi e tasi.",
+  "Não deu para abrir o código agora. Tente de novo.": "E leʻi mafai ona faʻaali le kota i le taimi nei. Toe taumafai.",
+  "Ligando o celular ao computador…": "O loʻo faʻafesoʻotaʻi le telefoni i le komepiuta…",
+  "A câmera do celular está na chamada.": "O loʻo i le valaʻau le meapueata a le telefoni.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "E leʻi mafai ona faʻafesoʻotaʻi le telefoni i le komepiuta. E tatau ona i ai uma i le fesoʻotaʻiga Wi-Fi e tasi.",
+  "O celular saiu.": "Ua motu le telefoni.",
+  "Abrindo a câmera…": "O loʻo tatala le meapueata…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "E leʻi faʻatagaina e le polokalame suʻesuʻe le tatalaina o le meapueata. Faʻataga le meapueata mo lenei saite ma toe tatala le kota.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Ua uma ona faʻaaogā lenei kota pe ua uma lona taimi. Talosaga mo se isi i le komepiuta.",
+  "Pronto. Pode fechar esta página.": "Ua uma. E mafai ona e tapuni lenei itulau.",
 } satisfies Record<string, string>;

@@ -4789,4 +4789,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tenis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Prenesi s strežnika Discord",
+  "Link do modelo do servidor": "Povezava do predloge strežnika",
+  "Ver o que vem": "Poglej, kaj se prenese",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Na Discordu povezavo ustvari tisti, ki upravlja strežnik, v Nastavitvah strežnika → Predloga strežnika. Prenesejo se kanali in vloge (ime in barva), brez sporočil.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Nad omejitvijo Sydena: {n} ostane zunaj.",
+  "Esse link não é de um modelo de servidor do Discord.": "Ta povezava ni predloga strežnika Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Ta predloga na Discordu ne obstaja. Prosi tistega, ki upravlja strežnik, za novo povezavo.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord se ni odzval. Poskusi znova čez trenutek.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Uporabi telefon kot kamero",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Usmeri kamero telefona v kodo in odpri naslov, ki se prikaže.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Telefon in računalnik morata biti v istem omrežju Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Kode zdaj ni bilo mogoče prikazati. Poskusi znova.",
+  "Ligando o celular ao computador…": "Povezovanje telefona z računalnikom…",
+  "A câmera do celular está na chamada.": "Kamera telefona je v klicu.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Telefona ni bilo mogoče povezati z računalnikom. Oba morata biti v istem omrežju Wi-Fi.",
+  "O celular saiu.": "Telefon je prekinil povezavo.",
+  "Abrindo a câmera…": "Odpiranje kamere…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Brskalnik ni dovolil odpreti kamere. Dovoli kamero za to spletno mesto in znova odpri kodo.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Ta koda je že bila uporabljena ali je potekla. Zahtevaj novo na računalniku.",
+  "Pronto. Pode fechar esta página.": "Končano. To stran lahko zapreš.",
 } satisfies Record<string, string>;

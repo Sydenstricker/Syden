@@ -4788,4 +4788,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Ithenisi",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Letha kusuka kuseva ye-Discord",
+  "Link do modelo do servidor": "Isixhumanisi sesifanekiso seseva",
+  "Ver o que vem": "Bona okuzofika",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Ku-Discord, ophethe iseva wenza isixhumanisi ku-Izilungiselelo zeseva → Isifanekiso seseva. Kufika iziteshi nezindima (igama nombala), ngaphandle kwemilayezo.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Kweqe umkhawulo we-Syden: {n} kusala ngaphandle.",
+  "Esse link não é de um modelo de servidor do Discord.": "Lesi sixhumanisi akusona isifanekiso seseva ye-Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Lesi sifanekiso asikho ku-Discord. Cela isixhumanisi esisha kophethe iseva.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "I-Discord ayiphendulanga. Zama futhi ngemva kwesikhashana.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Sebenzisa iselula njengekhamera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Khombisa ikhamera yeselula ekhodini bese uvula ikheli elivelayo.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Iselula nekhompyutha kufanele kube kunethiwekhi efanayo ye-Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Ayikwazanga ukukhombisa ikhodi manje. Zama futhi.",
+  "Ligando o celular ao computador…": "Ixhuma iselula nekhompyutha…",
+  "A câmera do celular está na chamada.": "Ikhamera yeselula isocingweni.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Ayikwazanga ukuxhuma iselula nekhompyutha. Kokubili kufanele kube kunethiwekhi efanayo ye-Wi-Fi.",
+  "O celular saiu.": "Iselula inqamukile.",
+  "Abrindo a câmera…": "Ivula ikhamera…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Isiphequluli asivumelanga ukuthi ikhamera ivuleke. Vumela ikhamera kule sayithi bese uvula ikhodi futhi.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Le khodi isisetshenzisiwe noma iphelelwe yisikhathi. Cela enye kukhompyutha.",
+  "Pronto. Pode fechar esta página.": "Kuphelile. Ungavala leli khasi.",
 } satisfies Record<string, string>;

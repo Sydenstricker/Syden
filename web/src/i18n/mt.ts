@@ -4734,4 +4734,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Ġib minn server ta' Discord",
+  "Link do modelo do servidor": "Link tal-mudell tas-server",
+  "Ver o que vem": "Ara x'jiġi",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Fuq Discord, min jieħu ħsieb is-server joħloq il-link f'Settings tas-server → Mudell tas-server. Jiġu l-kanali u r-rwoli (isem u kulur), mingħajr il-messaġġi.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Fuq il-limitu ta' Syden: {n} jibqgħu barra.",
+  "Esse link não é de um modelo de servidor do Discord.": "Dan il-link mhuwiex mudell ta' server ta' Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Dan il-mudell ma jeżistix fuq Discord. Itlob link ġdid lil min jieħu ħsieb is-server.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord ma weġibx. Erġa' pprova ftit wara.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Uża l-mowbajl bħala kamera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Ipponta l-kamera tal-mowbajl lejn il-kodiċi u iftaħ l-indirizz li jidher.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Il-mowbajl u l-kompjuter iridu jkunu fl-istess netwerk Wi-Fi.",
+  "Não deu para abrir o código agora. Tente de novo.": "Il-kodiċi ma setax jintwera issa. Erġa' pprova.",
+  "Ligando o celular ao computador…": "Qed jitqabbad il-mowbajl mal-kompjuter…",
+  "A câmera do celular está na chamada.": "Il-kamera tal-mowbajl qiegħda fis-sejħa.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Il-mowbajl ma setax jitqabbad mal-kompjuter. It-tnejn iridu jkunu fl-istess netwerk Wi-Fi.",
+  "O celular saiu.": "Il-mowbajl skonnettja.",
+  "Abrindo a câmera…": "Qed tinfetaħ il-kamera…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Il-browser ma ħalliex il-kamera tinfetaħ. Ippermetti l-kamera għal dan is-sit u erġa' iftaħ il-kodiċi.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Dan il-kodiċi diġà ntuża jew skada. Itlob ieħor fuq il-kompjuter.",
+  "Pronto. Pode fechar esta página.": "Lest. Tista' tagħlaq din il-paġna.",
 } satisfies Record<string, string>;

@@ -4731,4 +4731,26 @@ export default {
   "Zap": "แซป",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "เทนนิส",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "นำโครงสร้างมาจากเซิร์ฟเวอร์ Discord",
+  "Link do modelo do servidor": "ลิงก์เทมเพลตเซิร์ฟเวอร์",
+  "Ver o que vem": "ดูว่าจะได้อะไรมา",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "ใน Discord ผู้ดูแลเซิร์ฟเวอร์สร้างลิงก์ได้ที่ การตั้งค่าเซิร์ฟเวอร์ → เทมเพลตเซิร์ฟเวอร์ ช่องและบทบาท (ชื่อและสี) จะตามมาด้วย แต่ไม่มีข้อความ",
+  "Passou do limite do Syden: {n} ficam de fora.": "เกินขีดจำกัดของ Syden: {n} รายการจะไม่ถูกนำมา",
+  "Esse link não é de um modelo de servidor do Discord.": "ลิงก์นี้ไม่ใช่เทมเพลตเซิร์ฟเวอร์ของ Discord",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "ไม่มีเทมเพลตนี้ใน Discord ขอลิงก์ใหม่จากผู้ดูแลเซิร์ฟเวอร์",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord ไม่ตอบสนอง ลองใหม่อีกสักครู่",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "ใช้โทรศัพท์เป็นกล้อง",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "หันกล้องโทรศัพท์ไปที่รหัส แล้วเปิดที่อยู่ที่ปรากฏขึ้น",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "โทรศัพท์และคอมพิวเตอร์ต้องอยู่ในเครือข่าย Wi-Fi เดียวกัน",
+  "Não deu para abrir o código agora. Tente de novo.": "แสดงรหัสไม่ได้ในตอนนี้ ลองใหม่อีกครั้ง",
+  "Ligando o celular ao computador…": "กำลังเชื่อมต่อโทรศัพท์กับคอมพิวเตอร์…",
+  "A câmera do celular está na chamada.": "กล้องโทรศัพท์อยู่ในสายแล้ว",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "เชื่อมต่อโทรศัพท์กับคอมพิวเตอร์ไม่ได้ ทั้งสองเครื่องต้องอยู่ในเครือข่าย Wi-Fi เดียวกัน",
+  "O celular saiu.": "โทรศัพท์ตัดการเชื่อมต่อแล้ว",
+  "Abrindo a câmera…": "กำลังเปิดกล้อง…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "เบราว์เซอร์ไม่อนุญาตให้เปิดกล้อง อนุญาตกล้องสำหรับเว็บไซต์นี้ แล้วเปิดรหัสอีกครั้ง",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "รหัสนี้ถูกใช้ไปแล้วหรือหมดอายุ ขอรหัสใหม่ที่คอมพิวเตอร์",
+  "Pronto. Pode fechar esta página.": "เรียบร้อย ปิดหน้านี้ได้เลย",
 } satisfies Record<string, string>;

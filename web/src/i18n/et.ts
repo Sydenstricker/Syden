@@ -4784,4 +4784,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Too üle Discordi serverist",
+  "Link do modelo do servidor": "Serveri malli link",
+  "Ver o que vem": "Vaata, mis kaasa tuleb",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discordis loob serveri haldaja lingi jaotises Serveri seaded → Serveri mall. Kaasa tulevad kanalid ja rollid (nimi ja värv), ilma sõnumiteta.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Sydeni piir ületatud: {n} jääb välja.",
+  "Esse link não é de um modelo de servidor do Discord.": "See link ei ole Discordi serveri mall.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Seda malli Discordis ei ole. Küsi serveri haldajalt uus link.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord ei vastanud. Proovi natukese aja pärast uuesti.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Kasuta telefoni kaamerana",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Suuna telefoni kaamera koodile ja ava aadress, mis ilmub.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Telefon ja arvuti peavad olema samas Wi-Fi-võrgus.",
+  "Não deu para abrir o código agora. Tente de novo.": "Koodi ei õnnestunud praegu näidata. Proovi uuesti.",
+  "Ligando o celular ao computador…": "Telefoni ühendamine arvutiga…",
+  "A câmera do celular está na chamada.": "Telefoni kaamera on kõnes.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Telefoni ei õnnestunud arvutiga ühendada. Mõlemad peavad olema samas Wi-Fi-võrgus.",
+  "O celular saiu.": "Telefoni ühendus katkes.",
+  "Abrindo a câmera…": "Kaamera avamine…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Brauser ei lubanud kaamerat avada. Luba sellele saidile kaamera ja ava kood uuesti.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Seda koodi on juba kasutatud või see on aegunud. Küsi arvutist uus.",
+  "Pronto. Pode fechar esta página.": "Valmis. Võid selle lehe sulgeda.",
 } satisfies Record<string, string>;

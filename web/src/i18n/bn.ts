@@ -4715,4 +4715,26 @@ export default {
   "Zap": "জ্যাপ",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "টেনিস",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord সার্ভার থেকে কাঠামো আনো",
+  "Link do modelo do servidor": "সার্ভার টেমপ্লেটের লিংক",
+  "Ver o que vem": "দেখো কী আসবে",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord-এ সার্ভার চালান যিনি, তিনি সার্ভার সেটিংস → সার্ভার টেমপ্লেট থেকে লিংকটি তৈরি করেন। চ্যানেল আর রোল (নাম ও রং) আসে, মেসেজ আসে না।",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden-এর সীমা ছাড়িয়েছে: {n}টি বাদ পড়ছে।",
+  "Esse link não é de um modelo de servidor do Discord.": "এই লিংকটি Discord সার্ভার টেমপ্লেটের নয়।",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "এই টেমপ্লেট Discord-এ নেই। যিনি সার্ভার চালান, তাঁর কাছে নতুন লিংক চাও।",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord সাড়া দেয়নি। একটু পরে আবার চেষ্টা করো।",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "ফোনকে ক্যামেরা হিসেবে ব্যবহার করো",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "ফোনের ক্যামেরা কোডের দিকে ধরো আর যে ঠিকানা আসবে সেটা খোলো।",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "ফোন আর কম্পিউটার একই Wi-Fi নেটওয়ার্কে থাকতে হবে।",
+  "Não deu para abrir o código agora. Tente de novo.": "এখন কোডটা দেখানো গেল না। আবার চেষ্টা করো।",
+  "Ligando o celular ao computador…": "ফোনকে কম্পিউটারের সঙ্গে যুক্ত করা হচ্ছে…",
+  "A câmera do celular está na chamada.": "ফোনের ক্যামেরা কলে আছে।",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "ফোনকে কম্পিউটারের সঙ্গে যুক্ত করা গেল না। দুটোকেই একই Wi-Fi নেটওয়ার্কে থাকতে হবে।",
+  "O celular saiu.": "ফোনের সংযোগ বিচ্ছিন্ন হয়েছে।",
+  "Abrindo a câmera…": "ক্যামেরা খোলা হচ্ছে…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "ব্রাউজার ক্যামেরা খুলতে দেয়নি। এই সাইটের জন্য ক্যামেরার অনুমতি দাও আর কোডটা আবার খোলো।",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "এই কোডটা আগেই ব্যবহার হয়েছে বা মেয়াদ শেষ। কম্পিউটারে আরেকটা চাও।",
+  "Pronto. Pode fechar esta página.": "হয়ে গেছে। এই পেজটা বন্ধ করে দিতে পারো।",
 } satisfies Record<string, string>;

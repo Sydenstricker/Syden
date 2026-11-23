@@ -4787,4 +4787,26 @@ export default {
   "Zap": "සැප්",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "ටෙනිස්",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord සේවාදායකයකින් ව්‍යුහය ගෙනෙන්න",
+  "Link do modelo do servidor": "සේවාදායක අච්චුවේ සබැඳිය",
+  "Ver o que vem": "එන දේ බලන්න",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord හි සේවාදායකය පාලනය කරන අය සේවාදායක සැකසුම් → සේවාදායක අච්චුව තුළ සබැඳිය සාදයි. නාලිකා සහ භූමිකා (නම සහ වර්ණය) එයි, පණිවිඩ නොඑයි.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden සීමාව ඉක්මවා ඇත: {n}ක් ඉතිරි වේ.",
+  "Esse link não é de um modelo de servidor do Discord.": "මෙම සබැඳිය Discord සේවාදායක අච්චුවක් නොවේ.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "මෙම අච්චුව Discord හි නැත. සේවාදායකය පාලනය කරන අයගෙන් නව සබැඳියක් ඉල්ලන්න.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord ප්‍රතිචාර දැක්වූයේ නැත. ටික වේලාවකින් නැවත උත්සාහ කරන්න.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "දුරකථනය කැමරාවක් ලෙස භාවිත කරන්න",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "දුරකථනයේ කැමරාව කේතය දෙසට යොමු කර දිස්වන ලිපිනය විවෘත කරන්න.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "දුරකථනය සහ පරිගණකය එකම Wi-Fi ජාලයේ තිබිය යුතුය.",
+  "Não deu para abrir o código agora. Tente de novo.": "කේතය දැන් පෙන්විය නොහැකි විය. නැවත උත්සාහ කරන්න.",
+  "Ligando o celular ao computador…": "දුරකථනය පරිගණකයට සම්බන්ධ කරමින්…",
+  "A câmera do celular está na chamada.": "දුරකථනයේ කැමරාව ඇමතුමේ ඇත.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "දුරකථනය පරිගණකයට සම්බන්ධ කළ නොහැකි විය. දෙකම එකම Wi-Fi ජාලයේ තිබිය යුතුය.",
+  "O celular saiu.": "දුරකථනය විසන්ධි විය.",
+  "Abrindo a câmera…": "කැමරාව විවෘත කරමින්…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "බ්‍රවුසරය කැමරාව විවෘත කිරීමට ඉඩ දුන්නේ නැත. මෙම අඩවියට කැමරාවට අවසර දී කේතය නැවත විවෘත කරන්න.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "මෙම කේතය දැනටමත් භාවිත කර ඇත හෝ කල් ඉකුත් වී ඇත. පරිගණකයෙන් වෙනත් එකක් ඉල්ලන්න.",
+  "Pronto. Pode fechar esta página.": "හරි. ඔබට මෙම පිටුව වසා දැමිය හැක.",
 } satisfies Record<string, string>;

@@ -4805,4 +4805,26 @@ export default {
   "Zap": "ზაპი",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "ჩოგბურთი",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord-ის სერვერიდან გადმოტანა",
+  "Link do modelo do servidor": "სერვერის შაბლონის ბმული",
+  "Ver o que vem": "ნახე, რა გადმოვა",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord-ში ბმულს ქმნის ის, ვინც სერვერს მართავს: სერვერის პარამეტრები → სერვერის შაბლონი. გადმოდის არხები და როლები (სახელი და ფერი), შეტყობინებების გარეშე.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden-ის ლიმიტს გადააჭარბა: {n} გარეთ რჩება.",
+  "Esse link não é de um modelo de servidor do Discord.": "ეს ბმული Discord-ის სერვერის შაბლონი არ არის.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "ასეთი შაბლონი Discord-ში არ არსებობს. ახალი ბმული სთხოვე იმას, ვინც სერვერს მართავს.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord-მა არ უპასუხა. ცოტა ხანში კიდევ სცადე.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "ტელეფონის გამოყენება კამერად",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "მიმართე ტელეფონის კამერა კოდისკენ და გახსენი მისამართი, რომელიც გამოჩნდება.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "ტელეფონი და კომპიუტერი ერთსა და იმავე Wi-Fi ქსელში უნდა იყოს.",
+  "Não deu para abrir o código agora. Tente de novo.": "კოდის ჩვენება ახლა ვერ მოხერხდა. კიდევ სცადე.",
+  "Ligando o celular ao computador…": "ტელეფონი უკავშირდება კომპიუტერს…",
+  "A câmera do celular está na chamada.": "ტელეფონის კამერა ზარშია.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "ტელეფონის კომპიუტერთან დაკავშირება ვერ მოხერხდა. ორივე ერთსა და იმავე Wi-Fi ქსელში უნდა იყოს.",
+  "O celular saiu.": "ტელეფონი გაითიშა.",
+  "Abrindo a câmera…": "კამერა იხსნება…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "ბრაუზერმა კამერის გახსნის ნება არ მისცა. დაუშვი კამერა ამ საიტისთვის და კოდი თავიდან გახსენი.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "ეს კოდი უკვე გამოყენებულია ან ვადა გაუვიდა. კომპიუტერში სხვა მოითხოვე.",
+  "Pronto. Pode fechar esta página.": "მზადაა. შეგიძლია ეს გვერდი დახურო.",
 } satisfies Record<string, string>;

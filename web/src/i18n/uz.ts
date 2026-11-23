@@ -4808,4 +4808,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord serveridan ko‘chirish",
+  "Link do modelo do servidor": "Server shablonining havolasi",
+  "Ver o que vem": "Nima kelishini ko‘rish",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord’da havolani serverni boshqaradigan odam Server sozlamalari → Server shabloni bo‘limida yaratadi. Kanallar va rollar (nomi va rangi) keladi, xabarlar kelmaydi.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden chegarasidan oshdi: {n} tashqarida qoladi.",
+  "Esse link não é de um modelo de servidor do Discord.": "Bu havola Discord server shabloni emas.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Bunday shablon Discord’da yo‘q. Serverni boshqaradigan odamdan yangi havola so‘ra.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord javob bermadi. Birozdan keyin qayta urinib ko‘r.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Telefondan kamera sifatida foydalanish",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Telefon kamerasini kodga qarat va paydo boʻlgan manzilni och.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Telefon va kompyuter bitta Wi-Fi tarmogʻida boʻlishi kerak.",
+  "Não deu para abrir o código agora. Tente de novo.": "Kodni hozir koʻrsatib boʻlmadi. Qayta urinib koʻr.",
+  "Ligando o celular ao computador…": "Telefon kompyuterga ulanmoqda…",
+  "A câmera do celular está na chamada.": "Telefon kamerasi qoʻngʻiroqda.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Telefonni kompyuterga ulab boʻlmadi. Ikkalasi ham bitta Wi-Fi tarmogʻida boʻlishi kerak.",
+  "O celular saiu.": "Telefon uzildi.",
+  "Abrindo a câmera…": "Kamera ochilmoqda…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Brauzer kamerani ochishga ruxsat bermadi. Bu sayt uchun kameraga ruxsat ber va kodni qayta och.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Bu kod allaqachon ishlatilgan yoki muddati tugagan. Kompyuterda boshqasini soʻra.",
+  "Pronto. Pode fechar esta página.": "Tayyor. Bu sahifani yopsang boʻladi.",
 } satisfies Record<string, string>;

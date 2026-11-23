@@ -4733,4 +4733,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tẹ́nísì",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Mú ètò wá láti sáfà Discord",
+  "Link do modelo do servidor": "Ìjápọ̀ àwòṣe sáfà",
+  "Ver o que vem": "Wo ohun tí yóò wá",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Lórí Discord, ẹni tó ń ṣàkóso sáfà ló ń ṣe ìjápọ̀ náà ní Ètò sáfà → Àwòṣe sáfà. Àwọn ikanni àti ipa (orúkọ àti àwọ̀) yóò wá, láìsí àwọn ìfiránṣẹ́.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Ó ti kọjá òdiwọ̀n Syden: {n} yóò kù sí ìta.",
+  "Esse link não é de um modelo de servidor do Discord.": "Ìjápọ̀ yìí kì í ṣe àwòṣe sáfà Discord.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Àwòṣe yìí kò sí lórí Discord. Béèrè ìjápọ̀ tuntun lọ́wọ́ ẹni tó ń ṣàkóso sáfà.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord kò dáhùn. Tún gbìyànjú lẹ́yìn ìgbà díẹ̀.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Lo fóònù gẹ́gẹ́ bí kámẹ́rà",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Na kámẹ́rà fóònù sí kóòdù náà, kí o sì ṣí àdírẹ́sì tó bá yọ.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Fóònù àti kọ̀ǹpútà gbọ́dọ̀ wà lórí nẹ́tíwọ́ọ̀kì Wi-Fi kan náà.",
+  "Não deu para abrir o código agora. Tente de novo.": "A kò lè fi kóòdù náà hàn báyìí. Tún gbìyànjú.",
+  "Ligando o celular ao computador…": "À ń so fóònù mọ́ kọ̀ǹpútà…",
+  "A câmera do celular está na chamada.": "Kámẹ́rà fóònù wà nínú ìpè náà.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "A kò lè so fóònù mọ́ kọ̀ǹpútà. Méjèèjì gbọ́dọ̀ wà lórí nẹ́tíwọ́ọ̀kì Wi-Fi kan náà.",
+  "O celular saiu.": "Fóònù ti já.",
+  "Abrindo a câmera…": "À ń ṣí kámẹ́rà…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Aṣàwákiri kò jẹ́ kí kámẹ́rà ṣí. Fàyè gba kámẹ́rà fún ojú-òpó yìí, kí o sì tún ṣí kóòdù náà.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "A ti lo kóòdù yìí tẹ́lẹ̀ tàbí ó ti parí. Béèrè fún òmíràn lórí kọ̀ǹpútà.",
+  "Pronto. Pode fechar esta página.": "Ó ti parí. O lè pa ojú-ìwé yìí dé.",
 } satisfies Record<string, string>;

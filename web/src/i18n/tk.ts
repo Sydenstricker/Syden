@@ -4798,4 +4798,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Discord serwerinden getir",
+  "Link do modelo do servidor": "Serwer şablonynyň salgysy",
+  "Ver o que vem": "Nämäniň geljekdigine seret",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord-da salgyny serweri dolandyrýan adam Serwer sazlamalary → Serwer şablony bölüminde döredýär. Kanallar we rollar (ady we reňki) gelýär, habarlar gelmeýär.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Syden çäginden geçdi: {n} daşarda galýar.",
+  "Esse link não é de um modelo de servidor do Discord.": "Bu salgy Discord serwer şablony däl.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Bu şablon Discord-da ýok. Serweri dolandyrýan adamdan täze salgy sora.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord jogap bermedi. Biraz soňra täzeden synanyş.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Telefony kamera hökmünde ulan",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Telefonyň kamerasyny koda tarap tut we görnen salgyny aç.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Telefon bilen kompýuter şol bir Wi-Fi ulgamynda bolmaly.",
+  "Não deu para abrir o código agora. Tente de novo.": "Kody häzir görkezip bolmady. Täzeden synanyş.",
+  "Ligando o celular ao computador…": "Telefon kompýutere birikdirilýär…",
+  "A câmera do celular está na chamada.": "Telefonyň kamerasy jaňda.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Telefony kompýutere birikdirip bolmady. Ikisi hem şol bir Wi-Fi ulgamynda bolmaly.",
+  "O celular saiu.": "Telefon aýryldy.",
+  "Abrindo a câmera…": "Kamera açylýar…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Brauzer kamerany açmaga rugsat bermedi. Bu sahypa üçin kamera rugsat ber we kody täzeden aç.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Bu kod eýýäm ulanyldy ýa-da möhleti geçdi. Kompýuterde başgasyny sora.",
+  "Pronto. Pode fechar esta página.": "Taýýar. Bu sahypany ýapyp bilersiň.",
 } satisfies Record<string, string>;

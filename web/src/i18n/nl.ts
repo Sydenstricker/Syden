@@ -4717,4 +4717,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Overnemen van een Discord-server",
+  "Link do modelo do servidor": "Link naar de serversjabloon",
+  "Ver o que vem": "Bekijk wat er meekomt",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Op Discord maakt wie de server beheert de link aan via Serverinstellingen → Serversjabloon. De kanalen en rollen (naam en kleur) komen mee, zonder de berichten.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Boven de limiet van Syden: {n} vallen af.",
+  "Esse link não é de um modelo de servidor do Discord.": "Deze link is geen Discord-serversjabloon.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Deze sjabloon bestaat niet op Discord. Vraag wie de server beheert om een nieuwe link.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord reageerde niet. Probeer het zo meteen opnieuw.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Telefoon als camera gebruiken",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Richt de camera van je telefoon op de code en open het adres dat verschijnt.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Je telefoon en computer moeten op hetzelfde wifinetwerk zitten.",
+  "Não deu para abrir o código agora. Tente de novo.": "De code kon nu niet worden getoond. Probeer het opnieuw.",
+  "Ligando o celular ao computador…": "Telefoon verbinden met de computer…",
+  "A câmera do celular está na chamada.": "De camera van je telefoon is in het gesprek.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "De telefoon kon niet met de computer worden verbonden. Ze moeten allebei op hetzelfde wifinetwerk zitten.",
+  "O celular saiu.": "De verbinding met de telefoon is verbroken.",
+  "Abrindo a câmera…": "Camera openen…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "De browser liet de camera niet openen. Sta de camera toe voor deze site en open de code opnieuw.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Deze code is al gebruikt of verlopen. Vraag op de computer een nieuwe aan.",
+  "Pronto. Pode fechar esta página.": "Klaar. Je kunt deze pagina sluiten.",
 } satisfies Record<string, string>;

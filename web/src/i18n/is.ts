@@ -4788,4 +4788,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Sækja af Discord-netþjóni",
+  "Link do modelo do servidor": "Tengill á netþjónssniðmát",
+  "Ver o que vem": "Sjá hvað fylgir með",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Á Discord býr sá sem sér um netþjóninn til tengilinn í Stillingar netþjóns → Netþjónssniðmát. Rásirnar og hlutverkin (nafn og litur) fylgja með, án skilaboðanna.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Yfir mörkum Syden: {n} verða útundan.",
+  "Esse link não é de um modelo de servidor do Discord.": "Þessi tengill er ekki Discord-netþjónssniðmát.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Þetta sniðmát er ekki til á Discord. Biddu þann sem sér um netþjóninn um nýjan tengil.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord svaraði ekki. Reyndu aftur eftir smástund.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Nota símann sem myndavél",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Beindu myndavél símans að kóðanum og opnaðu slóðina sem birtist.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Síminn og tölvan þurfa að vera á sama Wi-Fi-neti.",
+  "Não deu para abrir o código agora. Tente de novo.": "Ekki tókst að sýna kóðann núna. Reyndu aftur.",
+  "Ligando o celular ao computador…": "Verið að tengja símann við tölvuna…",
+  "A câmera do celular está na chamada.": "Myndavél símans er í símtalinu.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Ekki tókst að tengja símann við tölvuna. Bæði þurfa að vera á sama Wi-Fi-neti.",
+  "O celular saiu.": "Síminn aftengdist.",
+  "Abrindo a câmera…": "Verið að opna myndavélina…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Vafrinn leyfði ekki að myndavélin yrði opnuð. Leyfðu myndavélina fyrir þessa síðu og opnaðu kóðann aftur.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "Þessi kóði hefur þegar verið notaður eða er útrunninn. Biddu um annan í tölvunni.",
+  "Pronto. Pode fechar esta página.": "Búið. Þú getur lokað þessari síðu.",
 } satisfies Record<string, string>;

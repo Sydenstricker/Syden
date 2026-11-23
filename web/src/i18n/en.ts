@@ -4713,4 +4713,26 @@ export default {
   "Zap": "Zap",
   // Os mini-games, o lote D, onda 2 (21/11/2026)
   "Partida de tênis": "Tennis",
+  // Trazer a estrutura de um servidor do Discord (23/11/2026)
+  "Trazer de um servidor do Discord": "Bring over a Discord server",
+  "Link do modelo do servidor": "Server template link",
+  "Ver o que vem": "See what comes over",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "On Discord, whoever runs the server creates the link in Server Settings → Server Template. The channels and roles (name and colour) come over, without the messages.",
+  "Passou do limite do Syden: {n} ficam de fora.": "Over Syden's limit: {n} are left out.",
+  "Esse link não é de um modelo de servidor do Discord.": "This link isn't a Discord server template.",
+  "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "This template doesn't exist on Discord. Ask whoever runs the server for a new link.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord didn't respond. Try again in a little while.",
+  // O celular como câmera (23/11/2026)
+  "Usar o celular como câmera": "Use your phone as a camera",
+  "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Point your phone's camera at the code and open the address that appears.",
+  "O celular e o computador precisam estar na mesma rede Wi-Fi.": "Your phone and computer need to be on the same Wi-Fi network.",
+  "Não deu para abrir o código agora. Tente de novo.": "Couldn't show the code right now. Try again.",
+  "Ligando o celular ao computador…": "Connecting your phone to the computer…",
+  "A câmera do celular está na chamada.": "Your phone's camera is in the call.",
+  "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Couldn't connect your phone to the computer. Both need to be on the same Wi-Fi network.",
+  "O celular saiu.": "Your phone disconnected.",
+  "Abrindo a câmera…": "Opening the camera…",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "The browser didn't allow the camera. Allow the camera for this site and open the code again.",
+  "Este código já foi usado ou venceu. Peça outro no computador.": "This code has already been used or has expired. Ask for another one on the computer.",
+  "Pronto. Pode fechar esta página.": "Done. You can close this page.",
 } satisfies Record<string, string>;
