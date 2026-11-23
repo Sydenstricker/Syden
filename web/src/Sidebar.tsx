@@ -4,6 +4,7 @@ import {
   Download,
   Gamepad2,
   Hash,
+  Megaphone,
   Headphones,
   Lock,
   HeadphoneOff,
@@ -277,7 +278,7 @@ export function Sidebar({
           {channels
             .filter((c) => c.type === 'text')
             .map((c) => (
-              <div key={c.id}>{row(c, <Hash size={18} />)}</div>
+              <div key={c.id}>{row(c, c.avisos ? <Megaphone size={18} /> : <Hash size={18} />)}</div>
             ))}
         </ChannelGroup>
 

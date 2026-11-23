@@ -2,7 +2,7 @@
 import { aplicarCargoPorReacao } from './cargos-automaticos-routes.js';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
-import { barrarMensagem } from './automod.js';
+import { barrarEdicao, barrarMensagem, soQuemAdministra } from './automod.js';
 import * as db from './db.js';
 import { talvezDestacar } from './destaques-routes.js';
 import { pontuarMensagem } from './niveis.js';
@@ -73,7 +73,14 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
         reply.code(404).send({ error: 'Canal não encontrado.' });
         return null;
       }
-      if (threadId === undefined || threadId === null) return { channel, threadId: null as number | null };
+      if (threadId === undefined || threadId === null) {
+        const soAvisos = soQuemAdministra(channel, request.user.id, null);
+        if (soAvisos) {
+          reply.code(403).send({ error: soAvisos });
+          return null;
+        }
+        return { channel, threadId: null as number | null };
+      }
       const thread = db.threadLocation(Number(threadId));
       if (!thread || thread.channelId !== channel.id) {
         reply.code(404).send({ error: 'Tópico não encontrado.' });
@@ -218,6 +225,37 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
         return publish(where.channel, message);
       },
     );
+
+    // ---------- Editar (23/11/2026; o porquê no fim de db.ts) ----------
+    //
+    // Só quem escreveu, e só o texto. Mensagem com enquete ou figurinha não se edita (não tem texto que seja dela); com
+    // anexo, o texto pode ficar vazio. As telas abertas recebem só o texto novo e a hora, e trocam na mensagem que já têm.
+
+    authed.patch<{ Params: { id: string }; Body: { content?: string } }>('/api/messages/:id', async (request, reply) => {
+      const message = db.findMessage(Number(request.params.id));
+      const channel = message && db.findChannel(message.channelId);
+      if (!message || !channel || !canUseChannel(request.user, channel)) {
+        return reply.code(404).send({ error: 'Mensagem não encontrada.' });
+      }
+      if (message.userId !== request.user.id) return reply.code(403).send({ error: 'Só quem escreveu a mensagem pode editá-la.' });
+      const tem = db.oQueAMensagemTem(message.id);
+      if (!tem || tem.enquetes > 0 || tem.figurinhas > 0) return reply.code(400).send({ error: 'Esta mensagem não tem texto para editar.' });
+      const content = String(request.body?.content ?? '').trim();
+      if (content.length > 2000) return reply.code(400).send({ error: 'Mensagem longa demais.' });
+      if (!content && tem.anexos === 0) return reply.code(400).send({ error: 'A mensagem não pode ficar vazia. Para tirá-la, apague.' });
+      if (content === (db.findMessageContent(message.id) ?? '')) return { ok: true, editadaEm: null };
+      const barrada = barrarEdicao(channel, request.user.id, content);
+      if (barrada) return reply.code(400).send({ error: barrada });
+      const editadaEm = db.editarMensagem(message.id, content);
+      io.to(channelRoom(channel)).emit('message:updated', {
+        id: message.id,
+        channelId: message.channelId,
+        threadId: message.threadId,
+        content,
+        editadaEm,
+      });
+      return { ok: true, editadaEm };
+    });
 
     // ---------- Enquetes ----------
 

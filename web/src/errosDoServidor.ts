@@ -21,6 +21,12 @@ import { chave } from './i18n';
 // ===================================================================================================
 
 export const ERROS_TRADUZIDOS = [
+  // o canal de avisos e o editar mensagem (server/src/automod.ts, automod-routes.ts, chat-routes.ts; 23/11/2026)
+  chave('Neste canal de avisos, só quem administra escreve. Dá para responder num tópico.'),
+  chave('Só canal de texto vira canal de avisos.'),
+  chave('Só quem escreveu a mensagem pode editá-la.'),
+  chave('Esta mensagem não tem texto para editar.'),
+  chave('A mensagem não pode ficar vazia. Para tirá-la, apague.'),
   // o futebol dos coelhos (server/src/minijogo-futebol.ts, 05/11/2026; o segundo também é da Briga)
   chave('Partida inválida.'),
   chave('Ninguém para jogar.'),

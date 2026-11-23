@@ -182,6 +182,8 @@ export interface Channel {
   createdBy: number | null;
   /** Modo lento: segundos entre mensagens da mesma pessoa. 0 = desligado. Ver server/src/automod.ts. */
   modoLento?: number;
+  /** Canal de avisos: só quem administra escreve no canal; a turma lê, reage e conversa nos tópicos. 0/1. */
+  avisos?: number;
   /** Sala de voz que, ao entrar, cria uma sala temporária para quem entrou. 0/1. */
   criaSalas?: number;
   /** Sala temporária: some quando a última pessoa sai. 0/1. */
@@ -279,6 +281,8 @@ export interface Message {
   replyTo?: Citacao | null;
   /** Quando foi fixada no canal; null ou ausente quando não está (ver FixadasDoCanal.tsx). */
   fixadaEm?: string | null;
+  /** Quando o texto foi editado pela última vez; null ou ausente quando nunca foi. */
+  editadaEm?: string | null;
 }
 
 /** O pedacinho da original em cima da resposta. `id` nulo: a original não existe mais para quem lê. */

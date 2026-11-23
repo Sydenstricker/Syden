@@ -1,9 +1,9 @@
-import { Download, FileText, Flag, MessageSquarePlus, MessagesSquare, Pin, PinOff, Reply, SmilePlus, ThumbsUp, Trash2, Check } from 'lucide-react';
+import { Download, FileText, Flag, MessageSquarePlus, MessagesSquare, Pencil, Pin, PinOff, Reply, SmilePlus, ThumbsUp, Trash2, Check } from 'lucide-react';
 import { useBloqueados } from './bloqueios';
 import { abrirConviteNoSyden } from './linkDeConvite';
 import { DialogoDeDenuncia } from './Denuncia';
 import { BotaoDeLembrete } from './Lembrete';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { api, mediaUrl } from './api';
 import { SeloDaComunidade } from './SeloDaComunidade';
@@ -386,6 +386,10 @@ export function MessageItem({
 }) {
   const t = useT();
   const [denunciando, setDenunciando] = useState(false);
+  // EDITAR (23/11/2026): só quem escreveu, só o texto; enquete e figurinha não têm texto que seja delas.
+  const [editando, setEditando] = useState(false);
+  const podeEditar =
+    meuId !== undefined && message.author.id === meuId && !message.author.app && !message.poll && !message.attachments.some((a) => a.figurinha);
   const podeDenunciar = meuId !== undefined && message.author.id !== meuId && !message.author.app;
   async function reactWith(emoji: string) {
     try {
@@ -396,9 +400,21 @@ export function MessageItem({
     }
   }
 
+  const marcaDeEditada = message.editadaEm ? (
+    <span className="mensagem-editada" title={new Date(message.editadaEm).toLocaleString(idiomaAtual())}>
+      {t('(editada)')}
+    </span>
+  ) : null;
+
   const body = (
     <>
-      {message.content && <MessageText content={message.content} />}
+      {editando ? (
+        <EdicaoDaMensagem message={message} aoFechar={() => setEditando(false)} />
+      ) : (
+        message.content && <MessageText content={message.content} sufixo={marcaDeEditada} />
+      )}
+      {/* sem texto (só o anexo), a marca fica sozinha embaixo */}
+      {!message.content && !editando && marcaDeEditada}
       {message.attachments.length > 0 && <Attachments files={message.attachments} />}
       {message.poll && <PollCard poll={message.poll} canClose={canManagePoll} onChange={onPollChange} />}
       {message.thread && onOpenThread && <ThreadChip thread={message.thread} onOpen={() => onOpenThread(message.thread!)} />}
@@ -419,6 +435,11 @@ export function MessageItem({
         </button>
       )}
       <AddReactionButton onPick={(emoji) => void reactWith(emoji)} />
+      {podeEditar && !editando && (
+        <button className="message-action" title={t('Editar mensagem')} aria-label={t('Editar mensagem')} onClick={() => setEditando(true)}>
+          <Pencil size={16} />
+        </button>
+      )}
       <BotaoDeLembrete messageId={message.id} />
       {onFixar && (
         <button
@@ -510,6 +531,70 @@ export function MessageItem({
   );
 }
 
+/**
+ * A caixa de editar, no lugar do texto. Enter salva, Shift+Enter quebra a linha, Esc desiste. O texto novo chega às telas
+ * abertas (inclusive a desta pessoa) pelo socket, 'message:updated'; aqui só se fecha a caixa quando o servidor aceitou.
+ */
+function EdicaoDaMensagem({ message, aoFechar }: { message: Message; aoFechar: () => void }) {
+  const t = useT();
+  const [texto, setTexto] = useState(message.content);
+  const [erro, setErro] = useState<string | null>(null);
+  const [salvando, setSalvando] = useState(false);
+  const caixa = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    const c = caixa.current;
+    if (!c) return;
+    c.focus();
+    c.setSelectionRange(c.value.length, c.value.length);
+  }, []);
+
+  async function salvar() {
+    if (salvando) return;
+    if (texto.trim() === message.content.trim()) return aoFechar();
+    setSalvando(true);
+    setErro(null);
+    try {
+      await api(`/api/messages/${message.id}`, { method: 'PATCH', body: { content: texto } });
+      aoFechar();
+    } catch (e) {
+      setErro((e as Error).message);
+      setSalvando(false);
+    }
+  }
+
+  return (
+    <div className="mensagem-edicao">
+      <textarea
+        ref={caixa}
+        value={texto}
+        rows={Math.min(8, Math.max(1, texto.split('\n').length))}
+        maxLength={2000}
+        aria-label={t('Editar mensagem')}
+        onChange={(e) => setTexto(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            e.stopPropagation();
+            aoFechar();
+          } else if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+            e.preventDefault();
+            void salvar();
+          }
+        }}
+      />
+      <div className="mensagem-edicao-botoes">
+        <button type="button" className="btn-secondary" onClick={aoFechar}>
+          {t('Cancelar')}
+        </button>
+        <button type="button" className="btn-primary" disabled={salvando} onClick={() => void salvar()}>
+          {t('Salvar')}
+        </button>
+      </div>
+      {erro && <p className="form-error small">{erro}</p>}
+    </div>
+  );
+}
+
 const URL_RE = /(https?:\/\/[^\s<]+)/g;
 // (com acento e maiúscula também: ":Coração:" acha o emoji "coracao", pela regra de nomeDoEmoji.ts)
 const EMOJI_TOKEN_RE = /:([\p{L}\p{N}_]{2,32}):/gu;
@@ -517,7 +602,8 @@ const EMOJI_TOKEN_RE = /:([\p{L}\p{N}_]{2,32}):/gu;
 const UNICODE_EMOJI_RE = /[\p{Extended_Pictographic}‍️\s]/gu;
 const JUMBO_LIMIT = 27; // como no Discord: até 27 emojis sem texto aparecem grandes
 
-export function MessageText({ content }: { content: string }) {
+/** `sufixo`: o que vai colado no fim do texto, na mesma linha (o "(editada)"). */
+export function MessageText({ content, sufixo }: { content: string; sufixo?: ReactNode }) {
   const { emojisByName } = useDirectory();
   const t = useT();
 
@@ -568,6 +654,7 @@ export function MessageText({ content }: { content: string }) {
           withEmojis(part, String(i))
         ),
       )}
+      {sufixo}
     </p>
   );
 }

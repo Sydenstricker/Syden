@@ -21316,3 +21316,46 @@ body.arrastando-barra {
 .message-action.ativa {
   color: var(--accent);
 }
+
+/* ---------- Canal de avisos e editar mensagem (23/11/2026) ---------- */
+.canal-de-avisos-nota {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 16px 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--bg-tertiary, rgba(127, 127, 127, 0.12));
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+.canal-de-avisos-nota svg {
+  flex-shrink: 0;
+}
+.mensagem-editada {
+  margin-inline-start: 4px;
+  color: var(--text-muted);
+  font-size: calc(11px * var(--escala-do-texto));
+}
+.mensagem-edicao {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 2px 0;
+}
+.mensagem-edicao textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border, rgba(127, 127, 127, 0.3));
+  background: var(--bg-input, var(--bg-secondary));
+  color: inherit;
+  font: inherit;
+}
+.mensagem-edicao-botoes {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}

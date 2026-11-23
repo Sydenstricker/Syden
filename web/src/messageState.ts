@@ -73,3 +73,19 @@ export function removeAuthor(list: Message[], userId: number): Message[] {
 }
 
 const CITACAO_APAGADA = { id: null, author: null, content: '', anexos: 0, enquete: null };
+
+/** O que o servidor manda quando alguém edita uma mensagem (chat-routes.ts): o texto novo e a hora. */
+export interface Edicao {
+  id: number;
+  content: string;
+  editadaEm: string;
+}
+
+/** Troca o texto da mensagem editada, e também o que as respostas a ela citam (até 200 letras, como o servidor). */
+export function applyEdit(list: Message[], edicao: Edicao): Message[] {
+  return list.map((m) => {
+    if (m.id === edicao.id) return { ...m, content: edicao.content, editadaEm: edicao.editadaEm };
+    if (m.replyTo?.id === edicao.id) return { ...m, replyTo: { ...m.replyTo, content: edicao.content.slice(0, 200) } };
+    return m;
+  });
+}

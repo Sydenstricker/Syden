@@ -5,7 +5,7 @@ import { api } from './api';
 import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem } from './MessageItem';
-import { applyReactionUpdate, applyTally, removeAuthor, removeMessage, replacePoll, replaceReactions, type PollTally, type ReactionUpdate } from './messageState';
+import { applyEdit, applyReactionUpdate, applyTally, removeAuthor, removeMessage, replacePoll, replaceReactions, type PollTally, type ReactionUpdate, type Edicao } from './messageState';
 import type { Message, Reaction, Role, ThreadSummary, User } from './types';
 import { useT } from './i18n';
 
@@ -66,6 +66,9 @@ export function ThreadPanel({
     const onAnexoRetirado = ({ id, messageId }: { id: number; messageId: number }) =>
       setMessages((list) => list.map((m) => (m.id === messageId ? { ...m, attachments: m.attachments.filter((a) => a.id !== id) } : m)));
     socket.on('message:deleted', onDeleted);
+    // Editar (chat-routes.ts): só o texto e a hora mudam; quem cita a mensagem também vê o texto novo.
+    const onEditada = (edicao: Edicao) => setMessages((list) => applyEdit(list, edicao));
+    socket.on('message:updated', onEditada);
     socket.on('attachment:removed', onAnexoRetirado);
     socket.on('user:deleted', onUserDeleted);
     socket.on('poll:tally', onTally);
@@ -73,6 +76,7 @@ export function ThreadPanel({
     return () => {
       socket.off('message:new', onMessage);
       socket.off('message:deleted', onDeleted);
+      socket.off('message:updated', onEditada);
       socket.off('attachment:removed', onAnexoRetirado);
       socket.off('user:deleted', onUserDeleted);
       socket.off('poll:tally', onTally);

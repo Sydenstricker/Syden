@@ -76,6 +76,16 @@ export function ModeracaoSection({ community }: { community: Community }) {
     }
   }
 
+  async function mudarAvisos(canal: Channel, ligado: boolean) {
+    setAviso(null);
+    try {
+      const atualizado = await api<Channel>(`/api/channels/${canal.id}/avisos`, { method: 'PUT', body: { ligado } });
+      setCanais((lista) => lista.map((c) => (c.id === canal.id ? atualizado : c)));
+    } catch (e) {
+      setAviso({ ok: false, texto: (e as Error).message });
+    }
+  }
+
   if (!regras) return aviso ? <p className="form-error">{aviso.texto}</p> : null;
   // Uma por linha (ou separadas por vírgula): o jeito que quem cola uma lista de algum lugar já tem.
   const palavrasDoTexto = texto
@@ -138,6 +148,22 @@ export function ModeracaoSection({ community }: { community: Community }) {
                   </option>
                 ))}
               </select>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <h3>{t('Canais de avisos')}</h3>
+      <div className="settings-card">
+        <p className="settings-hint">
+          {t('Num canal de avisos, só quem administra escreve. A turma lê, reage e conversa nos tópicos de cada aviso.')}
+        </p>
+        <ul className="cargo-lista">
+          {canais.map((canal) => (
+            <li key={canal.id} className="cargo-linha">
+              <label className="cargo-separado">
+                <input type="checkbox" checked={!!canal.avisos} onChange={(e) => void mudarAvisos(canal, e.target.checked)} />
+                <bdi className="moderacao-canal">{nomeDeCanal(canal.name, true)}</bdi>
+              </label>
             </li>
           ))}
         </ul>

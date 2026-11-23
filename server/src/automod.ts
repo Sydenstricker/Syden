@@ -109,3 +109,37 @@ function esquecerOAntigo(agora: number) {
   for (const [chave, quando] of ultimaNoCanal) if (agora - quando > limite) ultimaNoCanal.delete(chave);
   for (const [chave, lista] of recentesNaComunidade) if (lista.every((t) => agora - t > FLOOD.janelaMs)) recentesNaComunidade.delete(chave);
 }
+
+/**
+ * O CANAL DE AVISOS (ver o fim de db.ts): no canal marcado, só quem administra escreve. Os tópicos ficam abertos, para a
+ * conversa sobre um aviso ficar pendurada nele. Vale para todo caminho que grava mensagem no canal (texto, anexo,
+ * figurinha, enquete, recado em vídeo).
+ */
+export function soQuemAdministra(channel: db.Channel, userId: number, threadId: number | null): string | null {
+  if (!channel.avisos || channel.communityId === null || threadId !== null) return null;
+  const papel = db.memberRole(channel.communityId, userId);
+  if (papel === 'owner' || papel === 'admin') return null;
+  return 'Neste canal de avisos, só quem administra escreve. Dá para responder num tópico.';
+}
+
+/**
+ * A EDIÇÃO passa pelas mesmas regras de CONTEÚDO da mensagem nova (o silêncio, as palavras e os links); o modo lento e o
+ * excesso não, porque contam mensagens, e editar não cria mensagem. Sem isto, editar era o jeito de pôr a palavra
+ * proibida depois de a mensagem passar.
+ */
+export function barrarEdicao(channel: db.Channel, userId: number, conteudo: string, agora = Date.now()): string | null {
+  if (channel.communityId === null) return null;
+  const silencio = db.silenciadoAte(channel.communityId, userId, agora);
+  if (silencio) {
+    const minutos = Math.ceil((Date.parse(silencio) - agora) / 60_000);
+    return `Você está em silêncio nesta comunidade por mais ${minutos} min.`;
+  }
+  const papel = db.memberRole(channel.communityId, userId);
+  if (papel === 'owner' || papel === 'admin') return null;
+  const regras = db.regrasDeModeracao(channel.communityId);
+  if (regras.palavras.some((palavra) => contemPalavra(conteudo, palavra))) {
+    return 'Esta comunidade não permite uma das palavras desta mensagem.';
+  }
+  if (regras.links && temLink(conteudo)) return 'Esta comunidade não permite links nas mensagens.';
+  return null;
+}

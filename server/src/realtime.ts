@@ -1,6 +1,6 @@
 import type { Server as IOServer, Socket } from 'socket.io';
 import { verifySession } from './auth.js';
-import { barrarMensagem } from './automod.js';
+import { barrarMensagem, soQuemAdministra } from './automod.js';
 import { entregarPendentes } from './agendador.js';
 import { responderComando } from './comandos-routes.js';
 import * as db from './db.js';
@@ -619,6 +619,8 @@ export function setupRealtime(io: IOServer) {
         if (!thread || thread.channelId !== channel.id) return ack?.({ ok: false, error: 'Tópico não encontrado.' });
         threadId = thread.id;
       }
+      const soAvisos = soQuemAdministra(channel, user.id, threadId);
+      if (soAvisos) return ack?.({ ok: false, error: soAvisos });
       // Respondendo a uma mensagem: ela tem de estar aqui mesmo (ver podeResponderA).
       let replyTo: number | null = null;
       if (payload?.replyTo !== undefined && payload.replyTo !== null) {

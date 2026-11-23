@@ -154,6 +154,8 @@ export interface Channel {
   temporaria?: number;
   /** Quantas pessoas cabem na sala de voz. 0 = sem limite. */
   limite?: number;
+  /** Canal de avisos: só quem administra escreve nele (os tópicos ficam abertos). 0/1. */
+  avisos?: number;
 }
 
 /** Uma conversa privada do jeito que ela aparece na lista: com quem é e qual foi a última mensagem. */
@@ -248,6 +250,8 @@ export interface Message {
   replyTo: Citacao | null;
   /** Quando foi fixada no canal (ver fixadas-routes.ts); null quando não está. */
   fixadaEm: string | null;
+  /** Quando o texto foi editado pela última vez; null quando nunca foi. */
+  editadaEm: string | null;
 }
 
 /**
@@ -3291,7 +3295,7 @@ export function updatePassword(userId: number, passwordHash: string) {
 }
 
 const channelColumns =
-  'id, community_id AS communityId, name, type, position, created_by AS createdBy, modo_lento AS modoLento, cria_salas AS criaSalas, temporaria, limite';
+  'id, community_id AS communityId, name, type, position, created_by AS createdBy, modo_lento AS modoLento, cria_salas AS criaSalas, temporaria, limite, avisos';
 
 export function listChannels(communityId: number) {
   return db
@@ -3510,10 +3514,11 @@ interface MessageRow {
   nomeDeExibicao: string | null;
   sistema: number;
   fixadaEm: string | null;
+  editadaEm: string | null;
 }
 
 const messageSelect = `
-  SELECT m.id, m.channel_id AS channelId, m.content, m.created_at AS createdAt, m.thread_id AS threadId,
+  SELECT m.id, m.channel_id AS channelId, m.content, m.created_at AS createdAt, m.thread_id AS threadId, m.editada_em AS editadaEm,
          u.id AS userId, u.username, u.nome_exibicao AS nomeDeExibicao, u.sistema,
          (SELECT fx.fixada_em FROM fixadas fx WHERE fx.message_id = m.id) AS fixadaEm
   FROM messages m JOIN users u ON u.id = m.user_id`;
@@ -3534,6 +3539,7 @@ function toMessage(row: MessageRow): Message {
     suggestion: null,
     replyTo: null,
     fixadaEm: row.fixadaEm ?? null,
+    editadaEm: row.editadaEm ?? null,
   };
 }
 
@@ -8467,4 +8473,42 @@ export function mensagensFixadas(channelId: number, viewerId: number): Message[]
     .prepare(`${messageSelect} JOIN fixadas f ON f.message_id = m.id WHERE f.channel_id = ? AND ${visivelParaQuemLe} ORDER BY f.fixada_em DESC`)
     .all(channelId, viewerId) as unknown as MessageRow[];
   return hydrate(rows.map(toMessage), viewerId);
+}
+
+// ---------------------------------------------------------------------------------------------------
+// O CANAL DE AVISOS E O EDITAR MENSAGEM (23/11/2026, pedidos dele, do mapa das permissões do Discord).
+//
+// AVISOS: no canal marcado, só quem administra escreve no canal; a turma lê, reage e conversa nos TÓPICOS das
+// mensagens (é onde a dúvida sobre um aviso fica perto dele). A trava mora em automod.ts (`soQuemAdministra`).
+//
+// EDITAR: só quem escreveu edita, e só o texto. `editada_em` é o que faz o "(editada)" aparecer: a tela não esconde
+// que a mensagem mudou depois de lida. A versão anterior NÃO é guardada (apagar a mensagem já tira tudo, e guardar
+// cada versão para sempre seria dado novo sem prazo); a denúncia guarda o retrato da mensagem na hora em que é feita.
+// ---------------------------------------------------------------------------------------------------
+
+addColumnIfMissing('channels', 'avisos', 'INTEGER NOT NULL DEFAULT 0');
+addColumnIfMissing('messages', 'editada_em', 'TEXT');
+
+export function definirAvisos(channelId: number, ligado: boolean): Channel | undefined {
+  db.prepare('UPDATE channels SET avisos = ? WHERE id = ?').run(ligado ? 1 : 0, channelId);
+  return findChannel(channelId);
+}
+
+/** Troca o texto e marca a hora da edição. Devolve a hora, para as telas abertas. */
+export function editarMensagem(id: number, conteudo: string): string {
+  const agora = new Date().toISOString();
+  db.prepare('UPDATE messages SET content = ?, editada_em = ? WHERE id = ?').run(conteudo, agora, id);
+  return agora;
+}
+
+/** O que a edição precisa saber: se tem anexo (aí o texto pode ficar vazio), enquete ou figurinha (não se editam). */
+export function oQueAMensagemTem(id: number) {
+  return db
+    .prepare(
+      `SELECT (SELECT COUNT(*) FROM attachments a WHERE a.message_id = m.id) AS anexos,
+              (SELECT COUNT(*) FROM attachments a WHERE a.message_id = m.id AND a.figurinha = 1) AS figurinhas,
+              (SELECT COUNT(*) FROM polls p WHERE p.message_id = m.id) AS enquetes
+       FROM messages m WHERE m.id = ?`,
+    )
+    .get(id) as { anexos: number; figurinhas: number; enquetes: number } | undefined;
 }

@@ -2392,6 +2392,17 @@ mensagem, status da sala de voz, membro marcar evento. **Feitos no mesmo dia:**
 - O menu da pessoa passou a se reposicionar a cada mudança de tamanho (ResizeObserver): a confirmação do banir e o campo da
   advertência o cresciam por dentro e os botões ficavam abaixo da tela.
 Testes: `server/test/banir-e-fixar.test.ts`, `e2e/banir-e-fixar.mjs` (passaram).
+- **O canal de avisos** (`avisos` no canal; Configurações → Ferramentas → Moderação, ao lado do modo lento): no canal marcado,
+  só quem administra escreve; a turma lê, reage e conversa nos TÓPICOS de cada aviso (a trava é `soQuemAdministra`, em
+  automod.ts, conferida em todo caminho que grava mensagem no canal, o socket e o `destination` do chat-routes). Para quem não
+  administra, a caixa de escrever vira a frase que diz isso, e o canal ganha o megafone no lugar do #.
+- **Editar mensagem** (`PATCH /api/messages/:id`, o lápis da mensagem; Enter salva, Esc desiste): só quem escreveu, e só o
+  texto (enquete e figurinha não se editam; com anexo o texto pode ficar vazio). A edição passa pelas regras de CONTEÚDO da
+  moderação automática (o silêncio, as palavras, os links: `barrarEdicao`), não pelo modo lento. A mensagem mostra "(editada)"
+  com a hora, e as respostas que a citam trocam o texto citado. **A versão anterior não é guardada** (escolha minha, a confirmar
+  com ele): apagar já tira tudo, e guardar cada versão seria dado novo sem prazo; a denúncia guarda o retrato da hora em que é
+  feita. Nem quem administra edita o texto dos outros (apaga, se precisar).
+Testes: `server/test/avisos-e-editar.test.ts`, `e2e/avisos-e-editar.mjs` (passaram).
 
 ## Trazer a estrutura de um servidor do Discord: canais e cargos, nunca permissões
 

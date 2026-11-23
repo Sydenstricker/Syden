@@ -72,5 +72,17 @@ export function registerAutomodRoutes(app: FastifyInstance, io: IOServer) {
       io.to(communityRoom(channel.communityId)).emit('channel:updated', atualizado);
       return atualizado;
     });
+
+    /** O canal de avisos (ver soQuemAdministra, em automod.ts): só quem administra liga e desliga. */
+    authed.put<{ Params: { id: string }; Body: { ligado?: boolean } }>('/api/channels/:id/avisos', async (request, reply) => {
+      const channel = db.findChannel(Number(request.params.id));
+      if (!channel || channel.communityId === null) return reply.code(404).send({ error: 'Canal não encontrado.' });
+      const negado = administra(channel.communityId, request.user.id);
+      if (negado) return reply.code(negado.codigo === 404 ? 404 : 403).send({ error: negado.codigo === 404 ? 'Canal não encontrado.' : negado.erro });
+      if (channel.type !== 'text') return reply.code(400).send({ error: 'Só canal de texto vira canal de avisos.' });
+      const atualizado = db.definirAvisos(channel.id, request.body?.ligado === true)!;
+      io.to(communityRoom(channel.communityId)).emit('channel:updated', atualizado);
+      return atualizado;
+    });
   });
 }

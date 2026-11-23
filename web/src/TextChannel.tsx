@@ -1,4 +1,4 @@
-import { AtSign, Hash } from 'lucide-react';
+import { AtSign, Hash, Megaphone } from 'lucide-react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
@@ -13,6 +13,8 @@ import { QuemDigita } from './QuemDigita';
 import { MobileBackButton } from './MobileBackButton';
 import { FixadasDoCanal } from './FixadasDoCanal';
 import {
+  applyEdit,
+  type Edicao,
   applyReactionUpdate,
   applyTally,
   applyThread,
@@ -102,6 +104,9 @@ export function TextChannel({
     const onAnexoRetirado = ({ id, messageId }: { id: number; messageId: number }) =>
       setMessages((list) => list.map((m) => (m.id === messageId ? { ...m, attachments: m.attachments.filter((a) => a.id !== id) } : m)));
     socket.on('message:deleted', onDeleted);
+    // Editar (chat-routes.ts): só o texto e a hora mudam; quem cita a mensagem também vê o texto novo.
+    const onEditada = (edicao: Edicao) => setMessages((list) => applyEdit(list, edicao));
+    socket.on('message:updated', onEditada);
     socket.on('attachment:removed', onAnexoRetirado);
     socket.on('user:deleted', onUserDeleted);
     socket.on('poll:tally', onTally);
@@ -118,6 +123,7 @@ export function TextChannel({
       socket.off('mensagem:fixada', onFixada);
       socket.off('message:new', onMessage);
       socket.off('message:deleted', onDeleted);
+      socket.off('message:updated', onEditada);
       socket.off('attachment:removed', onAnexoRetirado);
       socket.off('user:deleted', onUserDeleted);
       socket.off('poll:tally', onTally);
@@ -207,7 +213,7 @@ export function TextChannel({
       >
         <header className="main-header">
           <MobileBackButton onBack={onMobileBack} />
-          {privada ? <AtSign size={22} className="muted-icon" /> : <Hash size={22} className="muted-icon" />} {channel.name}
+          {privada ? <AtSign size={22} className="muted-icon" /> : channel.avisos ? <Megaphone size={22} className="muted-icon" /> : <Hash size={22} className="muted-icon" />} {channel.name}
           <FixadasDoCanal channelId={channel.id} socket={socket} podeFixar={podeFixar} />
           {acoesDoCabecalho}
         </header>
@@ -226,7 +232,7 @@ export function TextChannel({
             </button>
           ) : (
             <div className="channel-intro">
-              <div className="channel-intro-icon">{privada ? <AtSign size={36} /> : <Hash size={36} />}</div>
+              <div className="channel-intro-icon">{privada ? <AtSign size={36} /> : channel.avisos ? <Megaphone size={36} /> : <Hash size={36} />}</div>
               <h2>{privada ? channel.name : t('Bem-vindo a {nome}!', { nome: nomeDeCanal(channel.name, true) })}</h2>
               <p>{privada ? t('Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.') : t('Este é o começo do canal.')}</p>
             </div>
@@ -271,6 +277,13 @@ export function TextChannel({
         )}
 
         <QuemDigita channelId={channel.id} />
+        {/* O canal de avisos (automod.ts, soQuemAdministra): quem não administra lê, reage e conversa nos tópicos. No
+            lugar da caixa, a frase diz isso, em vez de deixar a pessoa escrever para receber o erro depois. */}
+        {channel.avisos && role === 'member' ? (
+          <p className="canal-de-avisos-nota">
+            <Megaphone size={15} aria-hidden="true" /> {t('Canal de avisos: só quem administra escreve aqui. Para conversar sobre um aviso, abra um tópico nele.')}
+          </p>
+        ) : (
         <Composer
           ref={composerRef}
           channelId={channel.id}
@@ -284,6 +297,7 @@ export function TextChannel({
           aoCancelarResposta={() => setRespondendo(null)}
           devolverResposta={(m) => setRespondendo((r) => r ?? m)}
         />
+        )}
 
         {dragging && <div className="drop-overlay">{t('Solte para enviar o arquivo')}</div>}
       </div>
