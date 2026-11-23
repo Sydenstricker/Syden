@@ -265,14 +265,34 @@ else {
   await page.screenshot({ path: 'e2e/fotos/fundo-da-camera-desfocado.png' });
   await foto('desfocado');
 
-  // "Imagem": uma imagem toda vermelha, escolhida pela tela; os cantos têm de ficar vermelhos e o meio, a pessoa
+  // "Imagem": uma FOTO vermelha do tamanho de uma de verdade (com ruído, para o JPEG ficar pesado), escolhida pela tela COM O
+  // localStorage QUASE CHEIO: até 23/11/2026 a imagem que não cabia lá saía cinza, igual ao "Apagado" (relato de quem usa).
+  // Escolher "Imagem" sem imagem nenhuma já abre o seletor de arquivos. Os cantos têm de ficar vermelhos e o meio, a pessoa.
   const { PNG } = await import('pngjs');
-  const png = new PNG({ width: 64, height: 36 });
-  for (let i = 0; i < png.data.length; i += 4) png.data.set([220, 20, 30, 255], i);
+  const png = new PNG({ width: 1920, height: 1080 });
+  for (let i = 0; i < png.data.length; i += 4) png.data.set([190 + Math.random() * 60, Math.random() * 50, Math.random() * 50, 255], i);
+  const livre = await page.evaluate(() => {
+    const pedaco = 'x'.repeat(100_000);
+    let i = 0;
+    try {
+      for (;;) localStorage.setItem('enchimento-' + i++, pedaco);
+    } catch {
+      // cheio
+    }
+    localStorage.removeItem('enchimento-' + (i - 2)); // sobram ~200 mil caracteres: a imagem não cabe
+    return i;
+  });
+  console.log('  localStorage enchido com ' + livre + ' pedaços');
   await page.locator('button[aria-label="Configurações"]').first().click();
   await page.locator('.settings-tab', { hasText: /Voz e vídeo/ }).first().click();
+  const seletor = page.waitForEvent('filechooser', { timeout: 5000 });
   await page.locator('.fundo-da-camera .effect-option', { hasText: /^Imagem$/ }).click();
-  await page.locator('.fundo-da-camera-imagem input[type="file"]').setInputFiles({ name: 'vermelho.png', mimeType: 'image/png', buffer: PNG.sync.write(png) });
+  (await seletor.then(
+    async (fc) => (await fc.setFiles({ name: 'vermelho.png', mimeType: 'image/png', buffer: PNG.sync.write(png) }), true),
+    () => false,
+  ))
+    ? ok('escolher "Imagem" sem imagem abre o seletor de arquivos')
+    : falhou('escolher "Imagem" não abriu o seletor de arquivos');
   await page.locator('.fundo-da-camera-imagem img').waitFor({ timeout: 5000 });
   await page.keyboard.press('Escape');
   await page.waitForTimeout(2500);
@@ -292,6 +312,7 @@ else {
   console.log('  com a imagem: ' + JSON.stringify(comImagem));
   comImagem.canto > 0.8 && comImagem.meio < 0.2 ? ok('"Imagem": o fundo virou a imagem escolhida, e a pessoa ficou na frente') : falhou('"Imagem": ' + JSON.stringify(comImagem));
   await page.screenshot({ path: 'e2e/fotos/fundo-da-camera-imagem.png' });
+  await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('enchimento-')).forEach((k) => localStorage.removeItem(k)));
   if (FOTOS) {
     // para mostrar: uma paisagem desenhada por código (céu de fim de tarde e morros), no lugar do vermelho da medida
     const paisagem = new PNG({ width: 640, height: 360 });

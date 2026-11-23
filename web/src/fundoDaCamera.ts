@@ -90,8 +90,16 @@ export async function fundoDaCameraDisponivel(): Promise<boolean> {
   }
 }
 
-/** A imagem escolhida para o fundo, guardada neste aparelho (já reduzida). */
+/**
+ * A imagem escolhida nesta sessão. O efeito a lê DAQUI primeiro: até 23/11/2026 ele lia só do localStorage, e quando a imagem
+ * não cabia lá (o limite é de uns 5 MB por site, dividido com o resto do Syden) a gravação falhava calada e o fundo saía
+ * cinza, igual ao "Apagado" (relato de quem usa).
+ */
+let imagemNaMemoria: string | null = null;
+
+/** A imagem escolhida para o fundo (já reduzida): a desta sessão, ou a guardada neste aparelho. */
 export function imagemDoFundo(): string | null {
+  if (imagemNaMemoria) return imagemNaMemoria;
   try {
     return localStorage.getItem(CHAVE_DA_IMAGEM);
   } catch {
@@ -112,10 +120,15 @@ export async function guardarImagemDoFundo(arquivo: Blob): Promise<string> {
   ctx.drawImage(bitmap, (1280 - w) / 2, (720 - h) / 2, w, h);
   bitmap.close();
   const dados = canvas.toDataURL('image/jpeg', 0.85);
-  try {
-    localStorage.setItem(CHAVE_DA_IMAGEM, dados);
-  } catch {
-    // sem espaço no aparelho: vale só até fechar o app
+  imagemNaMemoria = dados;
+  // Guardar para a próxima vez: se não couber, tenta uma versão mais leve; se nem ela couber, vale só até fechar o app.
+  for (const versao of [dados, canvas.toDataURL('image/jpeg', 0.6)]) {
+    try {
+      localStorage.setItem(CHAVE_DA_IMAGEM, versao);
+      break;
+    } catch {
+      // sem espaço
+    }
   }
   return dados;
 }

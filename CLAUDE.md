@@ -2967,6 +2967,10 @@ fica no aparelho, reduzida a 1280 × 720). Vale na hora, com a câmera ligada. *
 - **Se o processo cair ou a placa recusar, o quadro passa como veio**: a câmera nunca fica preta por causa do efeito.
 - Teste: `e2e/fundo-da-camera-no-app.mjs` (o app com a câmera falsa tocando um vídeo do estudo; os quatro modos e o custo) e
   `desktop/test/fundo-camera.test.mjs`. Sobra: uma franja clara fina da parede em volta do cabelo (o modelo a 192 px).
+- **A IMAGEM DE FUNDO SAÍA CINZA, igual ao "Apagado"** (relato de quem usa, 23/11/2026): o efeito lia a imagem só do localStorage, e a
+  foto de verdade (1280 × 720 em JPEG) não cabia quando ele estava cheio; a gravação falhava calada. Agora a imagem fica na memória
+  da sessão e o localStorage é só para a próxima vez (com uma versão mais leve se a cheia não couber). E escolher "Imagem" sem
+  imagem nenhuma já abre o seletor de arquivos. O e2e enche o localStorage antes de escolher (com o código antigo, falha).
 
 **O FILTRO GUIADO E O COMPLETO (17/11/2026, relato dele: "não fica tão refinado quanto o do NVIDIA Broadcast"; "pode fazer os 3").**
 A franja clara em volta do cabelo saiu com o FILTRO GUIADO na placa (`fundoDaCamera.ts`: perto da borda, a máscara segue o brilho do

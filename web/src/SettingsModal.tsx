@@ -2777,6 +2777,9 @@ function FundoDaCameraPicker({ voice }: { voice: Voice }) {
   const settings = useSettings();
   const [disponivel, setDisponivel] = useState(false);
   const [imagem, setImagem] = useState(() => imagemDoFundo());
+  const [erroDaImagem, setErroDaImagem] = useState(false);
+  // "Imagem" sem imagem nenhuma ainda seria igual ao "Apagado": escolher a opção já abre o seletor de arquivos.
+  const seletorRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     let vivo = true;
     void fundoDaCameraDisponivel().then((sim) => vivo && setDisponivel(sim));
@@ -2793,7 +2796,14 @@ function FundoDaCameraPicker({ voice }: { voice: Voice }) {
   ];
   const escolhido = settings.fundoDaCamera;
   async function escolherImagem(arquivo: File) {
-    setImagem(await guardarImagemDoFundo(arquivo));
+    setErroDaImagem(false);
+    try {
+      setImagem(await guardarImagemDoFundo(arquivo));
+    } catch {
+      // um formato que o navegador não abre (HEIC, por exemplo)
+      setErroDaImagem(true);
+      return;
+    }
     await voice.setFundoDaCamera('imagem');
   }
   return (
@@ -2803,7 +2813,11 @@ function FundoDaCameraPicker({ voice }: { voice: Voice }) {
       <div className="effect-options fundo-da-camera" role="radiogroup" aria-label={t('Fundo da câmera')}>
         {OPCOES.map(([id, nome, icone]) => (
           <label key={id} className={`effect-option${escolhido === id ? ' selected' : ''}`}>
-            <input type="radio" name="fundo-da-camera" checked={escolhido === id} onChange={() => void voice.setFundoDaCamera(id)} />
+            <input type="radio" name="fundo-da-camera" checked={escolhido === id} onChange={() => {
+                void voice.setFundoDaCamera(id);
+                if (id === 'imagem' && !imagem) seletorRef.current?.click();
+              }}
+            />
             <span className="effect-option-icon">{icone}</span>
             <span className="effect-option-text">
               <strong>{t(nome)}</strong>
@@ -2811,12 +2825,24 @@ function FundoDaCameraPicker({ voice }: { voice: Voice }) {
           </label>
         ))}
       </div>
+      <input
+        ref={seletorRef}
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        hidden
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          e.target.value = '';
+          if (f) void escolherImagem(f);
+        }}
+      />
       {escolhido === 'imagem' && (
         <div className="fundo-da-camera-imagem">
           {imagem && <img src={imagem} alt="" />}
           <FilePicker accept="image/png,image/jpeg,image/webp" secondary onFile={(f) => void escolherImagem(f)}>
             {imagem ? t('Trocar imagem') : t('Escolher imagem')}
           </FilePicker>
+          {erroDaImagem && <p className="form-error">{t('Não foi possível abrir essa imagem.')}</p>}
         </div>
       )}
       {escolhido !== 'nenhum' && <QualidadeDoFundo />}
