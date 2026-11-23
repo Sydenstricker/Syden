@@ -22,7 +22,7 @@ import { Accessibility, Languages,
   Trash2,
   UserX,
   Users,
-  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown, CircleOff, Focus, Eraser, Image as ImageIcon, VideoOff, Video as VideoIcon, Ban, ScrollText } from 'lucide-react';
+  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown, CircleOff, Focus, Eraser, Image as ImageIcon, VideoOff, Video as VideoIcon, Smartphone, Ban, ScrollText } from 'lucide-react';
 import {
   type EfeitoDoFundo,
   fundoDaCameraDisponivel,
@@ -62,6 +62,7 @@ import { chave, t, useT } from './i18n';
 import { MOLDURAS } from './guardaRoupa';
 import { IdiomaSection } from './IdiomaSection';
 import { API_URL, api, loadToken, mediaUrl, saveToken } from './api';
+import { soToque } from './CelularComoCamera';
 import { FamiliaSection } from './Familia';
 import { procurarRepetidos } from './somParecido';
 import { CatalogoDeInsignias } from './CatalogoDeInsignias';
@@ -2882,18 +2883,25 @@ function PreviaDaCamera({ voice, efeito, imagem }: { voice: Voice; efeito: Efeit
           mostrar((daChamada.getProcessor() as ProcessadorDoFundo | undefined)?.processedTrack ?? daChamada.mediaStreamTrack);
           return;
         }
-        const fluxo = await navigator.mediaDevices.getUserMedia({
-          video: { deviceId: videoInput || undefined, width: { ideal: 1280 }, height: { ideal: 720 } },
-        });
-        propria = fluxo.getVideoTracks()[0];
-        if (!vivo) return propria.stop();
+        // O celular ligado fora de uma chamada (o botão logo abaixo): a imagem dele, que não é desta prévia e não se fecha aqui.
+        const doCelular = voice.faixaDoCelular?.mediaStreamTrack;
+        let origem: MediaStreamTrack;
+        if (doCelular && doCelular.readyState === 'live') origem = doCelular;
+        else {
+          const fluxo = await navigator.mediaDevices.getUserMedia({
+            video: { deviceId: videoInput || undefined, width: { ideal: 1280 }, height: { ideal: 720 } },
+          });
+          propria = fluxo.getVideoTracks()[0];
+          if (!vivo) return propria.stop();
+          origem = propria;
+        }
         if (comEfeito) {
           const processador = new ProcessadorDoFundo(efeito);
-          await processador.init({ track: propria } as VideoProcessorOptions);
+          await processador.init({ track: origem } as VideoProcessorOptions);
           if (!vivo) return void processador.destroy();
           processadorRef.current = processador;
-          mostrar(processador.processedTrack ?? propria);
-        } else mostrar(propria);
+          mostrar(processador.processedTrack ?? origem);
+        } else mostrar(origem);
       } catch (e) {
         console.error(e);
         if (vivo) {
@@ -2910,12 +2918,20 @@ function PreviaDaCamera({ voice, efeito, imagem }: { voice: Voice; efeito: Efeit
       if (videoRef.current) videoRef.current.srcObject = null;
     };
     // o efeito em si (desfocar, apagar, imagem) troca sem reabrir: logo abaixo
-  }, [ligada, videoInput, comEfeito, voice.room]);
+  }, [ligada, videoInput, comEfeito, voice.room, voice.faixaDoCelular]);
 
   // Trocar entre desfocar, apagar e imagem (ou a imagem em si) não reabre a câmera.
   useEffect(() => {
     if (comEfeito) void processadorRef.current?.trocar(efeito);
   }, [efeito, imagem, comEfeito]);
+
+  // O celular acabou de ligar: a prévia acende sozinha, para a pessoa ver o efeito na imagem dele.
+  useEffect(() => {
+    if (voice.faixaDoCelular) {
+      setErro(false);
+      setLigada(true);
+    }
+  }, [voice.faixaDoCelular]);
 
   return (
     <div className="previa-da-camera">
@@ -2947,6 +2963,18 @@ function PreviaDaCamera({ voice, efeito, imagem }: { voice: Voice; efeito: Efeit
         >
           {ligada ? t('Parar teste') : t('Testar')}
         </button>
+        {/* O CELULAR COMO CÂMERA também daqui (pedido dele, 23/11/2026): a mesma janela do QR code do "Mais" da chamada, e
+            fora de uma chamada a imagem fica na prévia até a pessoa entrar numa. Aceso, o botão desliga o celular. */}
+        {!soToque() && (
+          <button
+            type="button"
+            className="btn-secondary"
+            aria-pressed={voice.celular !== null}
+            onClick={() => (voice.celular ? voice.fecharCelular() : voice.abrirCelular())}
+          >
+            <Smartphone size={16} aria-hidden="true" /> {t('Usar o celular como câmera')}
+          </button>
+        )}
         {/* A câmera não abriu (sem permissão, ocupada, nenhuma): o ícone dela riscado, sem frase nova nos 80 idiomas. */}
         {erro && (
           <span className="previa-da-camera-erro" role="status" title={t('Câmera')} aria-label={t('Câmera')}>

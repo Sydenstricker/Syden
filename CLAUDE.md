@@ -3020,8 +3020,12 @@ abre a página (sem conta) e a câmera dele vira a câmera da pessoa, no lugar d
 - **Testado por ele com um iPhone de verdade em 23/11/2026: funcionou.** O vídeo do celular vem EM PÉ, e o quadro da chamada
   (deitado) o cortava pelo meio; agora a câmera em pé aparece INTEIRA, com faixas da cor do quadro dos lados (`camera-em-pe` em
   VoiceStage.tsx, medido pelo tamanho do vídeo). Vale para qualquer câmera em pé.
+- **Também pelas Configurações** (pedido dele, 23/11/2026): "Usar o celular como câmera" embaixo da prévia do Syden Broadcast (só no
+  app, onde a prévia existe). FORA DE UMA CHAMADA a imagem do celular fica guardada (`faixaDoCelular` em useVoice.ts), a prévia
+  acende sozinha com ela e o fundo escolhido, e ela entra como a câmera quando a pessoa entra numa sala; o botão aceso desliga. A
+  janela do QR code é uma só para o app (no Shell, por cima das Configurações).
 - Testes: `server/test/camera-do-celular.test.ts` e `e2e/celular-como-camera.mjs` (passaram; o "celular" é outro navegador com uma
-  câmera em pé de canvas, na mesma máquina).
+  câmera em pé de canvas, na mesma máquina). E `e2e/celular-nas-configuracoes-no-app.mjs` (o app, passou).
 
 ## O app de Android: medido, ainda não começado
 

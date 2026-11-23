@@ -1,4 +1,5 @@
 import { RoomAudioRenderer, RoomContext } from '@livekit/components-react';
+import { JanelaCelularComoCamera } from './CelularComoCamera';
 import { UserX, Users } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { type Socket, io } from 'socket.io-client';
@@ -1638,6 +1639,8 @@ export function Shell({
       )}
       {festasConferidas && !comemorar[0] && !aniversarioHoje && !festaDoSyden && porRevelar[0] && <Revelacao codigo={porRevelar[0]} aoResgatar={() => resgatar(porRevelar[0])} />}
 
+      {/* A janela do QR code do celular como câmera: uma só para o app, aberta pelo "Mais" da chamada ou pelas Configurações (por cima delas). */}
+      <JanelaCelularComoCamera voice={voice} />
       {settingsOpen !== null && (
         <SettingsModal
           secaoInicial={settingsOpen}

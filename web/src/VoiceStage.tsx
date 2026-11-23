@@ -60,7 +60,7 @@ import { chave, idiomaAtual, useT } from './i18n';
 import { DURACAO_DO_TESTE_MS, ligarCodificacaoParaTestar } from './testarCodificacao';
 import { IconButton } from './IconButton';
 import { MobileBackButton } from './MobileBackButton';
-import { BotaoCelularComoCamera, JanelaCelularComoCamera } from './CelularComoCamera';
+import { BotaoCelularComoCamera } from './CelularComoCamera';
 import { ClipButton, PreviaDoClipe, useClipe } from './ClipButton';
 import type { Socket } from 'socket.io-client';
 import { BotaoDestacar, JanelasDestacadas } from './BotaoDestacar';
@@ -1637,7 +1637,6 @@ export function Stage({
 
       <StartAudio label={t('Clique para ativar o áudio')} className="start-audio" />
 
-      <JanelaCelularComoCamera voice={voice} />
       <div className="stage-controls">
         <IconButton
           label={

@@ -1609,9 +1609,30 @@ export function useVoice(socket: Socket | null) {
   const receptorRef = useRef<ReceptorDoCelular | null>(null);
   const faixaDoCelularRef = useRef<LocalVideoTrack | null>(null);
   const [celular, setCelular] = useState<EstadoDoReceptor | null>(null);
+  // A imagem do celular, publicada ou não: FORA DE UMA CHAMADA (23/11/2026, o botão nas Configurações) ela fica guardada,
+  // a prévia a mostra, e ela entra na chamada quando a pessoa entra numa.
+  const [faixaDoCelular, setFaixaDoCelular] = useState<LocalVideoTrack | null>(null);
+  const publicarCelular = useCallback(async () => {
+    const faixa = faixaDoCelularRef.current;
+    const lp = room.localParticipant;
+    if (!faixa || room.state !== ConnectionState.Connected || lp.getTrackPublication(Track.Source.Camera)?.track === faixa) return;
+    // A webcam sai: são duas câmeras da mesma pessoa, e quem assiste só vê uma.
+    if (lp.isCameraEnabled) await lp.setCameraEnabled(false).catch(() => {});
+    const antiga = lp.getTrackPublication(Track.Source.Camera)?.track;
+    if (antiga) await lp.unpublishTrack(antiga).catch(() => {});
+    if (faixaDoCelularRef.current !== faixa) return;
+    try {
+      await lp.publishTrack(faixa, { source: Track.Source.Camera });
+    } catch (e) {
+      console.error(e);
+      reportProblem('câmera', `celular como câmera: ${e instanceof Error ? e.message : String(e)}`.slice(0, 200));
+    }
+    setMedia(readLocalMedia(lp));
+  }, [room]);
   const tirarFaixaDoCelular = useCallback(async () => {
     const faixa = faixaDoCelularRef.current;
     faixaDoCelularRef.current = null;
+    setFaixaDoCelular(null);
     if (!faixa) return;
     await room.localParticipant.unpublishTrack(faixa).catch(() => {});
     faixa.stop();
@@ -1640,35 +1661,25 @@ export function useVoice(socket: Socket | null) {
         void (async () => {
           if (receptorRef.current !== receptor) return faixaCrua.stop();
           await tirarFaixaDoCelular();
-          const lp = room.localParticipant;
-          // A webcam sai: são duas câmeras da mesma pessoa, e quem assiste só vê uma.
-          if (lp.isCameraEnabled) await lp.setCameraEnabled(false).catch(() => {});
-          const antiga = lp.getTrackPublication(Track.Source.Camera)?.track;
-          if (antiga) await lp.unpublishTrack(antiga).catch(() => {});
           const faixa = new LocalVideoTrack(faixaCrua, undefined, true);
           faixaDoCelularRef.current = faixa;
-          try {
-            await lp.publishTrack(faixa, { source: Track.Source.Camera });
-          } catch (e) {
-            console.error(e);
-            faixaDoCelularRef.current = null;
-            reportProblem('câmera', `celular como câmera: ${e instanceof Error ? e.message : String(e)}`.slice(0, 200));
-          }
-          setMedia(readLocalMedia(lp));
+          setFaixaDoCelular(faixa);
+          await publicarCelular();
         })();
       },
     );
     receptorRef.current = receptor;
     setCelular({ fase: 'conectando' });
     void receptor.abrir();
-  }, [room, tirarFaixaDoCelular, fecharCelular]);
+  }, [room, tirarFaixaDoCelular, fecharCelular, publicarCelular]);
   useEffect(() => {
-    // Saiu da chamada: o celular vai junto.
-    room.on(RoomEvent.Disconnected, fecharCelular);
+    // Saiu da chamada: o celular vai junto. Entrou numa com o celular já ligado (pelas Configurações): ele entra como a câmera.
+    const aoEntrar = () => void publicarCelular();
+    room.on(RoomEvent.Disconnected, fecharCelular).on(RoomEvent.Connected, aoEntrar);
     return () => {
-      room.off(RoomEvent.Disconnected, fecharCelular);
+      room.off(RoomEvent.Disconnected, fecharCelular).off(RoomEvent.Connected, aoEntrar);
     };
-  }, [room, fecharCelular]);
+  }, [room, fecharCelular, publicarCelular]);
 
   const toggleCamera = useCallback(async () => {
     const lp = room.localParticipant;
@@ -2456,6 +2467,8 @@ export function useVoice(socket: Socket | null) {
     toggleCamera,
     /** O celular como câmera: o passo de agora (null sem celular), abrir o QR code e fechar. */
     celular,
+    /** A imagem do celular, também fora de uma chamada (a prévia das Configurações a mostra). */
+    faixaDoCelular,
     abrirCelular,
     fecharCelular,
     setFundoDaCamera,

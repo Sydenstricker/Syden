@@ -12,7 +12,7 @@ import type { Voice } from './useVoice';
  * módulos que a biblioteca calcula (qrcode-generator, MIT): nada de HTML vindo de fora.
  */
 /** Num aparelho só de toque (o próprio celular), o botão não aparece: ele já é o celular. */
-const soToque = () => typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches;
+export const soToque = () => typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches;
 
 export function BotaoCelularComoCamera({ voice }: { voice: Voice }) {
   const t = useT();

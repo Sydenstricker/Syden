@@ -21516,3 +21516,9 @@ body.arrastando-barra {
   object-fit: contain;
   background: transparent; /* as faixas dos lados ficam com a cor do quadro, que continua com a forma dele */
 }
+
+/* O botão do celular aceso (o celular está ligado como câmera): a cor de "ao vivo" da chamada. */
+.previa-da-camera button[aria-pressed='true'] {
+  border-color: var(--green, #23a55a);
+  color: var(--green, #23a55a);
+}
