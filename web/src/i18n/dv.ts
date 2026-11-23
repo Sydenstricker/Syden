@@ -4801,7 +4801,7 @@ export default {
   "Trazer de um servidor do Discord": "Discord ސާވަރަކުން އޮނިގަނޑު ގެނައުން",
   "Link do modelo do servidor": "ސާވަރ ޓެމްޕްލޭޓްގެ ލިންކް",
   "Ver o que vem": "އަންނާނެ އެއްޗެހި ބެލުން",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord ގައި ސާވަރ ހިންގާ މީހާ ލިންކް ހަދަނީ ސާވަރ ސެޓިންގްސް → ސާވަރ ޓެމްޕްލޭޓް އިންނެވެ. ޗެނަލްތަކާއި ރޯލްތައް (ނަމާއި ކުލަ) އަންނާނެ، މެސެޖްތައް ނާންނާނެ.",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord ގައި ސާވަރ ހިންގާ މީހާ ލިންކް ހަދަނީ ސާވަރ ސެޓިންގްސް → ސާވަރ ޓެމްޕްލޭޓް އިންނެވެ. ޗެނަލްތަކާއި ދައުރުތައް (ނަމާއި ކުލަ) އަންނާނެ، މެސެޖްތައް ނާންނާނެ.",
   "Passou do limite do Syden: {n} ficam de fora.": "Syden ގެ ހައްދު ފަހަނައަޅައިފި: {n} ބޭރުގައި ބާކީ ވާނެ.",
   "Esse link não é de um modelo de servidor do Discord.": "މި ލިންކަކީ Discord ސާވަރ ޓެމްޕްލޭޓެއް ނޫން.",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "މި ޓެމްޕްލޭޓް Discord ގައި ނެތް. ސާވަރ ހިންގާ މީހާއަށް އާ ލިންކެއް އެދޭށެވެ.",

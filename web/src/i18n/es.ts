@@ -4717,7 +4717,7 @@ export default {
   "Trazer de um servidor do Discord": "Traer desde un servidor de Discord",
   "Link do modelo do servidor": "Enlace de la plantilla del servidor",
   "Ver o que vem": "Ver qué se trae",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "En Discord, quien administra el servidor genera el enlace en Ajustes del servidor → Plantilla de servidor. Vienen los canales y los roles (nombre y color), sin los mensajes.",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "En Discord, quien administra el servidor genera el enlace en Ajustes del servidor → Plantilla de servidor. Vienen los canales y los cargos (nombre y color), sin los mensajes.",
   "Passou do limite do Syden: {n} ficam de fora.": "Se pasó del límite de Syden: {n} quedan fuera.",
   "Esse link não é de um modelo de servidor do Discord.": "Este enlace no es de una plantilla de servidor de Discord.",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Esta plantilla no existe en Discord. Pide un enlace nuevo a quien administra el servidor.",

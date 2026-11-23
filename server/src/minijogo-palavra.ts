@@ -63,6 +63,13 @@ function lerDicionario(n: Tamanho): Dicionario {
   return { sorteio, grafia, sorteada };
 }
 export const DICIONARIOS = Object.fromEntries(TAMANHOS.map((n) => [n, lerDicionario(n)])) as Record<Tamanho, Dicionario>;
+/** A frase de cada tamanho escrita inteira: o site traduz o erro pela frase exata (web/src/errosDoServidor.ts). */
+const ERRO_DO_TAMANHO: Record<Tamanho, string> = {
+  4: 'Escreva uma palavra de 4 letras.',
+  5: 'Escreva uma palavra de 5 letras.',
+  6: 'Escreva uma palavra de 6 letras.',
+};
+
 /** As de 5 letras que podem sair (o nome de sempre, para os testes). */
 export const SORTEIO: string[] = DICIONARIOS[5].sorteio;
 
@@ -285,7 +292,7 @@ export const palavra: Definicao = {
         if (corpo.tipo !== 'chute') return 'Ação desconhecida.';
         if (fase !== 'chutando') return 'Esta rodada já acabou.';
         const chave = semAcento(String(corpo.texto ?? '').trim());
-        if (!new RegExp(`^[a-zç]{${letras}}$`).test(chave)) return `Escreva uma palavra de ${letras} letras.`;
+        if (!new RegExp(`^[a-zç]{${letras}}$`).test(chave)) return ERRO_DO_TAMANHO[letras];
         const limpa = chave.replace(/ç/g, 'c');
         if (!valida(limpa, letras)) return 'Essa palavra não está na lista.';
         let q = quadros.get(quem);

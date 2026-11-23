@@ -4776,7 +4776,7 @@ export default {
   "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Bilbila harkaa kompiitaratti walqabsiisuun hin danda'amne. Lamaanuu neetworkii Wi-Fi tokko irra jiraachuu qabu.",
   "O celular saiu.": "Bilbilli harkaa addaan citeera.",
   "Abrindo a câmera…": "Kaameraa banaa jira…",
-  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Barbaaduun kaameraa banuu hin hayyamne. Marsariitii kanaaf kaameraa hayyamiitii koodicha irra deebi'ii bani.",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Barbaadaan kaameraa banuu hin hayyamne. Marsariitii kanaaf kaameraa hayyamiitii koodicha irra deebi'ii bani.",
   "Este código já foi usado ou venceu. Peça outro no computador.": "Koodiin kun duraan itti fayyadamameera ykn yeroon isaa darbeera. Kompiitara irratti kan biraa gaafadhu.",
   "Pronto. Pode fechar esta página.": "Xumurameera. Fuula kana cufuu dandeessa.",
 } satisfies Record<string, string>;

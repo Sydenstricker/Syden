@@ -4724,7 +4724,7 @@ export default {
   "Trazer de um servidor do Discord": "Lori husi servidór Discord",
   "Link do modelo do servidor": "Ligasaun modelu servidór nian",
   "Ver o que vem": "Haree saida mak sei mai",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Iha Discord, ema ne'ebé jere servidór mak kria ligasaun iha Konfigurasaun servidór → Modelu servidór. Kanál no knaar sira (naran no kór) mai, la ho mensajen sira.",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Iha Discord, ema ne'ebé jere servidór mak kria ligasaun iha Konfigurasaun servidór → Modelu servidór. Kanál no kargu sira (naran no kór) mai, la ho mensajen sira.",
   "Passou do limite do Syden: {n} ficam de fora.": "Liu limite Syden nian: {n} hela iha li'ur.",
   "Esse link não é de um modelo de servidor do Discord.": "Ligasaun ne'e la'ós modelu servidór Discord nian.",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Modelu ne'e la iha Discord. Husu ligasaun foun ba ema ne'ebé jere servidór.",

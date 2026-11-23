@@ -4733,7 +4733,7 @@ export default {
   "Trazer de um servidor do Discord": "Zana imiterere ya seriveri ya Discord",
   "Link do modelo do servidor": "Ihuza ry'icyitegererezo cya seriveri",
   "Ver o que vem": "Reba ibizaza",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Kuri Discord, uyobora seriveri ni we ukora ihuza muri Igenamiterere rya seriveri → Icyitegererezo cya seriveri. Hazaza imiyoboro n'inshingano (izina n'ibara), nta butumwa.",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Kuri Discord, uyobora seriveri ni we ukora ihuza muri Igenamiterere rya seriveri → Icyitegererezo cya seriveri. Hazaza imiyoboro n'imyanya (izina n'ibara), nta butumwa.",
   "Passou do limite do Syden: {n} ficam de fora.": "Birenze urugero rwa Syden: {n} bisigara hanze.",
   "Esse link não é de um modelo de servidor do Discord.": "Iri huza si icyitegererezo cya seriveri ya Discord.",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Iki cyitegererezo ntikiri kuri Discord. Saba ihuza rishya uyobora seriveri.",

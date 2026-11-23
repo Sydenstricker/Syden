@@ -4739,7 +4739,7 @@ export default {
   "Não deu para ligar o celular ao computador. Os dois precisam estar na mesma rede Wi-Fi.": "Ba a iya haɗa waya da kwamfuta ba. Dole duka biyun su kasance a kan Wi-Fi ɗaya.",
   "O celular saiu.": "Waya ta katse.",
   "Abrindo a câmera…": "Ana buɗe kyamara…",
-  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Mai bincike bai bari a buɗe kyamara ba. Ku ba wannan shafin izinin kyamara, sannan ku sake buɗe lambar.",
+  "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Burauza bai bari a buɗe kyamara ba. Ku ba wannan shafin izinin kyamara, sannan ku sake buɗe lambar.",
   "Este código já foi usado ou venceu. Peça outro no computador.": "An riga an yi amfani da wannan lambar ko ta ƙare. Ku nemi wata a kwamfuta.",
   "Pronto. Pode fechar esta página.": "An gama. Kuna iya rufe wannan shafin.",
 } satisfies Record<string, string>;

@@ -4703,7 +4703,7 @@ export default {
   "Trazer de um servidor do Discord": "Discordサーバーから持ってくる",
   "Link do modelo do servidor": "サーバーテンプレートのリンク",
   "Ver o que vem": "持ってくる内容を見る",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discordでは、サーバーを管理している人が「サーバー設定 → サーバーテンプレート」でリンクを作ります。チャンネルとロール(名前と色)が来ます。メッセージは来ません。",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discordでは、サーバーを管理している人が「サーバー設定 → サーバーテンプレート」でリンクを作ります。チャンネルと役割(名前と色)が来ます。メッセージは来ません。",
   "Passou do limite do Syden: {n} ficam de fora.": "Sydenの上限を超えています:{n}件は入りません。",
   "Esse link não é de um modelo de servidor do Discord.": "このリンクはDiscordのサーバーテンプレートではありません。",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "このテンプレートはDiscordにありません。サーバーを管理している人に新しいリンクを頼んでください。",

@@ -4794,7 +4794,7 @@ export default {
   "Passou do limite do Syden: {n} ficam de fora.": "Iznad ograničenja Sydena: {n} ostaje izvan.",
   "Esse link não é de um modelo de servidor do Discord.": "Ova poveznica nije predložak Discord poslužitelja.",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Ovaj predložak ne postoji na Discordu. Zatraži novu poveznicu od onoga tko upravlja poslužiteljem.",
-  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord nije odgovorio. Pokušaj ponovno za malo.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord nije odgovorio. Pokušaj ponovno malo kasnije.",
   // O celular como câmera (23/11/2026)
   "Usar o celular como câmera": "Koristi mobitel kao kameru",
   "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Usmjeri kameru mobitela prema kodu i otvori adresu koja se pojavi.",

@@ -4746,7 +4746,7 @@ export default {
   "Trazer de um servidor do Discord": "جلب البنية من خادم Discord",
   "Link do modelo do servidor": "رابط قالب الخادم",
   "Ver o que vem": "عرض ما سيُنقل",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "في Discord، يُنشئ مَن يدير الخادم الرابط من إعدادات الخادم ← قالب الخادم. تُنقل القنوات والأدوار (الاسم واللون)، من دون الرسائل.",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "في Discord، يُنشئ مَن يدير الخادم الرابط من إعدادات الخادم ← قالب الخادم. تُنقل القنوات والرتب (الاسم واللون)، من دون الرسائل.",
   "Passou do limite do Syden: {n} ficam de fora.": "تجاوز حدّ Syden: سيُستبعد {n}.",
   "Esse link não é de um modelo de servidor do Discord.": "هذا الرابط ليس لقالب خادم على Discord.",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "هذا القالب غير موجود على Discord. يُرجى طلب رابط جديد ممّن يدير الخادم.",

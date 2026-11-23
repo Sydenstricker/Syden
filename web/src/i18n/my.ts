@@ -4760,7 +4760,7 @@ export default {
   "Trazer de um servidor do Discord": "Discord ဆာဗာမှ ဖွဲ့စည်းပုံ ယူလာရန်",
   "Link do modelo do servidor": "ဆာဗာ ပုံစံခွက်၏ လင့်ခ်",
   "Ver o que vem": "ဘာတွေ ပါလာမလဲ ကြည့်ရန်",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord တွင် ဆာဗာကို စီမံသူက ဆာဗာ ဆက်တင်များ → ဆာဗာ ပုံစံခွက် ထဲတွင် လင့်ခ်ကို ဖန်တီးသည်။ ချန်နယ်များနှင့် အခန်းကဏ္ဍများ (အမည်နှင့် အရောင်) ပါလာမည်၊ မက်ဆေ့ချ်များ မပါ။",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord တွင် ဆာဗာကို စီမံသူက ဆာဗာ ဆက်တင်များ → ဆာဗာ ပုံစံခွက် ထဲတွင် လင့်ခ်ကို ဖန်တီးသည်။ ချန်နယ်များနှင့် ရာထူးများ (အမည်နှင့် အရောင်) ပါလာမည်၊ မက်ဆေ့ချ်များ မပါ။",
   "Passou do limite do Syden: {n} ficam de fora.": "Syden ကန့်သတ်ချက် ကျော်သွားသည်: {n} ခု ချန်ထားခဲ့မည်။",
   "Esse link não é de um modelo de servidor do Discord.": "ဤလင့်ခ်သည် Discord ဆာဗာ ပုံစံခွက် မဟုတ်ပါ။",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "ဤပုံစံခွက် Discord တွင် မရှိပါ။ ဆာဗာကို စီမံသူထံ လင့်ခ်အသစ် တောင်းပါ။",

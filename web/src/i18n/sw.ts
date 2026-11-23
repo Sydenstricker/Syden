@@ -4721,7 +4721,7 @@ export default {
   "Trazer de um servidor do Discord": "Leta kutoka seva ya Discord",
   "Link do modelo do servidor": "Kiungo cha kiolezo cha seva",
   "Ver o que vem": "Ona kitakachokuja",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Kwenye Discord, anayesimamia seva huunda kiungo katika Mipangilio ya Seva → Kiolezo cha Seva. Chaneli na majukumu (jina na rangi) huja, bila jumbe.",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Kwenye Discord, anayesimamia seva huunda kiungo katika Mipangilio ya Seva → Kiolezo cha Seva. Chaneli na vyeo (jina na rangi) huja, bila jumbe.",
   "Passou do limite do Syden: {n} ficam de fora.": "Imezidi kikomo cha Syden: {n} vinabaki nje.",
   "Esse link não é de um modelo de servidor do Discord.": "Kiungo hiki si kiolezo cha seva ya Discord.",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Kiolezo hiki hakipo kwenye Discord. Omba kiungo kipya kwa anayesimamia seva.",

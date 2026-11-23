@@ -4707,7 +4707,7 @@ export default {
   "Trazer de um servidor do Discord": "Discord சர்வரிலிருந்து அமைப்பைக் கொண்டுவாருங்கள்",
   "Link do modelo do servidor": "சர்வர் டெம்ப்ளேட் இணைப்பு",
   "Ver o que vem": "என்ன வரும் என்று பாருங்கள்",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord-இல் சர்வரை நடத்துபவர் சர்வர் அமைப்புகள் → சர்வர் டெம்ப்ளேட் பகுதியில் இணைப்பை உருவாக்குவார். சேனல்களும் பாத்திரங்களும் (பெயர், நிறம்) வரும், செய்திகள் வராது.",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord-இல் சர்வரை நடத்துபவர் சர்வர் அமைப்புகள் → சர்வர் டெம்ப்ளேட் பகுதியில் இணைப்பை உருவாக்குவார். சேனல்களும் பொறுப்புகளும் (பெயர், நிறம்) வரும், செய்திகள் வராது.",
   "Passou do limite do Syden: {n} ficam de fora.": "Syden வரம்பைத் தாண்டியது: {n} விடுபடும்.",
   "Esse link não é de um modelo de servidor do Discord.": "இந்த இணைப்பு Discord சர்வர் டெம்ப்ளேட் அல்ல.",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "இந்த டெம்ப்ளேட் Discord-இல் இல்லை. சர்வரை நடத்துபவரிடம் புதிய இணைப்பைக் கேளுங்கள்.",

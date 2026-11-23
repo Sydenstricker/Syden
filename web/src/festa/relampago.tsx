@@ -127,7 +127,7 @@ export const PERGUNTAS: { p: string; o: [string, string, string] }[] = [
   { p: chave('Onde se guarda o sorvete para não derreter?'), o: [chave('No forno'), chave('No congelador'), chave('Na janela')] },
   { p: chave('Qual destes é um esporte com bola?'), o: [chave('Natação'), chave('Corrida'), chave('Basquete')] },
   { p: chave('Quantos jogadores um time de futebol tem em campo?'), o: [chave('Onze'), chave('Sete'), chave('Cinco')] },
-  { p: chave('Em que esporte se usa uma raquete?'), o: [chave('Futebol'), chave('Partida de tênis'), chave('Natação')] }, // 'Tênis' sozinho é o calçado (o objeto do Tamanho)
+  { p: chave('Em que esporte se usa uma raquete?'), o: [chave('Futebol'), chave('Partida de tênis'), chave('Natação')] }, // a palavra tênis sozinha é o calçado (o objeto do Tamanho)
   { p: chave('Em que esporte a bola passa por cima de uma rede alta, com as mãos?'), o: [chave('Golfe'), chave('Hóquei'), chave('Vôlei')] },
   { p: chave('Quantos minutos tem uma hora?'), o: [chave('Sessenta'), chave('Cem'), chave('Trinta')] },
   { p: chave('Quantos segundos tem um minuto?'), o: [chave('Cem'), chave('Sessenta'), chave('Dez')] },

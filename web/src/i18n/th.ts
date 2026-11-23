@@ -4735,7 +4735,7 @@ export default {
   "Trazer de um servidor do Discord": "นำโครงสร้างมาจากเซิร์ฟเวอร์ Discord",
   "Link do modelo do servidor": "ลิงก์เทมเพลตเซิร์ฟเวอร์",
   "Ver o que vem": "ดูว่าจะได้อะไรมา",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "ใน Discord ผู้ดูแลเซิร์ฟเวอร์สร้างลิงก์ได้ที่ การตั้งค่าเซิร์ฟเวอร์ → เทมเพลตเซิร์ฟเวอร์ ช่องและบทบาท (ชื่อและสี) จะตามมาด้วย แต่ไม่มีข้อความ",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "ใน Discord ผู้ดูแลเซิร์ฟเวอร์สร้างลิงก์ได้ที่ การตั้งค่าเซิร์ฟเวอร์ → เทมเพลตเซิร์ฟเวอร์ ช่องและยศ (ชื่อและสี) จะตามมาด้วย แต่ไม่มีข้อความ",
   "Passou do limite do Syden: {n} ficam de fora.": "เกินขีดจำกัดของ Syden: {n} รายการจะไม่ถูกนำมา",
   "Esse link não é de um modelo de servidor do Discord.": "ลิงก์นี้ไม่ใช่เทมเพลตเซิร์ฟเวอร์ของ Discord",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "ไม่มีเทมเพลตนี้ใน Discord ขอลิงก์ใหม่จากผู้ดูแลเซิร์ฟเวอร์",

@@ -4721,7 +4721,7 @@ export default {
   "Trazer de um servidor do Discord": "Discord सर्वर से ढाँचा लाओ",
   "Link do modelo do servidor": "सर्वर टेम्पलेट का लिंक",
   "Ver o que vem": "देखो क्या आएगा",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord पर सर्वर चलाने वाला व्यक्ति लिंक सर्वर सेटिंग्स → सर्वर टेम्पलेट में बनाता है। चैनल और रोल (नाम और रंग) आते हैं, मैसेज नहीं।",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord पर सर्वर चलाने वाला व्यक्ति लिंक सर्वर सेटिंग्स → सर्वर टेम्पलेट में बनाता है। चैनल और भूमिकाएँ (नाम और रंग) आते हैं, मैसेज नहीं।",
   "Passou do limite do Syden: {n} ficam de fora.": "Syden की सीमा से ज़्यादा: {n} बाहर रह जाते हैं।",
   "Esse link não é de um modelo de servidor do Discord.": "यह लिंक Discord सर्वर टेम्पलेट का नहीं है।",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "यह टेम्पलेट Discord पर नहीं है। सर्वर चलाने वाले व्यक्ति से नया लिंक माँगो।",

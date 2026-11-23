@@ -4797,7 +4797,7 @@ export default {
   "Passou do limite do Syden: {n} ficam de fora.": "Viršytas Syden limitas: {n} lieka už borto.",
   "Esse link não é de um modelo de servidor do Discord.": "Ši nuoroda nėra Discord serverio šablonas.",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Tokio šablono Discord'e nėra. Paprašyk naujos nuorodos serverį tvarkančio žmogaus.",
-  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord neatsakė. Pabandyk dar kartą po truputėlio.",
+  "O Discord não respondeu. Tente de novo daqui a pouco.": "Discord neatsakė. Pabandyk dar kartą šiek tiek vėliau.",
   // O celular como câmera (23/11/2026)
   "Usar o celular como câmera": "Naudoti telefoną kaip kamerą",
   "Aponte a câmera do celular para o código e abra o endereço que aparecer.": "Nukreipk telefono kamerą į kodą ir atidaryk pasirodžiusį adresą.",

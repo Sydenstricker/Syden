@@ -4793,7 +4793,7 @@ export default {
   "Trazer de um servidor do Discord": "Átvétel egy Discord-szerverről",
   "Link do modelo do servidor": "A szerversablon linkje",
   "Ver o que vem": "Nézd meg, mi jön át",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "A Discordon a szerver kezelője hozza létre a linket a Szerverbeállítások → Szerversablon menüben. Átjönnek a csatornák és a rangok (név és szín), az üzenetek nélkül.",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "A Discordon a szerver kezelője hozza létre a linket a Szerverbeállítások → Szerversablon menüben. Átjönnek a csatornák és a szerepek (név és szín), az üzenetek nélkül.",
   "Passou do limite do Syden: {n} ficam de fora.": "Túl a Syden korlátján: {n} kimarad.",
   "Esse link não é de um modelo de servidor do Discord.": "Ez a link nem Discord-szerversablon.",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Ez a sablon nem létezik a Discordon. Kérj új linket a szerver kezelőjétől.",

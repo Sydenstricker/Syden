@@ -4802,7 +4802,7 @@ export default {
   "Trazer de um servidor do Discord": "Discord serwerinden getir",
   "Link do modelo do servidor": "Serwer şablonynyň salgysy",
   "Ver o que vem": "Nämäniň geljekdigine seret",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord-da salgyny serweri dolandyrýan adam Serwer sazlamalary → Serwer şablony bölüminde döredýär. Kanallar we rollar (ady we reňki) gelýär, habarlar gelmeýär.",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord-da salgyny serweri dolandyrýan adam Serwer sazlamalary → Serwer şablony bölüminde döredýär. Kanallar we wezipeler (ady we reňki) gelýär, habarlar gelmeýär.",
   "Passou do limite do Syden: {n} ficam de fora.": "Syden çäginden geçdi: {n} daşarda galýar.",
   "Esse link não é de um modelo de servidor do Discord.": "Bu salgy Discord serwer şablony däl.",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Bu şablon Discord-da ýok. Serweri dolandyrýan adamdan täze salgy sora.",

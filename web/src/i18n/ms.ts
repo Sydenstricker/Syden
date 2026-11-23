@@ -4734,5 +4734,5 @@ export default {
   "Abrindo a câmera…": "Membuka kamera…",
   "O navegador não deixou abrir a câmera. Permita a câmera para este site e abra o código de novo.": "Pelayar tidak membenarkan kamera dibuka. Benarkan kamera untuk laman ini dan buka kod sekali lagi.",
   "Este código já foi usado ou venceu. Peça outro no computador.": "Kod ini sudah digunakan atau sudah tamat tempoh. Minta kod lain di komputer.",
-  "Pronto. Pode fechar esta página.": "Selesai. Anda boleh menutup halaman ini.",
+  "Pronto. Pode fechar esta página.": "Selesai. Kamu boleh menutup halaman ini.",
 } satisfies Record<string, string>;

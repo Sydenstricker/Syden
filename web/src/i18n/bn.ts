@@ -4719,7 +4719,7 @@ export default {
   "Trazer de um servidor do Discord": "Discord সার্ভার থেকে কাঠামো আনো",
   "Link do modelo do servidor": "সার্ভার টেমপ্লেটের লিংক",
   "Ver o que vem": "দেখো কী আসবে",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord-এ সার্ভার চালান যিনি, তিনি সার্ভার সেটিংস → সার্ভার টেমপ্লেট থেকে লিংকটি তৈরি করেন। চ্যানেল আর রোল (নাম ও রং) আসে, মেসেজ আসে না।",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord-এ সার্ভার চালান যিনি, তিনি সার্ভার সেটিংস → সার্ভার টেমপ্লেট থেকে লিংকটি তৈরি করেন। চ্যানেল আর ভূমিকা (নাম ও রং) আসে, মেসেজ আসে না।",
   "Passou do limite do Syden: {n} ficam de fora.": "Syden-এর সীমা ছাড়িয়েছে: {n}টি বাদ পড়ছে।",
   "Esse link não é de um modelo de servidor do Discord.": "এই লিংকটি Discord সার্ভার টেমপ্লেটের নয়।",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "এই টেমপ্লেট Discord-এ নেই। যিনি সার্ভার চালান, তাঁর কাছে নতুন লিংক চাও।",

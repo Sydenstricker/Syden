@@ -4714,7 +4714,7 @@ export default {
   "Trazer de um servidor do Discord": "Discord سرور سے ڈھانچہ لائیں",
   "Link do modelo do servidor": "سرور ٹیمپلیٹ کا لنک",
   "Ver o que vem": "دیکھیں کیا آئے گا",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord میں سرور چلانے والا شخص لنک سرور کی ترتیبات ← سرور ٹیمپلیٹ میں بناتا ہے۔ چینل اور کردار (نام اور رنگ) آتے ہیں، پیغامات نہیں۔",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Discord میں سرور چلانے والا شخص لنک سرور کی ترتیبات ← سرور ٹیمپلیٹ میں بناتا ہے۔ چینل اور عہدے (نام اور رنگ) آتے ہیں، پیغامات نہیں۔",
   "Passou do limite do Syden: {n} ficam de fora.": "Syden کی حد سے زیادہ: {n} باہر رہ جاتے ہیں۔",
   "Esse link não é de um modelo de servidor do Discord.": "یہ لنک Discord سرور ٹیمپلیٹ کا نہیں ہے۔",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "یہ ٹیمپلیٹ Discord پر موجود نہیں۔ براہِ کرم سرور چلانے والے شخص سے نیا لنک مانگیں۔",

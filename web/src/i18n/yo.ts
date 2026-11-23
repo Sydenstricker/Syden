@@ -4737,7 +4737,7 @@ export default {
   "Trazer de um servidor do Discord": "Mú ètò wá láti sáfà Discord",
   "Link do modelo do servidor": "Ìjápọ̀ àwòṣe sáfà",
   "Ver o que vem": "Wo ohun tí yóò wá",
-  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Lórí Discord, ẹni tó ń ṣàkóso sáfà ló ń ṣe ìjápọ̀ náà ní Ètò sáfà → Àwòṣe sáfà. Àwọn ikanni àti ipa (orúkọ àti àwọ̀) yóò wá, láìsí àwọn ìfiránṣẹ́.",
+  "No Discord, quem cuida do servidor gera o link em Configurações do servidor → Modelo de servidor. Vêm os canais e os cargos (nome e cor), sem as mensagens.": "Lórí Discord, ẹni tó ń ṣàkóso sáfà ló ń ṣe ìjápọ̀ náà ní Ètò sáfà → Àwòṣe sáfà. Àwọn ikanni àti ipò (orúkọ àti àwọ̀) yóò wá, láìsí àwọn ìfiránṣẹ́.",
   "Passou do limite do Syden: {n} ficam de fora.": "Ó ti kọjá òdiwọ̀n Syden: {n} yóò kù sí ìta.",
   "Esse link não é de um modelo de servidor do Discord.": "Ìjápọ̀ yìí kì í ṣe àwòṣe sáfà Discord.",
   "Esse modelo não existe no Discord. Peça um link novo a quem cuida do servidor.": "Àwòṣe yìí kò sí lórí Discord. Béèrè ìjápọ̀ tuntun lọ́wọ́ ẹni tó ń ṣàkóso sáfà.",
