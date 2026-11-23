@@ -1179,9 +1179,16 @@ export function Shell({
     }
   }
 
+  // A coluna dos canais só se recolhe onde o botão de trazê-la de volta está à vista (o cabeçalho do canal, da conversa
+  // privada e dos painéis). No quarto e no salão não há cabeçalho: recolhida ali, ela sumiria sem caminho de volta.
+  const canaisRecolhidos =
+    preferences.esconderCanais &&
+    ((view === 'community' && !mostrandoBoasVindas && (!!selected || usageOpen || jogosOpen || rankingOpen)) ||
+      (view === 'direct' && !!directAsChannel));
+
   return (
     <RoomContext.Provider value={voice.room}>
-      <div className={`app ${mobileChannels ? 'mobile-channels' : 'mobile-main'}${trocando ? ' trocando' : ''}${modoSala ? ' modo-sala' : ''}`}>
+      <div className={`app ${mobileChannels ? 'mobile-channels' : 'mobile-main'}${trocando ? ' trocando' : ''}${modoSala ? ' modo-sala' : ''}${canaisRecolhidos ? ' canais-escondidos' : ''}`}>
         {/* Enquanto a comunidade nova não chega inteira, uma barrinha avisa que algo está a caminho.
             Ela só aparece depois de um tempinho: numa troca rápida ninguém chega a ver. */}
         {trocando && <span className="troca-barra" aria-hidden="true" />}

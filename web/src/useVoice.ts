@@ -12,6 +12,7 @@ import {
   ScreenSharePresets,
   Track,
   type TrackPublication,
+  type TrackPublishOptions,
   VideoPreset,
   VideoPresets,
   isE2EESupported,
@@ -247,7 +248,10 @@ function onde() {
  */
 function erroDaTransmissao(error: unknown) {
   const nome = error instanceof Error ? error.name : '';
-  if (typeof navigator.mediaDevices?.getDisplayMedia !== 'function') {
+  // O iPhone e o iPad (que se diz Mac, mas tem toque) não transmitem a tela pelo navegador, mesmo quando a função existe:
+  // ela recusa com um nome que não diz nada (InvalidStateError, 23/11/2026). Aí o aviso certo é o do celular.
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+  if (typeof navigator.mediaDevices?.getDisplayMedia !== 'function' || ios) {
     return 'Este navegador não compartilha tela (no celular, nenhum deixa). Transmita pelo computador.';
   }
   if (recusaDoSistema(error)) {
@@ -1721,8 +1725,16 @@ export function useVoice(socket: Socket | null) {
         if (noAr) {
           await trocarATela(lp, noAr, captura);
         } else {
-          const { codec } = await escolherCodecDaTela(preset.width, preset.height, preset.encoding.maxFramerate ?? 30);
-          await lp.setScreenShareEnabled(true, captura, {
+          // O SELETOR ABRE ANTES DE QUALQUER ESPERA (23/11/2026, relato: "InvalidStateError" no Safari). O Safari só
+          // deixa abrir a escolha de tela DENTRO do clique, e a pergunta à placa sobre o codec, que vinha antes, gastava
+          // o clique: ele recusava. createScreenTracks chama o getDisplayMedia já na primeira linha, sem esperar nada;
+          // o codec é perguntado ao mesmo tempo, enquanto a pessoa escolhe. Depois, o mesmo que o setScreenShareEnabled
+          // fazia por dentro: publicar a imagem e o som com as mesmas opções.
+          const pedido = lp.createScreenTracks(captura);
+          const codecPedido = escolherCodecDaTela(preset.width, preset.height, preset.encoding.maxFramerate ?? 30);
+          const faixas = await pedido;
+          const { codec } = await codecPedido.catch(() => ({ codec: 'vp8' as const }));
+          const opcoes = {
             // valem só para a faixa de SOM da tela (a de imagem não as lê)
             ...SOM_DA_TELA,
             screenShareEncoding: preset.encoding,
@@ -1739,7 +1751,16 @@ export function useVoice(socket: Socket | null) {
             // o LiveKit só codifica quando alguém pede.
             ...(codec === 'vp9' && { scalabilityMode: 'L1T3' as const }),
             screenShareSimulcastLayers: camadas,
-          });
+          } satisfies TrackPublishOptions;
+          try {
+            await Promise.all(faixas.map((faixa) => lp.publishTrack(faixa, opcoes)));
+          } catch (erro) {
+            for (const faixa of faixas) {
+              void lp.unpublishTrack(faixa).catch(() => {});
+              faixa.stop();
+            }
+            throw erro;
+          }
           modoNoArRef.current = quality;
         }
         setTelaCompartilhada(surface);

@@ -1,5 +1,5 @@
 import { GruposDeToque } from './GruposDeToque';
-import { Room } from 'livekit-client';
+import { type LocalVideoTrack, Room, Track, type VideoProcessorOptions } from 'livekit-client';
 import { Accessibility, Languages,
   AudioLines,
   Bell,
@@ -22,7 +22,7 @@ import { Accessibility, Languages,
   Trash2,
   UserX,
   Users,
-  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown, CircleOff, Focus, Eraser, Image as ImageIcon } from 'lucide-react';
+  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown, CircleOff, Focus, Eraser, Image as ImageIcon, VideoOff } from 'lucide-react';
 import {
   type EfeitoDoFundo,
   fundoDaCameraDisponivel,
@@ -30,6 +30,7 @@ import {
   imagemDoFundo,
   type ModeloDoFundoAgora,
   ouvirModeloDoFundo,
+  ProcessadorDoFundo,
 } from './fundoDaCamera';
 import {
   type FormEvent,
@@ -2774,7 +2775,99 @@ function FundoDaCameraPicker({ voice }: { voice: Voice }) {
         </div>
       )}
       {escolhido !== 'nenhum' && <QualidadeDoFundo />}
+      <PreviaDaCamera voice={voice} efeito={escolhido} imagem={imagem} />
     </>
+  );
+}
+
+/**
+ * A PRÉVIA AO VIVO (23/11/2026, pedido dele: "uma janela para ir ajustando e vendo como será numa live de verdade"). Cada
+ * mudança acima aparece na hora, sem entrar numa chamada. Com a câmera já ligada numa chamada, mostra a própria faixa da
+ * chamada (o que os outros estão vendo); sem ela, abre a câmera escolhida só aqui, com o mesmo processador, e a solta ao
+ * parar ou ao fechar as Configurações. SEM ESPELHAR: é a imagem como chega aos outros, não a de um espelho.
+ */
+function PreviaDaCamera({ voice, efeito, imagem }: { voice: Voice; efeito: EfeitoDoFundo; imagem: string | null }) {
+  const t = useT();
+  const { videoInput } = useSettings();
+  const [ligada, setLigada] = useState(false);
+  const [erro, setErro] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const processadorRef = useRef<ProcessadorDoFundo | null>(null);
+  const comEfeito = efeito !== 'nenhum';
+
+  // Abre a câmera (ou pega a da chamada) e, com efeito, o processador. Refeito ao trocar de câmera ou ao ligar e desligar o efeito.
+  useEffect(() => {
+    if (!ligada) return;
+    let vivo = true;
+    let propria: MediaStreamTrack | null = null;
+    const daChamada = voice.room.localParticipant.getTrackPublication(Track.Source.Camera)?.videoTrack as LocalVideoTrack | undefined;
+    const mostrar = (faixa: MediaStreamTrack) => {
+      if (videoRef.current) videoRef.current.srcObject = new MediaStream([faixa]);
+    };
+    void (async () => {
+      try {
+        if (daChamada && !daChamada.isMuted) {
+          // a da chamada já leva o fundo escolhido (aplicarFundo, em useVoice.ts)
+          mostrar((daChamada.getProcessor() as ProcessadorDoFundo | undefined)?.processedTrack ?? daChamada.mediaStreamTrack);
+          return;
+        }
+        const fluxo = await navigator.mediaDevices.getUserMedia({
+          video: { deviceId: videoInput || undefined, width: { ideal: 1280 }, height: { ideal: 720 } },
+        });
+        propria = fluxo.getVideoTracks()[0];
+        if (!vivo) return propria.stop();
+        if (comEfeito) {
+          const processador = new ProcessadorDoFundo(efeito);
+          await processador.init({ track: propria } as VideoProcessorOptions);
+          if (!vivo) return void processador.destroy();
+          processadorRef.current = processador;
+          mostrar(processador.processedTrack ?? propria);
+        } else mostrar(propria);
+      } catch (e) {
+        console.error(e);
+        if (vivo) {
+          setErro(true);
+          setLigada(false);
+        }
+      }
+    })();
+    return () => {
+      vivo = false;
+      void processadorRef.current?.destroy();
+      processadorRef.current = null;
+      propria?.stop();
+      if (videoRef.current) videoRef.current.srcObject = null;
+    };
+    // o efeito em si (desfocar, apagar, imagem) troca sem reabrir: logo abaixo
+  }, [ligada, videoInput, comEfeito, voice.room]);
+
+  // Trocar entre desfocar, apagar e imagem (ou a imagem em si) não reabre a câmera.
+  useEffect(() => {
+    if (comEfeito) void processadorRef.current?.trocar(efeito);
+  }, [efeito, imagem, comEfeito]);
+
+  return (
+    <div className="previa-da-camera">
+      {ligada && <video ref={videoRef} autoPlay muted playsInline className="previa-da-camera-video" />}
+      <div className="mic-test-row">
+        <button
+          type="button"
+          className={ligada ? 'btn-secondary' : 'btn-primary'}
+          onClick={() => {
+            setErro(false);
+            setLigada(!ligada);
+          }}
+        >
+          {ligada ? t('Parar teste') : t('Testar')}
+        </button>
+        {/* A câmera não abriu (sem permissão, ocupada, nenhuma): o ícone dela riscado, sem frase nova nos 80 idiomas. */}
+        {erro && (
+          <span className="previa-da-camera-erro" role="status" title={t('Câmera')} aria-label={t('Câmera')}>
+            <VideoOff size={18} aria-hidden="true" />
+          </span>
+        )}
+      </div>
+    </div>
   );
 }
 

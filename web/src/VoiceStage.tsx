@@ -80,7 +80,7 @@ import { describeStats, useStreamStats } from './streamStats';
 import { useRegistroDoQueChega } from './oQueChega';
 import { prepareSound } from './upload';
 
-import { alternarMudoDaTela, getScreenVolume, setScreenVolume, TETO_DA_TRANSMISSAO } from './voiceVolumes';
+import { alternarMudoDaTela, setScreenVolume, TETO_DA_TRANSMISSAO, useVolumeDaTela } from './voiceVolumes';
 import type { Channel, Sound, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 import { SomPorEndereco } from './SomPorEndereco';
@@ -780,7 +780,8 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
    */
   const [aberto, setAberto] = useState(false);
   const userId = Number(publisher.identity);
-  const [volume, setVolume] = useState(() => getScreenVolume(userId));
+  // O mesmo volume que o botão direito em cima da transmissão muda (useVolumeDaTela avisa os dois).
+  const volume = useVolumeDaTela(userId);
   // Reavalia quando o participante publica ou tira faixas (o som pode chegar depois da imagem).
   useParticipantTracks([Track.Source.ScreenShareAudio], publisher.identity);
 
@@ -851,7 +852,7 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
         aria-pressed={volume === 0}
         onClick={(e) => {
           e.stopPropagation();
-          setVolume(alternarMudoDaTela(voice.room, userId));
+          alternarMudoDaTela(voice.room, userId);
         }}
       >
         {comSom && volume > 0 ? <Volume2 size={16} /> : <VolumeX size={16} />}
@@ -873,9 +874,7 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
                 value={volume}
                 aria-label={t('Volume da transmissão')}
                 onChange={(e) => {
-                  const value = Number(e.target.value);
-                  setVolume(value);
-                  setScreenVolume(voice.room, userId, value);
+                  setScreenVolume(voice.room, userId, Number(e.target.value));
                 }}
               />
               {/* O som só é baixado de quem está sendo assistido. Dizer isso é melhor do que um
@@ -1005,9 +1004,12 @@ function ScreenTile({ trackRef, membro, plateia }: { trackRef: TrackReferenceOrP
       </div>
       {/* O nome vem do Syden e é o que ESTÁ SENDO TRANSMITIDO ("Bloodstained"), não um rótulo fixo —
           e, quando ele ainda não chegou, fica o nome de quem transmite. */}
+      {/* DE QUEM É, SEMPRE (23/11/2026, relato de quem usa: com quatro telas, não se sabia qual era de quem): o nome de
+          quem transmite vem primeiro, e o que está sendo transmitido ao lado, mais apagado. */}
       <div className="tile-name">
         <MonitorPlay size={14} />
-        <span>{membro?.screenName || nomeNaComunidade(Number(trackRef.participant.identity), trackRef.participant.name || trackRef.participant.identity)}</span>
+        <span>{nomeNaComunidade(Number(trackRef.participant.identity), trackRef.participant.name || trackRef.participant.identity)}</span>
+        {membro?.screenName && <span className="tile-name-oque">{membro.screenName}</span>}
         <ContagemDePlateia plateia={plateia} />
       </div>
     </ParticipantTile>
@@ -1107,7 +1109,15 @@ function FocusPane({
             com dois botões (quem transmite) ou três (quem assiste) — que é justamente a diferença que
             um número cravado não sabe acompanhar.
           */}
-          {membro?.screenName && (
+          {/* De quem é a transmissão, e o que ela mostra (23/11/2026): com várias lado a lado, só o jogo não dizia de quem. */}
+          {!trackRef.participant.isLocal && (
+            <div className="stream-etiqueta">
+              <MonitorPlay size={14} />
+              <span>{nomeNaComunidade(Number(trackRef.participant.identity), trackRef.participant.name || trackRef.participant.identity)}</span>
+              {membro?.screenName && <span className="tile-name-oque">{membro.screenName}</span>}
+            </div>
+          )}
+          {trackRef.participant.isLocal && membro?.screenName && (
             <div className="stream-etiqueta">
               <MonitorPlay size={14} />
               <span>{membro.screenName}</span>
@@ -1268,6 +1278,7 @@ export function Stage({
   // do palco — a janela flutuante daquele vídeo, e o que o palco mostra.
   const menu = usePersonMenu();
   const [videoDoMenu, setVideoDoMenu] = useState<HTMLVideoElement | null>(null);
+  const [menuNaTransmissao, setMenuNaTransmissao] = useState(false);
   const [perfil, setPerfil] = useState<{ userId: number; x: number; y: number } | null>(null);
   const ajustes = useSettings();
   const { members: daComunidade } = useDirectory();
@@ -1389,8 +1400,10 @@ export function Stage({
   /** A faixa de baixo (as outras transmissões e as câmeras), com o botão de esconder e mostrar no canto direito. */
   const faixaDeBaixo = () =>
     others.length > 0 && (
-      <div className={`stage-faixa${faixaEscondida ? ' escondida' : ''}`}>
-        {!faixaEscondida && <div className="stage-strip">{others.map((ref) => tile(ref, 48, true))}</div>}
+      // COM UMA TRANSMISSÃO GRANDE, A FAIXA É BAIXA (23/11/2026, relato: "as cabeças das pessoas ocupam um bom espaço"):
+      // a tela tem a prioridade, e as câmeras e os avatares ficam em cartões menores embaixo dela.
+      <div className={`stage-faixa${faixaEscondida ? ' escondida' : ''}${splitting || focused?.source === Track.Source.ScreenShare ? ' compacta' : ''}`}>
+        {!faixaEscondida && <div className="stage-strip">{others.map((ref) => tile(ref, splitting || focused?.source === Track.Source.ScreenShare ? 32 : 48, true))}</div>}
         <button
           type="button"
           className="stream-info-button stage-faixa-botao"
@@ -1408,6 +1421,9 @@ export function Stage({
     const userId = Number(ref.participant.identity);
     if (!Number.isFinite(userId)) return;
     setVideoDoMenu(e.currentTarget.querySelector('video'));
+    // Aberto EM CIMA DA TRANSMISSÃO de outra pessoa, o menu começa pelo som da tela (23/11/2026, relato: "clico na
+    // transmissão da Sam e não aparece silenciar"; o calar da transmissão só existia no alto-falante de cima).
+    setMenuNaTransmissao(ref.source === Track.Source.ScreenShare && !ref.participant.isLocal);
     menu.open(e, userId, ref.participant.name || ref.participant.identity);
   };
 
@@ -1745,6 +1761,13 @@ export function Stage({
             aoAlternarMinhaCamera: () => updateSettings({ mostrarMinhaCamera: !ajustes.mostrarMinhaCamera }),
             // A imagem do momento, para a denúncia de transmissão: o quadro que quem denuncia está vendo agora.
             quadroDoVideo: videoDoMenu ? () => quadroDoVideo(videoDoMenu) : undefined,
+            transmissao: menuNaTransmissao
+              ? {
+                  comSom: Boolean(voice.room.remoteParticipants.get(String(menu.target.userId))?.getTrackPublication(Track.Source.ScreenShareAudio)),
+                  aberta: voice.assistindo.has(String(menu.target.userId)),
+                  aoPararDeAssistir: () => voice.assistir(String(menu.target!.userId), false),
+                }
+              : undefined,
           }}
         />
       )}

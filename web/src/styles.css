@@ -1932,6 +1932,14 @@ textarea {
   flex-shrink: 0;
 }
 
+/* Embaixo de uma transmissão em destaque, a faixa é baixa: a tela tem a prioridade (VoiceStage.tsx, faixaDeBaixo). */
+.stage-faixa.compacta .stage-strip {
+  height: 76px;
+}
+.stage-faixa.compacta .stage-strip .tile {
+  width: 136px;
+}
+
 /* O X da transmissão aberta na faixa de baixo (ver tile, em VoiceStage.tsx). Sempre visível: escondido até o
    mouse passar, ninguém o descobriria — e quem quer fechar é justamente quem não sabe que dá. */
 .tile-fechar {
@@ -3069,6 +3077,26 @@ textarea {
 
 .mic-test-row button {
   flex-shrink: 0;
+}
+
+/* A prévia ao vivo do Syden Broadcast (PreviaDaCamera, em SettingsModal.tsx): 16:9, do tamanho da coluna. */
+.previa-da-camera {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+.previa-da-camera-video {
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  background: #000;
+  object-fit: contain;
+}
+.previa-da-camera-erro {
+  display: flex;
+  color: var(--red);
 }
 
 .mic-meter {
@@ -7863,6 +7891,24 @@ textarea {
   color: var(--text-strong);
 }
 
+/* O botão de recolher a coluna de canais (MobileBackButton.tsx): no canto ESQUERDO do cabeçalho, antes do nome, e só no
+   computador; no celular, no mesmo lugar, mora a seta de voltar aos canais. */
+.header-toggle.botao-dos-canais {
+  margin-left: 0;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+@media (max-width: 760px) {
+  .header-toggle.botao-dos-canais {
+    display: none;
+  }
+}
+@media (min-width: 761px) {
+  .app.canais-escondidos > .sidebar {
+    display: none;
+  }
+}
+
 /* ---------- Tela inicial: o cantinho dos coelhos e as novidades ---------- */
 
 .home {
@@ -12503,6 +12549,22 @@ body.arrastando-barra {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* O QUE a pessoa transmite, ao lado do nome dela (VoiceStage.tsx): mais apagado, e é ele que encolhe primeiro. O nome
+   de quem transmite fica inteiro sempre que der. */
+.tile-name span:first-of-type,
+.stream-etiqueta span:first-of-type {
+  flex-shrink: 0;
+  max-width: 60%;
+}
+.tile-name-oque {
+  min-width: 0;
+  font-weight: 500;
+  opacity: 0.75;
+}
+.tile-name-oque::before {
+  content: '· ';
 }
 
 /* ---------- Seletor de GIFs (ver web/src/GifPicker.tsx) ----------

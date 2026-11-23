@@ -43,6 +43,8 @@ export interface Settings {
   startDeafened: boolean;
   /** Mostrar a lista de pessoas à direita também dentro das salas de voz. */
   showMembers: boolean;
+  /** A coluna de canais recolhida no computador (o botão no canto do cabeçalho), para a conversa ou a transmissão ganharem a largura. */
+  esconderCanais: boolean;
   /**
    * Abrir a transmissão dos outros sozinho ao entrar na sala. Desligado: a transmissão aparece como convite
    * e só é baixada quando você clica em "Assistir" — o que poupa internet e processador de todo mundo.
@@ -106,6 +108,7 @@ const DEFAULTS: Settings = {
   startMuted: false,
   startDeafened: false,
   showMembers: true,
+  esconderCanais: false,
   abrirTransmissaoSozinha: false,
   sounds: true,
   toqueDeLigacao: true,

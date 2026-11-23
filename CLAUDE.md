@@ -2709,6 +2709,16 @@ qual — o sinal de que havia escolha demais. O que saiu, e por quê:
 - **Uma opção em cada menu de compartilhar.** No app não existe aba de navegador; no navegador a janela
   sai sempre muda. App: tela inteira e janela. Navegador: tela inteira e aba.
 
+**OS AJUSTES DE 23/11/2026 (sugestões de quem usa).** (1) **O Safari só abre a escolha de tela no mesmo instante do clique**: o
+Syden perguntava o codec à placa ANTES do `getDisplayMedia`, e o Safari recusava ("InvalidStateError"). A captura é pedida primeiro
+e o codec junto (`shareScreen` em useVoice.ts); **nada que espere pode vir antes da captura**. No iPhone e no iPad nenhum navegador
+compartilha tela, e o aviso diz isso. (2) **Cada tela diz de quem é** ("ana · nome da janela"): com quatro transmitindo, só o nome
+da janela não dizia nada. (3) **O botão direito EM CIMA DA TRANSMISSÃO começa pelo som dela** (a régua, calar, parar de assistir),
+antes do menu da pessoa; é o mesmo volume do alto-falante de cima (`useVolumeDaTela`). (4) **O botão "Canais" do cabeçalho recolhe
+a coluna da esquerda** (`esconderCanais`), guardado, só no computador e só onde há cabeçalho para trazê-la de volta (no quarto e no
+salão ela não se recolhe); com uma tela em destaque, a faixa de rostos fica mais baixa. (5) **A prévia do Syden Broadcast**: o
+"Testar" embaixo do fundo da câmera mostra o efeito ao vivo (só no app, onde o fundo existe). Teste: `e2e/quem-transmite.mjs`.
+
 **A EXCEÇÃO, O PERSONALIZADO (16/11/2026, sugestão de quem usa; decisão dele: "é uma forma manual de corrigir eventual leitura
 equivocada do Syden"; o caso foi a gravação do Mundial, que o Padrão encolhia para segurar os quadros de um vídeo).** Ao lado
 de Padrão e Fluido, o terceiro modo: quem transmite escolhe a resolução (HD 720p, Full HD 1080p ou a Nativa da tela, até 4K) e

@@ -1,4 +1,5 @@
 import { type RemoteAudioTrack, type Room, Track, TrackEvent } from 'livekit-client';
+import { useEffect, useState } from 'react';
 import { criarTeto } from './limitador';
 import { getSettings } from './settings';
 
@@ -207,11 +208,28 @@ function manterOZeroAoLigar(faixa: RemoteAudioTrack, volumeAgora: () => number) 
   });
 }
 
+/**
+ * QUEM MOSTRA O VOLUME DE UMA TRANSMISSÃO OUVE AS MUDANÇAS (23/11/2026). O som da tela se muda em dois lugares, o
+ * alto-falante em cima da transmissão e o botão direito em cima dela; sem avisar, calar por um deixava o outro dizendo
+ * "tocando".
+ */
+const quemOuveATela = new Set<() => void>();
+export function ouvirVolumesDaTela(aoMudar: () => void) {
+  quemOuveATela.add(aoMudar);
+  return () => {
+    quemOuveATela.delete(aoMudar);
+  };
+}
+function avisarVolumesDaTela() {
+  for (const aoMudar of quemOuveATela) aoMudar();
+}
+
 /** O clique no alto-falante: cala, e o clique seguinte devolve o volume que estava (que continua guardado). */
 export function alternarMudoDaTela(room: Room, userId: number) {
   if (caladas.has(userId) || !(screenVolumes[String(userId)] ?? 1)) caladas.delete(userId);
   else caladas.add(userId);
   aplicarVolume(screenAudioTrack(room, userId), getScreenVolume(userId), userId);
+  avisarVolumesDaTela();
   return getScreenVolume(userId);
 }
 
@@ -226,6 +244,17 @@ export function setScreenVolume(room: Room, userId: number, volume: number) {
     void import('./preferencias').then((m) => m.guardarEmBreve());
   }
   aplicarVolume(screenAudioTrack(room, userId), getScreenVolume(userId), userId);
+  avisarVolumesDaTela();
+}
+
+/** O volume da transmissão de alguém, atualizado de onde quer que ele mude. */
+export function useVolumeDaTela(userId: number) {
+  const [volume, setVolume] = useState(() => getScreenVolume(userId));
+  useEffect(() => {
+    setVolume(getScreenVolume(userId));
+    return ouvirVolumesDaTela(() => setVolume(getScreenVolume(userId)));
+  }, [userId]);
+  return volume;
 }
 
 /**

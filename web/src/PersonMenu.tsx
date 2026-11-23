@@ -34,7 +34,17 @@ import { ouvirToque } from './sounds';
 import { criarGrupo, escolherToqueDaPessoa, LIMITE_DO_NOME_DO_GRUPO, MAXIMO_DE_GRUPOS, NOME_DO_TOQUE, porNoGrupo, TOQUES, toqueDe, useToques } from './toquesDeLigacao';
 import { guardarNota, LIMITE_DA_NOTA, useNota } from './notas';
 import { corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
-import { getUserVolume, isLocallyMuted, setLocalMute, setUserVolume, TETO_DA_VOZ } from './voiceVolumes';
+import {
+  alternarMudoDaTela,
+  getUserVolume,
+  isLocallyMuted,
+  setLocalMute,
+  setScreenVolume,
+  setUserVolume,
+  TETO_DA_TRANSMISSAO,
+  TETO_DA_VOZ,
+  useVolumeDaTela,
+} from './voiceVolumes';
 import type { Channel, Role } from './types';
 import type { Voice } from './useVoice';
 import { chave, useT } from './i18n';
@@ -54,6 +64,65 @@ export function usePersonMenu() {
   };
 
   return { target, open, close: () => setTarget(null) };
+}
+
+/**
+ * O SOM DA TRANSMISSÃO, no topo do menu aberto em cima dela: calar, a régua e parar de assistir. São as mesmas
+ * ações do alto-falante e do botão de cima da transmissão, com os mesmos textos, e mudam o mesmo volume.
+ */
+function SomDaTransmissao({
+  voice,
+  userId,
+  comSom,
+  aberta,
+  aoPararDeAssistir,
+  aoFechar,
+}: {
+  voice: Voice;
+  userId: number;
+  comSom: boolean;
+  aberta: boolean;
+  aoPararDeAssistir: () => void;
+  aoFechar: () => void;
+}) {
+  const t = useT();
+  const volume = useVolumeDaTela(userId);
+  return (
+    <>
+      <hr className="person-menu-linha" />
+      {comSom && (
+        <>
+          <label className="person-menu-volume">
+            {t('Som da transmissão')}: {Math.round(volume * 100)}%
+            <input
+              type="range"
+              min={0}
+              max={TETO_DA_TRANSMISSAO}
+              step={0.05}
+              value={volume}
+              aria-label={t('Volume da transmissão')}
+              onChange={(e) => setScreenVolume(voice.room, userId, Number(e.target.value))}
+            />
+          </label>
+          <Item icone={volume > 0 ? <VolumeX size={16} /> : <Volume2 size={16} />} marcado={volume === 0} onClick={() => alternarMudoDaTela(voice.room, userId)}>
+            {volume > 0 ? t('Calar esta transmissão') : t('Ouvir esta transmissão de novo')}
+          </Item>
+        </>
+      )}
+      {aberta && (
+        <Item
+          icone={<MonitorX size={16} />}
+          onClick={() => {
+            aoPararDeAssistir();
+            aoFechar();
+          }}
+        >
+          {t('Parar de assistir esta transmissão')}
+        </Item>
+      )}
+      <hr className="person-menu-linha" />
+    </>
+  );
 }
 
 const CARGO: Record<Role, string> = {
@@ -154,6 +223,11 @@ export function PersonMenu({
     aoAlternarMinhaCamera: () => void;
     /** O quadro aberto mostra vídeo de outra pessoa: tira a imagem do momento, para a denúncia de transmissão. */
     quadroDoVideo?: () => string | null;
+    /**
+     * Aberto em cima da TRANSMISSÃO de outra pessoa (23/11/2026): o som da tela vem primeiro, separado do da voz. O
+     * "Silenciar só para mim" de baixo é o da VOZ, e quem clicava na tela da Sam procurava calar a tela.
+     */
+    transmissao?: { comSom: boolean; aberta: boolean; aoPararDeAssistir: () => void };
   };
 }) {
   const t = useT();
@@ -301,6 +375,8 @@ export function PersonMenu({
           <Vitrine membro={membro!} tamanho={34} />
         </span>
       )}
+
+      {palco?.transmissao && !isSelf && <SomDaTransmissao voice={voice} userId={target.userId} {...palco.transmissao} aoFechar={onClose} />}
 
       {onOpenProfile && (
         <Item
