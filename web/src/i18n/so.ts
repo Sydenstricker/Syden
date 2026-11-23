@@ -4910,5 +4910,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Weli ma jiraan ogeysiisyo ka yimid bulshooyinkaaga.",
   "Sentiu falta de algo no Syden?": "Ma jiraa wax aad ka waysay Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Halkan ku qor si ay u gaarto {nome} oo loo hirgeliyo. Jawaabtu waxay imanaysaa wadahadalka gaarka ah.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Tani waa waxa saaxiibbadaa ka arkaan halkan. Fikradaha waxay u yimaadaan sidii wadahadal gaar ah, oo leh 💡. Marka mid app-ka galo, ku dhaji 👍: qofkaasi wuxuu helayaa billadda.",
 } satisfies Record<string, string>;

@@ -4826,5 +4826,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "మీ సంఘాల నుంచి ఇంకా ప్రకటనలు లేవు.",
   "Sentiu falta de algo no Syden?": "Sydenలో ఏదైనా లోటు అనిపించిందా?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome} దాన్ని అమలు చేయగలిగేలా ఇక్కడ చెప్పండి. జవాబు ప్రైవేట్ సంభాషణలో వస్తుంది.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "మీ స్నేహితులకు ఇక్కడ కనిపించేది ఇదే. ఆలోచనలు 💡తో ప్రైవేట్ సంభాషణగా వస్తాయి. ఏదైనా యాప్‌లోకి వచ్చినప్పుడు, దానికి థంబ్స్-అప్ ఇవ్వండి: ఆ వ్యక్తికి పతకం వస్తుంది.",
 } satisfies Record<string, string>;

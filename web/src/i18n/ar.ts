@@ -4868,5 +4868,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "لا توجد إعلانات من المجتمعات بعد.",
   "Sentiu falta de algo no Syden?": "هل ينقص Syden شيء؟",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "يمكن كتابة ما ينقص هنا ليصل إلى {nome} ويُضاف إلى التطبيق. يصل الرد في المحادثة الخاصة.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "هذا ما يراه الأصدقاء هنا. تصل الأفكار كمحادثة خاصة مع 💡. عندما تدخل إحداها التطبيق، يكفي وضع إعجاب عليها: ينال صاحبها الميدالية.",
 } satisfies Record<string, string>;

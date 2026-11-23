@@ -4829,5 +4829,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "உங்கள் சமூகங்களிடமிருந்து இன்னும் அறிவிப்பு எதுவும் இல்லை.",
   "Sentiu falta de algo no Syden?": "Sydenஇல் ஏதாவது குறையாகத் தெரிந்ததா?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome} அதைச் செயல்படுத்த இங்கே சொல்லுங்கள். பதில் தனிப்பட்ட உரையாடலில் வரும்.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "உங்கள் நண்பர்கள் இங்கே பார்ப்பது இதுதான். யோசனைகள் 💡 உடன் தனிப்பட்ட உரையாடலாக வரும். ஏதாவது ஒன்று செயலிக்குள் வந்ததும், அதற்குக் கட்டைவிரல் உயர்த்துங்கள்: அந்த நபருக்குப் பதக்கம் கிடைக்கும்.",
 } satisfies Record<string, string>;

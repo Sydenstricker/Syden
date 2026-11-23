@@ -4930,5 +4930,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Քո համայնքներից դեռ հայտարարություններ չկան։",
   "Sentiu falta de algo no Syden?": "Syden-ում ինչ-որ բա՞ն է պակասում",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Պատմիր այստեղ, որ {nome} կարողանա դա իրականացնել։ Պատասխանը կգա անձնական զրույցում։",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Սա է, ինչ քո ընկերները տեսնում են այստեղ։ Գաղափարները գալիս են որպես անձնական զրույց՝ 💡-ով։ Երբ մեկը մտնի հավելված, 👍 դիր դրան․ այդ մարդը կստանա մեդալը։",
 } satisfies Record<string, string>;

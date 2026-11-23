@@ -4850,5 +4850,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Καμία ανακοίνωση από τις κοινότητές σου ακόμα.",
   "Sentiu falta de algo no Syden?": "Σου έλειψε κάτι στο Syden;",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Πες το εδώ, για να μπορεί {nome} να το υλοποιήσει. Η απάντηση έρχεται στην ιδιωτική συνομιλία.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Αυτό βλέπουν οι φίλοι σου εδώ. Οι ιδέες έρχονται ως ιδιωτική συνομιλία, με 💡. Όταν κάποια μπει στην εφαρμογή, βάλε της έναν αντίχειρα: το άτομο παίρνει το μετάλλιο.",
 } satisfies Record<string, string>;

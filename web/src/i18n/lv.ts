@@ -4912,5 +4912,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Pagaidām nav paziņojumu no tavām kopienām.",
   "Sentiu falta de algo no Syden?": "Vai Syden tev kaut kā pietrūka?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Pastāsti šeit, lai {nome} to varētu izdarīt. Atbilde atnāks privātā sarunā.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Tas ir tas, ko tavi draugi redz šeit. Idejas atnāk kā privāta saruna ar 💡. Kad kāda nonāk lietotnē, atzīmē to ar 👍: šis cilvēks saņem medaļu.",
 } satisfies Record<string, string>;

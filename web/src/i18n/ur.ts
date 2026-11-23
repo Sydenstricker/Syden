@@ -4836,5 +4836,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "ابھی تک آپ کی کمیونٹیز کی طرف سے کوئی اعلان نہیں۔",
   "Sentiu falta de algo no Syden?": "Syden میں کسی چیز کی کمی محسوس ہوئی؟",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "یہاں بتائیں، تاکہ {nome} اسے بنا سکے۔ جواب نجی گفتگو میں آئے گا۔",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "یہ وہ ہے جو آپ کے دوست یہاں دیکھتے ہیں۔ خیالات 💡 کے ساتھ نجی گفتگو کی صورت میں آتے ہیں۔ جب کوئی ایپ میں شامل ہو جائے تو اس پر انگوٹھا لگائیں: اس شخص کو تمغہ ملتا ہے۔",
 } satisfies Record<string, string>;

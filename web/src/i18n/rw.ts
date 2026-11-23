@@ -4854,5 +4854,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Nta matangazo aturuka mu miryango yawe aragera.",
   "Sentiu falta de algo no Syden?": "Hari ikintu ubura muri Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Bitubwire hano, kugira ngo {nome} abashe kubikora. Igisubizo kiza mu kiganiro cyihariye.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Ibi ni byo inshuti zawe zibona hano. Ibitekerezo biza nk'ikiganiro cyihariye, gifite 💡. Iyo kimwe cyinjiye muri porogaramu, gishyireho igikumwe: uwo muntu ahabwa umudari.",
 } satisfies Record<string, string>;

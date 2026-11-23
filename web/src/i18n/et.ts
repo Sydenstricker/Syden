@@ -4908,5 +4908,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Sinu kogukondadelt pole veel teadaandeid.",
   "Sentiu falta de algo no Syden?": "Kas sul jäi Sydenis midagi puudu?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kirjuta siia, et {nome} saaks selle teha. Vastus tuleb privaatsesse vestlusse.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Seda näevad sinu sõbrad siin. Ideed jõuavad privaatse vestlusena, 💡 ees. Kui mõni jõuab rakendusse, pane sellele 👍: see inimene saab medali.",
 } satisfies Record<string, string>;

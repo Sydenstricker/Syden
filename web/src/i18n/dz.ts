@@ -4924,5 +4924,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "ད་ལྟོ་ཚུན་ཁྱོད་ཀྱི་མི་སྡེ་ཚུ་ལས་གསལ་བསྒྲགས་མེད།",
   "Sentiu falta de algo no Syden?": "Syden ནང་ ག་ཅི་རང་ཅིག་ ཁ་མ་ཚང་པས་ག?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome} གིས་ བཟོ་ཚུགས་ནིའི་དོན་ལུ་ ནཱ་ལུ་སླབ། ལན་འདི་ སྒེར་གྱི་གཏམ་གླེང་ནང་ལྷོད་འོང་།",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "ཁྱོད་ཀྱི་ཆ་རོགས་ཚུ་གིས་ ནཱ་ལུ་ འདི་མཐོངམ་ཨིན། འཆར་སྣང་ཚུ་ 💡 དང་གཅིག་ཁར་ སྒེར་གྱི་གཏམ་གླེང་སྦེ་ལྷོད་འོང་། འཆར་སྣང་ཅིག་ ཨེཔ་ནང་ཚུད་པ་ཅིན་ དེ་ལུ་ 👍 བཀལ། མི་དེ་ལུ་ གསེར་ཐམ་ཐོབ་འོང་།",
 } satisfies Record<string, string>;

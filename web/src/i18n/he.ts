@@ -4896,5 +4896,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "אין עדיין הכרזות מהקהילות.",
   "Sentiu falta de algo no Syden?": "חסר משהו ב-Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "אפשר לספר כאן, וזה יגיע אל {nome} כדי שייכנס לאפליקציה. התשובה מגיעה בשיחה הפרטית.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "זה מה שהחברים שלך רואים כאן. רעיונות מגיעים כשיחה פרטית, עם 💡. כשאחד מהם נכנס לאפליקציה, אפשר לסמן עליו אגודל למעלה: מי שכתב אותו מקבל את המדליה.",
 } satisfies Record<string, string>;

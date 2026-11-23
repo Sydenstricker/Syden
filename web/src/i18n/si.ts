@@ -4910,5 +4910,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "තවම ඔබේ ප්‍රජාවන්ගෙන් නිවේදන නැත.",
   "Sentiu falta de algo no Syden?": "Syden එකේ මොනවා හරි අඩුවක් දැනුණාද?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome}ට එය කරන්න හැකි වෙන්න මෙහි කියන්න. පිළිතුර පෞද්ගලික සංවාදයට ලැබේ.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "මෙහි ඔබේ මිතුරන්ට පෙනෙන්නේ මෙයයි. අදහස් 💡 සමඟ පෞද්ගලික සංවාදයක් ලෙස ලැබේ. එකක් යෙදුමට එකතු වූ විට, එයට 👍 දමන්න: ඒ පුද්ගලයාට පදක්කම ලැබේ.",
 } satisfies Record<string, string>;

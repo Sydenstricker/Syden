@@ -4913,5 +4913,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Kol kas nėra skelbimų iš tavo bendruomenių.",
   "Sentiu falta de algo no Syden?": "Ar ko nors pasigedai Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Parašyk čia, kad {nome} galėtų tai padaryti. Atsakymas ateis į privatų pokalbį.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Tai mato tavo draugai čia. Idėjos ateina kaip privatus pokalbis su 💡. Kai kuri nors patenka į programėlę, pažymėk ją 👍: tas žmogus gauna medalį.",
 } satisfies Record<string, string>;

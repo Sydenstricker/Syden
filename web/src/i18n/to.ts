@@ -4850,5 +4850,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "ʻOku teʻeki ai ha fanongonongo mei hoʻo ngaahi kulupú.",
   "Sentiu falta de algo no Syden?": "ʻOku ʻi ai ha meʻa ʻoku masiva ʻi Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Talanoa mai heni, koeʻuhi ke lava ʻe {nome} ʻo fakahoko. ʻE aʻu mai ʻa e tali ʻi he talanoa fakafoʻituitui.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Ko e meʻa ʻeni ʻoku sio ki ai ho ngaahi kaumeʻa heni. ʻOku aʻu mai ʻa e ngaahi fakakaukau ko ha talanoa fakafoʻituitui, mo e 💡. ʻI he taimi ʻe hū ai ha taha ki he polokalama, ngāueʻaki ʻa e 👍 ki ai: ʻe maʻu ʻe he tokotaha ko iá ʻa e mētali.",
 } satisfies Record<string, string>;

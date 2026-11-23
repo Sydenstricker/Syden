@@ -4814,5 +4814,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Chưa có thông báo nào từ cộng đồng của bạn.",
   "Sentiu falta de algo no Syden?": "Bạn thấy Syden còn thiếu gì không?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kể ở đây để {nome} có thể làm. Câu trả lời sẽ đến trong cuộc trò chuyện riêng.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Đây là thứ bạn bè của bạn thấy ở đây. Ý tưởng đến dưới dạng cuộc trò chuyện riêng, có 💡. Khi một ý tưởng được đưa vào ứng dụng, hãy thả like vào đó: người ấy sẽ nhận huy chương.",
 } satisfies Record<string, string>;

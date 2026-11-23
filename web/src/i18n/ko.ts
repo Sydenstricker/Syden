@@ -4831,5 +4831,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "아직 내 커뮤니티의 공지가 없어요.",
   "Sentiu falta de algo no Syden?": "Syden에 아쉬운 점이 있었나요?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "여기에 적어 주세요. {nome}에게 전달되어 앱에 반영될 수 있어요. 답장은 개인 대화로 와요.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "친구들에게는 여기가 이렇게 보여요. 아이디어는 💡가 붙은 개인 대화로 도착해요. 아이디어가 앱에 들어가면 좋아요를 눌러 주세요. 그 사람이 메달을 받아요.",
 } satisfies Record<string, string>;

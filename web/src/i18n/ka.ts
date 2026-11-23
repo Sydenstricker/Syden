@@ -4929,5 +4929,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "შენი თემებიდან ჯერ განცხადებები არ არის.",
   "Sentiu falta de algo no Syden?": "Syden-ში რამე გაკლია?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "აქ მოგვიყევი, რომ {nome} შეძლოს მისი გაკეთება. პასუხი პირად საუბარში მოვა.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "ამას ხედავენ შენი მეგობრები აქ. იდეები პირად საუბრად მოდის, 💡-ით. როცა რომელიმე აპში მოხვდება, დაუსვი 👍: ის ადამიანი მედალს მიიღებს.",
 } satisfies Record<string, string>;

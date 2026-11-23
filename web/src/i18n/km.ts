@@ -4910,5 +4910,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "មិនទាន់មានសេចក្តីប្រកាសពីសហគមន៍របស់អ្នកនៅឡើយទេ។",
   "Sentiu falta de algo no Syden?": "តើ Syden ខ្វះអ្វីមួយទេ?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "ប្រាប់នៅទីនេះ ដើម្បីឱ្យ {nome} អាចធ្វើវាបាន។ ចម្លើយនឹងមកដល់ក្នុងការសន្ទនាឯកជន។",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "នេះជាអ្វីដែលមិត្តភក្តិរបស់អ្នកឃើញនៅទីនេះ។ គំនិតមកដល់ជាការសន្ទនាឯកជន មាន 💡។ ពេលគំនិតណាមួយចូលក្នុងកម្មវិធី សូមដាក់ 👍 លើវា៖ អ្នកនោះនឹងទទួលបានមេដាយ។",
 } satisfies Record<string, string>;

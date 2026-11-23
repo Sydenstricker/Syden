@@ -4837,5 +4837,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Belum ada pengumuman daripada komuniti kamu.",
   "Sentiu falta de algo no Syden?": "Ada sesuatu yang kurang dalam Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Ceritakan di sini supaya {nome} dapat melaksanakannya. Balasan akan tiba dalam perbualan peribadi.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Inilah yang dilihat oleh rakan-rakan anda di sini. Idea tiba sebagai perbualan peribadi, dengan 💡. Apabila satu masuk ke dalam aplikasi, berikan ibu jari padanya: orang itu mendapat pingat.",
 } satisfies Record<string, string>;

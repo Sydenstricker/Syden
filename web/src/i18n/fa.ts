@@ -4837,5 +4837,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "هنوز اطلاعیه‌ای از انجمن‌های شما نیست.",
   "Sentiu falta de algo no Syden?": "در Syden جای چیزی خالی است؟",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "اینجا بنویسید تا {nome} بتواند آن را بسازد. پاسخ در گفتگوی خصوصی می‌رسد.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "این چیزی است که دوستانتان اینجا می‌بینند. ایده‌ها به‌صورت گفتگوی خصوصی، با 💡، می‌رسند. وقتی یکی وارد برنامه شد، روی آن لایک بزنید: آن شخص مدال را می‌گیرد.",
 } satisfies Record<string, string>;

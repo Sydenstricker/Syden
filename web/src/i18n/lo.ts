@@ -4912,5 +4912,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "ຍັງບໍ່ມີປະກາດຈາກຊຸມຊົນຂອງເຈົ້າເທື່ອ.",
   "Sentiu falta de algo no Syden?": "ຮູ້ສຶກວ່າ Syden ຂາດຫຍັງບໍ?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "ບອກຢູ່ນີ້ ເພື່ອໃຫ້ {nome} ເຮັດມັນໄດ້ ຄຳຕອບຈະມາໃນການສົນທະນາສ່ວນຕົວ",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "ນີ້ແມ່ນສິ່ງທີ່ໝູ່ຂອງເຈົ້າເຫັນຢູ່ນີ້ ແນວຄິດຈະມາເປັນການສົນທະນາສ່ວນຕົວ ມີ 💡 ເມື່ອແນວຄິດໃດເຂົ້າໄປໃນແອັບ ໃຫ້ກົດ 👍 ໃສ່: ຄົນນັ້ນຈະໄດ້ຫຼຽນ",
 } satisfies Record<string, string>;

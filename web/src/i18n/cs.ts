@@ -4910,5 +4910,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Zatím žádná oznámení z tvých komunit.",
   "Sentiu falta de algo no Syden?": "Chybí ti něco v Sydenu?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Napiš to sem, ať to {nome} může udělat. Odpověď přijde v soukromé konverzaci.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Tohle vidí tví přátelé tady. Nápady chodí jako soukromá konverzace s 💡. Když se některý dostane do aplikace, dej mu 👍: ten člověk dostane medaili.",
 } satisfies Record<string, string>;

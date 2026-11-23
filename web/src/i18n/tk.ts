@@ -4922,5 +4922,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Jemgyýetleriňden entek bildiriş ýok.",
   "Sentiu falta de algo no Syden?": "Syden-de bir zat ýetmezmi?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Şu ýerde aýt, {nome} ony amala aşyryp bilsin. Jogap şahsy söhbete geler.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Dostlaryň şu ýerde muny görýärler. Pikirler 💡 bilen şahsy söhbet bolup gelýär. Biri programma girende, oňa 👍 goý: şol adam medal alýar.",
 } satisfies Record<string, string>;

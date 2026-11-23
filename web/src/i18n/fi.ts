@@ -4911,5 +4911,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Yhteisöistäsi ei ole vielä tiedotteita.",
   "Sentiu falta de algo no Syden?": "Jäikö Sydenistä jotain puuttumaan?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kerro tässä, niin {nome} voi toteuttaa sen. Vastaus tulee yksityiseen keskusteluun.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Tämän kaverisi näkevät täällä. Ideat tulevat yksityisenä keskusteluna, 💡 edessä. Kun jokin päätyy sovellukseen, anna sille peukku: ehdottaja saa mitalin.",
 } satisfies Record<string, string>;

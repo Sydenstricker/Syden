@@ -4844,5 +4844,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "ከእርስዎ ማህበረሰቦች እስካሁን ምንም ማስታወቂያ የለም።",
   "Sentiu falta de algo no Syden?": "በSyden ውስጥ የጎደለ ነገር አለ?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "እዚህ ይንገሩን፤ ተግባራዊ እንዲሆን ለ{nome} ይደርሳል። መልሱ በግል ውይይት ይደርስዎታል።",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "ጓደኞችዎ እዚህ የሚያዩት ይህ ነው። ሐሳቦች በ💡 እንደ የግል ውይይት ይደርሳሉ። አንዱ ወደ መተግበሪያው ሲገባ፣ አውራ ጣት ያድርጉበት፦ ባለ ሐሳቡ ሜዳሊያውን ያገኛል።",
 } satisfies Record<string, string>;

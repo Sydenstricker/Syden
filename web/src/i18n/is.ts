@@ -4912,5 +4912,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Engar tilkynningar frá samfélögunum þínum enn.",
   "Sentiu falta de algo no Syden?": "Saknarðu einhvers í Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Segðu frá því hér, þá berst það til {nome} sem getur útfært það. Svarið kemur í einkasamtali.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Þetta sjá vinir þínir hér. Hugmyndir berast sem einkasamtal, með 💡. Þegar ein kemst inn í forritið, settu 👍 á hana: viðkomandi fær medalíuna.",
 } satisfies Record<string, string>;

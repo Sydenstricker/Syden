@@ -4843,5 +4843,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Încă nu există anunțuri de la comunitățile tale.",
   "Sentiu falta de algo no Syden?": "Ți-a lipsit ceva în Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Spune aici, ca {nome} să-l poată face. Răspunsul vine în conversația privată.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Asta văd prietenii tăi aici. Ideile vin ca o conversație privată, cu 💡. Când una intră în aplicație, pune-i un like: persoana primește medalia.",
 } satisfies Record<string, string>;

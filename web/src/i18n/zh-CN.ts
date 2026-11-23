@@ -4830,5 +4830,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "你的社区暂时还没有公告。",
   "Sentiu falta de algo no Syden?": "觉得 Syden 还缺点什么？",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "在这里说说，好让 {nome} 把它做出来。回复会出现在私聊里。",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "这就是你的朋友们在这里看到的。点子会以私聊的形式发来，带着 💡。等某个点子加进应用后，给它点个赞：那个人就会得到勋章。",
 } satisfies Record<string, string>;

@@ -4845,5 +4845,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Topluluklarından henüz duyuru yok.",
   "Sentiu falta de algo no Syden?": "Syden’da bir şeyin eksikliğini hissettin mi?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Burada anlat ki {nome} bunu yapabilsin. Yanıt özel sohbete gelir.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Arkadaşlarının burada gördüğü bu. Fikirler 💡 ile özel sohbet olarak gelir. Biri uygulamaya girdiğinde ona başparmak bırak: o kişi madalyayı kazanır.",
 } satisfies Record<string, string>;

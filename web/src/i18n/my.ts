@@ -4880,5 +4880,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "သင့်အသိုင်းအဝိုင်းများထံမှ ကြေညာချက် မရှိသေးပါ။",
   "Sentiu falta de algo no Syden?": "Syden မှာ တစ်ခုခု လိုအပ်နေသလား။",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome} လုပ်ပေးနိုင်အောင် ဒီမှာ ပြောပြပါ။ အဖြေက သီးသန့်စကားဝိုင်းထဲ ရောက်လာမယ်။",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "ဒါက သင့်သူငယ်ချင်းတွေ ဒီမှာ မြင်ရတာပါ။ အကြံဉာဏ်တွေက 💡 နဲ့ သီးသန့်စကားဝိုင်းအဖြစ် ရောက်လာတယ်။ တစ်ခုခု အက်ပ်ထဲ ရောက်သွားရင် အဲဒါကို လက်မထောင်ပေးပါ။ အဲဒီလူက ဆုတံဆိပ် ရမယ်။",
 } satisfies Record<string, string>;

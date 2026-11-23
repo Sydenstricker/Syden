@@ -4916,5 +4916,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Қауымдастықтарыңнан әзірге хабарландыру жоқ.",
   "Sentiu falta de algo no Syden?": "Syden-де бір нәрсе жетпей ме?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Осында айт, {nome} оны жасай алсын. Жауап жеке әңгімеге келеді.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Достарың мұнда дәл осыны көреді. Идеялар 💡 белгісімен жеке әңгіме ретінде келеді. Біреуі қолданбаға енгенде, оған 👍 қой: сол адам медаль алады.",
 } satisfies Record<string, string>;

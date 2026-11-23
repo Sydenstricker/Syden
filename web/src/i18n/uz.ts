@@ -4932,5 +4932,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Hamjamiyatlaringdan hozircha eʼlon yoʻq.",
   "Sentiu falta de algo no Syden?": "Syden-da nimadir yetishmayaptimi?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Shu yerda ayt, {nome} uni amalga oshira olsin. Javob shaxsiy suhbatga keladi.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Doʻstlaring bu yerda aynan shuni koʻradi. Gʻoyalar 💡 bilan shaxsiy suhbat sifatida keladi. Biri ilovaga qoʻshilganda, unga 👍 qoʻy: oʻsha odam medal oladi.",
 } satisfies Record<string, string>;

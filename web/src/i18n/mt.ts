@@ -4859,5 +4859,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Għad m’hemm l-ebda avviż mill-komunitajiet tiegħek.",
   "Sentiu falta de algo no Syden?": "Ħassejt in-nuqqas ta' xi ħaġa f'Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Għidilna hawn, biex jasal għand {nome} u jkun jista' jidħol fl-app. It-tweġiba tasal fil-konversazzjoni privata.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Dan hu dak li jaraw sħabek hawn. L-ideat jaslu bħala konversazzjoni privata, b'💡. Meta waħda tidħol fl-app, agħtiha 👍: dik il-persuna tieħu l-midalja.",
 } satisfies Record<string, string>;

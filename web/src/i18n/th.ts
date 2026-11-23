@@ -4857,5 +4857,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "ยังไม่มีประกาศจากคอมมูนิตี้ของคุณ",
   "Sentiu falta de algo no Syden?": "รู้สึกว่า Syden ยังขาดอะไรไหม",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "บอกไว้ตรงนี้ เพื่อให้ {nome} นำไปทำได้ คำตอบจะมาทางแชตส่วนตัว",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "นี่คือสิ่งที่เพื่อน ๆ ของคุณเห็นตรงนี้ ไอเดียจะส่งมาเป็นแชตส่วนตัว มี 💡 เมื่อไอเดียไหนได้เข้าไปอยู่ในแอป ให้กดถูกใจที่ไอเดียนั้น คนนั้นจะได้รับเหรียญ",
 } satisfies Record<string, string>;

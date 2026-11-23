@@ -65,9 +65,6 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
           <Lightbulb size={20} aria-hidden="true" />
           {t('Sentiu falta de algo no Syden?')}
         </h2>
-        <p className="ideias-lead">
-          {t('É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.')}
-        </p>
         <form onSubmit={(e) => e.preventDefault()} aria-hidden="true">
           <textarea rows={3} placeholder={t('Seria bom se…')} disabled />
           <div className="ideias-rodape">

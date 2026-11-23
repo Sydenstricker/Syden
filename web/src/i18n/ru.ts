@@ -4861,5 +4861,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Пока нет объявлений от твоих сообществ.",
   "Sentiu falta de algo no Syden?": "Чего-то не хватает в Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Расскажи здесь — так ты поможешь {nome} это сделать. Ответ придёт в личную переписку.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Вот что видят твои друзья здесь. Идеи приходят личной перепиской, с 💡. Когда какая-то попадёт в приложение, поставь ей палец вверх: этот человек получит медаль.",
 } satisfies Record<string, string>;

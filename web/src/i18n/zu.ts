@@ -4912,5 +4912,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Azikabi khona izaziso ezivela emiphakathini yakho.",
   "Sentiu falta de algo no Syden?": "Kukhona okushodayo ku-Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kusho lapha, ukuze {nome} akwazi ukukwenza. Impendulo ifika engxoxweni eyimfihlo.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Yilokhu abangane bakho abakubona lapha. Imibono ifika njengengxoxo eyimfihlo, ne-💡. Uma omunye ungena kuhlelo, wufake u-👍: lowo muntu uthola indondo.",
 } satisfies Record<string, string>;

@@ -4912,5 +4912,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "अहिलेसम्म तिम्रा समुदायहरूबाट कुनै सूचना छैन।",
   "Sentiu falta de algo no Syden?": "Syden मा केही कमी महसुस भयो?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "यहाँ भन्नुहोस्, ताकि {nome} ले यो बनाउन सकून्। जवाफ निजी कुराकानीमा आउँछ।",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "तपाईंका साथीहरूले यहाँ यही देख्छन्। विचारहरू 💡 सहित निजी कुराकानीको रूपमा आउँछन्। कुनै एपमा थपिएपछि त्यसमा 👍 लगाउनुहोस्: ती व्यक्तिले पदक पाउँछन्।",
 } satisfies Record<string, string>;

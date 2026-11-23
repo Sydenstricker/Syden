@@ -4903,5 +4903,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Ende asnjë njoftim nga komunitetet e tua.",
   "Sentiu falta de algo no Syden?": "Të ka munguar diçka në Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Tregoje këtu, që {nome} ta realizojë. Përgjigjja vjen në bisedën private.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Kjo është ajo që shohin miqtë e tu këtu. Idetë vijnë si bisedë private, me 💡. Kur njëra hyn në aplikacion, vëri një 👍: ai person merr medaljen.",
 } satisfies Record<string, string>;

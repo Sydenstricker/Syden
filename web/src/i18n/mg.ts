@@ -4910,5 +4910,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Mbola tsy misy filazana avy amin’ireo vondronao.",
   "Sentiu falta de algo no Syden?": "Nisy zavatra tsy hitanao tao amin’ny Syden ve?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Lazao eto, ho tonga any amin’ {nome} izany mba hatao. Tonga amin’ny resaka manokana ny valiny.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Izao no hitan’ny namanao eto. Tonga ho resaka manokana ny hevitra, misy 💡. Rehefa tafiditra ao amin’ny rindrambaiko ny iray, apetaho 👍 izany: mahazo ny medaly ilay olona.",
 } satisfies Record<string, string>;

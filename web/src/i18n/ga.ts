@@ -4850,5 +4850,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Níl aon fhógra ó do phobail fós.",
   "Sentiu falta de algo no Syden?": "An airíonn tú uait rud éigin in Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Inis anseo é, ionas gur féidir le {nome} é a dhéanamh. Tagann an freagra sa chomhrá príobháideach.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Seo a fheiceann do chairde anseo. Tagann na smaointe mar chomhrá príobháideach, le 💡. Nuair a théann ceann acu isteach san aip, cuir ordóg suas leis: faigheann an duine sin an bonn.",
 } satisfies Record<string, string>;

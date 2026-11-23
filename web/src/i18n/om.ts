@@ -4881,5 +4881,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Hanga ammaatti hawaasa kee irraa beeksisni hin jiru.",
   "Sentiu falta de algo no Syden?": "Syden keessatti wanti si hir’ate jiraa?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Asitti nutti himi, akka {nome} hojjechuu danda’uuf. Deebiin haasaa dhuunfaatiin dhufa.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Kun waan hiriyyoonni kee asitti arganidha. Yaadonni akka haasaa dhuunfaatti, 💡 qabatanii dhufu. Yeroo tokko appii keessa galu, quba ol kaa’iif: namni sun meedaaliyaa argata.",
 } satisfies Record<string, string>;

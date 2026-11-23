@@ -4846,5 +4846,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Babu sanarwa daga ƙungiyoyinku tukuna.",
   "Sentiu falta de algo no Syden?": "Akwai abin da kuka rasa a Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Ku faɗa a nan, saƙon zai je wurin {nome} don a aiwatar. Amsar za ta zo a tattaunawar sirri.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Wannan ne abokanku ke gani a nan. Ra’ayoyi suna zuwa a matsayin tattaunawar sirri, da 💡. Idan ɗaya ya shiga manhajar, ku sa babban yatsa a kai: za a ba mai ra’ayin lambar yabo.",
 } satisfies Record<string, string>;

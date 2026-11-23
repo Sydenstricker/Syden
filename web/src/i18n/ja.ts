@@ -4825,5 +4825,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "コミュニティからのお知らせはまだありません。",
   "Sentiu falta de algo no Syden?": "Sydenに足りないものはありましたか？",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "ここで教えてください。{nome}に届いて、実装につながります。返事は個人チャットに届きます。",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "友達にはここがこう見えています。アイデアは💡付きの個人チャットとして届きます。アプリに取り入れたら、そのメッセージにいいねを付けてください。送った人にメダルが付きます。",
 } satisfies Record<string, string>;

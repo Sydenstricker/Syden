@@ -4908,5 +4908,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Још нема обавештења из твојих заједница.",
   "Sentiu falta de algo no Syden?": "Недостаје ти нешто у Syden-у?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Напиши овде, да {nome} може то да направи. Одговор стиже у приватни разговор.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Ово твоји пријатељи виде овде. Идеје стижу као приватни разговор, са 💡. Кад нека уђе у апликацију, стави јој 👍: та особа добија медаљу.",
 } satisfies Record<string, string>;

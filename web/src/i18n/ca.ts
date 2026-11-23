@@ -4907,5 +4907,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Encara no hi ha cap avís de les teves comunitats.",
   "Sentiu falta de algo no Syden?": "Has trobat a faltar alguna cosa al Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Explica-ho aquí, perquè {nome} ho pugui fer. La resposta arriba a la conversa privada.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Això és el que veuen els teus amics aquí. Les idees arriben com a conversa privada, amb 💡. Quan una entri a l’aplicació, posa-hi un 👍: aquella persona guanya la medalla.",
 } satisfies Record<string, string>;

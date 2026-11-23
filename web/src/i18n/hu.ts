@@ -4913,5 +4913,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Még nincs hirdetmény a közösségeidtől.",
   "Sentiu falta de algo no Syden?": "Hiányzik valami a Sydenből?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Írd meg itt, hogy {nome} meg tudja csinálni. A válasz a privát beszélgetésbe érkezik.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Ezt látják a barátaid itt. Az ötletek privát beszélgetésként érkeznek, 💡 jellel. Ha valamelyik bekerül az alkalmazásba, adj rá 👍-t: az illető megkapja az érmet.",
 } satisfies Record<string, string>;

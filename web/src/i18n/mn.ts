@@ -4924,5 +4924,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Чиний бүлгэмүүдээс одоогоор мэдэгдэл алга.",
   "Sentiu falta de algo no Syden?": "Syden-д ямар нэг зүйл дутагдсан уу?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Энд бичээрэй, {nome} үүнийг хийж чадахаар. Хариу хувийн ярианд ирнэ.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Найзууд чинь энд үүнийг хардаг. Санаанууд 💡-тэй хувийн яриа болж ирнэ. Аль нэг нь апп-д орвол түүнд 👍 дар: тэр хүн медаль авна.",
 } satisfies Record<string, string>;

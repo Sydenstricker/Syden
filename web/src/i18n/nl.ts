@@ -4841,5 +4841,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Nog geen aankondigingen van je community’s.",
   "Sentiu falta de algo no Syden?": "Mis je iets in Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Vertel het hier, zodat {nome} het kan maken. Het antwoord komt in het privégesprek.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Dit zien je vrienden hier. Ideeën komen binnen als privégesprek, met 💡. Als er een in de app komt, geef het een duim omhoog: die persoon krijgt de medaille.",
 } satisfies Record<string, string>;

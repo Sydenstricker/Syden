@@ -4903,5 +4903,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Inga anslag från dina gemenskaper än.",
   "Sentiu falta de algo no Syden?": "Saknar du något i Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Berätta här, så att {nome} kan bygga det. Svaret kommer i den privata konversationen.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Det här är vad dina vänner ser här. Idéer kommer som en privat konversation, med 💡. När en kommer in i appen, ge den en tumme upp: personen får medaljen.",
 } satisfies Record<string, string>;

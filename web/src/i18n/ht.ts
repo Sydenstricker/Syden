@@ -4921,5 +4921,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Poko gen anons nan kominote ou yo.",
   "Sentiu falta de algo no Syden?": "Ou santi yon bagay manke nan Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Rakonte l isit la pou {nome} ka fè l. Repons lan ap rive nan konvèsasyon prive a.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Se sa zanmi w yo wè isit la. Lide yo rive tankou yon konvèsasyon prive, ak 💡. Lè youn antre nan app la, mete yon 👍 sou li: moun nan genyen meday la.",
 } satisfies Record<string, string>;

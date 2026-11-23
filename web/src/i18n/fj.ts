@@ -4843,5 +4843,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Se bera ni dua na vakaro mai na nomu isoqosoqo.",
   "Sentiu falta de algo no Syden?": "E dua na ka e sega ni tiko ena Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Tukuna eke, me rawa ni cakava {nome}. Na isau ena yaco ena veitalanoa vakaitaukei.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Oqo na ka era raica na nomu itokani eke. Na nanuma e yaco me veitalanoa vakaitaukei, kei na 💡. Ni curu e dua ena app, vakaraitaka na 👍 kina: ena rawata na mitali na tamata koya.",
 } satisfies Record<string, string>;

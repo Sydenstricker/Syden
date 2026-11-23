@@ -4906,5 +4906,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Na razie brak ogłoszeń z twoich społeczności.",
   "Sentiu falta de algo no Syden?": "Brakuje ci czegoś w Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Napisz tutaj — trafi to do {nome}, żeby mogło wejść do aplikacji. Odpowiedź przyjdzie w prywatnej rozmowie.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Tak to widzą twoi znajomi tutaj. Pomysły przychodzą jako prywatna rozmowa, z 💡. Kiedy któryś trafi do aplikacji, daj mu łapkę w górę: ta osoba dostaje medal.",
 } satisfies Record<string, string>;

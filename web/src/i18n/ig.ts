@@ -4852,5 +4852,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Enweghị ọkwa ọ bụla site n’obodo gị ugbu a.",
   "Sentiu falta de algo no Syden?": "Ọ dị ihe na-adịghị na Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kọọ ya ebe a ka {nome} nwee ike ime ya. Azịza ga-abịa na nkata nzuzo.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Nke a bụ ihe ndị enyi gị na-ahụ ebe a. Echiche na-abịa dị ka nkata nzuzo, nwere 💡. Mgbe otu banyere na ngwa ahụ, nye ya 👍: onye ahụ ga-enweta nrite ahụ.",
 } satisfies Record<string, string>;

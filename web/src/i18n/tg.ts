@@ -4921,5 +4921,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Ҳоло аз ҷомеаҳои шумо эълоне нест.",
   "Sentiu falta de algo no Syden?": "Дар Syden чизе намерасад?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Ин ҷо нависед, то {nome} онро амалӣ карда тавонад. Ҷавоб дар сӯҳбати хусусӣ мерасад.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Дӯстони шумо ин ҷо инро мебинанд. Ғояҳо ҳамчун сӯҳбати хусусӣ бо 💡 мерасанд. Вақте ки яке ба барнома ворид шавад, ба он 👍 гузоред: он шахс медал мегирад.",
 } satisfies Record<string, string>;

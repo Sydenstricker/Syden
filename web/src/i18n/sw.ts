@@ -4843,5 +4843,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Bado hakuna matangazo kutoka kwa jumuiya zako.",
   "Sentiu falta de algo no Syden?": "Kuna kitu ulichokikosa kwenye Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Eleza hapa, ili {nome} aweze kukitekeleza. Jibu linafika kwenye mazungumzo ya faragha.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Hiki ndicho marafiki zako wanachokiona hapa. Mawazo yanafika kama mazungumzo ya faragha, na 💡. Wazo likiingia kwenye programu, weka dole gumba juu yake: mtu huyo anapata medali.",
 } satisfies Record<string, string>;

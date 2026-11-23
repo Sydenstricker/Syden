@@ -4840,5 +4840,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "এখনো তোমার কমিউনিটিগুলো থেকে কোনো ঘোষণা নেই।",
   "Sentiu falta de algo no Syden?": "Syden-এ কিছুর অভাব বোধ করলে?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "এখানে বলো, যাতে {nome} সেটা বানাতে পারে। উত্তর আসবে ব্যক্তিগত কথোপকথনে।",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "এটাই তোমার বন্ধুরা এখানে দেখে। ভাবনাগুলো 💡 নিয়ে ব্যক্তিগত কথোপকথন হিসেবে আসে। কোনোটা অ্যাপে ঢুকলে তাতে থাম্বস-আপ দাও: সেই মানুষটা পদক পায়।",
 } satisfies Record<string, string>;

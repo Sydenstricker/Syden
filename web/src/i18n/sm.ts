@@ -4847,5 +4847,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "E leʻi iai ni faʻasilasilaga mai au faʻalapotopotoga.",
   "Sentiu falta de algo no Syden?": "E iai se mea e te misia i Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Taʻu mai iinei, ina ia mafai e {nome} ona faia. O le tali e oʻo mai i le talanoaga faʻalilolilo.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "O le mea lea e vaʻai i ai au uō iinei. E oʻo mai manatu o se talanoaga faʻalilolilo, ma le 💡. Pe a ulu atu se tasi i le app, tuʻu le 👍 i ai: e maua e lea tagata le pine.",
 } satisfies Record<string, string>;

@@ -4846,5 +4846,4 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Seidauk iha avizu husi ó-nia komunidade sira.",
   "Sentiu falta de algo no Syden?": "Ó sente falta buat ruma iha Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Konta iha ne'e, atu {nome} bele halo. Resposta to'o iha konversa privadu.",
-  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Ne'e mak buat ne'ebé ó-nia belun sira haree iha ne'e. Ideia sira to'o hanesan konversa privadu, ho 💡. Bainhira ida tama iha aplikasaun, fó 👍 ba ida-ne'e: ema ne'e hetan medalla.",
 } satisfies Record<string, string>;
