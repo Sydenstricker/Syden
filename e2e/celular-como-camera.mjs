@@ -42,6 +42,21 @@ try {
   // O celular.
   const ctxCel = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, permissions: ['camera'] });
   const cel = vigiar(await ctxCel.newPage());
+  // A câmera EM PÉ, como a de um celular de verdade (a falsa do Chromium é deitada): um canvas de 360 × 640 que muda de cor.
+  await cel.addInitScript(() => {
+    navigator.mediaDevices.getUserMedia = async () => {
+      const c = document.createElement('canvas');
+      c.width = 360;
+      c.height = 640;
+      const g = c.getContext('2d');
+      let n = 0;
+      setInterval(() => {
+        g.fillStyle = 'hsl(' + ((n += 7) % 360) + ' 70% 50%)';
+        g.fillRect(0, 0, 360, 640);
+      }, 66);
+      return c.captureStream(15);
+    };
+  });
   await cel.goto(endereco);
   const aoVivo = cel.locator('.camera-do-celular-estado.ao-vivo');
   (await aoVivo.waitFor({ timeout: 20000 }).then(() => true, () => false))
@@ -70,6 +85,13 @@ try {
     .then(() => true, () => false);
   vista ? ok(`a bia vê a câmera do celular da ana: ${JSON.stringify(await cameraDaAnaNaBia(bia))}`) : falhou('a bia não recebeu a câmera do celular');
   await bia.screenshot({ path: 'e2e/fotos/celular-como-camera-bia.png' });
+  // Em pé, a câmera aparece INTEIRA no quadro (sem cortar pelo meio), na bia e no próprio quadro da ana.
+  for (const [quem, pagina] of [['bia', bia], ['ana', ana]]) {
+    const inteira = await pagina
+      .waitForFunction(() => [...document.querySelectorAll('video[data-lk-source="camera"]')].some((v) => v.videoHeight > v.videoWidth && getComputedStyle(v).objectFit === 'contain'), null, { timeout: 10000 })
+      .then(() => true, () => false);
+    inteira ? ok('a câmera em pé aparece inteira no quadro (' + quem + ')') : falhou('a câmera em pé saiu cortada no quadro (' + quem + ')');
+  }
 
   // Virar a câmera não derruba nada.
   await cel.locator('.camera-do-celular-botoes button').first().click();

@@ -22,7 +22,7 @@ import { Accessibility, Languages,
   Trash2,
   UserX,
   Users,
-  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown, CircleOff, Focus, Eraser, Image as ImageIcon, VideoOff, Ban, ScrollText } from 'lucide-react';
+  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown, CircleOff, Focus, Eraser, Image as ImageIcon, VideoOff, Video as VideoIcon, Ban, ScrollText } from 'lucide-react';
 import {
   type EfeitoDoFundo,
   fundoDaCameraDisponivel,
@@ -2919,7 +2919,23 @@ function PreviaDaCamera({ voice, efeito, imagem }: { voice: Voice; efeito: Efeit
 
   return (
     <div className="previa-da-camera">
-      {ligada && <video ref={videoRef} autoPlay muted playsInline className="previa-da-camera-video" />}
+      {/* O RETÂNGULO É PERMANENTE (pedido dele, 23/11/2026): parado, ele mostra o ícone da câmera e é onde se clica para ver a
+          prévia, para quem chega ao Syden Broadcast saber logo que é ali que se vê o efeito. */}
+      {ligada ? (
+        <video ref={videoRef} autoPlay muted playsInline className="previa-da-camera-video" />
+      ) : (
+        <button
+          type="button"
+          className="previa-da-camera-video previa-da-camera-parada"
+          aria-label={t('Testar')}
+          onClick={() => {
+            setErro(false);
+            setLigada(true);
+          }}
+        >
+          {erro ? <VideoOff size={40} aria-hidden="true" /> : <VideoIcon size={40} aria-hidden="true" />}
+        </button>
+      )}
       <div className="mic-test-row">
         <button
           type="button"

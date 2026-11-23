@@ -267,11 +267,27 @@ function PersonTile({
   const name = nomeNaComunidade(Number(trackRef.participant.identity), trackRef.participant.name || trackRef.participant.identity);
 
   const hasVideo = isTrackReference(trackRef) && !cameraMuted;
+  // A CÂMERA EM PÉ (o celular como câmera, 23/11/2026, relato dele: "a área da câmera do celular não se reflete na
+  // transmissão"): o quadro é deitado e cortava o vídeo em pé pelo meio. Em pé, ele aparece INTEIRO, como no celular.
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [emPe, setEmPe] = useState(false);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!hasVideo || !v) return setEmPe(false);
+    const medir = () => setEmPe(v.videoHeight > v.videoWidth);
+    medir();
+    v.addEventListener('resize', medir);
+    v.addEventListener('loadedmetadata', medir);
+    return () => {
+      v.removeEventListener('resize', medir);
+      v.removeEventListener('loadedmetadata', medir);
+    };
+  }, [hasVideo]);
 
   return (
     <ParticipantTile trackRef={trackRef}>
       {hasVideo ? (
-        <VideoTrack trackRef={trackRef} />
+        <VideoTrack ref={videoRef} trackRef={trackRef} className={emPe ? 'camera-em-pe' : undefined} />
       ) : (
         <div className="tile-avatar">
           <Avatar name={name} userId={Number(trackRef.participant.identity)} size={avatarSize} speaking={speaking} musica={musica} assistindo={assistindo} naChamada />

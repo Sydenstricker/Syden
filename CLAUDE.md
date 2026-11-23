@@ -3017,8 +3017,11 @@ abre a página (sem conta) e a câmera dele vira a câmera da pessoa, no lugar d
 - **Sem STUN nem TURN** (nada de terceiro sabendo o endereço de ninguém): só funciona com os dois na MESMA REDE, e a tela diz
   isso quando não liga em 20 s. Funcionar pelo 4G pede um TURN nosso: decisão dele.
 - Parar no celular de propósito só apaga a câmera, sem janela no computador; a conexão que cai mostra "O celular saiu.".
-- Testes: `server/test/camera-do-celular.test.ts` e `e2e/celular-como-camera.mjs` (passaram; "celular" é outro navegador com a
-  câmera falsa, na mesma máquina). Ninguém testou com um celular de verdade.
+- **Testado por ele com um iPhone de verdade em 23/11/2026: funcionou.** O vídeo do celular vem EM PÉ, e o quadro da chamada
+  (deitado) o cortava pelo meio; agora a câmera em pé aparece INTEIRA, com faixas da cor do quadro dos lados (`camera-em-pe` em
+  VoiceStage.tsx, medido pelo tamanho do vídeo). Vale para qualquer câmera em pé.
+- Testes: `server/test/camera-do-celular.test.ts` e `e2e/celular-como-camera.mjs` (passaram; o "celular" é outro navegador com uma
+  câmera em pé de canvas, na mesma máquina).
 
 ## O app de Android: medido, ainda não começado
 

@@ -21494,3 +21494,25 @@ body.arrastando-barra {
   overflow: hidden;
   overflow-wrap: anywhere;
 }
+
+/* A prévia da câmera parada: o mesmo retângulo, com o ícone da câmera no meio (o clique liga o teste). */
+.previa-da-camera-parada {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--border);
+  background: var(--bg-input);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.previa-da-camera-parada:hover,
+.previa-da-camera-parada:focus-visible {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+/* A câmera em pé (o celular): inteira no quadro deitado, com faixas dos lados, e não cortada pelo meio (VoiceStage.tsx). */
+.tile video.camera-em-pe {
+  object-fit: contain;
+  background: transparent; /* as faixas dos lados ficam com a cor do quadro, que continua com a forma dele */
+}
