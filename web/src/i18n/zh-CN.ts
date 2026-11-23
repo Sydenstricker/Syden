@@ -4829,4 +4829,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "这个社区不允许此状态中的某个词。",
   "Esta comunidade não permite links no status da sala.": "这个社区不允许在房间状态里放链接。",
   "Espere alguns segundos para mudar o status da sala de novo.": "请等几秒再修改房间状态。",
+  "Versões anteriores": "以前的版本",
+  "Avisos": "公告",
+  "O que as suas comunidades avisaram": "你的社区发布的公告",
+  "Nenhum aviso das suas comunidades por enquanto.": "你的社区暂时还没有公告。",
 } satisfies Record<string, string>;

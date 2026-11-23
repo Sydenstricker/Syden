@@ -4924,4 +4924,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Энэ нийгэмлэг энэ төлөвийн нэг үгийг зөвшөөрөхгүй.",
   "Esta comunidade não permite links no status da sala.": "Энэ нийгэмлэг өрөөний төлөвт холбоос зөвшөөрөхгүй.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Өрөөний төлөвийг дахин өөрчлөхийн өмнө хэдэн секунд хүлээ.",
+  "Versões anteriores": "Өмнөх хувилбарууд",
+  "Avisos": "Мэдэгдлүүд",
+  "O que as suas comunidades avisaram": "Чиний бүлгэмүүдийн мэдэгдсэн зүйл",
+  "Nenhum aviso das suas comunidades por enquanto.": "Чиний бүлгэмүүдээс одоогоор мэдэгдэл алга.",
 } satisfies Record<string, string>;

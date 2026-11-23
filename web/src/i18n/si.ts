@@ -4910,4 +4910,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "මෙම ප්‍රජාව මෙම තත්ත්වයේ එක් වචනයකට ඉඩ නොදේ.",
   "Esta comunidade não permite links no status da sala.": "මෙම ප්‍රජාව කාමරයේ තත්ත්වයේ සබැඳිවලට ඉඩ නොදේ.",
   "Espere alguns segundos para mudar o status da sala de novo.": "කාමරයේ තත්ත්වය නැවත වෙනස් කිරීමට පෙර තත්පර කිහිපයක් රැඳී සිටින්න.",
+  "Versões anteriores": "පෙර අනුවාද",
+  "Avisos": "නිවේදන",
+  "O que as suas comunidades avisaram": "ඔබේ ප්‍රජාවන් නිවේදනය කළ දේ",
+  "Nenhum aviso das suas comunidades por enquanto.": "තවම ඔබේ ප්‍රජාවන්ගෙන් නිවේදන නැත.",
 } satisfies Record<string, string>;

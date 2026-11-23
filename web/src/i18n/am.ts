@@ -4842,4 +4842,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "ይህ ማህበረሰብ በዚህ ሁኔታ ውስጥ ካሉት ቃላት አንዱን አይፈቅድም።",
   "Esta comunidade não permite links no status da sala.": "ይህ ማህበረሰብ በክፍሉ ሁኔታ ውስጥ አገናኞችን አይፈቅድም።",
   "Espere alguns segundos para mudar o status da sala de novo.": "የክፍሉን ሁኔታ እንደገና ለመቀየር ጥቂት ሰከንዶች ይጠብቁ።",
+  "Versões anteriores": "የቀድሞ ስሪቶች",
+  "Avisos": "ማስታወቂያዎች",
+  "O que as suas comunidades avisaram": "የእርስዎ ማህበረሰቦች ያስታወቁት",
+  "Nenhum aviso das suas comunidades por enquanto.": "ከእርስዎ ማህበረሰቦች እስካሁን ምንም ማስታወቂያ የለም።",
 } satisfies Record<string, string>;

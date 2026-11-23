@@ -4836,4 +4836,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Komuniti ini tidak membenarkan salah satu perkataan dalam status ini.",
   "Esta comunidade não permite links no status da sala.": "Komuniti ini tidak membenarkan pautan dalam status bilik.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Tunggu beberapa saat sebelum menukar status bilik lagi.",
+  "Versões anteriores": "Versi sebelumnya",
+  "Avisos": "Pengumuman",
+  "O que as suas comunidades avisaram": "Apa yang diumumkan oleh komuniti kamu",
+  "Nenhum aviso das suas comunidades por enquanto.": "Belum ada pengumuman daripada komuniti kamu.",
 } satisfies Record<string, string>;

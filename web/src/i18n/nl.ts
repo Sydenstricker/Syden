@@ -4840,4 +4840,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Deze community staat een van de woorden in deze status niet toe.",
   "Esta comunidade não permite links no status da sala.": "Deze community staat geen links toe in de status van de kamer.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Wacht een paar seconden voordat je de status van de kamer weer wijzigt.",
+  "Versões anteriores": "Eerdere versies",
+  "Avisos": "Aankondigingen",
+  "O que as suas comunidades avisaram": "Wat je community’s hebben aangekondigd",
+  "Nenhum aviso das suas comunidades por enquanto.": "Nog geen aankondigingen van je community’s.",
 } satisfies Record<string, string>;

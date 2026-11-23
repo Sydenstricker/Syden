@@ -4855,4 +4855,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "ชุมชนนี้ไม่อนุญาตคำบางคำในสถานะนี้",
   "Esta comunidade não permite links no status da sala.": "ชุมชนนี้ไม่อนุญาตให้ใส่ลิงก์ในสถานะห้อง",
   "Espere alguns segundos para mudar o status da sala de novo.": "รอสักครู่ก่อนเปลี่ยนสถานะห้องอีกครั้ง",
+  "Versões anteriores": "เวอร์ชันก่อนหน้า",
+  "Avisos": "ประกาศ",
+  "O que as suas comunidades avisaram": "ประกาศจากคอมมูนิตี้ของคุณ",
+  "Nenhum aviso das suas comunidades por enquanto.": "ยังไม่มีประกาศจากคอมมูนิตี้ของคุณ",
 } satisfies Record<string, string>;

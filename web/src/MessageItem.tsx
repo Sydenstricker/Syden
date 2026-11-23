@@ -388,6 +388,7 @@ export function MessageItem({
   const [denunciando, setDenunciando] = useState(false);
   // EDITAR (23/11/2026): só quem escreveu, só o texto; enquete e figurinha não têm texto que seja delas.
   const [editando, setEditando] = useState(false);
+  const [historicoAberto, setHistoricoAberto] = useState(false);
   const podeEditar =
     meuId !== undefined && message.author.id === meuId && !message.author.app && !message.poll && !message.attachments.some((a) => a.figurinha);
   const podeDenunciar = meuId !== undefined && message.author.id !== meuId && !message.author.app;
@@ -400,10 +401,17 @@ export function MessageItem({
     }
   }
 
+  // O "(editada)" abre o histórico: o que a mensagem dizia antes de cada edição (guardado no servidor, ver db.ts).
   const marcaDeEditada = message.editadaEm ? (
-    <span className="mensagem-editada" title={new Date(message.editadaEm).toLocaleString(idiomaAtual())}>
+    <button
+      type="button"
+      className="mensagem-editada"
+      title={new Date(message.editadaEm).toLocaleString(idiomaAtual())}
+      aria-expanded={historicoAberto}
+      onClick={() => setHistoricoAberto((v) => !v)}
+    >
       {t('(editada)')}
-    </span>
+    </button>
   ) : null;
 
   const body = (
@@ -415,6 +423,7 @@ export function MessageItem({
       )}
       {/* sem texto (só o anexo), a marca fica sozinha embaixo */}
       {!message.content && !editando && marcaDeEditada}
+      {historicoAberto && message.editadaEm && <HistoricoDaMensagem key={message.editadaEm} id={message.id} />}
       {message.attachments.length > 0 && <Attachments files={message.attachments} />}
       {message.poll && <PollCard poll={message.poll} canClose={canManagePoll} onChange={onPollChange} />}
       {message.thread && onOpenThread && <ThreadChip thread={message.thread} onOpen={() => onOpenThread(message.thread!)} />}
@@ -528,6 +537,37 @@ export function MessageItem({
       </div>
       {actions}
     </div>
+  );
+}
+
+/** As versões anteriores da mensagem, da mais antiga à de antes da atual, cada uma com a hora em que deixou de valer. */
+function HistoricoDaMensagem({ id }: { id: number }) {
+  const t = useT();
+  const [versoes, setVersoes] = useState<{ conteudo: string; desde: string; ate: string }[] | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
+  useEffect(() => {
+    let vivo = true;
+    api<{ versoes: { conteudo: string; desde: string; ate: string }[] }>(`/api/messages/${id}/versoes`)
+      .then((r) => vivo && setVersoes(r.versoes))
+      .catch((e) => vivo && setErro((e as Error).message));
+    return () => {
+      vivo = false;
+    };
+  }, [id]);
+  if (erro) return <p className="mensagem-historico-erro">{t(erro)}</p>;
+  if (!versoes) return null;
+  return (
+    <section className="mensagem-historico" aria-label={t('Versões anteriores')}>
+      <h4>{t('Versões anteriores')}</h4>
+      <ol>
+        {versoes.map((v, i) => (
+          <li key={i}>
+            <time dateTime={v.desde}>{new Date(v.desde).toLocaleString(idiomaAtual())}</time>
+            <p>{v.conteudo || '—'}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 

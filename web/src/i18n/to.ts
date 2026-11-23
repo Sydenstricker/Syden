@@ -4848,4 +4848,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "ʻOku ʻikai ngofua ʻe he kulupu ko ʻeni ha taha ʻo e ngaahi foʻi lea ʻo e tuʻunga ko ʻeni.",
   "Esta comunidade não permite links no status da sala.": "ʻOku ʻikai ngofua ʻe he kulupu ko ʻeni ha link ʻi he tuʻunga ʻo e loki.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Tatali ha sekoni siʻi kimuʻa pea ke toe liliu ʻa e tuʻunga ʻo e loki.",
+  "Versões anteriores": "Ngaahi tatau kimuʻa",
+  "Avisos": "Ngaahi fanongonongo",
+  "O que as suas comunidades avisaram": "Ko e meʻa naʻe fanongonongo ʻe hoʻo ngaahi kulupú",
+  "Nenhum aviso das suas comunidades por enquanto.": "ʻOku teʻeki ai ha fanongonongo mei hoʻo ngaahi kulupú.",
 } satisfies Record<string, string>;

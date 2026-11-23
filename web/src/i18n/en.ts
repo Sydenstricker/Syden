@@ -4837,4 +4837,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "This community doesn't allow one of the words in this status.",
   "Esta comunidade não permite links no status da sala.": "This community doesn't allow links in the room status.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Wait a few seconds before changing the room status again.",
+  "Versões anteriores": "Previous versions",
+  "Avisos": "Announcements",
+  "O que as suas comunidades avisaram": "What your communities announced",
+  "Nenhum aviso das suas comunidades por enquanto.": "No announcements from your communities yet.",
 } satisfies Record<string, string>;

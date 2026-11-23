@@ -4930,4 +4930,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Այս համայնքը թույլ չի տալիս այս կարգավիճակի բառերից մեկը։",
   "Esta comunidade não permite links no status da sala.": "Այս համայնքը թույլ չի տալիս հղումներ սենյակի կարգավիճակում։",
   "Espere alguns segundos para mudar o status da sala de novo.": "Մի քանի վայրկյան սպասիր՝ սենյակի կարգավիճակը նորից փոխելու համար։",
+  "Versões anteriores": "Նախորդ տարբերակներ",
+  "Avisos": "Հայտարարություններ",
+  "O que as suas comunidades avisaram": "Ինչ են հայտարարել քո համայնքները",
+  "Nenhum aviso das suas comunidades por enquanto.": "Քո համայնքներից դեռ հայտարարություններ չկան։",
 } satisfies Record<string, string>;

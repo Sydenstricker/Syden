@@ -4895,4 +4895,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "הקהילה הזאת לא מתירה אחת מהמילים בסטטוס הזה.",
   "Esta comunidade não permite links no status da sala.": "הקהילה הזאת לא מתירה קישורים בסטטוס החדר.",
   "Espere alguns segundos para mudar o status da sala de novo.": "צריך לחכות כמה שניות לפני ששוב משנים את סטטוס החדר.",
+  "Versões anteriores": "גרסאות קודמות",
+  "Avisos": "הכרזות",
+  "O que as suas comunidades avisaram": "מה הכריזו הקהילות",
+  "Nenhum aviso das suas comunidades por enquanto.": "אין עדיין הכרזות מהקהילות.",
 } satisfies Record<string, string>;

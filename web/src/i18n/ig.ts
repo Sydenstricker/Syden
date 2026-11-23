@@ -4850,4 +4850,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Ọgbakọ a anaghị ekwe otu n'ime okwu dị n'ọnọdụ a.",
   "Esta comunidade não permite links no status da sala.": "Ọgbakọ a anaghị ekwe njikọ n'ọnọdụ ụlọ.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Chere sekọnd ole na ole tupu ị gbanwee ọnọdụ ụlọ ọzọ.",
+  "Versões anteriores": "Ụdị ndị gara aga",
+  "Avisos": "Ọkwa",
+  "O que as suas comunidades avisaram": "Ihe obodo gị kwupụtara",
+  "Nenhum aviso das suas comunidades por enquanto.": "Enweghị ọkwa ọ bụla site n’obodo gị ugbu a.",
 } satisfies Record<string, string>;

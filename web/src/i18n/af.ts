@@ -4905,4 +4905,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Hierdie gemeenskap laat een van die woorde in hierdie status nie toe nie.",
   "Esta comunidade não permite links no status da sala.": "Hierdie gemeenskap laat nie skakels in die kamerstatus toe nie.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Wag ’n paar sekondes voordat jy die kamerstatus weer verander.",
+  "Versões anteriores": "Vorige weergawes",
+  "Avisos": "Aankondigings",
+  "O que as suas comunidades avisaram": "Wat jou gemeenskappe aangekondig het",
+  "Nenhum aviso das suas comunidades por enquanto.": "Nog geen aankondigings van jou gemeenskappe nie.",
 } satisfies Record<string, string>;

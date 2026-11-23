@@ -4910,4 +4910,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Bulshadan ma oggola mid ka mid ah ereyada xaaladdan.",
   "Esta comunidade não permite links no status da sala.": "Bulshadan ma oggola linkiyo ku jira xaaladda qolka.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Sug dhowr ilbiriqsi ka hor intaadan mar kale beddelin xaaladda qolka.",
+  "Versões anteriores": "Noocyadii hore",
+  "Avisos": "Ogeysiisyo",
+  "O que as suas comunidades avisaram": "Waxa bulshooyinkaagu ku dhawaaqeen",
+  "Nenhum aviso das suas comunidades por enquanto.": "Weli ma jiraan ogeysiisyo ka yimid bulshooyinkaaga.",
 } satisfies Record<string, string>;

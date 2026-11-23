@@ -4880,4 +4880,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Hawaasni kun jecha haala kanaa keessaa tokko hin hayyamu.",
   "Esta comunidade não permite links no status da sala.": "Hawaasni kun haala kutaa keessatti liinkii hin hayyamu.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Haala kutaa deebitee jijjiiruuf sekondii muraasa eegi.",
+  "Versões anteriores": "Gosoota duraanii",
+  "Avisos": "Beeksisoota",
+  "O que as suas comunidades avisaram": "Waan hawaasni kee beeksise",
+  "Nenhum aviso das suas comunidades por enquanto.": "Hanga ammaatti hawaasa kee irraa beeksisni hin jiru.",
 } satisfies Record<string, string>;

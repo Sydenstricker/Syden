@@ -4823,4 +4823,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "このコミュニティでは、このステータスに含まれる言葉の一つが使えません。",
   "Esta comunidade não permite links no status da sala.": "このコミュニティでは、ボイスチャンネルのステータスにリンクを入れられません。",
   "Espere alguns segundos para mudar o status da sala de novo.": "数秒待ってから、もう一度ステータスを変えてください。",
+  "Versões anteriores": "以前のバージョン",
+  "Avisos": "お知らせ",
+  "O que as suas comunidades avisaram": "参加しているコミュニティからのお知らせ",
+  "Nenhum aviso das suas comunidades por enquanto.": "コミュニティからのお知らせはまだありません。",
 } satisfies Record<string, string>;

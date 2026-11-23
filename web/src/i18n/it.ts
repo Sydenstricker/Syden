@@ -4841,4 +4841,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Questa comunità non consente una delle parole di questo stato.",
   "Esta comunidade não permite links no status da sala.": "Questa comunità non consente link nello stato della stanza.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Aspetta qualche secondo prima di cambiare di nuovo lo stato della stanza.",
+  "Versões anteriores": "Versioni precedenti",
+  "Avisos": "Annunci",
+  "O que as suas comunidades avisaram": "Cosa hanno annunciato le tue community",
+  "Nenhum aviso das suas comunidades por enquanto.": "Ancora nessun annuncio dalle tue community.",
 } satisfies Record<string, string>;

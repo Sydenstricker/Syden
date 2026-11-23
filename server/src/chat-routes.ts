@@ -257,6 +257,18 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       return { ok: true, editadaEm };
     });
 
+    // O histórico da mensagem editada: quem vê a mensagem vê o que ela dizia antes (o "(editada)" abre).
+    authed.get<{ Params: { id: string } }>('/api/messages/:id/versoes', async (request, reply) => {
+      const message = db.findMessage(Number(request.params.id));
+      const channel = message && db.findChannel(message.channelId);
+      const versoes = message && channel && canUseChannel(request.user, channel) ? db.versoesDaMensagem(message.id, request.user.id) : undefined;
+      if (!versoes) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
+      return { versoes };
+    });
+
+    // A cortiça do quarto: os últimos avisos das comunidades da pessoa (ver avisosDaPessoa em db.ts).
+    authed.get('/api/me/avisos', async (request) => ({ avisos: db.avisosDaPessoa(request.user.id) }));
+
     // ---------- Enquetes ----------
 
     authed.post<{ Params: { id: string }; Body: { question?: string; options?: string[]; multiple?: boolean; threadId?: number } }>(

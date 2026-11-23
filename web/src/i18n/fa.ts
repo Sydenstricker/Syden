@@ -4835,4 +4835,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "این انجمن یکی از واژه‌های این وضعیت را مجاز نمی‌داند.",
   "Esta comunidade não permite links no status da sala.": "این انجمن پیوند در وضعیت اتاق را مجاز نمی‌داند.",
   "Espere alguns segundos para mudar o status da sala de novo.": "چند ثانیه صبر کنید تا دوباره وضعیت اتاق را تغییر دهید.",
+  "Versões anteriores": "نسخه‌های قبلی",
+  "Avisos": "اطلاعیه‌ها",
+  "O que as suas comunidades avisaram": "آنچه انجمن‌های شما اطلاع داده‌اند",
+  "Nenhum aviso das suas comunidades por enquanto.": "هنوز اطلاعیه‌ای از انجمن‌های شما نیست.",
 } satisfies Record<string, string>;

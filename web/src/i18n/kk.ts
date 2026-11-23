@@ -4916,4 +4916,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Бұл қауымдастық осы күйдегі сөздердің бірін рұқсат етпейді.",
   "Esta comunidade não permite links no status da sala.": "Бұл қауымдастық бөлме күйінде сілтемеге рұқсат етпейді.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Бөлме күйін қайта өзгерту үшін бірнеше секунд күт.",
+  "Versões anteriores": "Алдыңғы нұсқалар",
+  "Avisos": "Хабарландырулар",
+  "O que as suas comunidades avisaram": "Қауымдастықтарың не хабарлады",
+  "Nenhum aviso das suas comunidades por enquanto.": "Қауымдастықтарыңнан әзірге хабарландыру жоқ.",
 } satisfies Record<string, string>;

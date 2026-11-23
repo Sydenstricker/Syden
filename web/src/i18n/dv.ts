@@ -4921,4 +4921,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "މި ކޮމިއުނިޓީގައި މި ސްޓޭޓަހުގެ ބަހެއް ހުއްދައެއް ނުވޭ.",
   "Esta comunidade não permite links no status da sala.": "މި ކޮމިއުނިޓީގައި ރޫމުގެ ސްޓޭޓަހުގައި ލިންކް ހުއްދައެއް ނުވޭ.",
   "Espere alguns segundos para mudar o status da sala de novo.": "ރޫމުގެ ސްޓޭޓަސް އަލުން ބަދަލުކުރުމަށް ސިކުންތު ކޮޅަކު މަޑުކުރޭ.",
+  "Versões anteriores": "ކުރީގެ ވަރޝަންތައް",
+  "Avisos": "އިޢުލާންތައް",
+  "O que as suas comunidades avisaram": "ތިބާގެ ކޮމިއުނިޓީތަކުން އިޢުލާނުކުރި ކަންތައް",
+  "Nenhum aviso das suas comunidades por enquanto.": "ތިބާގެ ކޮމިއުނިޓީތަކުން އަދި އެއްވެސް އިޢުލާނެއް ނެތް.",
 } satisfies Record<string, string>;

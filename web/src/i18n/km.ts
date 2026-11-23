@@ -4910,4 +4910,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "សហគមន៍នេះមិនអនុញ្ញាតពាក្យមួយក្នុងស្ថានភាពនេះទេ។",
   "Esta comunidade não permite links no status da sala.": "សហគមន៍នេះមិនអនុញ្ញាតតំណក្នុងស្ថានភាពបន្ទប់ទេ។",
   "Espere alguns segundos para mudar o status da sala de novo.": "សូមរង់ចាំពីរបីវិនាទី មុននឹងប្តូរស្ថានភាពបន្ទប់ម្តងទៀត។",
+  "Versões anteriores": "កំណែមុនៗ",
+  "Avisos": "សេចក្តីប្រកាស",
+  "O que as suas comunidades avisaram": "អ្វីដែលសហគមន៍របស់អ្នកបានប្រកាស",
+  "Nenhum aviso das suas comunidades por enquanto.": "មិនទាន់មានសេចក្តីប្រកាសពីសហគមន៍របស់អ្នកនៅឡើយទេ។",
 } satisfies Record<string, string>;

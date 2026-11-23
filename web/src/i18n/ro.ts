@@ -4841,4 +4841,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Această comunitate nu permite unul dintre cuvintele din această stare.",
   "Esta comunidade não permite links no status da sala.": "Această comunitate nu permite linkuri în starea camerei.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Așteaptă câteva secunde înainte să schimbi din nou starea camerei.",
+  "Versões anteriores": "Versiuni anterioare",
+  "Avisos": "Anunțuri",
+  "O que as suas comunidades avisaram": "Ce au anunțat comunitățile tale",
+  "Nenhum aviso das suas comunidades por enquanto.": "Încă nu există anunțuri de la comunitățile tale.",
 } satisfies Record<string, string>;

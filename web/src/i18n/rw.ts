@@ -4852,4 +4852,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Iri huriro ntiryemera rimwe mu magambo ari muri iyi mimerere.",
   "Esta comunidade não permite links no status da sala.": "Iri huriro ntiryemera amahuza mu mimerere y'icyumba.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Tegereza amasegonda make mbere yo kongera guhindura imimerere y'icyumba.",
+  "Versões anteriores": "Inyandiko zabanje",
+  "Avisos": "Amatangazo",
+  "O que as suas comunidades avisaram": "Ibyo imiryango yawe yatangaje",
+  "Nenhum aviso das suas comunidades por enquanto.": "Nta matangazo aturuka mu miryango yawe aragera.",
 } satisfies Record<string, string>;

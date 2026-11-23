@@ -1362,6 +1362,7 @@ export function Shell({
                 setView('community');
                 setCommunityId(id);
               }}
+              aoAbrirCanal={(communityId, channelId) => setIrParaCanal({ communityId, channelId })}
             />
           </CenaGuardada>
           {view === 'amigos' && (

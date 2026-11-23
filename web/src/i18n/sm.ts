@@ -4845,4 +4845,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "E le faʻatagaina e lenei faʻalapotopotoga se tasi o upu o lenei tulaga.",
   "Esta comunidade não permite links no status da sala.": "E le faʻatagaina e lenei faʻalapotopotoga ni fesoʻotaʻiga i le tulaga o le potu.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Faatali ni nai sekone aʻo leʻi toe suia le tulaga o le potu.",
+  "Versões anteriores": "Lomiga muamua",
+  "Avisos": "Faʻasilasilaga",
+  "O que as suas comunidades avisaram": "Mea na faʻasilasila mai e au faʻalapotopotoga",
+  "Nenhum aviso das suas comunidades por enquanto.": "E leʻi iai ni faʻasilasilaga mai au faʻalapotopotoga.",
 } satisfies Record<string, string>;

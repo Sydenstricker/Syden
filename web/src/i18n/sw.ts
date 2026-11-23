@@ -4841,4 +4841,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Jumuiya hii hairuhusu mojawapo ya maneno ya hali hii.",
   "Esta comunidade não permite links no status da sala.": "Jumuiya hii hairuhusu viungo kwenye hali ya chumba.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Subiri sekunde chache kabla ya kubadilisha hali ya chumba tena.",
+  "Versões anteriores": "Matoleo ya awali",
+  "Avisos": "Matangazo",
+  "O que as suas comunidades avisaram": "Yale ambayo jumuiya zako zimetangaza",
+  "Nenhum aviso das suas comunidades por enquanto.": "Bado hakuna matangazo kutoka kwa jumuiya zako.",
 } satisfies Record<string, string>;

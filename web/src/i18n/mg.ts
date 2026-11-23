@@ -4910,4 +4910,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Tsy avelan’ity fiarahamonina ity ny iray amin’ny tenin’ity sata ity.",
   "Esta comunidade não permite links no status da sala.": "Tsy avelan’ity fiarahamonina ity ny rohy ao amin’ny satan’ny efitrano.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Andraso segondra vitsivitsy vao manova indray ny satan’ny efitrano.",
+  "Versões anteriores": "Dikan-teny teo aloha",
+  "Avisos": "Filazana",
+  "O que as suas comunidades avisaram": "Izay nambaran’ireo vondronao",
+  "Nenhum aviso das suas comunidades por enquanto.": "Mbola tsy misy filazana avy amin’ireo vondronao.",
 } satisfies Record<string, string>;

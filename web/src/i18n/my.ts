@@ -4879,4 +4879,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "ဒီအသိုင်းအဝိုင်းက ဒီအခြေအနေထဲက စကားလုံးတစ်လုံးကို ခွင့်မပြုပါ။",
   "Esta comunidade não permite links no status da sala.": "ဒီအသိုင်းအဝိုင်းက အခန်း အခြေအနေထဲမှာ လင့်ခ်တွေကို ခွင့်မပြုပါ။",
   "Espere alguns segundos para mudar o status da sala de novo.": "အခန်း အခြေအနေကို ထပ်ပြောင်းဖို့ စက္ကန့်အနည်းငယ် စောင့်ပါ။",
+  "Versões anteriores": "ယခင်ဗားရှင်းများ",
+  "Avisos": "ကြေညာချက်များ",
+  "O que as suas comunidades avisaram": "သင့်အသိုင်းအဝိုင်းများ ကြေညာထားသည်များ",
+  "Nenhum aviso das suas comunidades por enquanto.": "သင့်အသိုင်းအဝိုင်းများထံမှ ကြေညာချက် မရှိသေးပါ။",
 } satisfies Record<string, string>;

@@ -4903,4 +4903,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Den här gemenskapen tillåter inte ett av orden i den här statusen.",
   "Esta comunidade não permite links no status da sala.": "Den här gemenskapen tillåter inte länkar i rummets status.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Vänta några sekunder innan du ändrar rummets status igen.",
+  "Versões anteriores": "Tidigare versioner",
+  "Avisos": "Anslag",
+  "O que as suas comunidades avisaram": "Vad dina gemenskaper har meddelat",
+  "Nenhum aviso das suas comunidades por enquanto.": "Inga anslag från dina gemenskaper än.",
 } satisfies Record<string, string>;

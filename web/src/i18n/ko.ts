@@ -4830,4 +4830,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "이 커뮤니티에서는 이 상태에 들어 있는 단어 중 하나를 쓸 수 없어요.",
   "Esta comunidade não permite links no status da sala.": "이 커뮤니티에서는 음성 채널 상태에 링크를 넣을 수 없어요.",
   "Espere alguns segundos para mudar o status da sala de novo.": "몇 초 기다렸다가 음성 채널 상태를 다시 바꾸세요.",
+  "Versões anteriores": "이전 버전",
+  "Avisos": "공지",
+  "O que as suas comunidades avisaram": "내 커뮤니티의 공지",
+  "Nenhum aviso das suas comunidades por enquanto.": "아직 내 커뮤니티의 공지가 없어요.",
 } satisfies Record<string, string>;

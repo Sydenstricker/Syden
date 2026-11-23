@@ -4912,4 +4912,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Þetta samfélag leyfir ekki eitt af orðunum í þessari stöðu.",
   "Esta comunidade não permite links no status da sala.": "Þetta samfélag leyfir ekki tengla í stöðu herbergis.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Bíddu í nokkrar sekúndur áður en þú breytir stöðu herbergisins aftur.",
+  "Versões anteriores": "Fyrri útgáfur",
+  "Avisos": "Tilkynningar",
+  "O que as suas comunidades avisaram": "Það sem samfélögin þín hafa tilkynnt",
+  "Nenhum aviso das suas comunidades por enquanto.": "Engar tilkynningar frá samfélögunum þínum enn.",
 } satisfies Record<string, string>;

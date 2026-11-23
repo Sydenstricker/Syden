@@ -4891,4 +4891,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Ця спільнота не дозволяє одне зі слів цього статусу.",
   "Esta comunidade não permite links no status da sala.": "Ця спільнота не дозволяє посилання в статусі кімнати.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Зачекай кілька секунд, перш ніж знову змінювати статус кімнати.",
+  "Versões anteriores": "Попередні версії",
+  "Avisos": "Оголошення",
+  "O que as suas comunidades avisaram": "Що оголосили твої спільноти",
+  "Nenhum aviso das suas comunidades por enquanto.": "Поки що немає оголошень від твоїх спільнот.",
 } satisfies Record<string, string>;

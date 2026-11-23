@@ -15,6 +15,7 @@ import type { Channel, Community, VoiceMember } from './types';
 import { Farol, atividadeAgora } from './Farol';
 import { type AcoesDoQuarto, Quarto } from './Quarto';
 import { Trofeus } from './Trofeus';
+import { CorticaDeAvisos } from './CorticaDeAvisos';
 import { usarCenaNova } from './cenaNova';
 import { ENDERECO_DO_QUARTO, type EstadoNoQuarto, QuartoNovo } from './QuartoNovo';
 import { QuartoComEstilo } from './QuartoComEstilo';
@@ -150,6 +151,7 @@ export function Home({
   eu,
   socket,
   aoIrParaComunidade,
+  aoAbrirCanal,
 }: {
   /** Nome da comunidade aberta agora, se houver. */
   comunidade?: string;
@@ -174,11 +176,15 @@ export function Home({
   /** O aviso do servidor de que a partida solo andou (a rodada que acaba sozinha). */
   socket: Socket | null;
   aoIrParaComunidade: (communityId: number) => void;
+  /** A cortiça leva ao canal de avisos de onde o aviso veio. */
+  aoAbrirCanal: (communityId: number, channelId: number) => void;
 }) {
   const t = useT();
   // O céu segue o relógio, mas dá para mudar na mão clicando no sol — e isso troca o tema do app.
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
   const [salasAbertas, setSalasAbertas] = useState(false);
+  // A cortiça abre os avisos das comunidades (23/11/2026; antes ela levava à caixa de ideias, que segue embaixo do quarto).
+  const [avisosAbertos, setAvisosAbertos] = useState(false);
   const [jogosAbertos, setJogosAbertos] = useState(false);
   const [ficha, setFicha] = useFicha();
   /** Os troféus da Corrida dos coelhos, na estante de troféus do quarto (03/11/2026). */
@@ -214,7 +220,15 @@ export function Home({
     quadro: { rotulo: t('Amigos'), sub: t('Quem anda com você'), onClick: aoAbrirAmigos },
     gavetas: { rotulo: t('Guarda-roupa'), sub: t('Enfeites, sons e emojis'), onClick: aoAbrirGuardaRoupa },
     janela: { rotulo: t('Explorar'), sub: t('Entrar em outra comunidade'), onClick: aoExplorar },
-    cortica: { rotulo: t('Tem uma ideia para o Syden?'), onClick: () => ideiasRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
+    cortica: {
+      rotulo: t('Avisos'),
+      sub: t('O que as suas comunidades avisaram'),
+      onClick: () => {
+        setSalasAbertas(false);
+        setJogosAbertos(false);
+        setAvisosAbertos((aberto) => !aberto);
+      },
+    },
     abajur: { rotulo: t('Dia e noite'), onClick: alternarLuz },
     // a estante de troféus: o pódio das corridas na sala (os troféus do quarto, decisão dele de 03/11/2026)
     trofeu: { rotulo: t('Troféus'), sub: t('Os pódios e as conquistas da turma'), onClick: () => setTrofeusAbertos(true) },
@@ -255,6 +269,7 @@ export function Home({
             </div>
           )}
         </QuartoComEstilo>
+        {avisosAbertos && <CorticaDeAvisos aoFechar={() => setAvisosAbertos(false)} aoAbrirCanal={aoAbrirCanal} />}
         {salasAbertas && (
           <div className="vila-painel" role="dialog" aria-label={t('Salas de voz')}>
             <header>

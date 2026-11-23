@@ -4848,4 +4848,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Ní cheadaíonn an pobal seo ceann de na focail sa stádas seo.",
   "Esta comunidade não permite links no status da sala.": "Ní cheadaíonn an pobal seo naisc i stádas an tseomra.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Fan cúpla soicind sula n-athraíonn tú stádas an tseomra arís.",
+  "Versões anteriores": "Leaganacha roimhe seo",
+  "Avisos": "Fógraí",
+  "O que as suas comunidades avisaram": "Na rudaí a d’fhógair do phobail",
+  "Nenhum aviso das suas comunidades por enquanto.": "Níl aon fhógra ó do phobail fós.",
 } satisfies Record<string, string>;

@@ -4844,4 +4844,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Wannan ƙungiya ba ta yarda da ɗaya daga cikin kalmomin wannan hali ba.",
   "Esta comunidade não permite links no status da sala.": "Wannan ƙungiya ba ta yarda da hanyoyin haɗi a halin ɗaki ba.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Ku jira 'yan daƙiƙa kafin ku sake canza halin ɗaki.",
+  "Versões anteriores": "Sigogin baya",
+  "Avisos": "Sanarwa",
+  "O que as suas comunidades avisaram": "Abin da ƙungiyoyinku suka sanar",
+  "Nenhum aviso das suas comunidades por enquanto.": "Babu sanarwa daga ƙungiyoyinku tukuna.",
 } satisfies Record<string, string>;

@@ -4866,4 +4866,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "هذا المجتمع لا يسمح بإحدى كلمات هذه الحالة.",
   "Esta comunidade não permite links no status da sala.": "هذا المجتمع لا يسمح بالروابط في حالة الغرفة.",
   "Espere alguns segundos para mudar o status da sala de novo.": "يُرجى الانتظار بضع ثوانٍ قبل تغيير حالة الغرفة من جديد.",
+  "Versões anteriores": "النسخ السابقة",
+  "Avisos": "الإعلانات",
+  "O que as suas comunidades avisaram": "إعلانات المجتمعات",
+  "Nenhum aviso das suas comunidades por enquanto.": "لا توجد إعلانات من المجتمعات بعد.",
 } satisfies Record<string, string>;

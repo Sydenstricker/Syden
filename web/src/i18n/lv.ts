@@ -4912,4 +4912,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Šī kopiena neatļauj kādu no šī statusa vārdiem.",
   "Esta comunidade não permite links no status da sala.": "Šī kopiena neatļauj saites istabas statusā.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Pagaidi dažas sekundes, pirms atkal maini istabas statusu.",
+  "Versões anteriores": "Iepriekšējās versijas",
+  "Avisos": "Paziņojumi",
+  "O que as suas comunidades avisaram": "Ko paziņojušas tavas kopienas",
+  "Nenhum aviso das suas comunidades por enquanto.": "Pagaidām nav paziņojumu no tavām kopienām.",
 } satisfies Record<string, string>;

@@ -4911,4 +4911,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Tämä yhteisö ei salli yhtä tämän tilan sanoista.",
   "Esta comunidade não permite links no status da sala.": "Tämä yhteisö ei salli linkkejä huoneen tilassa.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Odota muutama sekunti ennen kuin muutat huoneen tilaa uudelleen.",
+  "Versões anteriores": "Aiemmat versiot",
+  "Avisos": "Tiedotteet",
+  "O que as suas comunidades avisaram": "Mitä yhteisösi ovat tiedottaneet",
+  "Nenhum aviso das suas comunidades por enquanto.": "Yhteisöistäsi ei ole vielä tiedotteita.",
 } satisfies Record<string, string>;

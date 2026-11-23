@@ -4912,4 +4912,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "ຊຸມຊົນນີ້ບໍ່ອະນຸຍາດຄຳໜຶ່ງໃນສະຖານະນີ້.",
   "Esta comunidade não permite links no status da sala.": "ຊຸມຊົນນີ້ບໍ່ອະນຸຍາດລິ້ງໃນສະຖານະຫ້ອງ.",
   "Espere alguns segundos para mudar o status da sala de novo.": "ລໍຖ້າສອງສາມວິນາທີ ກ່ອນປ່ຽນສະຖານະຫ້ອງອີກ.",
+  "Versões anteriores": "ເວີຊັນກ່ອນໜ້າ",
+  "Avisos": "ປະກາດ",
+  "O que as suas comunidades avisaram": "ສິ່ງທີ່ຊຸມຊົນຂອງເຈົ້າປະກາດ",
+  "Nenhum aviso das suas comunidades por enquanto.": "ຍັງບໍ່ມີປະກາດຈາກຊຸມຊົນຂອງເຈົ້າເທື່ອ.",
 } satisfies Record<string, string>;

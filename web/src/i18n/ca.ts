@@ -4907,4 +4907,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Aquesta comunitat no permet una de les paraules d’aquest estat.",
   "Esta comunidade não permite links no status da sala.": "Aquesta comunitat no permet enllaços a l’estat de la sala.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Espera uns segons per tornar a canviar l’estat de la sala.",
+  "Versões anteriores": "Versions anteriors",
+  "Avisos": "Avisos",
+  "O que as suas comunidades avisaram": "El que han avisat les teves comunitats",
+  "Nenhum aviso das suas comunidades por enquanto.": "Encara no hi ha cap avís de les teves comunitats.",
 } satisfies Record<string, string>;

@@ -4908,4 +4908,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "See kogukond ei luba ühte selle oleku sõnadest.",
   "Esta comunidade não permite links no status da sala.": "See kogukond ei luba ruumi olekus linke.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Oota mõni sekund, enne kui ruumi olekut uuesti muudad.",
+  "Versões anteriores": "Varasemad versioonid",
+  "Avisos": "Teadaanded",
+  "O que as suas comunidades avisaram": "Mida su kogukonnad teatasid",
+  "Nenhum aviso das suas comunidades por enquanto.": "Sinu kogukondadelt pole veel teadaandeid.",
 } satisfies Record<string, string>;

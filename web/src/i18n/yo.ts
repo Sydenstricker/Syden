@@ -4857,4 +4857,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Àwùjọ yìí kò gba ọ̀kan nínú àwọn ọ̀rọ̀ ipò yìí láàyè.",
   "Esta comunidade não permite links no status da sala.": "Àwùjọ yìí kò gba ìjápọ̀ láàyè nínú ipò yàrá.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Ẹ dúró fún ìṣẹ́jú-àáyá díẹ̀ kí ẹ tó tún yí ipò yàrá padà.",
+  "Versões anteriores": "Àwọn ẹ̀yà ti tẹ́lẹ̀",
+  "Avisos": "Àwọn ìkéde",
+  "O que as suas comunidades avisaram": "Ohun tí àwọn àwùjọ rẹ kéde",
+  "Nenhum aviso das suas comunidades por enquanto.": "Kò sí ìkéde láti ọ̀dọ̀ àwọn àwùjọ rẹ síbẹ̀.",
 } satisfies Record<string, string>;

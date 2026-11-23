@@ -4912,4 +4912,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "यो समुदायले यो स्थितिको एउटा शब्दलाई अनुमति दिँदैन।",
   "Esta comunidade não permite links no status da sala.": "यो समुदायले कोठाको स्थितिमा लिङ्कलाई अनुमति दिँदैन।",
   "Espere alguns segundos para mudar o status da sala de novo.": "कोठाको स्थिति फेरि बदल्नुअघि केही सेकेन्ड पर्खनुहोस्।",
+  "Versões anteriores": "अघिल्ला संस्करणहरू",
+  "Avisos": "सूचनाहरू",
+  "O que as suas comunidades avisaram": "तिम्रा समुदायहरूले के सूचना दिए",
+  "Nenhum aviso das suas comunidades por enquanto.": "अहिलेसम्म तिम्रा समुदायहरूबाट कुनै सूचना छैन।",
 } satisfies Record<string, string>;

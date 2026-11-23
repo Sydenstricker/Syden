@@ -3320,7 +3320,9 @@ function guardarNaCaixaPreta(userId: number) {
     .prepare('SELECT id, content AS texto, accepted_at AS acolhidaEm FROM suggestions WHERE user_id = ?')
     .all(userId) as Record<string, unknown>[];
 
-  const dados = JSON.stringify({ pessoa, mensagens, anexos, ideias }, null, 1);
+  // as versões anteriores das mensagens editadas (ver O EDITAR MENSAGEM, no fim deste arquivo)
+  const versoesAnteriores = versoesDaPessoa(userId);
+  const dados = JSON.stringify({ pessoa, mensagens, versoesAnteriores, anexos, ideias }, null, 1);
   db.prepare(
     "INSERT OR REPLACE INTO contas_retidas (user_id, excluida_em, dados) VALUES (?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), ?)",
   ).run(userId, dados);
@@ -8636,8 +8638,10 @@ export function mensagensFixadas(channelId: number, viewerId: number): Message[]
 // mensagens (é onde a dúvida sobre um aviso fica perto dele). A trava mora em automod.ts (`soQuemAdministra`).
 //
 // EDITAR: só quem escreveu edita, e só o texto. `editada_em` é o que faz o "(editada)" aparecer: a tela não esconde
-// que a mensagem mudou depois de lida. A versão anterior NÃO é guardada (apagar a mensagem já tira tudo, e guardar
-// cada versão para sempre seria dado novo sem prazo); a denúncia guarda o retrato da mensagem na hora em que é feita.
+// que a mensagem mudou depois de lida. AS VERSÕES ANTERIORES SÃO GUARDADAS (decisão dele, 23/11/2026: "ao editar, guarde o
+// histórico"), em `mensagem_versoes`, e quem vê a mensagem vê o histórico dela clicando no "(editada)": editar não vira
+// jeito de mudar o que já foi respondido sem ninguém saber. Elas vivem o tempo da mensagem (apagar a mensagem as apaga) e
+// vão no "Levar seus dados" de quem escreveu e na caixa-preta de quem exclui a conta.
 // ---------------------------------------------------------------------------------------------------
 
 addColumnIfMissing('channels', 'avisos', 'INTEGER NOT NULL DEFAULT 0');
@@ -8648,11 +8652,100 @@ export function definirAvisos(channelId: number, ligado: boolean): Channel | und
   return findChannel(channelId);
 }
 
-/** Troca o texto e marca a hora da edição. Devolve a hora, para as telas abertas. */
+db.exec(`
+  -- Cada versão que a mensagem TEVE antes de uma edição: o texto e de quando a quando ele valeu (desde a hora em que a
+  -- mensagem foi escrita, ou a da edição anterior). A versão de agora mora em messages.
+  CREATE TABLE IF NOT EXISTS mensagem_versoes (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    message_id INTEGER NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+    conteudo   TEXT NOT NULL,
+    desde      TEXT NOT NULL,
+    ate        TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_mensagem_versoes ON mensagem_versoes(message_id, id);
+`);
+
+/** Guarda a versão de agora no histórico, troca o texto e marca a hora da edição. Devolve a hora, para as telas abertas. */
 export function editarMensagem(id: number, conteudo: string): string {
   const agora = new Date().toISOString();
-  db.prepare('UPDATE messages SET content = ?, editada_em = ? WHERE id = ?').run(conteudo, agora, id);
+  db.exec('BEGIN');
+  try {
+    db.prepare(
+      `INSERT INTO mensagem_versoes (message_id, conteudo, desde, ate)
+       SELECT id, content, COALESCE(editada_em, created_at), ? FROM messages WHERE id = ?`,
+    ).run(agora, id);
+    db.prepare('UPDATE messages SET content = ?, editada_em = ? WHERE id = ?').run(conteudo, agora, id);
+    db.exec('COMMIT');
+  } catch (erro) {
+    db.exec('ROLLBACK');
+    throw erro;
+  }
   return agora;
+}
+
+export interface VersaoDaMensagem {
+  conteudo: string;
+  desde: string;
+  ate: string;
+}
+
+/**
+ * O histórico da mensagem, da versão mais antiga à de antes da atual, para quem a vê. Quem apagou a conversa privada do
+ * próprio lado (`apagada_em`) não vê mais a mensagem, nem o histórico dela: devolve undefined.
+ */
+export function versoesDaMensagem(id: number, viewerId: number): VersaoDaMensagem[] | undefined {
+  const visivel = db.prepare(`SELECT 1 FROM messages m WHERE m.id = ? AND ${visivelParaQuemLe}`).get(id, viewerId);
+  if (!visivel) return undefined;
+  return db
+    .prepare('SELECT conteudo, desde, ate FROM mensagem_versoes WHERE message_id = ? ORDER BY id')
+    .all(id) as unknown as VersaoDaMensagem[];
+}
+
+/** As versões anteriores de tudo o que a pessoa escreveu (o "Levar seus dados" e a caixa-preta). */
+export function versoesDaPessoa(userId: number) {
+  return db
+    .prepare(
+      `SELECT v.message_id AS mensagem, v.conteudo AS texto, v.desde, v.ate
+         FROM mensagem_versoes v JOIN messages m ON m.id = v.message_id
+        WHERE m.user_id = ? ORDER BY v.id`,
+    )
+    .all(userId) as Record<string, unknown>[];
+}
+
+export type AvisoDoQuarto = Message & { communityId: number; comunidade: string; canal: string };
+
+/**
+ * A CORTIÇA DO QUARTO (23/11/2026, decisão dele: "um item no quarto associado aos avisos"): os últimos avisos de todas as
+ * comunidades da pessoa, dos canais marcados como de avisos (só as mensagens do canal, não as dos tópicos), do mais novo
+ * para o mais velho.
+ */
+export function avisosDaPessoa(userId: number, limite = 20): AvisoDoQuarto[] {
+  const rows = db
+    .prepare(
+      `${messageSelect}
+         JOIN channels c ON c.id = m.channel_id AND c.avisos = 1 AND c.deleted_at IS NULL AND c.type = 'text'
+         JOIN community_members cm ON cm.community_id = c.community_id AND cm.user_id = ?
+         JOIN communities co ON co.id = c.community_id
+        WHERE m.thread_id IS NULL
+        ORDER BY m.id DESC LIMIT ?`,
+    )
+    .all(userId, limite) as unknown as MessageRow[];
+  const extras = new Map(
+    (rows.length
+      ? (db
+          .prepare(
+            `SELECT m.id, c.community_id AS communityId, co.name AS comunidade, c.name AS canal
+               FROM messages m JOIN channels c ON c.id = m.channel_id JOIN communities co ON co.id = c.community_id
+              WHERE m.id IN (${idList(rows.map((r) => r.id))})`,
+          )
+          .all() as { id: number; communityId: number; comunidade: string; canal: string }[])
+      : []
+    ).map((e) => [e.id, e]),
+  );
+  return hydrate(rows.map(toMessage), userId).map((m) => {
+    const e = extras.get(m.id)!;
+    return { ...m, communityId: e.communityId, comunidade: e.comunidade, canal: e.canal };
+  });
 }
 
 /** O que a edição precisa saber: se tem anexo (aí o texto pode ficar vazio), enquete ou figurinha (não se editam). */

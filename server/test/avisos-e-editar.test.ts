@@ -97,3 +97,35 @@ test('editar: quem está de fora nem acha a mensagem', async () => {
   const m = db.createMessage(texto.id, ana.user.id, 'só da turma');
   assert.equal((await comToken(app, fora.token)('PATCH', `/api/messages/${m.id}`, { content: 'x' })).statusCode, 404);
 });
+
+test('editar guarda o histórico: a turma vê o que a mensagem dizia, quem está de fora não, e apagar leva junto', async () => {
+  const m = db.createMessage(texto.id, ana.user.id, 'às 19h');
+  assert.deepEqual((await deBia('GET', `/api/messages/${m.id}/versoes`)).json().versoes, []);
+  await deAna('PATCH', `/api/messages/${m.id}`, { content: 'às 20h' });
+  await deAna('PATCH', `/api/messages/${m.id}`, { content: 'às 21h' });
+  const { versoes } = (await deBia('GET', `/api/messages/${m.id}/versoes`)).json() as { versoes: { conteudo: string; desde: string; ate: string }[] };
+  assert.deepEqual(versoes.map((v) => v.conteudo), ['às 19h', 'às 20h']);
+  assert.equal(versoes[0].ate, versoes[1].desde);
+  assert.equal(db.findMessageContent(m.id), 'às 21h');
+  const fora = await criarConta(app, 'fora-hist');
+  assert.equal((await comToken(app, fora.token)('GET', `/api/messages/${m.id}/versoes`)).statusCode, 404);
+  assert.deepEqual(db.versoesDaPessoa(ana.user.id).filter((v) => v.mensagem === m.id).map((v) => v.texto), ['às 19h', 'às 20h']);
+  db.deleteMessage(m.id);
+  assert.equal(db.versoesDaPessoa(ana.user.id).filter((v) => v.mensagem === m.id).length, 0);
+});
+
+test('a cortiça do quarto: os avisos das comunidades da pessoa, sem os tópicos e sem os canais comuns', async () => {
+  const outro = (await deDona('POST', `/api/communities/${comunidade.id}/channels`, { name: 'recados', type: 'text' })).json() as { id: number };
+  await deDona('PUT', `/api/channels/${outro.id}/avisos`, { ligado: true });
+  const aviso = db.createMessage(outro.id, dona.user.id, 'reunião sábado');
+  db.createMessage(texto.id, dona.user.id, 'conversa comum');
+  const { avisos } = (await deBia('GET', '/api/me/avisos')).json() as { avisos: { id: number; content: string; comunidade: string; canal: string; communityId: number }[] };
+  const dele = avisos.find((a) => a.id === aviso.id);
+  assert.ok(dele);
+  assert.equal(dele.comunidade, 'Turma dos avisos');
+  assert.equal(dele.canal, 'recados');
+  assert.equal(dele.communityId, comunidade.id);
+  assert.ok(!avisos.some((a) => a.content === 'conversa comum'));
+  const fora = await criarConta(app, 'fora-cortica');
+  assert.deepEqual((await comToken(app, fora.token)('GET', '/api/me/avisos')).json().avisos, []);
+});

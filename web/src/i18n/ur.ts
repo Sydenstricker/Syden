@@ -4834,4 +4834,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "یہ کمیونٹی اس حالت کے ایک لفظ کی اجازت نہیں دیتی۔",
   "Esta comunidade não permite links no status da sala.": "یہ کمیونٹی کمرے کی حالت میں لنکس کی اجازت نہیں دیتی۔",
   "Espere alguns segundos para mudar o status da sala de novo.": "کمرے کی حالت دوبارہ بدلنے کے لیے چند سیکنڈ انتظار کریں۔",
+  "Versões anteriores": "پچھلے ورژن",
+  "Avisos": "اعلانات",
+  "O que as suas comunidades avisaram": "آپ کی کمیونٹیز نے کیا اعلان کیا",
+  "Nenhum aviso das suas comunidades por enquanto.": "ابھی تک آپ کی کمیونٹیز کی طرف سے کوئی اعلان نہیں۔",
 } satisfies Record<string, string>;

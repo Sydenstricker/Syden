@@ -286,6 +286,8 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
         })(),
         insignias: db.itensDaPessoa(eu.id),
         mensagens: db.mensagensDaPessoa(eu.id),
+        // o que as mensagens editadas diziam antes (o histórico que o "(editada)" mostra)
+        versoesAnterioresDasMensagens: db.versoesDaPessoa(eu.id),
         tempoEmChamada: db.usoDaPessoa(eu.id),
         denunciasQueVoceAbriu: db.listarDenuncias()
           .filter((d) => d.reporterName === eu.username)

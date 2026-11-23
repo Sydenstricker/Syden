@@ -4905,4 +4905,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Dette fællesskab tillader ikke et af ordene i denne status.",
   "Esta comunidade não permite links no status da sala.": "Dette fællesskab tillader ikke links i rumstatussen.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Vent et par sekunder, før du ændrer rumstatussen igen.",
+  "Versões anteriores": "Tidligere versioner",
+  "Avisos": "Meddelelser",
+  "O que as suas comunidades avisaram": "Hvad dine fællesskaber har meddelt",
+  "Nenhum aviso das suas comunidades por enquanto.": "Ingen meddelelser fra dine fællesskaber endnu.",
 } satisfies Record<string, string>;

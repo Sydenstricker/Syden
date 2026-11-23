@@ -4903,4 +4903,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Ky komunitet nuk lejon një nga fjalët e këtij statusi.",
   "Esta comunidade não permite links no status da sala.": "Ky komunitet nuk lejon lidhje në statusin e dhomës.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Prit disa sekonda para se ta ndryshosh sërish statusin e dhomës.",
+  "Versões anteriores": "Versionet e mëparshme",
+  "Avisos": "Njoftime",
+  "O que as suas comunidades avisaram": "Çfarë kanë njoftuar komunitetet e tua",
+  "Nenhum aviso das suas comunidades por enquanto.": "Ende asnjë njoftim nga komunitetet e tua.",
 } satisfies Record<string, string>;

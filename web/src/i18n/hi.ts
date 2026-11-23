@@ -4841,4 +4841,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "यह समुदाय इस स्टेटस के एक शब्द की इजाज़त नहीं देता।",
   "Esta comunidade não permite links no status da sala.": "यह समुदाय रूम के स्टेटस में लिंक की इजाज़त नहीं देता।",
   "Espere alguns segundos para mudar o status da sala de novo.": "रूम का स्टेटस फिर से बदलने के लिए कुछ सेकंड रुको।",
+  "Versões anteriores": "पिछले संस्करण",
+  "Avisos": "घोषणाएँ",
+  "O que as suas comunidades avisaram": "तुम्हारे समुदायों ने क्या घोषणा की",
+  "Nenhum aviso das suas comunidades por enquanto.": "अभी तक तुम्हारे समुदायों से कोई घोषणा नहीं।",
 } satisfies Record<string, string>;

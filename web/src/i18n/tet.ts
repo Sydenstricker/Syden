@@ -4844,4 +4844,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Komunidade ne'e la permite liafuan ida husi estadu ne'e.",
   "Esta comunidade não permite links no status da sala.": "Komunidade ne'e la permite link iha estadu sala nian.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Hein segundu balun molok troka fali estadu sala nian.",
+  "Versões anteriores": "Versaun uluk sira",
+  "Avisos": "Avizu sira",
+  "O que as suas comunidades avisaram": "Saida mak ó-nia komunidade sira avizu",
+  "Nenhum aviso das suas comunidades por enquanto.": "Seidauk iha avizu husi ó-nia komunidade sira.",
 } satisfies Record<string, string>;

@@ -4932,4 +4932,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Bu hamjamiyat ushbu holatdagi soʻzlardan biriga ruxsat bermaydi.",
   "Esta comunidade não permite links no status da sala.": "Bu hamjamiyat xona holatida havolalarga ruxsat bermaydi.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Xona holatini yana oʻzgartirish uchun bir necha soniya kut.",
+  "Versões anteriores": "Oldingi versiyalar",
+  "Avisos": "Eʼlonlar",
+  "O que as suas comunidades avisaram": "Hamjamiyatlaring nimani eʼlon qildi",
+  "Nenhum aviso das suas comunidades por enquanto.": "Hamjamiyatlaringdan hozircha eʼlon yoʻq.",
 } satisfies Record<string, string>;

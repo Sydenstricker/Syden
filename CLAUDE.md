@@ -1699,7 +1699,7 @@ ficou combinado:
   com cortina e que abre), em arco, redonda e com floreira (`janelas/tipos.mjs`, vidro em magenta).
 - **O recheio, as funções e o componente (15/10/2026, pedido dele):** fone, quadro de fotos, cortiça, prateleira e pintura
   são OBJETOS DA PAREDE (como a janela: andam pelas duas paredes e sobem e descem; `parede/`), há duas plantas e a mesa
-  enfeitada. As funções da home moram nos objetos: fone → Salas, quadro → Amigos, cortiça → ideias, **o guarda-roupa (o
+  enfeitada. As funções da home moram nos objetos: fone → Salas, quadro → Amigos, cortiça → ideias (os avisos das comunidades desde 23/11/2026), **o guarda-roupa (o
   móvel) → Guarda-roupa** (na home atual eram as gavetas da cama), o vidro da janela → Explorar, abajur → Dia e noite,
   mesa → Mini-games; o nome aparece ao passar o mouse. **No app, `QuartoNovo.tsx` mostra a página do quarto num iframe
   (`?app`); LANÇADO PARA TODO MUNDO em 16/10/2026** ("o quarto novo substitui para todo mundo, assim como o salão
@@ -2399,10 +2399,16 @@ Testes: `server/test/banir-e-fixar.test.ts`, `e2e/banir-e-fixar.mjs` (passaram).
 - **Editar mensagem** (`PATCH /api/messages/:id`, o lápis da mensagem; Enter salva, Esc desiste): só quem escreveu, e só o
   texto (enquete e figurinha não se editam; com anexo o texto pode ficar vazio). A edição passa pelas regras de CONTEÚDO da
   moderação automática (o silêncio, as palavras, os links: `barrarEdicao`), não pelo modo lento. A mensagem mostra "(editada)"
-  com a hora, e as respostas que a citam trocam o texto citado. **A versão anterior não é guardada** (escolha minha, a confirmar
-  com ele): apagar já tira tudo, e guardar cada versão seria dado novo sem prazo; a denúncia guarda o retrato da hora em que é
-  feita. Nem quem administra edita o texto dos outros (apaga, se precisar).
-Testes: `server/test/avisos-e-editar.test.ts`, `e2e/avisos-e-editar.mjs` (passaram).
+  com a hora, e as respostas que a citam trocam o texto citado. **O HISTÓRICO É GUARDADO** (decisão dele, mesmo dia: "ao editar, guarde o
+  histórico"): cada versão de antes vai para `mensagem_versoes` com de quando a quando valeu, e QUEM VÊ A MENSAGEM VÊ O HISTÓRICO,
+  clicando no "(editada)" (`GET /api/messages/:id/versoes`): editar não vira jeito de mudar o que já foi respondido sem ninguém
+  saber. As versões vivem o tempo da mensagem (apagar a leva junto), vão no "Levar seus dados" e na caixa-preta, e a política
+  diz isso. Nem quem administra edita o texto dos outros (apaga, se precisar).
+- **A cortiça do quarto mostra os AVISOS** (decisão dele, mesmo dia: "um item no quarto associado aos avisos"; entre o quadro de
+  fotos, a pintura e a cortiça, ele escolheu a cortiça): os últimos 20 avisos dos canais de avisos de todas as comunidades da
+  pessoa, sem os tópicos (`GET /api/me/avisos`, `CorticaDeAvisos.tsx`); clicar leva ao canal. A caixa de ideias, que a cortiça
+  abria, continua embaixo do quarto.
+Testes: `server/test/avisos-e-editar.test.ts`, `e2e/avisos-e-editar.mjs`, `e2e/historico-e-cortica.mjs` (passaram).
 
 **"Pode moderar a conversa" no cargo (23/11/2026, o segundo da fila):** o interruptor fixo, ao lado do "Pode arrumar o salão"
 (Cargos.tsx; a coluna `cargos.modera`), e a SEGUNDA EXCEÇÃO ao "cargo é identidade" (db.ts). Quem tem o cargo apaga a mensagem

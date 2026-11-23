@@ -4844,4 +4844,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Bu topluluk bu durumdaki kelimelerden birine izin vermiyor.",
   "Esta comunidade não permite links no status da sala.": "Bu topluluk oda durumunda bağlantılara izin vermiyor.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Oda durumunu yeniden değiştirmek için birkaç saniye bekle.",
+  "Versões anteriores": "Önceki sürümler",
+  "Avisos": "Duyurular",
+  "O que as suas comunidades avisaram": "Topluluklarının duyurdukları",
+  "Nenhum aviso das suas comunidades por enquanto.": "Topluluklarından henüz duyuru yok.",
 } satisfies Record<string, string>;

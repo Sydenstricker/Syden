@@ -4910,4 +4910,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Táto komunita nepovoľuje jedno zo slov v tomto stave.",
   "Esta comunidade não permite links no status da sala.": "Táto komunita nepovoľuje odkazy v stave miestnosti.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Počkaj pár sekúnd, kým znova zmeníš stav miestnosti.",
+  "Versões anteriores": "Predchádzajúce verzie",
+  "Avisos": "Oznamy",
+  "O que as suas comunidades avisaram": "Čo oznámili tvoje komunity",
+  "Nenhum aviso das suas comunidades por enquanto.": "Zatiaľ žiadne oznamy z tvojich komunít.",
 } satisfies Record<string, string>;

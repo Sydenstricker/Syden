@@ -4859,4 +4859,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "В этом сообществе запрещено одно из слов этого статуса.",
   "Esta comunidade não permite links no status da sala.": "В этом сообществе запрещены ссылки в статусе комнаты.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Подожди несколько секунд, прежде чем снова менять статус комнаты.",
+  "Versões anteriores": "Предыдущие версии",
+  "Avisos": "Объявления",
+  "O que as suas comunidades avisaram": "Что объявили твои сообщества",
+  "Nenhum aviso das suas comunidades por enquanto.": "Пока нет объявлений от твоих сообществ.",
 } satisfies Record<string, string>;

@@ -4812,4 +4812,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Cộng đồng này không cho phép một trong các từ của trạng thái này.",
   "Esta comunidade não permite links no status da sala.": "Cộng đồng này không cho phép liên kết trong trạng thái phòng.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Hãy đợi vài giây rồi hãy đổi trạng thái phòng lần nữa.",
+  "Versões anteriores": "Các phiên bản trước",
+  "Avisos": "Thông báo",
+  "O que as suas comunidades avisaram": "Những gì cộng đồng của bạn đã thông báo",
+  "Nenhum aviso das suas comunidades por enquanto.": "Chưa có thông báo nào từ cộng đồng của bạn.",
 } satisfies Record<string, string>;

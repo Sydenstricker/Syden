@@ -4908,4 +4908,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Ова заједница не дозвољава једну од речи из овог статуса.",
   "Esta comunidade não permite links no status da sala.": "Ова заједница не дозвољава везе у статусу собе.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Сачекај неколико секунди па поново промени статус собе.",
+  "Versões anteriores": "Претходне верзије",
+  "Avisos": "Обавештења",
+  "O que as suas comunidades avisaram": "Шта су објавиле твоје заједнице",
+  "Nenhum aviso das suas comunidades por enquanto.": "Још нема обавештења из твојих заједница.",
 } satisfies Record<string, string>;

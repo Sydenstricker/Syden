@@ -4922,4 +4922,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Bu jemgyýet bu ýagdaýdaky sözleriň birine rugsat bermeýär.",
   "Esta comunidade não permite links no status da sala.": "Bu jemgyýet otagyň ýagdaýynda baglanyşyklara rugsat bermeýär.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Otagyň ýagdaýyny ýene üýtgetmek üçin birnäçe sekunt garaş.",
+  "Versões anteriores": "Öňki wersiýalar",
+  "Avisos": "Bildirişler",
+  "O que as suas comunidades avisaram": "Jemgyýetleriňiň bildirenleri",
+  "Nenhum aviso das suas comunidades por enquanto.": "Jemgyýetleriňden entek bildiriş ýok.",
 } satisfies Record<string, string>;

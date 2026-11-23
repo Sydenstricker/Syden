@@ -4841,4 +4841,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Na soqosoqo oqo e sega ni vakatara e dua na vosa ena itutu oqo.",
   "Esta comunidade não permite links no status da sala.": "Na soqosoqo oqo e sega ni vakatara na isema ena itutu ni rumu.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Waraka mada e vica na sekodi ni bera ni o veisautaka tale na itutu ni rumu.",
+  "Versões anteriores": "Na ivakarau makawa",
+  "Avisos": "Vakaro",
+  "O que as suas comunidades avisaram": "Na ka era vakaroya na nomu isoqosoqo",
+  "Nenhum aviso das suas comunidades por enquanto.": "Se bera ni dua na vakaro mai na nomu isoqosoqo.",
 } satisfies Record<string, string>;

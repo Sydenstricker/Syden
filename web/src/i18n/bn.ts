@@ -4839,4 +4839,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "এই কমিউনিটি এই স্ট্যাটাসের একটা শব্দ অনুমোদন করে না।",
   "Esta comunidade não permite links no status da sala.": "এই কমিউনিটি রুমের স্ট্যাটাসে লিংক অনুমোদন করে না।",
   "Espere alguns segundos para mudar o status da sala de novo.": "রুমের স্ট্যাটাস আবার বদলাতে কয়েক সেকেন্ড অপেক্ষা করো।",
+  "Versões anteriores": "আগের সংস্করণ",
+  "Avisos": "ঘোষণা",
+  "O que as suas comunidades avisaram": "তোমার কমিউনিটিগুলো যা ঘোষণা করেছে",
+  "Nenhum aviso das suas comunidades por enquanto.": "এখনো তোমার কমিউনিটিগুলো থেকে কোনো ঘোষণা নেই।",
 } satisfies Record<string, string>;

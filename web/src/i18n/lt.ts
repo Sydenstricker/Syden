@@ -4913,4 +4913,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Ši bendruomenė neleidžia vieno iš šios būsenos žodžių.",
   "Esta comunidade não permite links no status da sala.": "Ši bendruomenė neleidžia nuorodų kambario būsenoje.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Palauk kelias sekundes, kad vėl pakeistum kambario būseną.",
+  "Versões anteriores": "Ankstesnės versijos",
+  "Avisos": "Skelbimai",
+  "O que as suas comunidades avisaram": "Ką paskelbė tavo bendruomenės",
+  "Nenhum aviso das suas comunidades por enquanto.": "Kol kas nėra skelbimų iš tavo bendruomenių.",
 } satisfies Record<string, string>;

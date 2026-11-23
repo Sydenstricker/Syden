@@ -4824,4 +4824,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "ఈ కమ్యూనిటీ ఈ స్థితిలోని ఒక పదాన్ని అనుమతించదు.",
   "Esta comunidade não permite links no status da sala.": "ఈ కమ్యూనిటీ గది స్థితిలో లింక్‌లను అనుమతించదు.",
   "Espere alguns segundos para mudar o status da sala de novo.": "గది స్థితిని మళ్లీ మార్చడానికి కొన్ని సెకన్లు ఆగండి.",
+  "Versões anteriores": "మునుపటి వెర్షన్‌లు",
+  "Avisos": "ప్రకటనలు",
+  "O que as suas comunidades avisaram": "మీ సంఘాలు ప్రకటించినవి",
+  "Nenhum aviso das suas comunidades por enquanto.": "మీ సంఘాల నుంచి ఇంకా ప్రకటనలు లేవు.",
 } satisfies Record<string, string>;

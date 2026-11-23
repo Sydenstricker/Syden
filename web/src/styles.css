@@ -21396,8 +21396,52 @@ body.arrastando-barra {
 }
 .mensagem-editada {
   margin-inline-start: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: calc(11px * var(--escala-do-texto));
+  cursor: pointer;
+}
+.mensagem-editada:hover,
+.mensagem-editada[aria-expanded='true'] {
+  text-decoration: underline;
+}
+.mensagem-historico {
+  margin: 4px 0;
+  padding: 6px 10px;
+  border-inline-start: 3px solid var(--text-muted);
+  background: var(--bg-input);
+  border-radius: 4px;
+}
+.mensagem-historico h4 {
+  margin: 0 0 4px;
   color: var(--text-muted);
   font-size: calc(11px * var(--escala-do-texto));
+  font-weight: 600;
+}
+.mensagem-historico ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mensagem-historico time {
+  color: var(--text-muted);
+  font-size: calc(11px * var(--escala-do-texto));
+}
+.mensagem-historico p {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.mensagem-historico-erro {
+  margin: 4px 0;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
 }
 .mensagem-edicao {
   display: flex;
@@ -21420,4 +21464,33 @@ body.arrastando-barra {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+}
+
+/* A CORTIÇA DO QUARTO: os avisos das comunidades (CorticaDeAvisos.tsx, 23/11/2026). */
+.cortica-de-avisos ul {
+  max-height: min(60vh, 420px);
+  overflow-y: auto;
+}
+.cortica-de-avisos h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cortica-de-avisos li button {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: start;
+}
+.cortica-aviso-onde {
+  font-size: calc(11px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+.cortica-aviso-texto {
+  font-size: calc(13px * var(--escala-do-texto));
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }

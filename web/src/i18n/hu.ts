@@ -4913,4 +4913,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Ez a közösség nem engedi az állapot egyik szavát.",
   "Esta comunidade não permite links no status da sala.": "Ez a közösség nem engedi a linkeket a szoba állapotában.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Várj néhány másodpercet, mielőtt újra módosítod a szoba állapotát.",
+  "Versões anteriores": "Korábbi változatok",
+  "Avisos": "Hirdetmények",
+  "O que as suas comunidades avisaram": "Amit a közösségeid hirdettek",
+  "Nenhum aviso das suas comunidades por enquanto.": "Még nincs hirdetmény a közösségeidtől.",
 } satisfies Record<string, string>;

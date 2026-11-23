@@ -4848,4 +4848,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Αυτή η κοινότητα δεν επιτρέπει μία από τις λέξεις αυτής της κατάστασης.",
   "Esta comunidade não permite links no status da sala.": "Αυτή η κοινότητα δεν επιτρέπει συνδέσμους στην κατάσταση του δωματίου.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Περίμενε λίγα δευτερόλεπτα για να αλλάξεις ξανά την κατάσταση του δωματίου.",
+  "Versões anteriores": "Προηγούμενες εκδόσεις",
+  "Avisos": "Ανακοινώσεις",
+  "O que as suas comunidades avisaram": "Τι ανακοίνωσαν οι κοινότητές σου",
+  "Nenhum aviso das suas comunidades por enquanto.": "Καμία ανακοίνωση από τις κοινότητές σου ακόμα.",
 } satisfies Record<string, string>;

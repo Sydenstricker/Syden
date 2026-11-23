@@ -4857,4 +4857,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Din il-komunità ma tippermettix waħda mill-kliem ta' dan l-istatus.",
   "Esta comunidade não permite links no status da sala.": "Din il-komunità ma tippermettix links fl-istatus tal-kamra.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Stenna ftit sekondi qabel terġa' tibdel l-istatus tal-kamra.",
+  "Versões anteriores": "Verżjonijiet preċedenti",
+  "Avisos": "Avviżi",
+  "O que as suas comunidades avisaram": "X’avżaw il-komunitajiet tiegħek",
+  "Nenhum aviso das suas comunidades por enquanto.": "Għad m’hemm l-ebda avviż mill-komunitajiet tiegħek.",
 } satisfies Record<string, string>;

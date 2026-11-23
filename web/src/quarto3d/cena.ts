@@ -17,7 +17,7 @@ import { cenaPodeDesenhar, esperarParaDesenhar } from '../CenaGuardada';
  * - O TEMA (temas.ts) diz qual modelo desenha cada peça: o "clássico" (KayKit e Kenney) ou o "colorido" (Tiny Treats).
  * - AS FUNÇÕES NOS OBJETOS, as mesmas do pixel (o id é o de `AcoesDoQuarto`, em Home.tsx): o guarda-roupa → Guarda-roupa
  *   ('gavetas'), a mesa → Mini-games ('computador'), o fone da parede → Salas ('fone'), o quadro de fotos → Amigos ('quadro'),
- *   a cortiça → ideias ('cortica'), a janela → Explorar ('janela'), o criado-mudo com o abajur → Dia e noite ('abajur') e a
+ *   a cortiça → os avisos das comunidades ('cortica'), a janela → Explorar ('janela'), o criado-mudo com o abajur → Dia e noite ('abajur') e a
  *   prateleira dos troféus → Troféus ('trofeu'). A cópia de um móvel ("cama~2") não tem função, como no pixel. A ANIMAÇÃO VEM
  *   ANTES DA FUNÇÃO: o coelho anda até o objeto (na mesa, senta na cadeira), e só então ela abre. Passar o mouse realça.
  * - O COELHO é o de coelho3d.ts, com as cores do avatar, e segue o ESTADO DE VERDADE: ausente dorme na cama, em chamada senta

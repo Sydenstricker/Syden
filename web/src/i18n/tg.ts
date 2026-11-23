@@ -4921,4 +4921,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Ин анҷуман яке аз калимаҳои ин ҳолатро иҷозат намедиҳад.",
   "Esta comunidade não permite links no status da sala.": "Ин анҷуман дар ҳолати ҳуҷра пайвандро иҷозат намедиҳад.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Лутфан чанд сония сабр кунед ва баъд ҳолати ҳуҷраро боз иваз кунед.",
+  "Versões anteriores": "Версияҳои пешина",
+  "Avisos": "Эълонҳо",
+  "O que as suas comunidades avisaram": "Он чи ҷомеаҳои шумо эълон карданд",
+  "Nenhum aviso das suas comunidades por enquanto.": "Ҳоло аз ҷомеаҳои шумо эълоне нест.",
 } satisfies Record<string, string>;

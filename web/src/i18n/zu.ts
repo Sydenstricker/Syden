@@ -4912,4 +4912,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Lo mphakathi awuvumeli elinye lamagama akulesi simo.",
   "Esta comunidade não permite links no status da sala.": "Lo mphakathi awuvumeli izixhumanisi esimweni segumbi.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Linda imizuzwana embalwa ngaphambi kokushintsha isimo segumbi futhi.",
+  "Versões anteriores": "Izinguqulo zangaphambilini",
+  "Avisos": "Izaziso",
+  "O que as suas comunidades avisaram": "Lokho imiphakathi yakho ekumemezele",
+  "Nenhum aviso das suas comunidades por enquanto.": "Azikabi khona izaziso ezivela emiphakathini yakho.",
 } satisfies Record<string, string>;

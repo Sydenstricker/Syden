@@ -4929,4 +4929,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "ეს საზოგადოება ამ სტატუსის ერთ-ერთ სიტყვას არ უშვებს.",
   "Esta comunidade não permite links no status da sala.": "ეს საზოგადოება ოთახის სტატუსში ბმულებს არ უშვებს.",
   "Espere alguns segundos para mudar o status da sala de novo.": "მოიცადე რამდენიმე წამი, სანამ ოთახის სტატუსს ისევ შეცვლი.",
+  "Versões anteriores": "წინა ვერსიები",
+  "Avisos": "განცხადებები",
+  "O que as suas comunidades avisaram": "რა გამოაცხადეს შენმა თემებმა",
+  "Nenhum aviso das suas comunidades por enquanto.": "შენი თემებიდან ჯერ განცხადებები არ არის.",
 } satisfies Record<string, string>;

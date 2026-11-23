@@ -4921,4 +4921,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "Kominote sa a pa pèmèt youn nan mo ki nan estati sa a.",
   "Esta comunidade não permite links no status da sala.": "Kominote sa a pa pèmèt lyen nan estati chanm nan.",
   "Espere alguns segundos para mudar o status da sala de novo.": "Tann kèk segonn anvan ou chanje estati chanm nan ankò.",
+  "Versões anteriores": "Vèsyon anvan yo",
+  "Avisos": "Anons",
+  "O que as suas comunidades avisaram": "Sa kominote ou yo anonse",
+  "Nenhum aviso das suas comunidades por enquanto.": "Poko gen anons nan kominote ou yo.",
 } satisfies Record<string, string>;

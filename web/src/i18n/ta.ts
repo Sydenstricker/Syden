@@ -4827,4 +4827,8 @@ export default {
   "Esta comunidade não permite uma das palavras deste status.": "இந்த நிலையில் உள்ள ஒரு சொல்லை இந்தச் சமூகம் அனுமதிப்பதில்லை.",
   "Esta comunidade não permite links no status da sala.": "அறையின் நிலையில் இணைப்புகளை இந்தச் சமூகம் அனுமதிப்பதில்லை.",
   "Espere alguns segundos para mudar o status da sala de novo.": "அறையின் நிலையை மீண்டும் மாற்ற சில வினாடிகள் காத்திருங்கள்.",
+  "Versões anteriores": "முந்தைய பதிப்புகள்",
+  "Avisos": "அறிவிப்புகள்",
+  "O que as suas comunidades avisaram": "உங்கள் சமூகங்கள் அறிவித்தவை",
+  "Nenhum aviso das suas comunidades por enquanto.": "உங்கள் சமூகங்களிடமிருந்து இன்னும் அறிவிப்பு எதுவும் இல்லை.",
 } satisfies Record<string, string>;
