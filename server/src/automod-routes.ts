@@ -56,6 +56,8 @@ export function registerAutomodRoutes(app: FastifyInstance, io: IOServer) {
         if (palavras.length > MAXIMO_DE_PALAVRAS) return reply.code(400).send({ error: `No máximo ${MAXIMO_DE_PALAVRAS} palavras.` });
         const regras = { palavras, links: corpo.links, flood: corpo.flood };
         db.definirRegrasDeModeracao(communityId, regras);
+        // No registro, só que as regras mudaram: a lista de palavras fica na tela da moderação, não espalhada pelo registro.
+        db.registrarAuditoria({ actor: request.user, action: 'automod.regras', communityId });
         return regras;
       },
     );
@@ -69,6 +71,14 @@ export function registerAutomodRoutes(app: FastifyInstance, io: IOServer) {
       const segundos = Number(request.body?.segundos);
       if (!MODOS_LENTOS.includes(segundos)) return reply.code(400).send({ error: 'Tempo de modo lento inválido.' });
       const atualizado = db.definirModoLento(channel.id, segundos)!;
+      db.registrarAuditoria({
+        actor: request.user,
+        action: 'canal.modo-lento',
+        target: channel.name,
+        targetId: channel.id,
+        communityId: channel.communityId,
+        detail: String(segundos),
+      });
       io.to(communityRoom(channel.communityId)).emit('channel:updated', atualizado);
       return atualizado;
     });

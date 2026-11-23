@@ -56,6 +56,7 @@ export function registerAdvertenciasRoutes(app: FastifyInstance, io: IOServer) {
           actor: request.user,
           action: 'membro.advertido',
           target: db.findUserById(alvoId)?.username ?? String(alvoId),
+          targetId: alvoId,
           communityId,
           detail: motivo,
         });
@@ -79,6 +80,7 @@ export function registerAdvertenciasRoutes(app: FastifyInstance, io: IOServer) {
           actor: request.user,
           action: ate ? 'membro.silenciado' : 'membro.silencio-tirado',
           target: db.findUserById(alvoId)?.username ?? String(alvoId),
+          targetId: alvoId,
           communityId,
           detail: ate ? `${minutos} min` : undefined,
         });

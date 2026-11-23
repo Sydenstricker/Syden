@@ -35,6 +35,7 @@ import { registerNiveisRoutes } from './niveis-routes.js';
 import { registerAutomodRoutes } from './automod-routes.js';
 import { registerAdvertenciasRoutes } from './advertencias-routes.js';
 import { registerBanidosRoutes } from './banidos-routes.js';
+import { registerRegistroRoutes } from './registro-routes.js';
 import { registerFixadasRoutes } from './fixadas-routes.js';
 import { registerComandosRoutes } from './comandos-routes.js';
 import { registerTicketsRoutes } from './tickets-routes.js';
@@ -105,6 +106,7 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
   registerAutomodRoutes(app, io);
   registerAdvertenciasRoutes(app, io);
   registerBanidosRoutes(app, io);
+  registerRegistroRoutes(app);
   registerFixadasRoutes(app, io);
   registerComandosRoutes(app);
   registerTicketsRoutes(app, io);

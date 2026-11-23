@@ -179,7 +179,7 @@ export function roleIn(user: db.User, communityId: number): db.Role | undefined 
  * O poder de quem cuida do Syden, para o que é obrigação de quem opera o serviço e não pode depender do
  * dono de uma comunidade estar acordado. Todo uso é registrado: é isso que separa "moderação" de "abuso".
  */
-export function poderDeOperador(user: db.User, action: string, sobre: { target?: string; communityId?: number | null; detail?: string }) {
+export function poderDeOperador(user: db.User, action: string, sobre: { target?: string; targetId?: number | null; communityId?: number | null; detail?: string }) {
   if (!user.isAdmin) return false;
   db.registrarAuditoria({ actor: user, action, ...sobre });
   return true;
@@ -1236,6 +1236,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode trocar o convite.' });
       const code = db.newInviteCode();
       db.setCommunityInviteCode(access.community.id, code);
+      db.registrarAuditoria({ actor: request.user, action: 'convite.trocado', communityId: access.community.id });
       io.to(communityRoom(access.community.id)).emit('community:invite', { id: access.community.id, inviteCode: code });
       return { inviteCode: code };
     });
@@ -1288,6 +1289,15 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         if (!current) return reply.code(404).send({ error: 'Essa pessoa não participa da comunidade.' });
         if (current === 'owner') return reply.code(400).send({ error: 'Quem criou a comunidade é sempre administrador.' });
         db.setMemberRole(access.community.id, targetId, role);
+        if (current !== role) {
+          db.registrarAuditoria({
+            actor: request.user,
+            action: role === 'admin' ? 'membro.admin-dado' : 'membro.admin-tirado',
+            target: db.findUserById(targetId)?.username ?? String(targetId),
+            targetId,
+            communityId: access.community.id,
+          });
+        }
         const member = db.listCommunityMembers(access.community.id).find((m) => m.id === targetId);
         io.to(communityRoom(access.community.id)).emit('member:updated', { communityId: access.community.id, member });
         return member;
@@ -1310,6 +1320,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         actor: request.user,
         action: 'membro.removido',
         target: db.findUserById(targetId)?.username ?? String(targetId),
+        targetId,
         communityId: access.community.id,
         detail: access.community.name,
       });
@@ -1365,6 +1376,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
           actor: request.user,
           action: travar ? 'microfone.travado' : 'microfone.liberado',
           target: db.findUserById(targetId)?.username ?? String(targetId),
+          targetId,
           communityId: channel.communityId,
         });
         return { ok: true, travado: travar };
@@ -1440,6 +1452,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         actor: request.user,
         action: 'transmissao.cortada',
         target: db.findUserById(targetId)?.username ?? String(targetId),
+        targetId,
         communityId: channel.communityId,
         detail: `sala #${channel.id}`,
       });
@@ -1563,6 +1576,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         const name = channelName(request.body?.name, type);
         if (!name) return reply.code(400).send({ error: 'O nome do canal deve ter de 1 a 50 caracteres.' });
         const channel = db.createChannel(access.community.id, name, type, request.user.id);
+        db.registrarAuditoria({ actor: request.user, action: 'canal.criado', target: channel.name, targetId: channel.id, communityId: access.community.id });
         io.to(communityRoom(access.community.id)).emit("channel:created", channel);
         return channel;
       },
@@ -1590,6 +1604,16 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const name = channelName(request.body?.name, channel.type);
       if (!name) return reply.code(400).send({ error: 'O nome do canal deve ter de 1 a 50 caracteres.' });
       const updated = db.renameChannel(channel.id, name);
+      if (updated.name !== channel.name) {
+        db.registrarAuditoria({
+          actor: request.user,
+          action: 'canal.renomeado',
+          target: channel.name,
+          targetId: channel.id,
+          communityId: channel.communityId,
+          detail: updated.name,
+        });
+      }
       io.to(communityRoom(channel.communityId)).emit('channel:updated', updated);
       return updated;
     });
@@ -1619,6 +1643,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         return reply.code(400).send({ error: 'Precisa existir pelo menos um canal de texto.' });
       }
       db.deleteChannel(channel.id);
+      db.registrarAuditoria({ actor: request.user, action: 'canal.apagado', target: channel.name, targetId: channel.id, communityId: channel.communityId });
       // A varredura pega carona aqui: quem apaga um canal é exatamente quem pode estar enchendo a
       // lixeira, e é o momento mais barato de conferir o que já passou dos trinta dias.
       db.varrerCanaisApagados(new Date(Date.now() - DIAS_NA_LIXEIRA * 24 * 60 * 60_000).toISOString());
@@ -1673,6 +1698,9 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
           return reply.code(404).send({ error: 'Esse canal não está na lixeira. Pode ter passado dos trinta dias.' });
         }
         const canal = db.findChannel(Number(request.params.canalId));
+        if (canal) {
+          db.registrarAuditoria({ actor: request.user, action: 'canal.restaurado', target: canal.name, targetId: canal.id, communityId: access.community.id });
+        }
         io.to(communityRoom(access.community.id)).emit('channel:created', canal);
         return { ok: true, canal };
       },
@@ -1706,6 +1734,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         (db.podeModerar(channel.communityId, request.user.id) ||
           poderDeOperador(request.user, 'moderacao.mensagem', {
             target: `mensagem ${message.id}`,
+            targetId: message.userId,
             communityId: channel.communityId,
             detail: `de ${db.findUserById(message.userId)?.username ?? message.userId} em #${channel.name}`,
           }));
@@ -1714,6 +1743,18 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       }
       // O destaque some junto (gatilho no banco); as telas do canal de destaques precisam saber.
       const destaque = db.postDoDestaque(message.id);
+      // Quem administra apagando a mensagem de outra pessoa vai ao registro da comunidade: de quem era e em que canal,
+      // NUNCA o texto. (Quem cuida do Syden já ficou registrado acima, pelo poderDeOperador.)
+      if (message.userId !== request.user.id && channel.communityId !== null && manages(roleIn(request.user, channel.communityId))) {
+        db.registrarAuditoria({
+          actor: request.user,
+          action: 'mensagem.apagada',
+          target: `mensagem ${message.id}`,
+          targetId: message.userId,
+          communityId: channel.communityId,
+          detail: channel.name,
+        });
+      }
       db.deleteMessage(message.id);
       const room = channelRoom(channel);
       const canalDoDestaque = destaque && db.findChannel(destaque.channelId);

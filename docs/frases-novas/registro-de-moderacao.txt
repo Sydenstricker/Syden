@@ -1,0 +1,28 @@
+{quem} removeu {alvo} da comunidade
+{quem} baniu {alvo}
+{quem} desbaniu {alvo}
+{quem} advertiu {alvo}
+{quem} silenciou {alvo} por {tempo}
+{quem} tirou o silêncio de {alvo}
+{quem} deu o cargo de administrador a {alvo}
+{quem} tirou o cargo de administrador de {alvo}
+{quem} deu o cargo {cargo} a {alvo}
+{quem} tirou o cargo {cargo} de {alvo}
+{quem} travou o microfone de {alvo}
+{quem} liberou o microfone de {alvo}
+{quem} cortou a transmissão de {alvo}
+{quem} apagou uma mensagem de {alvo} em {canal}
+Quem cuida do Syden apagou uma mensagem de {alvo}
+{quem} fixou uma mensagem de {alvo} em {canal}
+{quem} desafixou uma mensagem de {alvo} em {canal}
+{quem} criou o canal {canal}
+{quem} renomeou o canal {canal} para {nome}
+{quem} apagou o canal {canal}
+{quem} restaurou o canal {canal}
+{quem} pôs o modo lento de {canal} em {tempo}
+{quem} mudou as regras da moderação automática
+{quem} trocou o código do convite
+{quem} desligou o modo lento de {canal}
+
+erros:
+Só quem administra a comunidade vê o registro de moderação.

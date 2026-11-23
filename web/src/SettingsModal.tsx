@@ -22,7 +22,7 @@ import { Accessibility, Languages,
   Trash2,
   UserX,
   Users,
-  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown, CircleOff, Focus, Eraser, Image as ImageIcon, VideoOff, Ban } from 'lucide-react';
+  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown, CircleOff, Focus, Eraser, Image as ImageIcon, VideoOff, Ban, ScrollText } from 'lucide-react';
 import {
   type EfeitoDoFundo,
   fundoDaCameraDisponivel,
@@ -84,6 +84,7 @@ import { CargosAutomaticosSection } from './CargosAutomaticos';
 import { DestaquesSection } from './Destaques';
 import { ConfirmDialog } from './ConfirmDialog';
 import { BanidosDaComunidade } from './BanidosDaComunidade';
+import { RegistroDeModeracao } from './RegistroDeModeracao';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { NOME_DO_MOTOR, aoMudarMotor, lerEstadoDaSupressao, supressaoPrevista, type EstadoDaSupressao } from './microfone';
 import { nomeDaConta, nomeDe, useDirectory } from './directory';
@@ -107,7 +108,7 @@ import { SomPorEndereco } from './SomPorEndereco';
 
 export type SettingsSection = Section;
 
-type Section = 'account' | 'familia' | 'guarda-roupa' | 'aparencia' | 'graficos' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'moderacao' | 'comandos' | 'tickets' | 'cargos-automaticos' | 'agendadas' | 'sorteios' | 'destaques' | 'emojis' | 'soundboard';
+type Section = 'account' | 'familia' | 'guarda-roupa' | 'aparencia' | 'graficos' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'moderacao' | 'comandos' | 'tickets' | 'cargos-automaticos' | 'agendadas' | 'sorteios' | 'destaques' | 'registro' | 'emojis' | 'soundboard';
 
 // Os desenhos animados ficam aqui, nos menus: são poucos, aparecem um de cada vez e reagem ao passar
 // o mouse, que é onde esse tipo de ícone rende sem competir com os botões da chamada.
@@ -131,7 +132,7 @@ const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
 ];
 
 /** Seções que só quem administra enxerga: as regras e o que o Syden publica sozinho são dela. */
-const SO_PARA_QUEM_ADMINISTRA: Section[] = ['moderacao', 'comandos', 'tickets', 'cargos-automaticos', 'agendadas', 'sorteios', 'destaques'];
+const SO_PARA_QUEM_ADMINISTRA: Section[] = ['moderacao', 'comandos', 'tickets', 'cargos-automaticos', 'agendadas', 'sorteios', 'destaques', 'registro'];
 
 const COMMUNITY_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   // Comunidade e Membros seguem com os ícones de traço: o desenho de videochamada é colorido demais para
@@ -146,6 +147,8 @@ const COMMUNITY_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   { id: 'agendadas', label: chave('Mensagens agendadas'), icon: <CalendarClock size={18} /> },
   { id: 'sorteios', label: chave('Sorteios'), icon: <Gift size={18} /> },
   { id: 'destaques', label: chave('Destaques'), icon: <Star size={18} /> },
+  // O REGISTRO DE MODERAÇÃO (23/11/2026): quem fez o quê sobre quem. Ver RegistroDeModeracao.tsx.
+  { id: 'registro', label: chave('Registro de moderação'), icon: <ScrollText size={18} /> },
   { id: 'emojis', label: chave('Emojis'), icon: <AnimatedIcon name="emoji" size={20} /> },
   { id: 'soundboard', label: chave('Soundboard'), icon: <AnimatedIcon name="musica" size={20} /> },
 ];
@@ -313,6 +316,7 @@ export function SettingsModal({
           {community && section === 'agendadas' && manages(community) && <AgendadasSection community={community} />}
           {community && section === 'sorteios' && manages(community) && <SorteiosSection community={community} />}
           {community && section === 'destaques' && manages(community) && <DestaquesSection community={community} />}
+          {community && section === 'registro' && manages(community) && <RegistroDeModeracao communityId={community.id} />}
           {community && section === 'emojis' && <EmojisSection user={user} community={community} />}
           {community && section === 'soundboard' && <SoundboardSection user={user} community={community} />}
         </div>
