@@ -5549,6 +5549,11 @@ export function limparTemporariosVencidos(): number {
 // arrumar o salão", e quem tem o cargo mexe nos móveis e nos estados do salão (salao-routes.ts) — e em nada
 // mais. É o equilíbrio que ele pediu entre o dono fazer toda a manutenção e a turma contribuir sem bagunçar:
 // o salão guarda quem mexeu por último, e quem administra desfaz (ver "O salão de cada comunidade").
+//
+// A SEGUNDA EXCEÇÃO (pedido dele, 23/11/2026, pelo mapa das permissões do Discord): MODERAR A CONVERSA. Um
+// interruptor fixo, "Pode moderar a conversa": quem tem o cargo apaga a mensagem dos outros e fixa e desafixa,
+// na comunidade do cargo — e em nada mais. Banir, tirar alguém, mexer nos cargos e nas configurações continua só
+// de quem administra. A conta é uma só (`podeModerar`), e toda rota de moderação de mensagem passa por ela.
 // ---------------------------------------------------------------------------------------------------
 
 db.exec(`
@@ -5574,6 +5579,7 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS cargos_de_quem ON cargos_dos_membros(community_id, user_id);
 `);
 addColumnIfMissing('cargos', 'arruma_salao', 'INTEGER NOT NULL DEFAULT 0');
+addColumnIfMissing('cargos', 'modera', 'INTEGER NOT NULL DEFAULT 0');
 
 export interface Cargo {
   id: number;
@@ -5582,16 +5588,23 @@ export interface Cargo {
   cor: string;
   separado: boolean;
   posicao: number;
-  /** O único poder que um cargo dá: arrumar o salão (ver A EXCEÇÃO, acima). */
+  /** Um dos dois poderes que um cargo dá: arrumar o salão (ver A EXCEÇÃO, acima). */
   arrumaSalao: boolean;
+  /** O outro: moderar a conversa (ver A SEGUNDA EXCEÇÃO, acima). */
+  modera: boolean;
 }
 
 /** Um teto, como o de emojis e sons: cargo demais vira lista que ninguém lê. */
 export const MAXIMO_DE_CARGOS = 50;
 
-const colunasDoCargo = 'id, community_id AS communityId, nome, cor, separado, posicao, arruma_salao AS arrumaSalao';
-type LinhaDoCargo = Omit<Cargo, 'separado' | 'arrumaSalao'> & { separado: number; arrumaSalao: number };
-const paraCargo = (linha: LinhaDoCargo): Cargo => ({ ...linha, separado: linha.separado === 1, arrumaSalao: linha.arrumaSalao === 1 });
+const colunasDoCargo = 'id, community_id AS communityId, nome, cor, separado, posicao, arruma_salao AS arrumaSalao, modera';
+type LinhaDoCargo = Omit<Cargo, 'separado' | 'arrumaSalao' | 'modera'> & { separado: number; arrumaSalao: number; modera: number };
+const paraCargo = (linha: LinhaDoCargo): Cargo => ({
+  ...linha,
+  separado: linha.separado === 1,
+  arrumaSalao: linha.arrumaSalao === 1,
+  modera: linha.modera === 1,
+});
 
 export function listarCargos(communityId: number): Cargo[] {
   return (
@@ -5620,17 +5633,18 @@ export function criarCargo(communityId: number, nome: string, cor: string, separ
 export function editarCargo(
   communityId: number,
   cargoId: number,
-  mudanca: { nome?: string; cor?: string; separado?: boolean; posicao?: number; arrumaSalao?: boolean },
+  mudanca: { nome?: string; cor?: string; separado?: boolean; posicao?: number; arrumaSalao?: boolean; modera?: boolean },
 ) {
   const atual = acharCargo(communityId, cargoId);
   if (!atual) return undefined;
   const novo = { ...atual, ...mudanca };
-  db.prepare('UPDATE cargos SET nome = ?, cor = ?, separado = ?, posicao = ?, arruma_salao = ? WHERE id = ? AND community_id = ?').run(
+  db.prepare('UPDATE cargos SET nome = ?, cor = ?, separado = ?, posicao = ?, arruma_salao = ?, modera = ? WHERE id = ? AND community_id = ?').run(
     novo.nome,
     novo.cor,
     novo.separado ? 1 : 0,
     novo.posicao,
     novo.arrumaSalao ? 1 : 0,
+    novo.modera ? 1 : 0,
     cargoId,
     communityId,
   );
@@ -5658,6 +5672,26 @@ export function cargoArrumaSalao(communityId: number, userId: number): boolean {
        WHERE cm.community_id = ? AND cm.user_id = ? AND c.arruma_salao = 1 LIMIT 1`,
     )
     .get(communityId, userId);
+}
+
+/** A pessoa tem algum cargo marcado "Pode moderar a conversa"? (ver A SEGUNDA EXCEÇÃO, acima) */
+export function cargoModera(communityId: number, userId: number): boolean {
+  return !!db
+    .prepare(
+      `SELECT 1 FROM cargos_dos_membros cm JOIN cargos c ON c.id = cm.cargo_id
+       WHERE cm.community_id = ? AND cm.user_id = ? AND c.modera = 1 LIMIT 1`,
+    )
+    .get(communityId, userId);
+}
+
+/**
+ * Quem modera a conversa nesta comunidade: quem administra (dono ou admin) ou quem tem um cargo que modera.
+ * Só para o que é da mensagem (apagar a dos outros, fixar): banir, tirar, cargos e configurações seguem no papel.
+ */
+export function podeModerar(communityId: number, userId: number): boolean {
+  const papel = memberRole(communityId, userId);
+  if (!papel) return false;
+  return papel === 'owner' || papel === 'admin' || cargoModera(communityId, userId);
 }
 
 /** Os cargos de cada pessoa da comunidade, por id de pessoa. Uma consulta só, para a lista inteira. */

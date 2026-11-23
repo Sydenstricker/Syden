@@ -95,8 +95,10 @@ export interface Cargo {
   /** Vira um grupo à parte na lista de membros. */
   separado: boolean;
   posicao: number;
-  /** O único poder de um cargo: quem o tem arruma o salão da comunidade (server/src/db.ts, A EXCEÇÃO). */
+  /** Um dos dois poderes de um cargo: quem o tem arruma o salão da comunidade (server/src/db.ts, A EXCEÇÃO). */
   arrumaSalao: boolean;
+  /** O outro: quem o tem apaga a mensagem dos outros e fixa (A SEGUNDA EXCEÇÃO). Falta num servidor mais velho. */
+  modera?: boolean;
 }
 
 /** Uma comunidade (o "servidor" do Discord) do jeito que quem participa dela enxerga. */

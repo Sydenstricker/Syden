@@ -21,6 +21,7 @@ export function ThreadPanel({
   socket,
   user,
   role,
+  modera,
   onClose,
   onDeleteMessage,
   onParentReactionsChange,
@@ -31,6 +32,8 @@ export function ThreadPanel({
   socket: Socket;
   user: User;
   role: Role;
+  /** Quem administra, ou quem tem um cargo que modera a conversa (usePodeModerar, no canal). */
+  modera?: boolean;
   onClose: () => void;
   onDeleteMessage: (message: Message, skipConfirm: boolean) => void;
   /** Reagir à mensagem-mãe também atualiza ela lá no canal. */
@@ -85,8 +88,9 @@ export function ThreadPanel({
     if (el && stick.current) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
-  const canManage = (message: Message) => message.author.id === user.id || role === 'owner' || role === 'admin';
-  const canDeleteThread = role === 'owner' || role === 'admin' || parent?.author.id === user.id;
+  const podeModerar = modera ?? (role === 'owner' || role === 'admin');
+  const canManage = (message: Message) => message.author.id === user.id || podeModerar;
+  const canDeleteThread = podeModerar || parent?.author.id === user.id;
 
   async function deleteThread() {
     try {

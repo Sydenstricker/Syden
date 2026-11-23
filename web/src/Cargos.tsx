@@ -86,7 +86,7 @@ export function CargosDoMembro({ community, member }: { community: Community; me
   );
 }
 
-/** Uma linha do editor: nome, cor, "mostrar separado" e "pode arrumar o salão", salvos na hora em que mudam. */
+/** Uma linha do editor: nome, cor, "mostrar separado", "pode arrumar o salão" e "pode moderar a conversa", salvos na hora em que mudam. */
 function LinhaDoCargo({ community, cargo }: { community: Community; cargo: Cargo }) {
   const t = useT();
   const [nome, setNome] = useState(cargo.nome);
@@ -96,13 +96,15 @@ function LinhaDoCargo({ community, cargo }: { community: Community; cargo: Cargo
   const [cor, setCor] = useState(cargo.cor);
   const [separado, setSeparado] = useState(cargo.separado);
   const [arrumaSalao, setArrumaSalao] = useState(cargo.arrumaSalao);
+  const [modera, setModera] = useState(cargo.modera === true);
   // Outra pessoa da administração mudou: os campos acompanham.
   useEffect(() => setNome(cargo.nome), [cargo.nome]);
   useEffect(() => setCor(cargo.cor), [cargo.cor]);
   useEffect(() => setSeparado(cargo.separado), [cargo.separado]);
   useEffect(() => setArrumaSalao(cargo.arrumaSalao), [cargo.arrumaSalao]);
+  useEffect(() => setModera(cargo.modera === true), [cargo.modera]);
 
-  async function salvar(mudanca: Partial<Pick<Cargo, 'nome' | 'cor' | 'separado' | 'arrumaSalao'>>) {
+  async function salvar(mudanca: Partial<Pick<Cargo, 'nome' | 'cor' | 'separado' | 'arrumaSalao' | 'modera'>>) {
     setErro(null);
     try {
       await api(`/api/communities/${community.id}/cargos/${cargo.id}`, { method: 'PATCH', body: mudanca });
@@ -112,6 +114,7 @@ function LinhaDoCargo({ community, cargo }: { community: Community; cargo: Cargo
       setCor(cargo.cor);
       setSeparado(cargo.separado);
       setArrumaSalao(cargo.arrumaSalao);
+      setModera(cargo.modera === true);
     }
   }
 
@@ -155,7 +158,7 @@ function LinhaDoCargo({ community, cargo }: { community: Community; cargo: Cargo
         />
         {t('Separado na lista')}
       </label>
-      {/* O único poder que um cargo dá (decisão dele, 18/10/2026): a turma ajuda a cuidar do salão. */}
+      {/* Um dos dois poderes que um cargo dá (decisão dele, 18/10/2026): a turma ajuda a cuidar do salão. */}
       <label className="cargo-separado">
         <input
           type="checkbox"
@@ -166,6 +169,19 @@ function LinhaDoCargo({ community, cargo }: { community: Community; cargo: Cargo
           }}
         />
         {t('Pode arrumar o salão')}
+      </label>
+      {/* O outro (pedido dele, 23/11/2026): apagar a mensagem dos outros e fixar, nada mais. Banir, cargos e configurações
+          continuam de quem administra (server/src/db.ts, A SEGUNDA EXCEÇÃO). */}
+      <label className="cargo-separado">
+        <input
+          type="checkbox"
+          checked={modera}
+          onChange={(e) => {
+            setModera(e.target.checked);
+            void salvar({ modera: e.target.checked });
+          }}
+        />
+        {t('Pode moderar a conversa')}
       </label>
       <button
         type="button"

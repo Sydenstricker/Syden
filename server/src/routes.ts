@@ -1702,7 +1702,8 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       // conteúdo ilegal —, mas isso fica registrado na auditoria com nome e hora.
       const canManage =
         channel.communityId !== null &&
-        (manages(roleIn(request.user, channel.communityId)) ||
+        // quem administra, ou quem tem um cargo que modera a conversa (ver A SEGUNDA EXCEÇÃO em db.ts)
+        (db.podeModerar(channel.communityId, request.user.id) ||
           poderDeOperador(request.user, 'moderacao.mensagem', {
             target: `mensagem ${message.id}`,
             communityId: channel.communityId,
