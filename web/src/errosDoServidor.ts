@@ -21,6 +21,20 @@ import { chave } from './i18n';
 // ===================================================================================================
 
 export const ERROS_TRADUZIDOS = [
+  // convites com prazo, status da sala de voz e o registro de moderação (23/11/2026)
+  chave('Este convite expirou.'),
+  chave('Este convite já foi usado o máximo de vezes.'),
+  chave('Escolha uma validade e um limite de usos da lista.'),
+  chave('Você já tem convites demais nesta comunidade. Revogue algum antes de criar outro.'),
+  chave('Convite não encontrado.'),
+  chave('Só quem criou o convite, ou quem administra a comunidade, pode revogá-lo.'),
+  chave('Só quem administra a comunidade vê o registro de moderação.'),
+  chave('Só quem está na sala muda o status dela.'),
+  chave('O status da sala tem no máximo 60 caracteres.'),
+  chave('A sala está vazia: o status só aparece com alguém nela.'),
+  chave('Esta comunidade não permite uma das palavras deste status.'),
+  chave('Esta comunidade não permite links no status da sala.'),
+  chave('Espere alguns segundos para mudar o status da sala de novo.'),
   // o canal de avisos e o editar mensagem (server/src/automod.ts, automod-routes.ts, chat-routes.ts; 23/11/2026)
   chave('Neste canal de avisos, só quem administra escreve. Dá para responder num tópico.'),
   chave('Só canal de texto vira canal de avisos.'),
