@@ -603,7 +603,11 @@ export class ProcessadorDoFundo implements TrackProcessor<Track.Kind.Video, Vide
     if (!this.montador) return;
     if (!dados) return this.montador.imagem(null);
     try {
-      const bitmap = await createImageBitmap(await (await fetch(dados)).blob());
+      // SEM fetch: no site no ar, a política de segurança (connect-src) não deixa buscar um endereço data:, e o fetch falhava
+      // calado (o fundo saía cinza, 23/11/2026). O base64 é aberto aqui mesmo.
+      const [cabeca, base64] = dados.split(',', 2);
+      const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+      const bitmap = await createImageBitmap(new Blob([bytes], { type: /^data:([^;]+)/.exec(cabeca)?.[1] ?? 'image/jpeg' }));
       this.montador?.imagem(bitmap);
       bitmap.close();
     } catch {

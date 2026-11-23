@@ -2970,7 +2970,9 @@ fica no aparelho, reduzida a 1280 × 720). Vale na hora, com a câmera ligada. *
 - **A IMAGEM DE FUNDO SAÍA CINZA, igual ao "Apagado"** (relato de quem usa, 23/11/2026): o efeito lia a imagem só do localStorage, e a
   foto de verdade (1280 × 720 em JPEG) não cabia quando ele estava cheio; a gravação falhava calada. Agora a imagem fica na memória
   da sessão e o localStorage é só para a próxima vez (com uma versão mais leve se a cheia não couber). E escolher "Imagem" sem
-  imagem nenhuma já abre o seletor de arquivos. O e2e enche o localStorage antes de escolher (com o código antigo, falha).
+  imagem nenhuma já abre o seletor de arquivos. O e2e enche o localStorage antes de escolher (com o código antigo, falha). **E a causa de verdade, no ar, era outra:** a imagem era aberta por
+  `fetch(data:…)`, e a política de segurança do site (connect-src, sem `data:`) a barrava; o site de desenvolvimento não tem a
+  política, e o e2e passava. Agora o base64 é aberto sem fetch. **Regra: nada de fetch em endereço data: ou blob: no site.**
 
 **O FILTRO GUIADO E O COMPLETO (17/11/2026, relato dele: "não fica tão refinado quanto o do NVIDIA Broadcast"; "pode fazer os 3").**
 A franja clara em volta do cabelo saiu com o FILTRO GUIADO na placa (`fundoDaCamera.ts`: perto da borda, a máscara segue o brilho do
