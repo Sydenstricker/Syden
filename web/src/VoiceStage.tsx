@@ -85,6 +85,7 @@ import { alternarMudoDaTela, setScreenVolume, TETO_DA_TRANSMISSAO, useVolumeDaTe
 import type { Channel, Sound, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 import { SomPorEndereco } from './SomPorEndereco';
+import { LapisDoStatusDaSala, LinhaDoStatusDaSala } from './StatusDaSala';
 
 function trackKey(ref: TrackReferenceOrPlaceholder) {
   return `${ref.participant.identity}:${ref.source}`;
@@ -168,6 +169,9 @@ export function VoiceStage({
       <header className="main-header">
         <MobileBackButton onBack={onMobileBack} />
         <Volume2 size={22} className="muted-icon" /> {channel.name}
+        {/* O status da sala, e o lápis para quem está nela mudá-lo (ver StatusDaSala.tsx). */}
+        <LinhaDoStatusDaSala channelId={channel.id} noCabecalho />
+        {inThisRoom && !simples && <LapisDoStatusDaSala channelId={channel.id} />}
         {/* Transmissão ocupa a tela toda; por isso dá para esconder a lista de pessoas e trazer de volta. */}
         {!simples && (
         <button

@@ -2393,6 +2393,15 @@ mensagem, status da sala de voz, membro marcar evento. **Feitos no mesmo dia:**
   advertência o cresciam por dentro e os botões ficavam abaixo da tela.
 Testes: `server/test/banir-e-fixar.test.ts`, `e2e/banir-e-fixar.mjs` (passaram).
 
+**O status da sala de voz** (23/11/2026; `server/src/status-da-sala.ts`, `web/src/StatusDaSala.tsx`): uma linha curta (até 60
+caracteres, emoji vale) embaixo do nome da sala, como "ranqueada, não chamar". Muda quem está NA sala, ou quem administra; o texto
+vazio tira. **Some sozinho quando a última pessoa sai** (a regra do "Jogando agora": status que ninguém atualiza vira enfeite
+morto), e por isso só se põe com alguém lá dentro; as salas temporárias seguem igual. Só na memória do servidor, como quem está em
+chamada, e vai junto do `voice:state` (`statusDasSalas`). A moderação da comunidade vale (palavras, links e o silêncio; quem
+administra não passa por ela, como nas mensagens), e uma mudança a cada 3 s por pessoa. Pelo botão direito na sala ("Definir status
+da sala"; no toque, o toque longo) e pelo lápis no cabeçalho do palco, para quem está na sala. Teste:
+`server/test/status-da-sala.test.ts` (pelo socket de verdade). Sem e2e.
+
 ## Trazer a estrutura de um servidor do Discord: canais e cargos, nunca permissões
 
 **Feito em 23/11/2026, pedido dele ("eles copiam a estrutura de uma comunidade do Discord e transferem para o novo app").** Ao

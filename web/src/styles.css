@@ -2284,6 +2284,27 @@ textarea {
   background: var(--red-hover);
 }
 
+/* O status da sala de voz (StatusDaSala.tsx): uma linha esmaecida embaixo do nome, cortada se não couber. */
+.status-da-sala {
+  margin: -2px 8px 2px 36px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: calc(12px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+
+.status-da-sala.no-cabecalho {
+  min-width: 0;
+  margin: 0 0 0 4px;
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+/* O lápis fica junto do nome da sala, e não empurrado para a direita com os outros botões do cabeçalho. */
+.header-toggle.lapis-do-status {
+  margin-left: 2px;
+}
+
 /* ---------- Ações dos canais (renomear/excluir) ---------- */
 
 .channel-row {
@@ -6258,6 +6279,7 @@ textarea {
 
 .person-menu-nota-rodape {
   display: flex;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
   font-size: calc(11px * var(--escala-do-texto));
