@@ -2123,6 +2123,8 @@ export const ACOES_DO_REGISTRO: Record<string, 'pessoa' | 'canal' | 'nada'> = {
   'canal.apagado': 'canal',
   'canal.restaurado': 'canal',
   'canal.modo-lento': 'canal',
+  'canal.avisos-ligado': 'canal',
+  'canal.avisos-desligado': 'canal',
   'automod.regras': 'nada',
   'convite.trocado': 'nada',
 };

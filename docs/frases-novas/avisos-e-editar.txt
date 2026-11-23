@@ -9,3 +9,5 @@ Só canal de texto vira canal de avisos.
 Só quem escreveu a mensagem pode editá-la.
 Esta mensagem não tem texto para editar.
 A mensagem não pode ficar vazia. Para tirá-la, apague.
+{quem} fez de {canal} um canal de avisos
+{quem} tirou o canal de avisos de {canal}

@@ -90,7 +90,17 @@ export function registerAutomodRoutes(app: FastifyInstance, io: IOServer) {
       const negado = administra(channel.communityId, request.user.id);
       if (negado) return reply.code(negado.codigo === 404 ? 404 : 403).send({ error: negado.codigo === 404 ? 'Canal não encontrado.' : negado.erro });
       if (channel.type !== 'text') return reply.code(400).send({ error: 'Só canal de texto vira canal de avisos.' });
-      const atualizado = db.definirAvisos(channel.id, request.body?.ligado === true)!;
+      const ligado = request.body?.ligado === true;
+      const atualizado = db.definirAvisos(channel.id, ligado)!;
+      if (!!channel.avisos !== ligado) {
+        db.registrarAuditoria({
+          actor: request.user,
+          action: ligado ? 'canal.avisos-ligado' : 'canal.avisos-desligado',
+          target: channel.name,
+          targetId: channel.id,
+          communityId: channel.communityId,
+        });
+      }
       io.to(communityRoom(channel.communityId)).emit('channel:updated', atualizado);
       return atualizado;
     });

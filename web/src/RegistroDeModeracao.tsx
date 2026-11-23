@@ -4,6 +4,7 @@ import {
   Bot,
   Hash,
   Link,
+  Megaphone,
   type LucideIcon,
   Mic,
   MicOff,
@@ -68,6 +69,8 @@ const ACOES: Record<string, { icone: LucideIcon; frase: string }> = {
   'canal.apagado': { icone: Hash, frase: chave('{quem} apagou o canal {canal}') },
   'canal.restaurado': { icone: ArchiveRestore, frase: chave('{quem} restaurou o canal {canal}') },
   'canal.modo-lento': { icone: Timer, frase: chave('{quem} pôs o modo lento de {canal} em {tempo}') },
+  'canal.avisos-ligado': { icone: Megaphone, frase: chave('{quem} fez de {canal} um canal de avisos') },
+  'canal.avisos-desligado': { icone: Megaphone, frase: chave('{quem} tirou o canal de avisos de {canal}') },
   'automod.regras': { icone: Bot, frase: chave('{quem} mudou as regras da moderação automática') },
   'convite.trocado': { icone: Link, frase: chave('{quem} trocou o código do convite') },
 };
