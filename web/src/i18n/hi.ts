@@ -17,7 +17,6 @@
 // idiomas.ts). Sem ela o navegador desenharia quadradinhos.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', और जवाब उसी बातचीत में वापस आता है।',
   '{dias} dias para trazer de volta': 'वापस लाने के लिए {dias} दिन',
   '{n} mensagens': '{n} संदेश',
   '{n} na chamada agora': 'अभी कॉल में {n} लोग',
@@ -391,8 +390,6 @@ export default {
   'Escolher de novo, marcando o som': 'फिर से चुनो, आवाज़ पर निशान लगाकर',
   'Escolher GIF': 'GIF चुनो',
   Escreva: 'लिखो',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'यहाँ लिखो कि तुम क्या चाहते हो कि हो — या क्या अटका रहा है। यह निजी संदेश बनकर पहुँचता है:',
   'Esmeralda': 'पन्ना',
   'Espaço desmontado.': 'स्क्रीन हटा दी गई।',
   'Esperando você responder': 'तुम्हारे जवाब का इंतज़ार',
@@ -665,7 +662,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'उस पेज पर आवाज़ नहीं मिली। MyInstants पर डाउनलोड बटन का लिंक कॉपी करके यहाँ चिपकाओ।',
   'Esse endereço não é de um arquivo de áudio.': 'यह पता किसी ऑडियो फ़ाइल का नहीं है।',
   'Caixa de ideias (como os outros veem)': 'सुझाव पेटी (जैसी दूसरों को दिखती है)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'यही तुम्हारे दोस्त यहाँ कमरे के नीचे देखते हैं। वे जो लिखेंगे, वह तुम्हें निजी बातचीत के रूप में मिलेगा, आगे 💡 के साथ — और Syden तुरंत धन्यवाद कहकर जवाब देता है। जब सुझाव ऐप में आ जाए, तो संदेश पर अंगूठा लगाओ: उनकी तरफ़ कंफ़ेटी गिरती है और पदक प्रोफ़ाइल पर दिखता है।',
   'Entre numa comunidade para ver as salas.': 'कमरे देखने के लिए किसी कम्युनिटी से जुड़ो।',
   'Escreva um pouco mais sobre a sua ideia.': 'अपने सुझाव के बारे में थोड़ा और लिखो।',
   'Esta comunidade ainda não tem sala de voz.': 'इस कम्युनिटी में अभी कोई वॉइस रूम नहीं है।',
@@ -705,7 +701,6 @@ export default {
   'Tela de boas-vindas': 'स्वागत स्क्रीन',
   'Tem certeza que quer apagar esta mensagem de': 'क्या सच में इसका यह संदेश मिटाना है:',
   'Tem certeza que quer excluir': 'क्या सच में मिटाना है:',
-  'Tem uma ideia para o Syden?': 'Syden के लिए कोई सुझाव है?',
   'Tentar de novo': 'फिर कोशिश करो',
   'Termos de uso': 'उपयोग की शर्तें',
   'Testando… os números aparecem em instantes.': 'जाँच रहे हैं… आँकड़े अभी आ जाएँगे।',
@@ -4845,4 +4840,7 @@ export default {
   "Avisos": "घोषणाएँ",
   "O que as suas comunidades avisaram": "तुम्हारे समुदायों ने क्या घोषणा की",
   "Nenhum aviso das suas comunidades por enquanto.": "अभी तक तुम्हारे समुदायों से कोई घोषणा नहीं।",
+  "Sentiu falta de algo no Syden?": "Syden में कुछ कमी महसूस हुई?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "यहाँ बताओ, ताकि {nome} उसे बना सके। जवाब निजी बातचीत में आएगा।",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "यही तुम्हारे दोस्त यहाँ देखते हैं। सुझाव 💡 के साथ निजी बातचीत के रूप में आते हैं। जब कोई ऐप में आ जाए, तो उस पर अंगूठा लगाओ: उस व्यक्ति को पदक मिलता है।",
 } satisfies Record<string, string>;

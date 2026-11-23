@@ -52,7 +52,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = ཐམ་ག (o da comunidade), insígnia = རྟགས་མ (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': '། ལན་ཡང་གཏམ་གླེང་འདི་ནང་ལུ་ལོག་འོང་།',
   '{dias} dias para trazer de volta': 'ལོག་སྟེ་ལེན་ནིའི་ཉིན་གྲངས: {dias}',
   '{email} — ainda não confirmado': '{email} — ད་ལྟོ་ངེས་དཔྱད་མ་འབད་བས།',
   '{email} — confirmado': '{email} — ངེས་དཔྱད་འབད་ཡི།',
@@ -320,8 +319,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'མི་སྡེ་ནང་འཛུལ་བའི་སྐབས་ མཐོང་མི་དང་པ་ཨིན། ཐེངས་གཅིག་རྐྱངམ་ཅིག ཨིན་མེན་པ་ཅིན་ ཐད་ཀར་ བརྒྱུད་ལམ་ཐོ་ཡིག་ནང་འགྱོ་འོང་།',
   'É assim que os outros veem você na lista e nas conversas.': 'གཞན་མི་ཚུ་གིས་ ཐོ་ཡིག་དང་གཏམ་གླེང་ནང་ ཁྱོད་འདི་བཟུམ་སྦེ་མཐོངམ་ཨིན།',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'ཁྱོད་ཀྱི་ཆ་རོགས་ཚུ་གིས་ ཁང་མིག་གི་འོག་ལུ་ འདི་མཐོངམ་ཨིན། ཁོང་གིས་འབྲི་མི་འདི་ 💡 དང་གཅིག་ཁར་ སྒེར་གྱི་གཏམ་གླེང་སྦེ་ཁྱོད་ལུ་ལྷོད་འོང་། Syden གིས་ ཕྱིར་སྦེ་བཀྲིན་ཆེ་ཞུ་འོང་། འཆར་སྣང་འདི་ ཨེཔ་ནང་ཚུད་པ་ཅིན་ འཕྲིན་ཡིག་ལུ་ 👍 བཀལ། ཁོང་གི་ཕྱོགས་ལས་ ཀོན་ཕེ་ཊི་བབ་འོང་ ངོ་སྤྲོད་ནང་ གསེར་ཐམ་སྟོན་འོང་།',
   'é o que você está enviando': 'ཁྱོད་ཀྱིས་གཏང་དོ་ཡོད་མི་འདི་ཨིན།',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'འདི་ ཁྱོད་ནང་བསྐྱོད་འབད་ནིའི་ཐབས་ལམ་གཅིག་རྐྱངམ་ཨིན། མཐུད་ལམ་མ་བཏོག་པའི་ཧེ་མ་ ཆོག་ཡིག་གཞི་སྒྲིག་འབད།',
   'E-mail': 'གློག་འཕྲིན།',
@@ -560,8 +557,6 @@ export default {
   'Escolher imagem': 'པར་གདམ།',
   'Escondidas por não terem todas as letras deste nome: {n}': 'མིང་འདི་གི་ཡིག་འབྲུ་ཆ་མཉམ་མེད་ལས་ སྦ་ཡོད་མི: {n}',
   'Escreva': 'འབྲི།',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'ཁྱོད་ཀྱིས་ག་ཅི་དགོཔ་ཨིན་ན་ ཡང་ན་ ག་ཅི་གིས་བར་ཆད་འབདཝ་ཨིན་ན་ ནཱ་ལུ་འབྲི། སྒེར་གྱི་འཕྲིན་ཡིག་སྦེ་ལྷོད་འོང་:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'ནུས་ཅན་གྱི་གློག་འཕྲིན་ཁ་བྱང་འབྲི། འདི་གི་ཐོག་ལས་ རྩིས་ཐོ་ངེས་དཔྱད་འབདཝ་ཨིན།',
   'Escreva um pouco mais sobre a sua ideia.': 'ཁྱོད་ཀྱི་འཆར་སྣང་གི་སྐོར་ལས་ ཅུང་ཞིག་ཧེང་འབྲི།',
   'Esmeralda': 'མརྒད།',
@@ -1017,7 +1012,6 @@ export default {
   'Tela de boas-vindas': 'བྱོན་པ་ལེགས་སོའི་གསལ་གཞི།',
   'Tem certeza que quer apagar esta mensagem de': 'འཕྲིན་ཡིག་འདི་ བཏོན་གཏང་ནི་ཨིན་ན? རྩོམ་པ་པོ:',
   'Tem certeza que quer excluir': 'བཏོན་གཏང་ནི་ཨིན་ན:',
-  'Tem uma ideia para o Syden?': 'Syden གི་དོན་ལུ་ འཆར་སྣང་ཡོད་ག?',
   'Tentar de novo': 'ལོག་འབད།',
   'Termos de uso': 'ལག་ལེན་གྱི་ཆ་རྐྱེན།',
   'Testando… os números aparecem em instantes.': 'བརྟག་ཞིབ་འབད་དོ… ཨང་གྲངས་ཚུ་ ཕྱིར་སྦེ་སྟོན་འོང་།',
@@ -4928,4 +4922,7 @@ export default {
   "Avisos": "གསལ་བསྒྲགས་ཚུ",
   "O que as suas comunidades avisaram": "ཁྱོད་ཀྱི་མི་སྡེ་ཚུ་གིས་གསལ་བསྒྲགས་འབད་མི།",
   "Nenhum aviso das suas comunidades por enquanto.": "ད་ལྟོ་ཚུན་ཁྱོད་ཀྱི་མི་སྡེ་ཚུ་ལས་གསལ་བསྒྲགས་མེད།",
+  "Sentiu falta de algo no Syden?": "Syden ནང་ ག་ཅི་རང་ཅིག་ ཁ་མ་ཚང་པས་ག?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome} གིས་ བཟོ་ཚུགས་ནིའི་དོན་ལུ་ ནཱ་ལུ་སླབ། ལན་འདི་ སྒེར་གྱི་གཏམ་གླེང་ནང་ལྷོད་འོང་།",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "ཁྱོད་ཀྱི་ཆ་རོགས་ཚུ་གིས་ ནཱ་ལུ་ འདི་མཐོངམ་ཨིན། འཆར་སྣང་ཚུ་ 💡 དང་གཅིག་ཁར་ སྒེར་གྱི་གཏམ་གླེང་སྦེ་ལྷོད་འོང་། འཆར་སྣང་ཅིག་ ཨེཔ་ནང་ཚུད་པ་ཅིན་ དེ་ལུ་ 👍 བཀལ། མི་དེ་ལུ་ གསེར་ཐམ་ཐོབ་འོང་།",
 } satisfies Record<string, string>;

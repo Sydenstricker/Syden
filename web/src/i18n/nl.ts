@@ -15,7 +15,6 @@
 // duas palavras são naturais, e assim nenhum menu aponta para o lugar errado.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', en het antwoord komt terug in datzelfde gesprek.',
   '{dias} dias para trazer de volta': 'nog {dias} dagen om terug te halen',
   '{n} mensagens': '{n} berichten',
   '{n} na chamada agora': '{n} nu in gesprek',
@@ -389,8 +388,6 @@ export default {
   'Escolher de novo, marcando o som': 'Opnieuw kiezen, met het geluid aangevinkt',
   'Escolher GIF': 'Een GIF kiezen',
   Escreva: 'Schrijf',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Schrijf hier wat je zou willen dat er was — of wat je in de weg zit. Het komt als privébericht aan bij',
   'Esmeralda': 'Smaragd',
   'Espaço desmontado.': 'Scherm weggehaald.',
   'Esperando você responder': 'Wachten op jouw antwoord',
@@ -663,7 +660,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'Geen audio gevonden op die pagina. Kopieer op MyInstants de link van de downloadknop en plak die hier.',
   'Esse endereço não é de um arquivo de áudio.': 'Dat adres is geen audiobestand.',
   'Caixa de ideias (como os outros veem)': 'Ideeënbus (zoals anderen hem zien)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Dit zien je vrienden hier onder de kamer. Wat ze schrijven, komt bij jou binnen als privégesprek, met 💡 ervoor — en Syden bedankt meteen. Als het idee in de app komt, geef je het bericht een duim omhoog: bij hen valt confetti en verschijnt de medaille op hun profiel.',
   'Entre numa comunidade para ver as salas.': 'Word lid van een community om de kamers te zien.',
   'Escreva um pouco mais sobre a sua ideia.': 'Schrijf iets meer over je idee.',
   'Esta comunidade ainda não tem sala de voz.': 'Deze community heeft nog geen spraakkamer.',
@@ -703,7 +699,6 @@ export default {
   'Tela de boas-vindas': 'Welkomstscherm',
   'Tem certeza que quer apagar esta mensagem de': 'Weet je zeker dat je dit bericht wilt verwijderen van',
   'Tem certeza que quer excluir': 'Weet je zeker dat je dit wilt verwijderen:',
-  'Tem uma ideia para o Syden?': 'Heb je een idee voor Syden?',
   'Tentar de novo': 'Opnieuw proberen',
   'Termos de uso': 'Gebruiksvoorwaarden',
   'Testando… os números aparecem em instantes.': 'Bezig met testen… de cijfers komen zo.',
@@ -4844,4 +4839,7 @@ export default {
   "Avisos": "Aankondigingen",
   "O que as suas comunidades avisaram": "Wat je community’s hebben aangekondigd",
   "Nenhum aviso das suas comunidades por enquanto.": "Nog geen aankondigingen van je community’s.",
+  "Sentiu falta de algo no Syden?": "Mis je iets in Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Vertel het hier, zodat {nome} het kan maken. Het antwoord komt in het privégesprek.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Dit zien je vrienden hier. Ideeën komen binnen als privégesprek, met 💡. Als er een in de app komt, geef het een duim omhoog: die persoon krijgt de medaille.",
 } satisfies Record<string, string>;

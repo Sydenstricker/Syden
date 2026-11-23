@@ -41,7 +41,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = छाप (o da comunidade), insígnia = ब्याज (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', र जवाफ सोही कुराकानीमा फर्केर आउँछ।',
   '{dias} dias para trazer de volta': 'फर्काउन {dias} दिन बाँकी',
   '{email} — ainda não confirmado': '{email} — अझै पुष्टि भएको छैन',
   '{email} — confirmado': '{email} — पुष्टि भयो',
@@ -309,8 +308,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'समुदायमा पस्दा मान्छेले एक पटक मात्र देख्ने पहिलो कुरा यही हो। यो नभए सिधै च्यानल सूचीमा पुगिन्छ।',
   'É assim que os outros veem você na lista e nas conversas.': 'सूची र कुराकानीमा अरूले तपाईंलाई यसरी देख्छन्।',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'तपाईंका साथीहरूले कोठामुनि यही देख्छन्। उनीहरूले लेखेको कुरा अगाडि 💡 सहित निजी कुराकानीको रूपमा तपाईंकहाँ आउँछ — र Syden ले तुरुन्तै धन्यवाद दिँदै जवाफ दिन्छ। विचार एपमा थपिएपछि सन्देशमा 👍 लगाउनुहोस्: उनीहरूतिर कन्फेटी झर्छ र प्रोफाइलमा पदक देखिन्छ।',
   'é o que você está enviando': 'तपाईंले पठाइरहनुभएको यही हो',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'भित्र पस्ने तपाईंको एउटै उपाय यही हो। हटाउनुअघि पासवर्ड राख्नुहोस्।',
   'E-mail': 'इमेल',
@@ -549,8 +546,6 @@ export default {
   'Escolher imagem': 'तस्बिर छान्नुहोस्',
   'Escondidas por não terem todas as letras deste nome: {n}': 'यो नामका सबै अक्षर नभएकाले लुकाइएका: {n}',
   'Escreva': 'पुष्टि गर्न लेख्नुहोस्:',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'तपाईं के होस् भन्ने चाहनुहुन्छ — वा के बाधा भइरहेको छ — यहाँ लेख्नुहोस्। यो निजी सन्देशको रूपमा यिनीकहाँ पुग्छ:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'मान्य इमेल लेख्नुहोस्: खाता त्यसैबाट पुष्टि हुन्छ।',
   'Escreva um pouco mais sobre a sua ideia.': 'आफ्नो विचारबारे अलि बढी लेख्नुहोस्।',
   'Esmeralda': 'पन्ना',
@@ -1006,7 +1001,6 @@ export default {
   'Tela de boas-vindas': 'स्वागत स्क्रिन',
   'Tem certeza que quer apagar esta mensagem de': 'साँच्चै यो सन्देश मेटाउने? पठाउने:',
   'Tem certeza que quer excluir': 'साँच्चै मेटाउने:',
-  'Tem uma ideia para o Syden?': 'Syden का लागि कुनै विचार छ?',
   'Tentar de novo': 'फेरि प्रयास गर्नुहोस्',
   'Termos de uso': 'प्रयोगका सर्तहरू',
   'Testando… os números aparecem em instantes.': 'परीक्षण हुँदै… अङ्कहरू केही क्षणमै देखिन्छन्।',
@@ -4916,4 +4910,7 @@ export default {
   "Avisos": "सूचनाहरू",
   "O que as suas comunidades avisaram": "तिम्रा समुदायहरूले के सूचना दिए",
   "Nenhum aviso das suas comunidades por enquanto.": "अहिलेसम्म तिम्रा समुदायहरूबाट कुनै सूचना छैन।",
+  "Sentiu falta de algo no Syden?": "Syden मा केही कमी महसुस भयो?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "यहाँ भन्नुहोस्, ताकि {nome} ले यो बनाउन सकून्। जवाफ निजी कुराकानीमा आउँछ।",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "तपाईंका साथीहरूले यहाँ यही देख्छन्। विचारहरू 💡 सहित निजी कुराकानीको रूपमा आउँछन्। कुनै एपमा थपिएपछि त्यसमा 👍 लगाउनुहोस्: ती व्यक्तिले पदक पाउँछन्।",
 } satisfies Record<string, string>;

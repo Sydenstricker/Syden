@@ -36,7 +36,6 @@
 // Gerado por: node scripts/idiomas.mjs --novo ta
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', பதில் அதே உரையாடலுக்கே திரும்பி வரும்.',
   '{dias} dias para trazer de volta': 'திரும்பப் பெற {dias} நாட்கள்',
   '{email} — ainda não confirmado': '{email} — இன்னும் உறுதி செய்யப்படவில்லை',
   '{email} — confirmado': '{email} — உறுதி செய்யப்பட்டது',
@@ -481,7 +480,6 @@ export default {
   'Escolher GIF': 'GIF தேர்ந்தெடு',
   'Escolher imagem': 'படத்தைத் தேர்ந்தெடு',
   'Escreva': 'எழுதுங்கள்',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para': 'என்ன இருக்க வேண்டும் என்று நீங்கள் விரும்புகிறீர்களோ — அல்லது எது தொந்தரவு தருகிறதோ — அதை இங்கே எழுதுங்கள். இது தனிப்பட்ட செய்தியாக இவரை அடையும்:',
   'Esmeralda': 'மரகதம்',
   'Espaço desmontado.': 'இந்தத் திரை அகற்றப்பட்டது.',
   'Esperando você responder': 'உங்கள் பதிலுக்காகக் காத்திருக்கிறது',
@@ -818,7 +816,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'அந்தப் பக்கத்தில் ஒலி கிடைக்கவில்லை. MyInstants-இல் பதிவிறக்கப் பொத்தானின் இணைப்பை நகலெடுத்து இங்கே ஒட்டுங்கள்.',
   'Esse endereço não é de um arquivo de áudio.': 'இந்த முகவரி ஒலிக் கோப்பு அல்ல.',
   'Caixa de ideias (como os outros veem)': 'யோசனைப் பெட்டி (மற்றவர்களுக்குத் தெரிவது போல)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'அறையின் கீழே இங்கே உங்கள் நண்பர்கள் பார்ப்பது இதுதான். அவர்கள் எழுதுவது உங்களுக்குத் தனிப்பட்ட உரையாடலாக, முன்னால் 💡 உடன் வந்து சேரும் — Syden உடனே நன்றி சொல்லிப் பதிலளிக்கும். யோசனை செயலிக்குள் வந்ததும், அந்தச் செய்திக்குக் கட்டைவிரல் உயர்த்துங்கள்: அவர்கள் பக்கம் வண்ணக் காகிதங்கள் விழும், சுயவிவரத்தில் பதக்கம் தோன்றும்.',
   'Entre numa comunidade para ver as salas.': 'சேனல்களைப் பார்க்க ஏதாவது ஒரு சமூகத்தில் சேருங்கள்.',
   'Escreva um pouco mais sobre a sua ideia.': 'உங்கள் யோசனையைப் பற்றி இன்னும் கொஞ்சம் எழுதுங்கள்.',
   'Esta comunidade ainda não tem sala de voz.': 'இந்தச் சமூகத்தில் இன்னும் குரல் சேனல் இல்லை.',
@@ -863,7 +860,6 @@ export default {
   'Tela de boas-vindas': 'வரவேற்புத் திரை',
   'Tem certeza que quer apagar esta mensagem de': 'இந்தச் செய்தியை நிச்சயம் நீக்கவா? அனுப்பியவர்:',
   'Tem certeza que quer excluir': 'நிச்சயம் நீக்கவா:',
-  'Tem uma ideia para o Syden?': 'Sydenக்கு ஏதாவது யோசனை உண்டா?',
   'Tentar de novo': 'மீண்டும் முயல்',
   'Termos de uso': 'பயன்பாட்டு விதிமுறைகள்',
   'Testando… os números aparecem em instantes.': 'சோதிக்கிறது… எண்கள் சில நொடிகளில் தெரியும்.',
@@ -4831,4 +4827,7 @@ export default {
   "Avisos": "அறிவிப்புகள்",
   "O que as suas comunidades avisaram": "உங்கள் சமூகங்கள் அறிவித்தவை",
   "Nenhum aviso das suas comunidades por enquanto.": "உங்கள் சமூகங்களிடமிருந்து இன்னும் அறிவிப்பு எதுவும் இல்லை.",
+  "Sentiu falta de algo no Syden?": "Sydenஇல் ஏதாவது குறையாகத் தெரிந்ததா?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome} அதைச் செயல்படுத்த இங்கே சொல்லுங்கள். பதில் தனிப்பட்ட உரையாடலில் வரும்.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "உங்கள் நண்பர்கள் இங்கே பார்ப்பது இதுதான். யோசனைகள் 💡 உடன் தனிப்பட்ட உரையாடலாக வரும். ஏதாவது ஒன்று செயலிக்குள் வந்ததும், அதற்குக் கட்டைவிரல் உயர்த்துங்கள்: அந்த நபருக்குப் பதக்கம் கிடைக்கும்.",
 } satisfies Record<string, string>;

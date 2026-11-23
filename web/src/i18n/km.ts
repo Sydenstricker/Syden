@@ -38,7 +38,6 @@
 // são a mesma palavra (សំឡេង), como no laosiano: o contexto separa.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ' ហើយចម្លើយនឹងត្រឡប់មកក្នុងការសន្ទនាដដែល។',
   '{dias} dias para trazer de volta': 'នៅសល់ {dias} ថ្ងៃដើម្បីយកមកវិញ',
   '{email} — ainda não confirmado': '{email} — មិនទាន់បញ្ជាក់',
   '{email} — confirmado': '{email} — បានបញ្ជាក់',
@@ -306,8 +305,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'នេះជារឿងដំបូងដែលគេឃើញពេលចូលសហគមន៍ តែម្តងគត់។ បើគ្មាន គេនឹងទៅដល់បញ្ជីឆានែលភ្លាម។',
   'É assim que os outros veem você na lista e nas conversas.': 'នេះជារបៀបដែលអ្នកដទៃឃើញអ្នកនៅក្នុងបញ្ជី និងការសន្ទនា។',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'នេះជាអ្វីដែលមិត្តភក្តិរបស់អ្នកឃើញនៅខាងក្រោមបន្ទប់។ អ្វីដែលគេសរសេរនឹងមកដល់អ្នកជាការសន្ទនាឯកជន មាន 💡 នៅខាងមុខ — ហើយ Syden ឆ្លើយអរគុណភ្លាមៗ។ ពេលគំនិតចូលក្នុងកម្មវិធី សូមដាក់ 👍 លើសារ៖ នៅខាងគេនឹងមានក្រដាសពណ៌ធ្លាក់ ហើយមេដាយនឹងបង្ហាញនៅលើប្រវត្តិរូប។',
   'é o que você está enviando': 'គឺជាអ្វីដែលអ្នកកំពុងផ្ញើ',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'វាជាវិធីតែមួយគត់ដែលអ្នកអាចចូលបាន។ សូមកំណត់ពាក្យសម្ងាត់មុននឹងផ្តាច់។',
   'E-mail': 'អ៊ីមែល',
@@ -546,8 +543,6 @@ export default {
   'Escolher imagem': 'ជ្រើសរើសរូបភាព',
   'Escondidas por não terem todas as letras deste nome: {n}': 'លាក់ព្រោះមិនមានអក្សរទាំងអស់នៃឈ្មោះនេះ៖ {n}',
   'Escreva': 'វាយ',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'សរសេរនៅទីនេះនូវអ្វីដែលអ្នកចង់ឱ្យមាន — ឬអ្វីដែលកំពុងរំខាន។ វានឹងទៅដល់ជាសារឯកជនសម្រាប់',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'សរសេរអ៊ីមែលដែលត្រឹមត្រូវ៖ អ្នកបញ្ជាក់គណនីតាមរយៈវា។',
   'Escreva um pouco mais sobre a sua ideia.': 'សរសេរបន្ថែមបន្តិចអំពីគំនិតរបស់អ្នក។',
   'Esmeralda': 'ត្បូងមរកត',
@@ -1003,7 +998,6 @@ export default {
   'Tela de boas-vindas': 'អេក្រង់ស្វាគមន៍',
   'Tem certeza que quer apagar esta mensagem de': 'តើអ្នកប្រាកដថាចង់លុបសារនេះរបស់',
   'Tem certeza que quer excluir': 'តើអ្នកប្រាកដថាចង់លុប',
-  'Tem uma ideia para o Syden?': 'មានគំនិតសម្រាប់ Syden ទេ?',
   'Tentar de novo': 'ព្យាយាមម្តងទៀត',
   'Termos de uso': 'លក្ខខណ្ឌប្រើប្រាស់',
   'Testando… os números aparecem em instantes.': 'កំពុងសាកល្បង… លេខនឹងបង្ហាញក្នុងពេលបន្តិចទៀត។',
@@ -4914,4 +4908,7 @@ export default {
   "Avisos": "សេចក្តីប្រកាស",
   "O que as suas comunidades avisaram": "អ្វីដែលសហគមន៍របស់អ្នកបានប្រកាស",
   "Nenhum aviso das suas comunidades por enquanto.": "មិនទាន់មានសេចក្តីប្រកាសពីសហគមន៍របស់អ្នកនៅឡើយទេ។",
+  "Sentiu falta de algo no Syden?": "តើ Syden ខ្វះអ្វីមួយទេ?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "ប្រាប់នៅទីនេះ ដើម្បីឱ្យ {nome} អាចធ្វើវាបាន។ ចម្លើយនឹងមកដល់ក្នុងការសន្ទនាឯកជន។",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "នេះជាអ្វីដែលមិត្តភក្តិរបស់អ្នកឃើញនៅទីនេះ។ គំនិតមកដល់ជាការសន្ទនាឯកជន មាន 💡។ ពេលគំនិតណាមួយចូលក្នុងកម្មវិធី សូមដាក់ 👍 លើវា៖ អ្នកនោះនឹងទទួលបានមេដាយ។",
 } satisfies Record<string, string>;

@@ -36,7 +36,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = мөр (o da comunidade), insígnia = төсбелгі (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', ал жауап сол әңгімеге қайтып келеді.',
   '{dias} dias para trazer de volta': 'Қайтаруға {dias} күн',
   '{email} — ainda não confirmado': '{email} — әлі расталмаған',
   '{email} — confirmado': '{email} — расталған',
@@ -304,8 +303,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Бұл қауымдастыққа кірген адамның бір рет қана көретін алғашқы нәрсесі. Онсыз адам бірден арналар тізіміне түседі.',
   'É assim que os outros veem você na lista e nas conversas.': 'Басқалар сені тізімде және әңгімелерде осылай көреді.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Достарың бөлменің астында дәл осыны көреді. Олардың жазғаны саған алдында 💡 белгісі бар жеке әңгіме ретінде келеді — ал Syden бірден алғыс айтып жауап береді. Идея қолданбаға енгенде, хабарламаға 👍 қой: олардың жағында конфетти түседі, ал профилінде медаль пайда болады.',
   'é o que você está enviando': 'сен жіберіп жатқан нәрсе',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Бұл кірудің жалғыз жолың. Ажыратпас бұрын құпиясөз орнат.',
   'E-mail': 'Электрондық пошта',
@@ -544,8 +541,6 @@ export default {
   'Escolher imagem': 'Сурет таңдау',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Бұл аттың барлық әріптері болмағандықтан жасырылғандар: {n}',
   'Escreva': 'Растау үшін жаз:',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Не болғанын қалайтыныңды — немесе не кедергі келтіріп тұрғанын — осында жаз. Ол жеке хабарлама ретінде мына адамға барады:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Жарамды электрондық пошта жаз: аккаунтты сол арқылы растайсың.',
   'Escreva um pouco mais sobre a sua ideia.': 'Идеяң туралы сәл көбірек жаз.',
   'Esmeralda': 'Зүмірет',
@@ -1001,7 +996,6 @@ export default {
   'Tela de boas-vindas': 'Қарсы алу экраны',
   'Tem certeza que quer apagar esta mensagem de': 'Бұл хабарлама шынымен жойылсын ба? Авторы:',
   'Tem certeza que quer excluir': 'Шынымен жойылсын ба:',
-  'Tem uma ideia para o Syden?': 'Syden үшін идеяң бар ма?',
   'Tentar de novo': 'Қайталау',
   'Termos de uso': 'Пайдалану шарттары',
   'Testando… os números aparecem em instantes.': 'Тексерілуде… сандар сәлден соң шығады.',
@@ -4920,4 +4914,7 @@ export default {
   "Avisos": "Хабарландырулар",
   "O que as suas comunidades avisaram": "Қауымдастықтарың не хабарлады",
   "Nenhum aviso das suas comunidades por enquanto.": "Қауымдастықтарыңнан әзірге хабарландыру жоқ.",
+  "Sentiu falta de algo no Syden?": "Syden-де бір нәрсе жетпей ме?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Осында айт, {nome} оны жасай алсын. Жауап жеке әңгімеге келеді.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Достарың мұнда дәл осыны көреді. Идеялар 💡 белгісімен жеке әңгіме ретінде келеді. Біреуі қолданбаға енгенде, оған 👍 қой: сол адам медаль алады.",
 } satisfies Record<string, string>;

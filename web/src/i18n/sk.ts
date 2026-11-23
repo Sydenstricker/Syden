@@ -39,7 +39,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = pečať (o da comunidade), insígnia = odznak (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', a odpoveď príde späť do tej istej konverzácie.',
   '{dias} dias para trazer de volta': 'Dni na obnovenie: {dias}',
   '{email} — ainda não confirmado': '{email} — zatiaľ nepotvrdené',
   '{email} — confirmado': '{email} — potvrdené',
@@ -307,8 +306,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Je to prvé, čo človek uvidí po vstupe do komunity, iba raz. Bez toho skončí rovno v zozname kanálov.',
   'É assim que os outros veem você na lista e nas conversas.': 'Takto ťa vidia ostatní v zozname a v konverzáciách.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Toto vidia tvoji priatelia tu pod izbou. Čo napíšu, príde ti ako súkromná konverzácia s 💡 na začiatku — a Syden hneď odpovie poďakovaním. Keď sa nápad dostane do aplikácie, daj správe 👍: u nich začnú padať konfety a na profile sa objaví medaila.',
   'é o que você está enviando': 'je to, čo posielaš',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Je to tvoj jediný spôsob prihlásenia. Kým to odpojíš, nastav si heslo.',
   'E-mail': 'E-mail',
@@ -547,8 +544,6 @@ export default {
   'Escolher imagem': 'Vybrať obrázok',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Skryté, pretože nemajú všetky písmená tohto mena: {n}',
   'Escreva': 'Napíš',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Napíš sem, čo by tu malo byť — alebo čo prekáža. Príde to ako súkromná správa pre:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Napíš platný e-mail: cez neho sa potvrdzuje účet.',
   'Escreva um pouco mais sobre a sua ideia.': 'Napíš o svojom nápade trochu viac.',
   'Esmeralda': 'Smaragd',
@@ -1004,7 +999,6 @@ export default {
   'Tela de boas-vindas': 'Uvítacia obrazovka',
   'Tem certeza que quer apagar esta mensagem de': 'Naozaj zmazať túto správu? Autor:',
   'Tem certeza que quer excluir': 'Naozaj zmazať:',
-  'Tem uma ideia para o Syden?': 'Máš nápad pre Syden?',
   'Tentar de novo': 'Skúsiť znova',
   'Termos de uso': 'Podmienky používania',
   'Testando… os números aparecem em instantes.': 'Testuje sa… čísla sa ukážu o chvíľku.',
@@ -4914,4 +4908,7 @@ export default {
   "Avisos": "Oznamy",
   "O que as suas comunidades avisaram": "Čo oznámili tvoje komunity",
   "Nenhum aviso das suas comunidades por enquanto.": "Zatiaľ žiadne oznamy z tvojich komunít.",
+  "Sentiu falta de algo no Syden?": "Chýba ti niečo v Sydene?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Napíš to sem, nech to {nome} môže urobiť. Odpoveď príde v súkromnej konverzácii.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Toto vidia tvoji priatelia tu. Nápady prichádzajú ako súkromná konverzácia s 💡. Keď sa niektorý dostane do aplikácie, daj mu 👍: ten človek dostane medailu.",
 } satisfies Record<string, string>;

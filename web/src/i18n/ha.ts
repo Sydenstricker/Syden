@@ -53,7 +53,6 @@
 // para quem usa, não menos.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', kuma amsar za ta dawo ta wannan tattaunawar.',
   '{dias} dias para trazer de volta': 'kwanaki {dias} don mayar da shi',
   '{email} — ainda não confirmado': '{email} — har yanzu ba a tabbatar ba',
   '{email} — confirmado': '{email} — an tabbatar',
@@ -498,7 +497,6 @@ export default {
   'Escolher GIF': 'Zaɓi GIF',
   'Escolher imagem': 'Zaɓi hoto',
   'Escreva': 'Ku rubuta',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para': 'Ku rubuta a nan abin da kuke so ya kasance — ko abin da ke damun ku. Yana zuwa a matsayin saƙon sirri zuwa ga',
   'Esmeralda': 'Zumurrudi',
   'Espaço desmontado.': 'An kwance wurin.',
   'Esperando você responder': 'Ana jiran amsarku',
@@ -835,7 +833,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'Ba a sami sautin wannan shafin ba. A MyInstants, ku kwafi mahaɗin maɓallin saukewa ku liƙa shi a nan.',
   'Esse endereço não é de um arquivo de áudio.': 'Wannan adireshin ba fayil ɗin sauti ba ne.',
   'Caixa de ideias (como os outros veem)': 'Akwatin ra’ayoyi (yadda wasu ke ganinsa)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Wannan ne abokanku ke gani a nan ƙasan ɗakin. Abin da suka rubuta yana zuwa gare ku a matsayin tattaunawar sirri, da 💡 a gaba — kuma Syden yana amsawa da godiya nan take. Idan ra’ayin ya shiga manhajar, ku sa babban yatsa a kan saƙon: a ɓangarensu takardun biki suna faɗowa, kuma lambar yabo tana bayyana a bayanan martaba.',
   'Entre numa comunidade para ver as salas.': 'Ku shiga wata ƙungiya don ganin ɗakunanta.',
   'Escreva um pouco mais sobre a sua ideia.': 'Ku ƙara rubuta kaɗan game da ra’ayinku.',
   'Esta comunidade ainda não tem sala de voz.': 'Wannan ƙungiya ba ta da ɗakin murya tukuna.',
@@ -880,7 +877,6 @@ export default {
   'Tela de boas-vindas': 'Allon marabta',
   'Tem certeza que quer apagar esta mensagem de': 'Kun tabbata kuna son goge wannan saƙon na',
   'Tem certeza que quer excluir': 'Kun tabbata kuna son share',
-  'Tem uma ideia para o Syden?': 'Kuna da ra\'ayi don Syden?',
   'Tentar de novo': 'Sake gwadawa',
   'Termos de uso': 'Sharuɗɗan amfani',
   'Testando… os números aparecem em instantes.': 'Ana gwadawa… lambobin za su bayyana nan take.',
@@ -4848,4 +4844,7 @@ export default {
   "Avisos": "Sanarwa",
   "O que as suas comunidades avisaram": "Abin da ƙungiyoyinku suka sanar",
   "Nenhum aviso das suas comunidades por enquanto.": "Babu sanarwa daga ƙungiyoyinku tukuna.",
+  "Sentiu falta de algo no Syden?": "Akwai abin da kuka rasa a Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Ku faɗa a nan, saƙon zai je wurin {nome} don a aiwatar. Amsar za ta zo a tattaunawar sirri.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Wannan ne abokanku ke gani a nan. Ra’ayoyi suna zuwa a matsayin tattaunawar sirri, da 💡. Idan ɗaya ya shiga manhajar, ku sa babban yatsa a kai: za a ba mai ra’ayin lambar yabo.",
 } satisfies Record<string, string>;

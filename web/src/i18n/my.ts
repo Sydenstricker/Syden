@@ -38,7 +38,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = တံဆိပ်တုံး (o da comunidade), insígnia = ဆုတံဆိပ် (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': '၊ အဖြေကို ဒီစကားဝိုင်းထဲမှာပဲ ပြန်ရပါမယ်။',
   '{dias} dias para trazer de volta': 'ပြန်ယူရန် {dias} ရက် ကျန်',
   '{email} — ainda não confirmado': '{email} — အတည်မပြုရသေး',
   '{email} — confirmado': '{email} — အတည်ပြုပြီး',
@@ -527,8 +526,6 @@ export default {
   'Escolher GIF': 'GIF ရွေးရန်',
   'Escolher imagem': 'ပုံ ရွေးရန်',
   'Escreva': 'တစ်ခုခု ရေးပါ',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'ရှိစေချင်တာ — သို့မဟုတ် အနှောင့်အယှက်ဖြစ်နေတာကို ဒီမှာ ရေးပါ။ ကိုယ်ပိုင်မက်ဆေ့ချ်အဖြစ် ရောက်မည့်သူ-',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'မှန်ကန်တဲ့ အီးမေးလ် ရေးပါ- အကောင့်ကို အဲဒါနဲ့ အတည်ပြုရပါတယ်။',
   'Esmeralda': 'မြ',
   'Espaço desmontado.': 'မျက်နှာပြင် ဖြုတ်ပြီး။',
@@ -907,7 +904,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'အဲဒီစာမျက်နှာမှာ အသံ ရှာမတွေ့ပါ။ MyInstants မှာ ဒေါင်းလုဒ်ခလုတ်ရဲ့ လင့်ခ်ကို ကူးပြီး ဒီမှာ ထည့်ပါ။',
   'Esse endereço não é de um arquivo de áudio.': 'ဒီလိပ်စာက အသံဖိုင် မဟုတ်ပါ။',
   'Caixa de ideias (como os outros veem)': 'အကြံဉာဏ်ပုံး (တခြားသူတွေ မြင်ရသလို)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'ဒါက အခန်းအောက်နားမှာ သင့်သူငယ်ချင်းတွေ မြင်ရတာပါ။ သူတို့ ရေးတာတွေက ရှေ့မှာ 💡 ပါပြီး သင့်ဆီကို သီးသန့်စကားဝိုင်းအဖြစ် ရောက်လာမယ် — Syden က ချက်ချင်း ကျေးဇူးတင်စကားနဲ့ ပြန်ဖြေပေးတယ်။ အကြံဉာဏ်က အက်ပ်ထဲ ရောက်သွားတဲ့အခါ အဲဒီမက်ဆေ့ချ်ကို လက်မထောင်ပေးပါ။ သူတို့ဘက်မှာ ရောင်စုံစက္ကူတွေ ကျလာပြီး ပရိုဖိုင်မှာ ဆုတံဆိပ် ပေါ်လာမယ်။',
   'Entre numa comunidade para ver as salas.': 'အခန်းတွေ မြင်ရဖို့ အသိုင်းအဝိုင်းတစ်ခုမှာ ဝင်ပါ။',
   'Escreva um pouco mais sobre a sua ideia.': 'သင့်အကြံဉာဏ်အကြောင်း နည်းနည်းပိုရေးပါ။',
   'Esta comunidade ainda não tem sala de voz.': 'ဒီအသိုင်းအဝိုင်းမှာ အသံအခန်း မရှိသေးပါ။',
@@ -964,7 +960,6 @@ export default {
   'Tela de boas-vindas': 'ကြိုဆိုရေး မျက်နှာပြင်',
   'Tem certeza que quer apagar esta mensagem de': 'ဒီမက်ဆေ့ချ်ကို တကယ် ဖျက်မလား၊ ပို့သူ-',
   'Tem certeza que quer excluir': 'တကယ် ဖျက်မလား-',
-  'Tem uma ideia para o Syden?': 'Syden အတွက် အကြံဉာဏ် ရှိသလား။',
   'Tentar de novo': 'ထပ်ကြိုးစားရန်',
   'Termos de uso': 'အသုံးပြုမှု စည်းမျဉ်းများ',
   'Testando… os números aparecem em instantes.': 'စမ်းသပ်နေသည်… ကိန်းဂဏန်းများ ခဏအတွင်း ပေါ်လာပါမယ်။',
@@ -4883,4 +4878,7 @@ export default {
   "Avisos": "ကြေညာချက်များ",
   "O que as suas comunidades avisaram": "သင့်အသိုင်းအဝိုင်းများ ကြေညာထားသည်များ",
   "Nenhum aviso das suas comunidades por enquanto.": "သင့်အသိုင်းအဝိုင်းများထံမှ ကြေညာချက် မရှိသေးပါ။",
+  "Sentiu falta de algo no Syden?": "Syden မှာ တစ်ခုခု လိုအပ်နေသလား။",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome} လုပ်ပေးနိုင်အောင် ဒီမှာ ပြောပြပါ။ အဖြေက သီးသန့်စကားဝိုင်းထဲ ရောက်လာမယ်။",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "ဒါက သင့်သူငယ်ချင်းတွေ ဒီမှာ မြင်ရတာပါ။ အကြံဉာဏ်တွေက 💡 နဲ့ သီးသန့်စကားဝိုင်းအဖြစ် ရောက်လာတယ်။ တစ်ခုခု အက်ပ်ထဲ ရောက်သွားရင် အဲဒါကို လက်မထောင်ပေးပါ။ အဲဒီလူက ဆုတံဆိပ် ရမယ်။",
 } satisfies Record<string, string>;

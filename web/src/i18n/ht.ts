@@ -45,7 +45,6 @@
 // cenoura = kawòt, guarda-roupa = gadwòb, cutucada = ti pouse, recado da tela de boas-vindas = ti mo.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', epi repons lan tounen nan menm konvèsasyon an.',
   '{dias} dias para trazer de volta': 'Jou ki rete pou retabli l: {dias}',
   '{email} — ainda não confirmado': '{email} — poko konfime',
   '{email} — confirmado': '{email} — konfime',
@@ -317,8 +316,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Se premye bagay yon moun wè lè l antre nan kominote a, yon sèl fwa. San sa, moun nan tonbe dirèk sou lis chanèl yo.',
   'É assim que os outros veem você na lista e nas conversas.': 'Se konsa lòt moun wè w nan lis la ak nan konvèsasyon yo.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Se sa zanmi w yo wè isit la anba chanm nan. Sa yo ekri rive jwenn ou tankou yon konvèsasyon prive, ak 💡 devan — epi Syden reponn yo touswit pou di mèsi. Lè lide a antre nan app la, mete yon 👍 sou mesaj la: bò kote yo, konfeti tonbe epi meday la parèt sou pwofil yo.',
   'é o que você está enviando': 'se sa w ap voye a',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.':
     'Se sèl fason ou genyen pou antre. Mete yon mopas anvan ou dekonekte l.',
@@ -558,8 +555,6 @@ export default {
   'Escolher imagem': 'Chwazi yon imaj',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Kache paske yo pa gen tout lèt non sa a: {n}',
   'Escreva': 'Ekri',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Ekri isit la sa ou ta renmen ki egziste — oswa sa k ap jennen w. Li rive tankou yon mesaj prive pou',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Ekri yon imèl ki valab: se ak li ou konfime kont lan.',
   'Escreva um pouco mais sobre a sua ideia.': 'Ekri yon ti kras plis sou lide w la.',
   'Esmeralda': 'Emwòd',
@@ -1015,7 +1010,6 @@ export default {
   'Tela de boas-vindas': 'Ekran byenveni',
   'Tem certeza que quer apagar esta mensagem de': 'Ou si ou vle efase mesaj sa a ki soti nan men',
   'Tem certeza que quer excluir': 'Ou si ou vle efase',
-  'Tem uma ideia para o Syden?': 'Ou gen yon lide pou Syden?',
   'Tentar de novo': 'Eseye ankò',
   'Termos de uso': 'Kondisyon itilizasyon',
   'Testando… os números aparecem em instantes.': 'Ap teste… chif yo ap parèt talè.',
@@ -4925,4 +4919,7 @@ export default {
   "Avisos": "Anons",
   "O que as suas comunidades avisaram": "Sa kominote ou yo anonse",
   "Nenhum aviso das suas comunidades por enquanto.": "Poko gen anons nan kominote ou yo.",
+  "Sentiu falta de algo no Syden?": "Ou santi yon bagay manke nan Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Rakonte l isit la pou {nome} ka fè l. Repons lan ap rive nan konvèsasyon prive a.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Se sa zanmi w yo wè isit la. Lide yo rive tankou yon konvèsasyon prive, ak 💡. Lè youn antre nan app la, mete yon 👍 sou li: moun nan genyen meday la.",
 } satisfies Record<string, string>;

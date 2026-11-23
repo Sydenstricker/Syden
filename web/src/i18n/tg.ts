@@ -40,7 +40,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = мӯҳр (o da comunidade), insígnia = нишон (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', ва ҷавоб ба ҳамин сӯҳбат бармегардад.',
   '{dias} dias para trazer de volta': '{dias} рӯз барои барқарор кардан',
   '{email} — ainda não confirmado': '{email} — ҳоло тасдиқ нашудааст',
   '{email} — confirmado': '{email} — тасдиқ шуд',
@@ -308,8 +307,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Ин аввалин чизест, ки касе ҳангоми ворид шудан ба анҷуман мебинад, танҳо як бор. Бе он, шахс мустақиман ба рӯйхати каналҳо меравад.',
   'É assim que os outros veem você na lista e nas conversas.': 'Дигарон шуморо дар рӯйхат ва сӯҳбатҳо ҳамин тавр мебинанд.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Дӯстони шумо ин ҷо, дар зери ҳуҷра, инро мебинанд. Он чи онҳо менависанд, ба шумо ҳамчун сӯҳбати хусусӣ бо 💡 дар пеш мерасад — ва Syden фавран бо ташаккур ҷавоб медиҳад. Вақте ки ғоя ба барнома ворид шавад, ба паём 👍 гузоред: дар тарафи онҳо конфетти мерезад ва медал дар профил пайдо мешавад.',
   'é o que você está enviando': 'чизест, ки шумо мефиристед',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Ин ягона роҳи вуруди шумост. Пеш аз ҷудо кардан рамз муқаррар кунед.',
   'E-mail': 'Почтаи электронӣ',
@@ -548,8 +545,6 @@ export default {
   'Escolher imagem': 'Интихоби тасвир',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Пинҳон, зеро ҳамаи ҳарфҳои ин номро надоранд: {n}',
   'Escreva': 'Нависед',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Ин ҷо нависед, ки шумо мехостед чӣ бошад — ё чӣ халал мерасонад. Ҳамчун паёми хусусӣ мерасад ба:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Почтаи электронии дурустро нависед: ҳисоб тавассути он тасдиқ мешавад.',
   'Escreva um pouco mais sobre a sua ideia.': 'Дар бораи ғояи худ каме бештар нависед.',
   'Esmeralda': 'Зумуррад',
@@ -1005,7 +1000,6 @@ export default {
   'Tela de boas-vindas': 'Экрани хушомадгӯӣ',
   'Tem certeza que quer apagar esta mensagem de': 'Дар ҳақиқат ин паём нест карда шавад? Муаллиф:',
   'Tem certeza que quer excluir': 'Дар ҳақиқат нест карда шавад:',
-  'Tem uma ideia para o Syden?': 'Барои Syden ғоя доред?',
   'Tentar de novo': 'Боз кӯшиш кардан',
   'Termos de uso': 'Шартҳои истифода',
   'Testando… os números aparecem em instantes.': 'Санҷиш… рақамҳо пас аз лаҳзае пайдо мешаванд.',
@@ -4925,4 +4919,7 @@ export default {
   "Avisos": "Эълонҳо",
   "O que as suas comunidades avisaram": "Он чи ҷомеаҳои шумо эълон карданд",
   "Nenhum aviso das suas comunidades por enquanto.": "Ҳоло аз ҷомеаҳои шумо эълоне нест.",
+  "Sentiu falta de algo no Syden?": "Дар Syden чизе намерасад?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Ин ҷо нависед, то {nome} онро амалӣ карда тавонад. Ҷавоб дар сӯҳбати хусусӣ мерасад.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Дӯстони шумо ин ҷо инро мебинанд. Ғояҳо ҳамчун сӯҳбати хусусӣ бо 💡 мерасанд. Вақте ки яке ба барнома ворид шавад, ба он 👍 гузоред: он шахс медал мегирад.",
 } satisfies Record<string, string>;

@@ -36,7 +36,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = pitser (o da comunidade), insígnia = märk (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', ja vastus tuleb samasse vestlusesse tagasi.',
   '{dias} dias para trazer de volta': '{dias} päeva taastamiseks',
   '{email} — ainda não confirmado': '{email} — veel kinnitamata',
   '{email} — confirmado': '{email} — kinnitatud',
@@ -304,8 +303,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'See on esimene asi, mida kogukonnaga liituja näeb, ainult üks kord. Ilma selleta satub ta otse kanalite loendisse.',
   'É assim que os outros veem você na lista e nas conversas.': 'Nii näevad teised sind loendis ja vestlustes.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Seda näevad sinu sõbrad siin toa all. Mida nad kirjutavad, jõuab sinuni privaatse vestlusena, 💡 ees — ja Syden vastab kohe tänuga. Kui idee jõuab rakendusse, pane sõnumile 👍: nende poolel sajab konfette ja profiilile ilmub medal.',
   'é o que você está enviando': 'on see, mida sa saadad',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'See on sinu ainus viis sisse logida. Enne lahtiühendamist määra parool.',
   'E-mail': 'E-post',
@@ -544,8 +541,6 @@ export default {
   'Escolher imagem': 'Vali pilt',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Peidetud, kuna neil pole kõiki selle nime tähti: {n}',
   'Escreva': 'Kirjuta',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Kirjuta siia, mida sa tahaksid, et oleks olemas — või mis segab. See jõuab privaatsõnumina adressaadile',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Kirjuta kehtiv e-posti aadress: selle kaudu kinnitad konto.',
   'Escreva um pouco mais sobre a sua ideia.': 'Kirjuta oma ideest natuke rohkem.',
   'Esmeralda': 'Smaragd',
@@ -1001,7 +996,6 @@ export default {
   'Tela de boas-vindas': 'Tervitusekraan',
   'Tem certeza que quer apagar esta mensagem de': 'Kas kustutada kindlasti see sõnum? Autor:',
   'Tem certeza que quer excluir': 'Kas kustutada kindlasti:',
-  'Tem uma ideia para o Syden?': 'Kas sul on Sydeni jaoks idee?',
   'Tentar de novo': 'Proovi uuesti',
   'Termos de uso': 'Kasutustingimused',
   'Testando… os números aparecem em instantes.': 'Testimine… numbrid ilmuvad kohe.',
@@ -4912,4 +4906,7 @@ export default {
   "Avisos": "Teadaanded",
   "O que as suas comunidades avisaram": "Mida su kogukonnad teatasid",
   "Nenhum aviso das suas comunidades por enquanto.": "Sinu kogukondadelt pole veel teadaandeid.",
+  "Sentiu falta de algo no Syden?": "Kas sul jäi Sydenis midagi puudu?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kirjuta siia, et {nome} saaks selle teha. Vastus tuleb privaatsesse vestlusse.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Seda näevad sinu sõbrad siin. Ideed jõuavad privaatse vestlusena, 💡 ees. Kui mõni jõuab rakendusse, pane sellele 👍: see inimene saab medali.",
 } satisfies Record<string, string>;

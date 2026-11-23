@@ -36,7 +36,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = печат (o da comunidade), insígnia = значка (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', а отговорът идва в същия разговор.',
   '{dias} dias para trazer de volta': '{dias} дни за възстановяване',
   '{email} — ainda não confirmado': '{email} — още не е потвърден',
   '{email} — confirmado': '{email} — потвърден',
@@ -304,8 +303,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Това е първото, което човек вижда, когато влезе в общността, само веднъж. Без него отива направо в списъка с канали.',
   'É assim que os outros veem você na lista e nas conversas.': 'Така те виждат другите в списъка и в разговорите.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Това виждат приятелите ти тук, под стаята. Каквото напишат, стига до теб като личен разговор с 💡 отпред — а Syden веднага отговаря с благодарност. Когато идеята влезе в приложението, сложи 👍 на съобщението: при тях заваляват конфети и медалът се появява в профила.',
   'é o que você está enviando': 'е това, което изпращаш',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Това е единственият ти начин да влизаш. Задай парола, преди да прекъснеш.',
   'E-mail': 'Имейл',
@@ -544,8 +541,6 @@ export default {
   'Escolher imagem': 'Избери изображение',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Скрити, защото нямат всички букви от това име: {n}',
   'Escreva': 'Напиши',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Напиши тук какво ти се иска да има — или какво пречи. Пристига като лично съобщение за',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Напиши валиден имейл: с него потвърждаваш акаунта.',
   'Escreva um pouco mais sobre a sua ideia.': 'Напиши малко повече за идеята си.',
   'Esmeralda': 'Изумруд',
@@ -1001,7 +996,6 @@ export default {
   'Tela de boas-vindas': 'Екран за добре дошли',
   'Tem certeza que quer apagar esta mensagem de': 'Наистина ли да се изтрие това съобщение? Автор:',
   'Tem certeza que quer excluir': 'Наистина ли да се изтрие:',
-  'Tem uma ideia para o Syden?': 'Имаш идея за Syden?',
   'Tentar de novo': 'Опитай пак',
   'Termos de uso': 'Условия за ползване',
   'Testando… os números aparecem em instantes.': 'Тества се… числата идват след миг.',
@@ -4912,4 +4906,7 @@ export default {
   "Avisos": "Обяви",
   "O que as suas comunidades avisaram": "Какво обявиха твоите общности",
   "Nenhum aviso das suas comunidades por enquanto.": "Все още няма обяви от твоите общности.",
+  "Sentiu falta de algo no Syden?": "Липсва ли ти нещо в Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Разкажи тук, за да може {nome} да го направи. Отговорът идва в личния разговор.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Това виждат приятелите ти тук. Идеите идват като личен разговор, с 💡. Когато някоя влезе в приложението, сложи ѝ 👍: човекът получава медала.",
 } satisfies Record<string, string>;

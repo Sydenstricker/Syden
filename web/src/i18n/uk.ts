@@ -46,7 +46,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = печатка (o da comunidade), insígnia = значок (o da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', а відповідь прийде в цю ж розмову.',
   '{dias} dias para trazer de volta': 'Днів на відновлення: {dias}',
   '{email} — ainda não confirmado': '{email} — ще не підтверджено',
   '{email} — confirmado': '{email} — підтверджено',
@@ -538,8 +537,6 @@ export default {
   'Escolher GIF': 'Вибрати GIF',
   'Escolher imagem': 'Вибрати зображення',
   'Escreva': 'Напиши щось',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Напиши тут, чого бракує — або що заважає. Це прийде особистим повідомленням до',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Вкажи справжню пошту: через неї підтверджується обліковий запис.',
   'Esmeralda': 'Смарагд',
   'Espaço desmontado.': 'Екран прибрано.',
@@ -918,7 +915,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'Не вдалося знайти звук на цій сторінці. На MyInstants скопіюй посилання з кнопки завантаження і встав його сюди.',
   'Esse endereço não é de um arquivo de áudio.': 'За цією адресою немає аудіофайлу.',
   'Caixa de ideias (como os outros veem)': 'Скринька ідей (як її бачать інші)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Ось що бачать твої друзі тут, під кімнатою. Те, що вони напишуть, приходить тобі як приватна розмова, з 💡 на початку — і Syden одразу відповідає подякою. Коли ідея потрапить у застосунок, постав на повідомлення палець угору: у них посиплеться конфетті, а медаль з’явиться в профілі.',
   'Entre numa comunidade para ver as salas.': 'Приєднайся до спільноти, щоб побачити її кімнати.',
   'Escreva um pouco mais sobre a sua ideia.': 'Напиши трохи більше про свою ідею.',
   'Esta comunidade ainda não tem sala de voz.': 'У цій спільноті ще немає голосової кімнати.',
@@ -973,7 +969,6 @@ export default {
   'Tela de boas-vindas': 'Екран привітання',
   'Tem certeza que quer apagar esta mensagem de': 'Точно видалити це повідомлення від',
   'Tem certeza que quer excluir': 'Точно видалити',
-  'Tem uma ideia para o Syden?': 'Маєш ідею для Syden?',
   'Tentar de novo': 'Спробувати ще раз',
   'Termos de uso': 'Умови використання',
   'Testando… os números aparecem em instantes.': 'Тестування… числа з’являться за мить.',
@@ -4895,4 +4890,7 @@ export default {
   "Avisos": "Оголошення",
   "O que as suas comunidades avisaram": "Що оголосили твої спільноти",
   "Nenhum aviso das suas comunidades por enquanto.": "Поки що немає оголошень від твоїх спільнот.",
+  "Sentiu falta de algo no Syden?": "Тобі чогось бракує в Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Розкажи тут — це дійде до {nome}, щоб це можна було реалізувати. Відповідь прийде в приватну розмову.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Ось що бачать твої друзі тут. Ідеї приходять як приватна розмова, з 💡. Коли якась потрапить у застосунок, постав їй палець угору: ця людина отримає медаль.",
 } satisfies Record<string, string>;

@@ -41,7 +41,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = möhür (o da comunidade), insígnia = nyşan (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', jogap hem şol söhbete gaýdyp gelýär.',
   '{dias} dias para trazer de volta': 'Dikeltmek üçin galan gün: {dias}',
   '{email} — ainda não confirmado': '{email} — entek tassyklanmadyk',
   '{email} — confirmado': '{email} — tassyklandy',
@@ -309,8 +308,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Bu jemgyýete giren adamyň ilki görýän zady, diňe bir gezek. Bu bolmasa, adam göni kanallaryň sanawyna düşýär.',
   'É assim que os outros veem você na lista e nas conversas.': 'Beýlekiler seni sanawda we söhbetlerde şeýle görýärler.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Dostlaryň muny şu ýerde, otagyň aşagynda görýärler. Olaryň ýazanlary saňa öňünde 💡 bilen şahsy söhbet bolup gelýär — Syden bolsa derrew minnetdarlyk bilen jogap berýär. Pikir programma girende, habara 👍 goý: olaryň tarapynda konfetti ýagýar we profilde medal peýda bolýar.',
   'é o que você está enviando': 'seniň iberýän zadyň',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Bu seniň girmegiň ýeke-täk ýoly. Aýyrmazdan öň parol belle.',
   'E-mail': 'E-poçta',
@@ -549,8 +546,6 @@ export default {
   'Escolher imagem': 'Surat saýla',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Bu adyň ähli harplary olarda ýoklugy sebäpli gizlenen: {n}',
   'Escreva': 'Ýaz',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Näme bolmagyny isleýändigiňi — ýa-da näme päsgel berýändigini — şu ýere ýaz. Şahsy habar bolup barýar:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Dogry e-poçta ýaz: hasap şonuň üsti bilen tassyklanýar.',
   'Escreva um pouco mais sobre a sua ideia.': 'Pikiriň barada azajyk köpräk ýaz.',
   'Esmeralda': 'Zümerret',
@@ -1006,7 +1001,6 @@ export default {
   'Tela de boas-vindas': 'Garşylaýyş ekrany',
   'Tem certeza que quer apagar esta mensagem de': 'Bu habary hakykatdanam öçürmelimi? Awtory:',
   'Tem certeza que quer excluir': 'Hakykatdanam öçürmelimi:',
-  'Tem uma ideia para o Syden?': 'Syden üçin pikiriň barmy?',
   'Tentar de novo': 'Täzeden synanyş',
   'Termos de uso': 'Ulanyş şertleri',
   'Testando… os números aparecem em instantes.': 'Barlanýar… sanlar biraz salymdan görüner.',
@@ -4926,4 +4920,7 @@ export default {
   "Avisos": "Bildirişler",
   "O que as suas comunidades avisaram": "Jemgyýetleriňiň bildirenleri",
   "Nenhum aviso das suas comunidades por enquanto.": "Jemgyýetleriňden entek bildiriş ýok.",
+  "Sentiu falta de algo no Syden?": "Syden-de bir zat ýetmezmi?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Şu ýerde aýt, {nome} ony amala aşyryp bilsin. Jogap şahsy söhbete geler.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Dostlaryň şu ýerde muny görýärler. Pikirler 💡 bilen şahsy söhbet bolup gelýär. Biri programma girende, oňa 👍 goý: şol adam medal alýar.",
 } satisfies Record<string, string>;

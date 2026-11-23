@@ -31,7 +31,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = sigill (o da comunidade), insígnia = märke (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', och svaret kommer tillbaka i samma konversation.',
   '{dias} dias para trazer de volta': '{dias} dagar kvar att återställa',
   '{email} — ainda não confirmado': '{email} — inte bekräftad än',
   '{email} — confirmado': '{email} — bekräftad',
@@ -299,8 +298,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Det är det första man ser när man går med i gemenskapen, bara en gång. Utan det hamnar man direkt i kanallistan.',
   'É assim que os outros veem você na lista e nas conversas.': 'Så här ser andra dig i listan och i konversationer.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Det här är vad dina vänner ser här nedanför rummet. Det de skriver kommer till dig som en privat konversation, med 💡 framför — och Syden svarar direkt med ett tack. När idén kommer in i appen, ge meddelandet en tumme upp: på deras sida regnar det konfetti och medaljen syns på profilen.',
   'é o que você está enviando': 'är vad du skickar',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Det är ditt enda sätt att logga in. Ställ in ett lösenord innan du kopplar från.',
   'E-mail': 'E-post',
@@ -539,8 +536,6 @@ export default {
   'Escolher imagem': 'Välj bild',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Dolda eftersom de inte har alla bokstäver i det här namnet: {n}',
   'Escreva': 'Skriv',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Skriv här vad du skulle vilja att det fanns — eller vad som är i vägen. Det kommer fram som ett privat meddelande till',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Skriv en giltig e-postadress: det är med den du bekräftar kontot.',
   'Escreva um pouco mais sobre a sua ideia.': 'Skriv lite mer om din idé.',
   'Esmeralda': 'Smaragd',
@@ -996,7 +991,6 @@ export default {
   'Tela de boas-vindas': 'Välkomstskärm',
   'Tem certeza que quer apagar esta mensagem de': 'Är du säker på att du vill radera det här meddelandet från',
   'Tem certeza que quer excluir': 'Är du säker på att du vill radera',
-  'Tem uma ideia para o Syden?': 'Har du en idé för Syden?',
   'Tentar de novo': 'Försök igen',
   'Termos de uso': 'Användarvillkor',
   'Testando… os números aparecem em instantes.': 'Testar… siffrorna dyker upp om ett ögonblick.',
@@ -4907,4 +4901,7 @@ export default {
   "Avisos": "Anslag",
   "O que as suas comunidades avisaram": "Vad dina gemenskaper har meddelat",
   "Nenhum aviso das suas comunidades por enquanto.": "Inga anslag från dina gemenskaper än.",
+  "Sentiu falta de algo no Syden?": "Saknar du något i Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Berätta här, så att {nome} kan bygga det. Svaret kommer i den privata konversationen.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Det här är vad dina vänner ser här. Idéer kommer som en privat konversation, med 💡. När en kommer in i appen, ge den en tumme upp: personen får medaljen.",
 } satisfies Record<string, string>;

@@ -12,7 +12,6 @@
 // insígnia = rozet, selo = mühür.
 
 export default {
-  ', e a resposta volta pela mesma conversa.':'ve yanıt aynı sohbetten geri gelir.',
   '{dias} dias para trazer de volta': 'geri getirmek için {dias} gün',
   '{n} mensagens': '{n} mesaj',
   '{n} na chamada agora': 'şu anda görüşmede {n} kişi',
@@ -386,8 +385,6 @@ export default {
   'Escolher de novo, marcando o som': 'Sesi işaretleyerek yeniden seç',
   'Escolher GIF': 'GIF seç',
   Escreva: 'Yaz',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Olmasını istediğin şeyi — ya da seni rahatsız edeni — buraya yaz. Şu kişiye özel mesaj olarak ulaşır:',
   'Esmeralda': 'Zümrüt',
   'Espaço desmontado.': 'Ekran kaldırıldı.',
   'Esperando você responder': 'Yanıtını bekliyor',
@@ -660,7 +657,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'O sayfada ses bulunamadı. MyInstants’ta indirme düğmesinin bağlantısını kopyalayıp buraya yapıştır.',
   'Esse endereço não é de um arquivo de áudio.': 'Bu adres bir ses dosyası değil.',
   'Caixa de ideias (como os outros veem)': 'Fikir kutusu (başkalarının gördüğü hâli)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Arkadaşlarının odanın aşağısında gördüğü bu. Yazdıkları sana özel sohbet olarak gelir, başında 💡 ile — ve Syden hemen teşekkür ederek yanıt verir. Fikir uygulamaya girdiğinde mesaja başparmak bırak: onların tarafında konfeti yağar ve madalya profilde görünür.',
   'Entre numa comunidade para ver as salas.': 'Odalarını görmek için bir topluluğa katıl.',
   'Escreva um pouco mais sobre a sua ideia.': 'Fikrin hakkında biraz daha yaz.',
   'Esta comunidade ainda não tem sala de voz.': 'Bu topluluğun henüz ses odası yok.',
@@ -700,7 +696,6 @@ export default {
   'Tela de boas-vindas': 'Karşılama ekranı',
   'Tem certeza que quer apagar esta mensagem de': 'Şu kişinin bu mesajını silmek istediğine emin misin:',
   'Tem certeza que quer excluir': 'Silmek istediğine emin misin:',
-  'Tem uma ideia para o Syden?': 'Syden için bir fikrin mi var?',
   'Tentar de novo': 'Yeniden dene',
   'Termos de uso': 'Kullanım koşulları',
   'Testando… os números aparecem em instantes.': 'Deneniyor… sayılar birazdan çıkar.',
@@ -4848,4 +4843,7 @@ export default {
   "Avisos": "Duyurular",
   "O que as suas comunidades avisaram": "Topluluklarının duyurdukları",
   "Nenhum aviso das suas comunidades por enquanto.": "Topluluklarından henüz duyuru yok.",
+  "Sentiu falta de algo no Syden?": "Syden’da bir şeyin eksikliğini hissettin mi?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Burada anlat ki {nome} bunu yapabilsin. Yanıt özel sohbete gelir.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Arkadaşlarının burada gördüğü bu. Fikirler 💡 ile özel sohbet olarak gelir. Biri uygulamaya girdiğinde ona başparmak bırak: o kişi madalyayı kazanır.",
 } satisfies Record<string, string>;

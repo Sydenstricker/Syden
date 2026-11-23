@@ -39,7 +39,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = summad (o da comunidade), insígnia = billad (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', jawaabtuna waxay ku soo noqonaysaa isla wadahadalkaas.',
   '{dias} dias para trazer de volta': '{dias} maalmood oo lagu soo celin karo',
   '{email} — ainda não confirmado': '{email} — weli lama xaqiijin',
   '{email} — confirmado': '{email} — waa la xaqiijiyay',
@@ -307,8 +306,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Waa waxa ugu horreeya ee la arko marka bulshada la galo, hal mar oo keliya. La’aantiis, toos ayaa loogu dhacaa liiska kanaalada.',
   'É assim que os outros veem você na lista e nas conversas.': 'Sidan ayay kuwa kale kuugu arkaan liiska iyo wadahadallada.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Tani waa waxa saaxiibbadaa ka arkaan halkan qolka hoostiisa. Waxay qoraan waxay kuu yimaadaan wadahadal gaar ah, oo 💡 horta ku leh — Syden-na isla markiiba wuxuu ku jawaabaa mahadnaq. Marka fikraddu app-ka gasho, fariinta ku dhaji 👍: dhinacooda kanfeeti ayaa ku daadata, billaddu-na waxay ka muuqataa boggooda.',
   'é o que você está enviando': 'waa waxa aad dirayso',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Waa habka keliya ee aad ku gali karto. Deji eray sir ah intaadan gooyn.',
   'E-mail': 'Iimayl',
@@ -547,8 +544,6 @@ export default {
   'Escolher imagem': 'Dooro sawir',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Kuwa la qariyay maxaa yeelay ma laha dhammaan xarfaha magacan: {n}',
   'Escreva': 'Qor',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Halkan ku qor waxa aad jeclaan lahayd inay jiraan — ama waxa dhibaya. Waxay fariin gaar ah u gaartaa:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Qor iimayl sax ah: isaga ayaad ku xaqiijinaysaa akoonka.',
   'Escreva um pouco mais sobre a sua ideia.': 'Wax yar oo dheeraad ah ka qor fikraddaada.',
   'Esmeralda': 'Zumurud',
@@ -1004,7 +999,6 @@ export default {
   'Tela de boas-vindas': 'Shaashadda soo dhawaynta',
   'Tem certeza que quer apagar esta mensagem de': 'Ma hubtaa inaad tirtirto fariintan? Qoraha:',
   'Tem certeza que quer excluir': 'Ma hubtaa inaad tirtirto',
-  'Tem uma ideia para o Syden?': 'Ma haysaa fikrad Syden ah?',
   'Tentar de novo': 'Isku day mar kale',
   'Termos de uso': 'Shuruudaha isticmaalka',
   'Testando… os números aparecem em instantes.': 'Waa la tijaabinayaa… tirooyinku dhawaan ayay soo muuqan doonaan.',
@@ -4914,4 +4908,7 @@ export default {
   "Avisos": "Ogeysiisyo",
   "O que as suas comunidades avisaram": "Waxa bulshooyinkaagu ku dhawaaqeen",
   "Nenhum aviso das suas comunidades por enquanto.": "Weli ma jiraan ogeysiisyo ka yimid bulshooyinkaaga.",
+  "Sentiu falta de algo no Syden?": "Ma jiraa wax aad ka waysay Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Halkan ku qor si ay u gaarto {nome} oo loo hirgeliyo. Jawaabtu waxay imanaysaa wadahadalka gaarka ah.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Tani waa waxa saaxiibbadaa ka arkaan halkan. Fikradaha waxay u yimaadaan sidii wadahadal gaar ah, oo leh 💡. Marka mid app-ka galo, ku dhaji 👍: qofkaasi wuxuu helayaa billadda.",
 } satisfies Record<string, string>;

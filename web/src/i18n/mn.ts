@@ -49,7 +49,6 @@
 // хувцасны шүүгээ, cutucada = нудралт, recado da tela de boas-vindas = захиа.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', хариулт нь мөн тэр яриагаар буцаж ирнэ.',
   '{dias} dias para trazer de volta': 'Сэргээхэд үлдсэн хоног: {dias}',
   '{email} — ainda não confirmado': '{email} — хараахан баталгаажаагүй',
   '{email} — confirmado': '{email} — баталгаажсан',
@@ -321,8 +320,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Энэ бол хүн нийгэмлэгт ороход хамгийн түрүүнд, зөвхөн нэг удаа хардаг зүйл. Үүнгүйгээр хүн шууд сувгийн жагсаалт руу орно.',
   'É assim que os outros veem você na lista e nas conversas.': 'Бусад чамайг жагсаалт болон яриан дээр ингэж хардаг.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Найзууд чинь энд, өрөөний доор үүнийг хардаг. Тэдний бичсэн зүйл чамд урдаа 💡-тэй хувийн яриа болж ирнэ — Syden даруй талархал илэрхийлж хариулна. Санаа апп-д орвол зурвас дээр 👍 дар: тэдний талд конфетти бууж, медаль профайлд нь гарч ирнэ.',
   'é o que você está enviando': 'чиний илгээж буй зүйл',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.':
     'Энэ бол нэвтрэх цорын ганц арга чинь. Унтраахаас өмнө нууц үг тохируул.',
@@ -562,8 +559,6 @@ export default {
   'Escolher imagem': 'Зураг сонгох',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Энэ нэрийн бүх үсэг байхгүй тул нуусан: {n}',
   'Escreva': 'Бич',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Юу байгаасай гэж хүсэж байгаагаа — эсвэл юу саад болж байгааг энд бич. Хувийн зурвас болж очих хүн:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Зөв имэйл бич: түүгээр бүртгэлээ баталгаажуулна.',
   'Escreva um pouco mais sobre a sua ideia.': 'Санаагаа арай дэлгэрэнгүй бич.',
   'Esmeralda': 'Маргад',
@@ -1019,7 +1014,6 @@ export default {
   'Tela de boas-vindas': 'Угтах дэлгэц',
   'Tem certeza que quer apagar esta mensagem de': 'Энэ зурвасыг устгах уу? Зохиогч:',
   'Tem certeza que quer excluir': 'Үнэхээр устгах уу:',
-  'Tem uma ideia para o Syden?': 'Syden-д зориулсан санаа байна уу?',
   'Tentar de novo': 'Дахин оролдох',
   'Termos de uso': 'Үйлчилгээний нөхцөл',
   'Testando… os números aparecem em instantes.': 'Туршиж байна… тоонууд удахгүй гарна.',
@@ -4928,4 +4922,7 @@ export default {
   "Avisos": "Мэдэгдлүүд",
   "O que as suas comunidades avisaram": "Чиний бүлгэмүүдийн мэдэгдсэн зүйл",
   "Nenhum aviso das suas comunidades por enquanto.": "Чиний бүлгэмүүдээс одоогоор мэдэгдэл алга.",
+  "Sentiu falta de algo no Syden?": "Syden-д ямар нэг зүйл дутагдсан уу?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Энд бичээрэй, {nome} үүнийг хийж чадахаар. Хариу хувийн ярианд ирнэ.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Найзууд чинь энд үүнийг хардаг. Санаанууд 💡-тэй хувийн яриа болж ирнэ. Аль нэг нь апп-д орвол түүнд 👍 дар: тэр хүн медаль авна.",
 } satisfies Record<string, string>;

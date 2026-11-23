@@ -64,7 +64,6 @@
 // estranha para quem usa, não menos.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ' และคำตอบจะกลับมาทางการสนทนาเดิมนี้',
   '{dias} dias para trazer de volta': 'อีก {dias} วันในการกู้คืน',
   '{email} — ainda não confirmado': '{email} — ยังไม่ได้ยืนยัน',
   '{email} — confirmado': '{email} — ยืนยันแล้ว',
@@ -509,7 +508,6 @@ export default {
   'Escolher GIF': 'เลือก GIF',
   'Escolher imagem': 'เลือกรูป',
   'Escreva': 'เขียน',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para': 'เขียนตรงนี้ว่าคุณอยากให้มีอะไร — หรืออะไรที่ขัดใจอยู่ จะส่งเป็นข้อความส่วนตัวถึง',
   'Esmeralda': 'มรกต',
   'Espaço desmontado.': 'รื้อพื้นที่ออกแล้ว',
   'Esperando você responder': 'รอคุณตอบ',
@@ -846,7 +844,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'ไม่พบเสียงในหน้านั้น ใน MyInstants ให้คัดลอกลิงก์ของปุ่มดาวน์โหลดแล้ววางที่นี่',
   'Esse endereço não é de um arquivo de áudio.': 'ที่อยู่นี้ไม่ใช่ไฟล์เสียง',
   'Caixa de ideias (como os outros veem)': 'กล่องไอเดีย (แบบที่คนอื่นเห็น)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'นี่คือสิ่งที่เพื่อน ๆ ของคุณเห็นตรงนี้ ใต้ห้อง สิ่งที่พวกเขาเขียนจะส่งถึงคุณเป็นแชตส่วนตัว มี 💡 นำหน้า — และ Syden จะตอบขอบคุณทันที เมื่อไอเดียได้เข้าไปอยู่ในแอป ให้กดถูกใจที่ข้อความนั้น ฝั่งของพวกเขาจะมีกระดาษสีโปรยลงมา และเหรียญจะปรากฏในโปรไฟล์',
   'Entre numa comunidade para ver as salas.': 'เข้าร่วมชุมชนเพื่อดูห้องต่าง ๆ',
   'Escreva um pouco mais sobre a sua ideia.': 'เขียนเกี่ยวกับไอเดียของคุณเพิ่มอีกนิด',
   'Esta comunidade ainda não tem sala de voz.': 'ชุมชนนี้ยังไม่มีห้องเสียง',
@@ -891,7 +888,6 @@ export default {
   'Tela de boas-vindas': 'หน้าต้อนรับ',
   'Tem certeza que quer apagar esta mensagem de': 'แน่ใจไหมว่าจะลบข้อความนี้ของ',
   'Tem certeza que quer excluir': 'แน่ใจไหมว่าจะลบทิ้ง',
-  'Tem uma ideia para o Syden?': 'มีไอเดียสำหรับ Syden ไหม',
   'Tentar de novo': 'ลองอีกครั้ง',
   'Termos de uso': 'ข้อกำหนดการใช้งาน',
   'Testando… os números aparecem em instantes.': 'กำลังทดสอบ… ตัวเลขจะขึ้นในอีกสักครู่',
@@ -4859,4 +4855,7 @@ export default {
   "Avisos": "ประกาศ",
   "O que as suas comunidades avisaram": "ประกาศจากคอมมูนิตี้ของคุณ",
   "Nenhum aviso das suas comunidades por enquanto.": "ยังไม่มีประกาศจากคอมมูนิตี้ของคุณ",
+  "Sentiu falta de algo no Syden?": "รู้สึกว่า Syden ยังขาดอะไรไหม",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "บอกไว้ตรงนี้ เพื่อให้ {nome} นำไปทำได้ คำตอบจะมาทางแชตส่วนตัว",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "นี่คือสิ่งที่เพื่อน ๆ ของคุณเห็นตรงนี้ ไอเดียจะส่งมาเป็นแชตส่วนตัว มี 💡 เมื่อไอเดียไหนได้เข้าไปอยู่ในแอป ให้กดถูกใจที่ไอเดียนั้น คนนั้นจะได้รับเหรียญ",
 } satisfies Record<string, string>;

@@ -33,7 +33,6 @@
 // Gerado por: node scripts/idiomas.mjs --novo te
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', జవాబు అదే సంభాషణలోకే తిరిగి వస్తుంది.',
   '{dias} dias para trazer de volta': 'తిరిగి తెచ్చుకోవడానికి {dias} రోజులు',
   '{email} — ainda não confirmado': '{email} — ఇంకా ధృవీకరించలేదు',
   '{email} — confirmado': '{email} — ధృవీకరించారు',
@@ -478,7 +477,6 @@ export default {
   'Escolher GIF': 'GIF ఎంచుకో',
   'Escolher imagem': 'చిత్రాన్ని ఎంచుకో',
   'Escreva': 'రాయండి',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para': 'ఏమి ఉండాలని మీరు కోరుకుంటున్నారో — లేదా ఏది ఇబ్బంది పెడుతోందో — ఇక్కడ రాయండి. ఇది ప్రైవేట్ సందేశంగా వీరికి చేరుతుంది:',
   'Esmeralda': 'పచ్చ',
   'Espaço desmontado.': 'ఈ తెరను తీసేశాం.',
   'Esperando você responder': 'మీ జవాబు కోసం ఎదురుచూస్తోంది',
@@ -815,7 +813,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'ఆ పేజీలో ఆడియో దొరకలేదు. MyInstantsలో డౌన్‌లోడ్ బటన్ లింక్‌ను కాపీ చేసి ఇక్కడ అతికించండి.',
   'Esse endereço não é de um arquivo de áudio.': 'ఈ చిరునామా ఆడియో ఫైల్ కాదు.',
   'Caixa de ideias (como os outros veem)': 'ఆలోచనల పెట్టె (ఇతరులకు ఎలా కనిపిస్తుందో)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'గది కింద ఇక్కడ మీ స్నేహితులకు కనిపించేది ఇదే. వాళ్లు రాసేది మీకు ప్రైవేట్ సంభాషణగా, ముందు 💡తో చేరుతుంది — Syden వెంటనే ధన్యవాదాలతో జవాబిస్తుంది. ఆలోచన యాప్‌లోకి వచ్చినప్పుడు, ఆ సందేశానికి థంబ్స్-అప్ ఇవ్వండి: వాళ్ల వైపు కాన్ఫెట్టి కురుస్తుంది, ప్రొఫైల్‌లో పతకం కనిపిస్తుంది.',
   'Entre numa comunidade para ver as salas.': 'ఛానెల్‌లు చూడడానికి ఏదైనా కమ్యూనిటీలో చేరండి.',
   'Escreva um pouco mais sobre a sua ideia.': 'మీ ఆలోచన గురించి ఇంకొంచెం రాయండి.',
   'Esta comunidade ainda não tem sala de voz.': 'ఈ కమ్యూనిటీకి ఇంకా వాయిస్ ఛానెల్ లేదు.',
@@ -860,7 +857,6 @@ export default {
   'Tela de boas-vindas': 'స్వాగత తెర',
   'Tem certeza que quer apagar esta mensagem de': 'ఈ సందేశాన్ని నిజంగా తొలగించాలా? పంపినవారు:',
   'Tem certeza que quer excluir': 'నిజంగా తొలగించాలా:',
-  'Tem uma ideia para o Syden?': 'Syden కోసం ఏదైనా ఆలోచన ఉందా?',
   'Tentar de novo': 'మళ్ళీ ప్రయత్నించు',
   'Termos de uso': 'వినియోగ నిబంధనలు',
   'Testando… os números aparecem em instantes.': 'పరీక్షిస్తోంది… సంఖ్యలు కొద్ది క్షణాల్లో కనిపిస్తాయి.',
@@ -4828,4 +4824,7 @@ export default {
   "Avisos": "ప్రకటనలు",
   "O que as suas comunidades avisaram": "మీ సంఘాలు ప్రకటించినవి",
   "Nenhum aviso das suas comunidades por enquanto.": "మీ సంఘాల నుంచి ఇంకా ప్రకటనలు లేవు.",
+  "Sentiu falta de algo no Syden?": "Sydenలో ఏదైనా లోటు అనిపించిందా?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome} దాన్ని అమలు చేయగలిగేలా ఇక్కడ చెప్పండి. జవాబు ప్రైవేట్ సంభాషణలో వస్తుంది.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "మీ స్నేహితులకు ఇక్కడ కనిపించేది ఇదే. ఆలోచనలు 💡తో ప్రైవేట్ సంభాషణగా వస్తాయి. ఏదైనా యాప్‌లోకి వచ్చినప్పుడు, దానికి థంబ్స్-అప్ ఇవ్వండి: ఆ వ్యక్తికి పతకం వస్తుంది.",
 } satisfies Record<string, string>;

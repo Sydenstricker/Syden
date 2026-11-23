@@ -40,7 +40,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = pecsét (o da comunidade), insígnia = kitűző (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', és a válasz ugyanebben a beszélgetésben érkezik vissza.',
   '{dias} dias para trazer de volta': 'Még {dias} nap a visszaállításig',
   '{email} — ainda não confirmado': '{email} — még nincs megerősítve',
   '{email} — confirmado': '{email} — megerősítve',
@@ -308,8 +307,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Ez az első, amit valaki lát, amikor belép a közösségbe, csak egyszer. Enélkül egyenesen a csatornalistára kerül.',
   'É assim que os outros veem você na lista e nas conversas.': 'Így látnak mások a listában és a beszélgetésekben.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Ezt látják a barátaid itt a szoba alatt. Amit írnak, privát beszélgetésként érkezik hozzád, 💡 jellel az elején — és a Syden azonnal megköszöni. Amikor az ötlet bekerül az alkalmazásba, adj az üzenetre egy 👍-t: náluk konfetti hull, és a profiljukon megjelenik az érem.',
   'é o que você está enviando': 'ezt küldöd',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Ez az egyetlen módod a belépésre. Állíts be jelszót, mielőtt leválasztod.',
   'E-mail': 'E-mail',
@@ -548,8 +545,6 @@ export default {
   'Escolher imagem': 'Kép kiválasztása',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Elrejtve, mert nincs meg bennük a név összes betűje: {n}',
   'Escreva': 'Írd be',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Írd ide, minek örülnél — vagy mi zavar. Privát üzenetként érkezik ide:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Adj meg egy érvényes e-mail-címet: ezzel erősíted meg a fiókot.',
   'Escreva um pouco mais sobre a sua ideia.': 'Írj egy kicsit többet az ötletedről.',
   'Esmeralda': 'Smaragd',
@@ -1006,7 +1001,6 @@ export default {
   'Tela de boas-vindas': 'Üdvözlőképernyő',
   'Tem certeza que quer apagar esta mensagem de': 'Biztosan törlöd ezt az üzenetet? Küldte:',
   'Tem certeza que quer excluir': 'Biztosan törlöd?',
-  'Tem uma ideia para o Syden?': 'Van egy ötleted a Sydenhez?',
   'Tentar de novo': 'Újra',
   'Termos de uso': 'Felhasználási feltételek',
   'Testando… os números aparecem em instantes.': 'Tesztelés… a számok mindjárt megjelennek.',
@@ -4917,4 +4911,7 @@ export default {
   "Avisos": "Hirdetmények",
   "O que as suas comunidades avisaram": "Amit a közösségeid hirdettek",
   "Nenhum aviso das suas comunidades por enquanto.": "Még nincs hirdetmény a közösségeidtől.",
+  "Sentiu falta de algo no Syden?": "Hiányzik valami a Sydenből?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Írd meg itt, hogy {nome} meg tudja csinálni. A válasz a privát beszélgetésbe érkezik.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Ezt látják a barátaid itt. Az ötletek privát beszélgetésként érkeznek, 💡 jellel. Ha valamelyik bekerül az alkalmazásba, adj rá 👍-t: az illető megkapja az érmet.",
 } satisfies Record<string, string>;

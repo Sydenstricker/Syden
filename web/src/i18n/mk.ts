@@ -39,7 +39,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = печат (o da comunidade), insígnia = значка (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', а одговорот се враќа во истиот разговор.',
   '{dias} dias para trazer de volta': '{dias} дена за враќање',
   '{email} — ainda não confirmado': '{email} — уште не е потврдена',
   '{email} — confirmado': '{email} — потврдена',
@@ -307,8 +306,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Тоа е првото што човек го гледа кога ќе влезе во заедницата, само еднаш. Без ова, оди директно во списокот на канали.',
   'É assim que os outros veem você na lista e nas conversas.': 'Вака те гледаат другите во списокот и во разговорите.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Ова го гледаат твоите пријатели тука под собата. Она што ќе го напишат ти стига како приватен разговор со 💡 напред — а Syden веднаш одговара со благодарност. Кога идејата ќе влезе во апликацијата, стави 👍 на пораката: кај нив паѓаат конфети и на профилот се појавува медал.',
   'é o que você está enviando': 'е она што го праќаш',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Тоа е твојот единствен начин за најава. Пред да исклучиш, постави лозинка.',
   'E-mail': 'Е-пошта',
@@ -547,8 +544,6 @@ export default {
   'Escolher imagem': 'Избери слика',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Скриени затоа што ги немаат сите букви од ова име: {n}',
   'Escreva': 'Пиши',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Напиши тука што треба да постои — или што пречи. Стига како приватна порака до',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Напиши важечка е-пошта: преку неа се потврдува сметката.',
   'Escreva um pouco mais sobre a sua ideia.': 'Напиши малку повеќе за твојата идеја.',
   'Esmeralda': 'Смарагд',
@@ -1004,7 +999,6 @@ export default {
   'Tela de boas-vindas': 'Екран за добредојде',
   'Tem certeza que quer apagar esta mensagem de': 'Навистина да се избрише оваа порака? Автор:',
   'Tem certeza que quer excluir': 'Навистина да се избрише:',
-  'Tem uma ideia para o Syden?': 'Имаш идеја за Syden?',
   'Tentar de novo': 'Обиди се повторно',
   'Termos de uso': 'Услови за користење',
   'Testando… os números aparecem em instantes.': 'Се тестира… бројките ќе се појават за момент.',
@@ -4914,4 +4908,7 @@ export default {
   "Avisos": "Објави",
   "O que as suas comunidades avisaram": "Што објавија твоите заедници",
   "Nenhum aviso das suas comunidades por enquanto.": "Сè уште нема објави од твоите заедници.",
+  "Sentiu falta de algo no Syden?": "Ти недостасува нешто во Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Кажи тука, за да може {nome} да го направи. Одговорот стига во приватниот разговор.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Ова го гледаат твоите пријатели тука. Идеите стигнуваат како приватен разговор, со 💡. Кога некоја ќе влезе во апликацијата, стави ѝ 👍: тоа лице добива медал.",
 } satisfies Record<string, string>;

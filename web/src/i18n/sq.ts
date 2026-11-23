@@ -31,7 +31,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = vulë (o da comunidade), insígnia = distinktiv (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', dhe përgjigjja vjen në të njëjtën bisedë.',
   '{dias} dias para trazer de volta': '{dias} ditë për ta rikthyer',
   '{email} — ainda não confirmado': '{email} — ende i pakonfirmuar',
   '{email} — confirmado': '{email} — i konfirmuar',
@@ -299,8 +298,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Është gjëja e parë që sheh dikush kur hyn në komunitet, vetëm një herë. Pa këtë, personi bie drejt në listën e kanaleve.',
   'É assim que os outros veem você na lista e nas conversas.': 'Kështu të shohin të tjerët në listë dhe në biseda.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Kjo është ajo që shohin miqtë e tu këtu poshtë dhomës. Ajo që shkruajnë të vjen si bisedë private, me 💡 përpara — dhe Syden përgjigjet menjëherë me falënderim. Kur ideja hyn në aplikacion, vëri mesazhit një 👍: tek ata bie konfeti dhe medalja shfaqet në profil.',
   'é o que você está enviando': 'është ajo që po dërgon',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Është mënyra jote e vetme për të hyrë. Vendos një fjalëkalim para se ta shkëputësh.',
   'E-mail': 'Email',
@@ -539,8 +536,6 @@ export default {
   'Escolher imagem': 'Zgjidh imazh',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Të fshehura sepse nuk kanë të gjitha shkronjat e këtij emri: {n}',
   'Escreva': 'Shkruaj',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Shkruaj këtu çfarë do të doje të ekzistonte — ose çfarë po pengon. Mbërrin si mesazh privat për',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Shkruaj një email të vlefshëm: me të konfirmon llogarinë.',
   'Escreva um pouco mais sobre a sua ideia.': 'Shkruaj pak më shumë për idenë tënde.',
   'Esmeralda': 'Smerald',
@@ -996,7 +991,6 @@ export default {
   'Tela de boas-vindas': 'Ekrani i mirëseardhjes',
   'Tem certeza que quer apagar esta mensagem de': 'Vërtet do ta fshish këtë mesazh? Autori:',
   'Tem certeza que quer excluir': 'Vërtet do ta fshish:',
-  'Tem uma ideia para o Syden?': 'Ke një ide për Syden?',
   'Tentar de novo': 'Provo sërish',
   'Termos de uso': 'Kushtet e përdorimit',
   'Testando… os números aparecem em instantes.': 'Po testohet… numrat shfaqen pas pak çastesh.',
@@ -4907,4 +4901,7 @@ export default {
   "Avisos": "Njoftime",
   "O que as suas comunidades avisaram": "Çfarë kanë njoftuar komunitetet e tua",
   "Nenhum aviso das suas comunidades por enquanto.": "Ende asnjë njoftim nga komunitetet e tua.",
+  "Sentiu falta de algo no Syden?": "Të ka munguar diçka në Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Tregoje këtu, që {nome} ta realizojë. Përgjigjja vjen në bisedën private.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Kjo është ajo që shohin miqtë e tu këtu. Idetë vijnë si bisedë private, me 💡. Kur njëra hyn në aplikacion, vëri një 👍: ai person merr medaljen.",
 } satisfies Record<string, string>;

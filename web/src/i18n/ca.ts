@@ -35,7 +35,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = segell (o da comunidade), insígnia = insígnia (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', i la resposta torna per la mateixa conversa.',
   '{dias} dias para trazer de volta': '{dias} dies per recuperar-lo',
   '{email} — ainda não confirmado': '{email} — encara no confirmat',
   '{email} — confirmado': '{email} — confirmat',
@@ -303,8 +302,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'És el primer que es veu en entrar a la comunitat, una sola vegada. Sense això, s’entra directament a la llista de canals.',
   'É assim que os outros veem você na lista e nas conversas.': 'Així et veu la resta a la llista i a les converses.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Això és el que veuen els teus amics aquí sota el dormitori. El que escriguin t’arriba com una conversa privada, amb 💡 al davant — i el Syden ja respon donant les gràcies a l’instant. Quan la idea entri a l’aplicació, posa un 👍 al missatge: al seu costat cau confeti i la medalla apareix al perfil.',
   'é o que você está enviando': 'és el que estàs enviant',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'És l’única manera que tens d’entrar. Defineix una contrasenya abans de desconnectar-lo.',
   'E-mail': 'Correu electrònic',
@@ -543,8 +540,6 @@ export default {
   'Escolher imagem': 'Triar una imatge',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Amagades perquè no tenen totes les lletres d’aquest nom: {n}',
   'Escreva': 'Escriu',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Escriu aquí què t’agradaria que existís — o què t’està molestant. Arriba com a missatge privat a',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Escriu un correu vàlid: és amb ell que confirmes el compte.',
   'Escreva um pouco mais sobre a sua ideia.': 'Escriu una mica més sobre la teva idea.',
   'Esmeralda': 'Maragda',
@@ -1000,7 +995,6 @@ export default {
   'Tela de boas-vindas': 'Pantalla de benvinguda',
   'Tem certeza que quer apagar esta mensagem de': 'Segur que vols esborrar aquest missatge de',
   'Tem certeza que quer excluir': 'Segur que vols esborrar',
-  'Tem uma ideia para o Syden?': 'Tens una idea per al Syden?',
   'Tentar de novo': 'Tornar-ho a provar',
   'Termos de uso': 'Condicions d’ús',
   'Testando… os números aparecem em instantes.': 'S’està provant… les xifres apareixen d’aquí a un moment.',
@@ -4911,4 +4905,7 @@ export default {
   "Avisos": "Avisos",
   "O que as suas comunidades avisaram": "El que han avisat les teves comunitats",
   "Nenhum aviso das suas comunidades por enquanto.": "Encara no hi ha cap avís de les teves comunitats.",
+  "Sentiu falta de algo no Syden?": "Has trobat a faltar alguna cosa al Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Explica-ho aquí, perquè {nome} ho pugui fer. La resposta arriba a la conversa privada.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Això és el que veuen els teus amics aquí. Les idees arriben com a conversa privada, amb 💡. Quan una entri a l’aplicació, posa-hi un 👍: aquella persona guanya la medalla.",
 } satisfies Record<string, string>;

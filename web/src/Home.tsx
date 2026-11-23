@@ -63,12 +63,10 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
       <section className="ideias exemplo" aria-label={t('Caixa de ideias (como os outros veem)')}>
         <h2>
           <Lightbulb size={20} aria-hidden="true" />
-          {t('Tem uma ideia para o Syden?')}
+          {t('Sentiu falta de algo no Syden?')}
         </h2>
         <p className="ideias-lead">
-          {t(
-            'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.',
-          )}
+          {t('É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.')}
         </p>
         <form onSubmit={(e) => e.preventDefault()} aria-hidden="true">
           <textarea rows={3} placeholder={t('Seria bom se…')} disabled />
@@ -88,12 +86,10 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
     <section className="ideias" aria-label={t('Sugestões de melhoria')}>
       <h2>
         <Lightbulb size={20} aria-hidden="true" />
-        {t('Tem uma ideia para o Syden?')}
+        {t('Sentiu falta de algo no Syden?')}
       </h2>
       <p className="ideias-lead">
-        {t('Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para')}{' '}
-        {dono ? <strong>{nomeDe(dono)}</strong> : t('quem cuida do Syden')}
-        {t(', e a resposta volta pela mesma conversa.')}
+        {t('Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.', { nome: dono ? nomeDe(dono) : t('quem cuida do Syden') })}
       </p>
       {estado === 'enviado' ? (
         <div className="ideias-obrigado">

@@ -60,7 +60,6 @@
 // Szeryfowa, Odręczna…), e as cores dos cosméticos são substantivos (Szmaragd, Rubin, Miedź).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', a odpowiedź wróci w tej samej rozmowie.',
   '{dias} dias para trazer de volta': 'dni na przywrócenie: {dias}',
   '{email} — ainda não confirmado': '{email} — jeszcze niepotwierdzony',
   '{email} — confirmado': '{email} — potwierdzony',
@@ -552,8 +551,6 @@ export default {
   'Escolher GIF': 'Wybierz GIF',
   'Escolher imagem': 'Wybierz obraz',
   'Escreva': 'Napisz coś',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Napisz tutaj, czego brakuje — albo co przeszkadza. Trafi jako prywatna wiadomość do',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Wpisz prawidłowy e-mail: to przez niego potwierdzasz konto.',
   'Esmeralda': 'Szmaragd',
   'Espaço desmontado.': 'Ekran rozebrany.',
@@ -933,7 +930,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'Nie udało się znaleźć dźwięku na tej stronie. Na MyInstants skopiuj link z przycisku pobierania i wklej go tutaj.',
   'Esse endereço não é de um arquivo de áudio.': 'Ten adres nie prowadzi do pliku audio.',
   'Caixa de ideias (como os outros veem)': 'Skrzynka pomysłów (tak widzą ją inni)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Tak to widzą twoi znajomi tutaj, pod pokojem. To, co napiszą, trafia do ciebie jako prywatna rozmowa, z 💡 na początku — a Syden od razu odpowiada podziękowaniem. Kiedy pomysł trafi do aplikacji, daj łapkę w górę pod wiadomością: u nich spada konfetti, a medal pojawia się w profilu.',
   'Entre numa comunidade para ver as salas.': 'Dołącz do społeczności, żeby zobaczyć jej pokoje.',
   'Escreva um pouco mais sobre a sua ideia.': 'Napisz trochę więcej o swoim pomyśle.',
   'Esta comunidade ainda não tem sala de voz.': 'Ta społeczność nie ma jeszcze pokoju głosowego.',
@@ -988,7 +984,6 @@ export default {
   'Tela de boas-vindas': 'Ekran powitalny',
   'Tem certeza que quer apagar esta mensagem de': 'Na pewno usunąć tę wiadomość od',
   'Tem certeza que quer excluir': 'Na pewno usunąć',
-  'Tem uma ideia para o Syden?': 'Masz pomysł na Syden?',
   'Tentar de novo': 'Spróbuj ponownie',
   'Termos de uso': 'Warunki korzystania',
   'Testando… os números aparecem em instantes.': 'Testowanie… liczby pojawią się za chwilę.',
@@ -4909,4 +4904,7 @@ export default {
   "Avisos": "Ogłoszenia",
   "O que as suas comunidades avisaram": "Co ogłosiły twoje społeczności",
   "Nenhum aviso das suas comunidades por enquanto.": "Na razie brak ogłoszeń z twoich społeczności.",
+  "Sentiu falta de algo no Syden?": "Brakuje ci czegoś w Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Napisz tutaj — trafi to do {nome}, żeby mogło wejść do aplikacji. Odpowiedź przyjdzie w prywatnej rozmowie.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Tak to widzą twoi znajomi tutaj. Pomysły przychodzą jako prywatna rozmowa, z 💡. Kiedy któryś trafi do aplikacji, daj mu łapkę w górę: ta osoba dostaje medal.",
 } satisfies Record<string, string>;

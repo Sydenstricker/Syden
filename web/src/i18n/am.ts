@@ -51,7 +51,6 @@
 // não menos.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': '፣ መልሱም በዚሁ ውይይት ይመለሳል።',
   '{dias} dias para trazer de volta': 'ለመመለስ {dias} ቀናት',
   '{email} — ainda não confirmado': '{email} — ገና አልተረጋገጠም',
   '{email} — confirmado': '{email} — ተረጋግጧል',
@@ -499,7 +498,6 @@ export default {
   'Escolher GIF': 'GIF ምረጥ',
   'Escolher imagem': 'ምስል ምረጥ',
   'Escreva': 'ይጻፉ',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para': 'እንዲኖር የሚፈልጉትን — ወይም የሚያስቸግርዎትን — እዚህ ይጻፉ። እንደ የግል መልእክት ይደርሳል ለ',
   'Esmeralda': 'ኤመራልድ',
   'Espaço desmontado.': 'ቦታው ተነስቷል።',
   'Esperando você responder': 'መልስዎን በመጠበቅ ላይ',
@@ -839,7 +837,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'በዚያ ገጽ ላይ ድምፅ አልተገኘም። በMyInstants ላይ የማውረጃ ቁልፉን ሊንክ ቀድተው እዚህ ይለጥፉ።',
   'Esse endereço não é de um arquivo de áudio.': 'ይህ አድራሻ የድምፅ ፋይል አይደለም።',
   'Caixa de ideias (como os outros veem)': 'የሐሳብ ሣጥን (ሌሎች እንደሚያዩት)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'ጓደኞችዎ እዚህ ከክፍሉ በታች የሚያዩት ይህ ነው። የሚጽፉት ከፊቱ 💡 ይዞ እንደ የግል ውይይት ይደርስዎታል — Syden ደግሞ ወዲያውኑ በምስጋና ይመልሳል። ሐሳቡ ወደ መተግበሪያው ሲገባ፣ በመልእክቱ ላይ አውራ ጣት ያድርጉ፦ በእነሱ በኩል ኮንፈቲ ይወርዳል፣ ሜዳሊያውም በመገለጫው ላይ ይታያል።',
   'Entre numa comunidade para ver as salas.': 'ክፍሎቹን ለማየት ማህበረሰብ ይቀላቀሉ።',
   'Escreva um pouco mais sobre a sua ideia.': 'ስለ ሐሳብዎ ትንሽ ተጨማሪ ይጻፉ።',
   'Esta comunidade ainda não tem sala de voz.': 'ይህ ማህበረሰብ እስካሁን የድምፅ ክፍል የለውም።',
@@ -884,7 +881,6 @@ export default {
   'Tela de boas-vindas': 'የእንኳን ደህና መጡ ገጽ',
   'Tem certeza que quer apagar esta mensagem de': 'ይህን መልእክት መሰረዝ እንደሚፈልጉ እርግጠኛ ነዎት፣ የ',
   'Tem certeza que quer excluir': 'ማጥፋት እንደሚፈልጉ እርግጠኛ ነዎት',
-  'Tem uma ideia para o Syden?': 'ለSyden ሐሳብ አለዎት?',
   'Tentar de novo': 'እንደገና ሞክር',
   'Termos de uso': 'የአጠቃቀም ውሎች',
   'Testando… os números aparecem em instantes.': 'በመሞከር ላይ… ቁጥሮቹ በቅርቡ ይታያሉ።',
@@ -4846,4 +4842,7 @@ export default {
   "Avisos": "ማስታወቂያዎች",
   "O que as suas comunidades avisaram": "የእርስዎ ማህበረሰቦች ያስታወቁት",
   "Nenhum aviso das suas comunidades por enquanto.": "ከእርስዎ ማህበረሰቦች እስካሁን ምንም ማስታወቂያ የለም።",
+  "Sentiu falta de algo no Syden?": "በSyden ውስጥ የጎደለ ነገር አለ?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "እዚህ ይንገሩን፤ ተግባራዊ እንዲሆን ለ{nome} ይደርሳል። መልሱ በግል ውይይት ይደርስዎታል።",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "ጓደኞችዎ እዚህ የሚያዩት ይህ ነው። ሐሳቦች በ💡 እንደ የግል ውይይት ይደርሳሉ። አንዱ ወደ መተግበሪያው ሲገባ፣ አውራ ጣት ያድርጉበት፦ ባለ ሐሳቡ ሜዳሊያውን ያገኛል።",
 } satisfies Record<string, string>;

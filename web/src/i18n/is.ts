@@ -40,7 +40,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = innsigli (o da comunidade), insígnia = merki (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', og svarið kemur til baka í sama samtali.',
   '{dias} dias para trazer de volta': 'Dagar til að endurheimta: {dias}',
   '{email} — ainda não confirmado': '{email} — ekki staðfest enn',
   '{email} — confirmado': '{email} — staðfest',
@@ -308,8 +307,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Þetta er það fyrsta sem fólk sér þegar það kemur inn í samfélagið, aðeins einu sinni. Án þess lendir það beint á rásalistanum.',
   'É assim que os outros veem você na lista e nas conversas.': 'Svona sér fólk þig á listanum og í samtölum.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Þetta sjá vinir þínir hér fyrir neðan herbergið. Það sem þau skrifa berst þér sem einkasamtal með 💡 fremst — og Syden svarar strax með þökkum. Þegar hugmyndin kemst inn í forritið, settu 👍 á skilaboðin: hjá þeim rignir konfetti og medalían birtist á prófílnum.',
   'é o que você está enviando': 'er það sem þú sendir',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Þetta er eina leiðin þín til að skrá þig inn. Settu lykilorð áður en þú aftengir.',
   'E-mail': 'Netfang',
@@ -548,8 +545,6 @@ export default {
   'Escolher imagem': 'Velja mynd',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Falin af því að þau hafa ekki alla stafi þessa nafns: {n}',
   'Escreva': 'Skrifaðu',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Skrifaðu hér hvað þú vildir að væri til — eða hvað er að trufla. Það berst sem einkaskilaboð til',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Skrifaðu gilt netfang: það er með því sem aðgangurinn er staðfestur.',
   'Escreva um pouco mais sobre a sua ideia.': 'Skrifaðu aðeins meira um hugmyndina þína.',
   'Esmeralda': 'Smaragður',
@@ -1005,7 +1000,6 @@ export default {
   'Tela de boas-vindas': 'Móttökuskjár',
   'Tem certeza que quer apagar esta mensagem de': 'Viltu örugglega eyða þessum skilaboðum frá',
   'Tem certeza que quer excluir': 'Viltu örugglega eyða',
-  'Tem uma ideia para o Syden?': 'Ertu með hugmynd fyrir Syden?',
   'Tentar de novo': 'Reyna aftur',
   'Termos de uso': 'Notkunarskilmálar',
   'Testando… os números aparecem em instantes.': 'Prófar… tölurnar birtast eftir augnablik.',
@@ -4916,4 +4910,7 @@ export default {
   "Avisos": "Tilkynningar",
   "O que as suas comunidades avisaram": "Það sem samfélögin þín hafa tilkynnt",
   "Nenhum aviso das suas comunidades por enquanto.": "Engar tilkynningar frá samfélögunum þínum enn.",
+  "Sentiu falta de algo no Syden?": "Saknarðu einhvers í Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Segðu frá því hér, þá berst það til {nome} sem getur útfært það. Svarið kemur í einkasamtali.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Þetta sjá vinir þínir hér. Hugmyndir berast sem einkasamtal, með 💡. Þegar ein kemst inn í forritið, settu 👍 á hana: viðkomandi fær medalíuna.",
 } satisfies Record<string, string>;

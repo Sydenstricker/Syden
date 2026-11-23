@@ -48,7 +48,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = muhr (o da comunidade), insígnia = nishon (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', javob esa shu suhbatning oʻziga keladi.',
   '{dias} dias para trazer de volta': 'Qaytarish uchun {dias} kun',
   '{email} — ainda não confirmado': '{email} — hali tasdiqlanmagan',
   '{email} — confirmado': '{email} — tasdiqlangan',
@@ -316,8 +315,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Bu hamjamiyatga kirgan kishi bir marta koʻradigan birinchi narsa. Busiz u toʻgʻridan-toʻgʻri kanallar roʻyxatiga tushadi.',
   'É assim que os outros veem você na lista e nas conversas.': 'Boshqalar seni roʻyxatda va suhbatlarda shunday koʻradi.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Doʻstlaring xona ostida aynan shuni koʻradi. Ular yozgan narsa senga oldida 💡 bilan shaxsiy suhbat sifatida keladi — Syden esa darhol minnatdorchilik bilan javob beradi. Gʻoya ilovaga qoʻshilganda, xabarga 👍 qoʻy: ular tomonida konfetti yogʻiladi va profilida medal paydo boʻladi.',
   'é o que você está enviando': 'sen yuborayotganing shu',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Bu kirishning yagona yoʻling. Uzishdan oldin parol oʻrnat.',
   'E-mail': 'E-pochta',
@@ -556,8 +553,6 @@ export default {
   'Escolher imagem': 'Rasm tanlash',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Bu nomning barcha harflari boʻlmagani uchun yashirilganlar: {n}',
   'Escreva': 'Tasdiqlash uchun yoz:',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Nima boʻlishini xohlashingni — yoki nima xalaqit berayotganini — shu yerga yoz. Shaxsiy xabar sifatida quyidagi kishiga boradi:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Haqiqiy e-pochta yoz: hisobni u orqali tasdiqlaysan.',
   'Escreva um pouco mais sobre a sua ideia.': 'Gʻoyang haqida biroz koʻproq yoz.',
   'Esmeralda': 'Zumrad',
@@ -1013,7 +1008,6 @@ export default {
   'Tela de boas-vindas': 'Kutib olish ekrani',
   'Tem certeza que quer apagar esta mensagem de': 'Bu xabar rostdan ham oʻchirilsinmi? Muallif:',
   'Tem certeza que quer excluir': 'Rostdan ham oʻchirilsinmi:',
-  'Tem uma ideia para o Syden?': 'Syden uchun gʻoyang bormi?',
   'Tentar de novo': 'Qayta urinish',
   'Termos de uso': 'Foydalanish shartlari',
   'Testando… os números aparecem em instantes.': 'Sinalmoqda… raqamlar bir zumda chiqadi.',
@@ -4936,4 +4930,7 @@ export default {
   "Avisos": "Eʼlonlar",
   "O que as suas comunidades avisaram": "Hamjamiyatlaring nimani eʼlon qildi",
   "Nenhum aviso das suas comunidades por enquanto.": "Hamjamiyatlaringdan hozircha eʼlon yoʻq.",
+  "Sentiu falta de algo no Syden?": "Syden-da nimadir yetishmayaptimi?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Shu yerda ayt, {nome} uni amalga oshira olsin. Javob shaxsiy suhbatga keladi.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Doʻstlaring bu yerda aynan shuni koʻradi. Gʻoyalar 💡 bilan shaxsiy suhbat sifatida keladi. Biri ilovaga qoʻshilganda, unga 👍 qoʻy: oʻsha odam medal oladi.",
 } satisfies Record<string, string>;

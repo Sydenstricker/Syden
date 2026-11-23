@@ -41,7 +41,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = antspaudas (o da comunidade), insígnia = ženklelis (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', o atsakymas grįš į tą patį pokalbį.',
   '{dias} dias para trazer de volta': 'Dienos atkūrimui: {dias}',
   '{email} — ainda não confirmado': '{email} — dar nepatvirtinta',
   '{email} — confirmado': '{email} — patvirtinta',
@@ -309,8 +308,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Tai pirmas dalykas, kurį žmogus pamato įėjęs į bendruomenę, tik vieną kartą. Be to jis patenka tiesiai į kanalų sąrašą.',
   'É assim que os outros veem você na lista e nas conversas.': 'Taip tave mato kiti sąraše ir pokalbiuose.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Tai mato tavo draugai čia po kambariu. Ką jie parašys, tau ateis kaip privatus pokalbis su 💡 priekyje — o Syden iš karto atsakys padėka. Kai idėja pateks į programėlę, pažymėk žinutę 👍: pas juos pasipils konfeti, o profilyje atsiras medalis.',
   'é o que você está enviando': 'yra tai, ką siunti',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Tai tavo vienintelis būdas prisijungti. Prieš atjungiant nustatyk slaptažodį.',
   'E-mail': 'El. paštas',
@@ -549,8 +546,6 @@ export default {
   'Escolher imagem': 'Pasirinkti paveikslėlį',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Paslėpta, nes neturi visų šio vardo raidžių: {n}',
   'Escreva': 'Rašyk',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Parašyk čia, ko norėtum, kad būtų — arba kas trukdo. Tai ateis kaip privati žinutė gavėjui:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Įrašyk galiojantį el. paštą: per jį patvirtinama paskyra.',
   'Escreva um pouco mais sobre a sua ideia.': 'Parašyk apie savo idėją šiek tiek daugiau.',
   'Esmeralda': 'Smaragdas',
@@ -1006,7 +1001,6 @@ export default {
   'Tela de boas-vindas': 'Pasveikinimo ekranas',
   'Tem certeza que quer apagar esta mensagem de': 'Tikrai ištrinti šią žinutę? Autorius:',
   'Tem certeza que quer excluir': 'Tikrai ištrinti:',
-  'Tem uma ideia para o Syden?': 'Turi idėją Syden?',
   'Tentar de novo': 'Bandyti dar kartą',
   'Termos de uso': 'Naudojimo sąlygos',
   'Testando… os números aparecem em instantes.': 'Bandoma… skaičiai pasirodys tuoj pat.',
@@ -4917,4 +4911,7 @@ export default {
   "Avisos": "Skelbimai",
   "O que as suas comunidades avisaram": "Ką paskelbė tavo bendruomenės",
   "Nenhum aviso das suas comunidades por enquanto.": "Kol kas nėra skelbimų iš tavo bendruomenių.",
+  "Sentiu falta de algo no Syden?": "Ar ko nors pasigedai Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Parašyk čia, kad {nome} galėtų tai padaryti. Atsakymas ateis į privatų pokalbį.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Tai mato tavo draugai čia. Idėjos ateina kaip privatus pokalbis su 💡. Kai kuri nors patenka į programėlę, pažymėk ją 👍: tas žmogus gauna medalį.",
 } satisfies Record<string, string>;

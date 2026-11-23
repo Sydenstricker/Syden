@@ -51,7 +51,6 @@
 // soundboard = panou de sunete.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', iar răspunsul vine în aceeași conversație.',
   '{dias} dias para trazer de volta': '{dias} zile pentru recuperare',
   '{email} — ainda não confirmado': '{email} — încă neconfirmat',
   '{email} — confirmado': '{email} — confirmat',
@@ -499,7 +498,6 @@ export default {
   'Escolher GIF': 'Alege GIF',
   'Escolher imagem': 'Alege imaginea',
   'Escreva': 'Scrie',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para': 'Scrie aici ce ți-ar plăcea să existe — sau ce te încurcă. Ajunge ca mesaj privat la',
   'Esmeralda': 'Smarald',
   'Espaço desmontado.': 'Spațiul a fost desființat.',
   'Esperando você responder': 'Așteaptă răspunsul tău',
@@ -839,7 +837,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'Nu am găsit sunetul de pe pagina aceea. Pe MyInstants, copiază linkul butonului de descărcare și lipește-l aici.',
   'Esse endereço não é de um arquivo de áudio.': 'Adresa aceasta nu este un fișier audio.',
   'Caixa de ideias (como os outros veem)': 'Cutia cu idei (cum o văd ceilalți)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Asta văd prietenii tăi aici, sub cameră. Ce scriu ei îți ajunge ca o conversație privată, cu 💡 în față — iar Syden răspunde imediat cu un mulțumesc. Când ideea intră în aplicație, pune un like pe mesaj: la ei cad confetti, iar medalia apare pe profil.',
   'Entre numa comunidade para ver as salas.': 'Intră într-o comunitate ca să-i vezi camerele.',
   'Escreva um pouco mais sobre a sua ideia.': 'Scrie puțin mai mult despre ideea ta.',
   'Esta comunidade ainda não tem sala de voz.': 'Comunitatea aceasta nu are încă o cameră de voce.',
@@ -884,7 +881,6 @@ export default {
   'Tela de boas-vindas': 'Ecran de bun venit',
   'Tem certeza que quer apagar esta mensagem de': 'Sigur vrei să ștergi acest mesaj de la',
   'Tem certeza que quer excluir': 'Sigur vrei să ștergi',
-  'Tem uma ideia para o Syden?': 'Ai o idee pentru Syden?',
   'Tentar de novo': 'Încearcă din nou',
   'Termos de uso': 'Termeni de utilizare',
   'Testando… os números aparecem em instantes.': 'Se testează… numerele apar în câteva clipe.',
@@ -4845,4 +4841,7 @@ export default {
   "Avisos": "Anunțuri",
   "O que as suas comunidades avisaram": "Ce au anunțat comunitățile tale",
   "Nenhum aviso das suas comunidades por enquanto.": "Încă nu există anunțuri de la comunitățile tale.",
+  "Sentiu falta de algo no Syden?": "Ți-a lipsit ceva în Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Spune aici, ca {nome} să-l poată face. Răspunsul vine în conversația privată.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Asta văd prietenii tăi aici. Ideile vin ca o conversație privată, cu 💡. Când una intră în aplicație, pune-i un like: persoana primește medalia.",
 } satisfies Record<string, string>;

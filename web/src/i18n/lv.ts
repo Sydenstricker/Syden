@@ -41,7 +41,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = zīmogs (o da comunidade), insígnia = nozīmīte (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', un atbilde atnāks atpakaļ tajā pašā sarunā.',
   '{dias} dias para trazer de volta': 'Dienas atjaunošanai: {dias}',
   '{email} — ainda não confirmado': '{email} — vēl nav apstiprināts',
   '{email} — confirmado': '{email} — apstiprināts',
@@ -309,8 +308,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Tas ir pirmais, ko cilvēks redz, ienākot kopienā, tikai vienu reizi. Bez tā nonāk tieši kanālu sarakstā.',
   'É assim que os outros veem você na lista e nas conversas.': 'Tā tevi redz citi sarakstā un sarunās.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Tas ir tas, ko tavi draugi redz šeit zem istabas. Ko viņi uzrakstīs, atnāks pie tevis kā privāta saruna ar 💡 priekšā — un Syden uzreiz atbildēs ar pateicību. Kad ideja nonāks lietotnē, atzīmē ziņu ar 👍: pie viņiem birs konfeti, un profilā parādīsies medaļa.',
   'é o que você está enviando': 'ir tas, ko tu sūti',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Tas ir tavs vienīgais veids, kā pieteikties. Pirms atslēgšanas iestati paroli.',
   'E-mail': 'E-pasts',
@@ -549,8 +546,6 @@ export default {
   'Escolher imagem': 'Izvēlēties attēlu',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Paslēptas, jo tām nav visu šī vārda burtu: {n}',
   'Escreva': 'Raksti',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Uzraksti šeit, kam vajadzētu būt — vai kas traucē. Tas atnāks kā privāta ziņa adresātam:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Ieraksti derīgu e-pastu: ar to tiek apstiprināts konts.',
   'Escreva um pouco mais sobre a sua ideia.': 'Uzraksti par savu ideju mazliet vairāk.',
   'Esmeralda': 'Smaragds',
@@ -1006,7 +1001,6 @@ export default {
   'Tela de boas-vindas': 'Sveiciena ekrāns',
   'Tem certeza que quer apagar esta mensagem de': 'Tiešām dzēst šo ziņu? Autors:',
   'Tem certeza que quer excluir': 'Tiešām dzēst:',
-  'Tem uma ideia para o Syden?': 'Ir ideja Syden?',
   'Tentar de novo': 'Mēģināt vēlreiz',
   'Termos de uso': 'Lietošanas noteikumi',
   'Testando… os números aparecem em instantes.': 'Testē… skaitļi parādīsies pēc mirkļa.',
@@ -4916,4 +4910,7 @@ export default {
   "Avisos": "Paziņojumi",
   "O que as suas comunidades avisaram": "Ko paziņojušas tavas kopienas",
   "Nenhum aviso das suas comunidades por enquanto.": "Pagaidām nav paziņojumu no tavām kopienām.",
+  "Sentiu falta de algo no Syden?": "Vai Syden tev kaut kā pietrūka?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Pastāsti šeit, lai {nome} to varētu izdarīt. Atbilde atnāks privātā sarunā.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Tas ir tas, ko tavi draugi redz šeit. Idejas atnāk kā privāta saruna ar 💡. Kad kāda nonāk lietotnē, atzīmē to ar 👍: šis cilvēks saņem medaļu.",
 } satisfies Record<string, string>;

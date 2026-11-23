@@ -13,7 +13,6 @@
 // escreve em italiano de verdade, e traduzi-las por invenção deixaria a tela mais estranha.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', e la risposta torna nella stessa conversazione.',
   '{dias} dias para trazer de volta': '{dias} giorni per recuperarlo',
   '{n} mensagens': '{n} messaggi',
   '{n} na chamada agora': '{n} in chiamata adesso',
@@ -389,8 +388,6 @@ export default {
   'Escolher de novo, marcando o som': 'Scegli di nuovo, spuntando l’audio',
   'Escolher GIF': 'Scegli una GIF',
   Escreva: 'Scrivi',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Scrivi qui cosa vorresti che esistesse — o cosa ti dà fastidio. Arriva come messaggio privato a',
   'Esmeralda': 'Smeraldo',
   'Espaço desmontado.': 'Schermata rimossa.',
   'Esperando você responder': 'Aspettano una tua risposta',
@@ -663,7 +660,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'Non ho trovato l’audio di quella pagina. Su MyInstants, copia il link del pulsante di download e incollalo qui.',
   'Esse endereço não é de um arquivo de áudio.': 'Questo indirizzo non è un file audio.',
   'Caixa de ideias (como os outros veem)': 'Cassetta delle idee (come la vedono gli altri)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Questo è ciò che i tuoi amici vedono qui sotto la stanza. Quello che scrivono ti arriva come conversazione privata, con 💡 davanti — e Syden risponde subito ringraziando. Quando l’idea entra nell’app, metti il pollice in su sul messaggio: dalla loro parte cadono coriandoli e la medaglia compare sul profilo.',
   'Entre numa comunidade para ver as salas.': 'Entra in una comunità per vederne le stanze.',
   'Escreva um pouco mais sobre a sua ideia.': 'Scrivi qualcosa in più sulla tua idea.',
   'Esta comunidade ainda não tem sala de voz.': 'Questa comunità non ha ancora una stanza vocale.',
@@ -703,7 +699,6 @@ export default {
   'Tela de boas-vindas': 'Schermata di benvenuto',
   'Tem certeza que quer apagar esta mensagem de': 'Sei sicuro di voler eliminare questo messaggio di',
   'Tem certeza que quer excluir': 'Sei sicuro di voler eliminare',
-  'Tem uma ideia para o Syden?': 'Hai un’idea per Syden?',
   'Tentar de novo': 'Riprova',
   'Termos de uso': 'Termini d’uso',
   'Testando… os números aparecem em instantes.': 'Prova in corso… i numeri appaiono tra poco.',
@@ -4845,4 +4840,7 @@ export default {
   "Avisos": "Annunci",
   "O que as suas comunidades avisaram": "Cosa hanno annunciato le tue community",
   "Nenhum aviso das suas comunidades por enquanto.": "Ancora nessun annuncio dalle tue community.",
+  "Sentiu falta de algo no Syden?": "Ti è mancato qualcosa in Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Raccontalo qui, così {nome} potrà realizzarlo. La risposta arriva nella conversazione privata.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Questo è ciò che vedono i tuoi amici qui. Le idee arrivano come conversazione privata, con 💡. Quando una entra nell’app, mettile un pollice in su: quella persona riceve la medaglia.",
 } satisfies Record<string, string>;

@@ -15,7 +15,6 @@
 // mensagem = mesej, senha = kata laluan, transmissão = siaran, lixeira = tong sampah, tópico = topik.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', dan jawapannya kembali dalam perbualan yang sama.',
   '{dias} dias para trazer de volta': '{dias} hari lagi untuk mengembalikannya',
   '{n} mensagens': '{n} mesej',
   '{n} na chamada agora': '{n} dalam panggilan sekarang',
@@ -391,8 +390,6 @@ export default {
   'Escolher de novo, marcando o som': 'Pilih semula, dengan menanda bunyi',
   'Escolher GIF': 'Pilih GIF',
   Escreva: 'Tulis',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Tulis di sini apa yang anda mahu ada — atau apa yang mengganggu. Ia sampai sebagai mesej peribadi kepada',
   'Esmeralda': 'Zamrud',
   'Espaço desmontado.': 'Skrin dibuang.',
   'Esperando você responder': 'Menunggu jawapan anda',
@@ -665,7 +662,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'Audio di halaman itu tidak ditemui. Di MyInstants, salin pautan butang muat turun dan tampal di sini.',
   'Esse endereço não é de um arquivo de áudio.': 'Alamat ini bukan fail audio.',
   'Caixa de ideias (como os outros veem)': 'Kotak idea (seperti yang dilihat orang lain)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Inilah yang dilihat oleh rakan-rakan anda di sini, di bawah bilik. Apa yang mereka tulis sampai kepada anda sebagai perbualan peribadi, dengan 💡 di hadapan — dan Syden terus membalas dengan ucapan terima kasih. Apabila idea itu masuk ke dalam aplikasi, berikan ibu jari pada mesej itu: di pihak mereka konfeti berguguran dan pingat muncul di profil.',
   'Entre numa comunidade para ver as salas.': 'Sertai komuniti untuk melihat biliknya.',
   'Escreva um pouco mais sobre a sua ideia.': 'Tulis sedikit lagi tentang idea anda.',
   'Esta comunidade ainda não tem sala de voz.': 'Komuniti ini belum ada bilik suara.',
@@ -705,7 +701,6 @@ export default {
   'Tela de boas-vindas': 'Skrin selamat datang',
   'Tem certeza que quer apagar esta mensagem de': 'Anda pasti mahu memadam mesej ini daripada',
   'Tem certeza que quer excluir': 'Anda pasti mahu memadam',
-  'Tem uma ideia para o Syden?': 'Ada idea untuk Syden?',
   'Tentar de novo': 'Cuba lagi',
   'Termos de uso': 'Terma penggunaan',
   'Testando… os números aparecem em instantes.': 'Sedang menguji… nombornya muncul sebentar lagi.',
@@ -4840,4 +4835,7 @@ export default {
   "Avisos": "Pengumuman",
   "O que as suas comunidades avisaram": "Apa yang diumumkan oleh komuniti kamu",
   "Nenhum aviso das suas comunidades por enquanto.": "Belum ada pengumuman daripada komuniti kamu.",
+  "Sentiu falta de algo no Syden?": "Ada sesuatu yang kurang dalam Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Ceritakan di sini supaya {nome} dapat melaksanakannya. Balasan akan tiba dalam perbualan peribadi.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Inilah yang dilihat oleh rakan-rakan anda di sini. Idea tiba sebagai perbualan peribadi, dengan 💡. Apabila satu masuk ke dalam aplikasi, berikan ibu jari padanya: orang itu mendapat pingat.",
 } satisfies Record<string, string>;

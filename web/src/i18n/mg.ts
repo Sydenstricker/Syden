@@ -39,7 +39,6 @@
 // pessoa). Voz e som são a mesma palavra (feo), como em laosiano: o contexto separa.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', ary ao amin’io resaka io ihany no hiverenan’ny valiny.',
   '{dias} dias para trazer de volta': '{dias} andro hamerenana azy',
   '{email} — ainda não confirmado': '{email} — tsy mbola voamarina',
   '{email} — confirmado': '{email} — voamarina',
@@ -307,8 +306,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Izy no zavatra voalohany hitan’ny olona rehefa miditra ao amin’ny fiarahamonina, indray mandeha ihany. Raha tsy misy izy, dia tonga mivantana amin’ny lisitry ny fantsona ny olona.',
   'É assim que os outros veem você na lista e nas conversas.': 'Toy izao no ahitan’ny hafa anao ao amin’ny lisitra sy ny resaka.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Izao no hitan’ny namanao eto ambanin’ny efitrano. Tonga aminao ho resaka manokana izay soratany, misy 💡 eo aloha — ary misaotra avy hatrany ny Syden. Rehefa tafiditra ao amin’ny rindrambaiko ny hevitra, apetaho 👍 amin’ny hafatra: milatsaka ny konfety eo aminy ary miseho eo amin’ny mombamombany ny medaly.',
   'é o que você está enviando': 'no alefanao',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Io ihany no fomba hidiranao. Apetraho ny teny miafina alohan’ny hanapahana.',
   'E-mail': 'Mailaka',
@@ -547,8 +544,6 @@ export default {
   'Escolher imagem': 'Hisafidy sary',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Nafenina satria tsy manana ny litera rehetra amin’ity anarana ity: {n}',
   'Escreva': 'Soraty',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Soraty eto izay tianao hisy — na izay manelingelina. Tonga ho hafatra manokana amin’i',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Soraty mailaka manan-kery: amin’izany no hanamafisanao ny kaonty.',
   'Escreva um pouco mais sobre a sua ideia.': 'Soraty kely kokoa momba ny hevitrao.',
   'Esmeralda': 'Emeraoda',
@@ -1004,7 +999,6 @@ export default {
   'Tela de boas-vindas': 'Efijery fandraisana',
   'Tem certeza que quer apagar esta mensagem de': 'Tena hofafanao ve ity hafatr’i',
   'Tem certeza que quer excluir': 'Tena hofafanao ve',
-  'Tem uma ideia para o Syden?': 'Manana hevitra ho an’ny Syden ve ianao?',
   'Tentar de novo': 'Andramo indray',
   'Termos de uso': 'Fepetra fampiasana',
   'Testando… os números aparecem em instantes.': 'Manandrana… hiseho afaka fotoana fohy ny isa.',
@@ -4914,4 +4908,7 @@ export default {
   "Avisos": "Filazana",
   "O que as suas comunidades avisaram": "Izay nambaran’ireo vondronao",
   "Nenhum aviso das suas comunidades por enquanto.": "Mbola tsy misy filazana avy amin’ireo vondronao.",
+  "Sentiu falta de algo no Syden?": "Nisy zavatra tsy hitanao tao amin’ny Syden ve?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Lazao eto, ho tonga any amin’ {nome} izany mba hatao. Tonga amin’ny resaka manokana ny valiny.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Izao no hitan’ny namanao eto. Tonga ho resaka manokana ny hevitra, misy 💡. Rehefa tafiditra ao amin’ny rindrambaiko ny iray, apetaho 👍 izany: mahazo ny medaly ilay olona.",
 } satisfies Record<string, string>;

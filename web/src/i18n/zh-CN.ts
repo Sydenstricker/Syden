@@ -15,7 +15,6 @@
 // desde que passou a mapear escritas.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': '，回复会回到同一个对话里。',
   '{dias} dias para trazer de volta': '还有 {dias} 天可以恢复',
   '{n} mensagens': '{n} 条消息',
   '{n} na chamada agora': '现在有 {n} 人在通话',
@@ -386,8 +385,6 @@ export default {
   'Escolher de novo, marcando o som': '重新选择，并勾上声音',
   'Escolher GIF': '选择 GIF',
   Escreva: '写',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    '在这里写下你希望有什么功能，或者什么地方碍事。它会作为私信发给',
   'Esmeralda': '祖母绿',
   'Espaço desmontado.': '页面已移除。',
   'Esperando você responder': '等着你回复',
@@ -653,7 +650,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': '没在那个页面找到音频。在 MyInstants 上复制下载按钮的链接，粘贴到这里。',
   'Esse endereço não é de um arquivo de áudio.': '这个地址不是音频文件。',
   'Caixa de ideias (como os outros veem)': '点子箱（别人看到的样子）',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': '这就是你的朋友们在房间下方看到的内容。他们写的东西会以私聊的形式发给你，前面带着 💡——Syden 会立刻回复致谢。等这个点子真的加进应用后，给那条消息点个赞：他们那边会落下彩纸，勋章也会出现在个人资料上。',
   'Entre numa comunidade para ver as salas.': '加入一个社区，就能看到它的房间。',
   'Escreva um pouco mais sobre a sua ideia.': '再多写一点你的想法吧。',
   'Esta comunidade ainda não tem sala de voz.': '这个社区还没有语音房间。',
@@ -693,7 +689,6 @@ export default {
   'Tela de boas-vindas': '欢迎页面',
   'Tem certeza que quer apagar esta mensagem de': '确定要删除这条来自',
   'Tem certeza que quer excluir': '确定要删除',
-  'Tem uma ideia para o Syden?': '对 Syden 有什么想法？',
   'Tentar de novo': '再试一次',
   'Termos de uso': '使用条款',
   'Testando… os números aparecem em instantes.': '正在测试…数字马上就出来。',
@@ -4833,4 +4828,7 @@ export default {
   "Avisos": "公告",
   "O que as suas comunidades avisaram": "你的社区发布的公告",
   "Nenhum aviso das suas comunidades por enquanto.": "你的社区暂时还没有公告。",
+  "Sentiu falta de algo no Syden?": "觉得 Syden 还缺点什么？",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "在这里说说，好让 {nome} 把它做出来。回复会出现在私聊里。",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "这就是你的朋友们在这里看到的。点子会以私聊的形式发来，带着 💡。等某个点子加进应用后，给它点个赞：那个人就会得到勋章。",
 } satisfies Record<string, string>;

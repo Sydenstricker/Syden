@@ -54,7 +54,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = կնիք (o da comunidade), insígnia = կրծքանշան (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', և պատասխանը վերադառնում է նույն զրույցով։',
   '{dias} dias para trazer de volta': 'Վերականգնելու համար մնացել է {dias} օր',
   '{email} — ainda não confirmado': '{email} — դեռ հաստատված չէ',
   '{email} — confirmado': '{email} — հաստատված է',
@@ -326,8 +325,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Սա առաջին բանն է, որ մարդը տեսնում է համայնք մտնելիս, միայն մեկ անգամ։ Առանց դրա՝ նա հայտնվում է ուղիղ ալիքների ցանկում։',
   'É assim que os outros veem você na lista e nas conversas.': 'Այսպես են քեզ տեսնում մյուսները ցանկում և զրույցներում։',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Սա այն է, ինչ քո ընկերները տեսնում են այստեղ՝ սենյակի ներքևում։ Այն, ինչ նրանք գրեն, քեզ կհասնի որպես անձնական զրույց՝ սկզբում 💡-ով — և Syden-ն անմիջապես կպատասխանի շնորհակալությամբ։ Երբ գաղափարը մտնի հավելված, հաղորդագրությանը 👍 դիր․ նրանց մոտ կոնֆետի կթափվի, և մեդալը կհայտնվի պրոֆիլում։',
   'é o que você está enviando': 'այն է, ինչ դու ուղարկում ես',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.':
     'Սա մուտքի քո միակ ճանապարհն է։ Սահմանիր գաղտնաբառ՝ անջատելուց առաջ։',
@@ -567,8 +564,6 @@ export default {
   'Escolher imagem': 'Ընտրել պատկեր',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Թաքցված են, քանի որ չունեն այս անվան բոլոր տառերը՝ {n}',
   'Escreva': 'Գրիր',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Գրիր այստեղ, թե ինչ կուզենայիր, որ լիներ — կամ ինչն է խանգարում։ Կհասնի որպես անձնական հաղորդագրություն՝',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Գրիր վավեր էլ. փոստ․ դրանով ես հաստատում հաշիվը։',
   'Escreva um pouco mais sobre a sua ideia.': 'Մի քիչ ավելին գրիր քո գաղափարի մասին։',
   'Esmeralda': 'Զմրուխտ',
@@ -1024,7 +1019,6 @@ export default {
   'Tela de boas-vindas': 'Ողջույնի էկրան',
   'Tem certeza que quer apagar esta mensagem de': 'Ջնջե՞լ այս հաղորդագրությունը։ Հեղինակ՝',
   'Tem certeza que quer excluir': 'Իսկապե՞ս ջնջել՝',
-  'Tem uma ideia para o Syden?': 'Գաղափար ունե՞ս Syden-ի համար',
   'Tentar de novo': 'Կրկին փորձել',
   'Termos de uso': 'Օգտագործման պայմաններ',
   'Testando… os números aparecem em instantes.': 'Փորձարկվում է… թվերը կհայտնվեն մի ակնթարթից։',
@@ -4934,4 +4928,7 @@ export default {
   "Avisos": "Հայտարարություններ",
   "O que as suas comunidades avisaram": "Ինչ են հայտարարել քո համայնքները",
   "Nenhum aviso das suas comunidades por enquanto.": "Քո համայնքներից դեռ հայտարարություններ չկան։",
+  "Sentiu falta de algo no Syden?": "Syden-ում ինչ-որ բա՞ն է պակասում",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Պատմիր այստեղ, որ {nome} կարողանա դա իրականացնել։ Պատասխանը կգա անձնական զրույցում։",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Սա է, ինչ քո ընկերները տեսնում են այստեղ։ Գաղափարները գալիս են որպես անձնական զրույց՝ 💡-ով։ Երբ մեկը մտնի հավելված, 👍 դիր դրան․ այդ մարդը կստանա մեդալը։",
 } satisfies Record<string, string>;

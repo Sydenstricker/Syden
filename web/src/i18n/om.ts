@@ -39,7 +39,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = chaappaa (o da comunidade), insígnia = mallattoo (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', deebiinis haasaa kanuma keessatti dhufa.',
   '{dias} dias para trazer de volta': 'Deebisuuf guyyaa {dias}',
   '{email} — ainda não confirmado': '{email} — ammallee hin mirkanoofne',
   '{email} — confirmado': '{email} — mirkanaa’eera',
@@ -528,8 +527,6 @@ export default {
   'Escolher GIF': 'GIF filadhu',
   'Escolher imagem': 'Suuraa filadhu',
   'Escreva': 'Waan tokko barreessi',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Waan akka jiraatu barbaaddu — ykn waan si rakkisu — asitti barreessi. Akka ergaa dhuunfaatti kan ga’u:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Imeelii sirrii barreessi: akkaawuntii kan ittiin mirkaneessitu isa.',
   'Esmeralda': 'Ilillee magariisaa',
   'Espaço desmontado.': 'Iskiriiniin buqqifameera.',
@@ -908,7 +905,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'Sagaleen fuula sanaa hin argamne. MyInstants irratti liinkii qabduu buusii garagalchiitii asitti maxxansi.',
   'Esse endereço não é de um arquivo de áudio.': 'Teessoon kun faayilii sagalee miti.',
   'Caixa de ideias (como os outros veem)': 'Saanduqa yaadaa (akka warri kaan arganitti)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Kun waan hiriyyoonni kee asitti, kutaa kana gaditti arganidha. Wanti isaan barreessan, 💡 fuuldura qabatee, akka haasaa dhuunfaatti siif dhufa — Syden immoo battalumatti galata galchuun deebisa. Yeroo yaadni sun appii keessa galu, ergaa irratti quba ol kaa’i: gama isaaniitiin konfeetiin roobaa, meedaaliyaanis profaayilii irratti mul’ata.',
   'Entre numa comunidade para ver as salas.': 'Kutaalee isaa arguuf hawaasa tokkotti makami.',
   'Escreva um pouco mais sobre a sua ideia.': 'Waa’ee yaada keetii xiqqoo dabaliitii barreessi.',
   'Esta comunidade ainda não tem sala de voz.': 'Hawaasni kun ammallee kutaa sagalee hin qabu.',
@@ -963,7 +959,6 @@ export default {
   'Tela de boas-vindas': 'Iskiriinii baga nagaan dhuftanii',
   'Tem certeza que quer apagar esta mensagem de': 'Dhuguma ergaa kana haqxaa? Kan',
   'Tem certeza que quer excluir': 'Dhuguma haqxaa:',
-  'Tem uma ideia para o Syden?': 'Syden-iif yaada qabdaa?',
   'Tentar de novo': 'Irra deebi’ii yaali',
   'Termos de uso': 'Haala fayyadamaa',
   'Testando… os números aparecem em instantes.': 'Qoraa jira… lakkoofsonni battaluma mul’atu.',
@@ -4884,4 +4879,7 @@ export default {
   "Avisos": "Beeksisoota",
   "O que as suas comunidades avisaram": "Waan hawaasni kee beeksise",
   "Nenhum aviso das suas comunidades por enquanto.": "Hanga ammaatti hawaasa kee irraa beeksisni hin jiru.",
+  "Sentiu falta de algo no Syden?": "Syden keessatti wanti si hir’ate jiraa?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Asitti nutti himi, akka {nome} hojjechuu danda’uuf. Deebiin haasaa dhuunfaatiin dhufa.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Kun waan hiriyyoonni kee asitti arganidha. Yaadonni akka haasaa dhuunfaatti, 💡 qabatanii dhufu. Yeroo tokko appii keessa galu, quba ol kaa’iif: namni sun meedaaliyaa argata.",
 } satisfies Record<string, string>;

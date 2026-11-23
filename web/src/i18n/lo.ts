@@ -40,7 +40,6 @@
 // comunidade), insígnia = ເຄື່ອງໝາຍ (a da pessoa), recado (da tela de boas-vindas e do aviso) = ປະກາດ.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ' ແລະຄຳຕອບຈະກັບມາໃນການສົນທະນາດຽວກັນ',
   '{dias} dias para trazer de volta': 'ເຫຼືອ {dias} ມື້ເພື່ອກູ້ຄືນ',
   '{email} — ainda não confirmado': '{email} — ຍັງບໍ່ໄດ້ຢືນຢັນ',
   '{email} — confirmado': '{email} — ຢືນຢັນແລ້ວ',
@@ -308,8 +307,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'ນີ້ແມ່ນສິ່ງທຳອິດທີ່ຄົນເຫັນເມື່ອເຂົ້າຊຸມຊົນ ພຽງເທື່ອດຽວ ຖ້າບໍ່ມີ ເຂົາຈະໄປຮອດລາຍການຊ່ອງໂດຍກົງ',
   'É assim que os outros veem você na lista e nas conversas.': 'ນີ້ແມ່ນວິທີທີ່ຄົນອື່ນເຫັນເຈົ້າໃນລາຍການແລະໃນການສົນທະນາ',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'ນີ້ແມ່ນສິ່ງທີ່ໝູ່ຂອງເຈົ້າເຫັນຢູ່ລຸ່ມຫ້ອງ ສິ່ງທີ່ເຂົາຂຽນຈະມາຫາເຈົ້າເປັນການສົນທະນາສ່ວນຕົວ ມີ 💡 ຢູ່ທາງໜ້າ — ແລະ Syden ຈະຕອບຂອບໃຈທັນທີ ເມື່ອແນວຄິດເຂົ້າໄປໃນແອັບ ໃຫ້ກົດ 👍 ທີ່ຂໍ້ຄວາມ: ຝ່າຍເຂົາຈະມີເຈ້ຍສີຕົກລົງມາ ແລະຫຼຽນຈະສະແດງໃນໂປຣໄຟລ໌',
   'é o que você está enviando': 'ແມ່ນສິ່ງທີ່ເຈົ້າກຳລັງສົ່ງ',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'ນີ້ແມ່ນທາງດຽວທີ່ເຈົ້າເຂົ້າໄດ້ ຕັ້ງລະຫັດຜ່ານກ່ອນຕັດການເຊື່ອມຕໍ່',
   'E-mail': 'ອີເມວ',
@@ -548,8 +545,6 @@ export default {
   'Escolher imagem': 'ເລືອກຮູບ',
   'Escondidas por não terem todas as letras deste nome: {n}': 'ຖືກເຊື່ອງໄວ້ເພາະບໍ່ມີຕົວອັກສອນຂອງຊື່ນີ້ຄົບ: {n}',
   'Escreva': 'ພິມ',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'ຂຽນທີ່ນີ້ວ່າເຈົ້າຢາກໃຫ້ມີຫຍັງ — ຫຼື ຫຍັງທີ່ເປັນອຸປະສັກ ມັນຈະໄປເປັນຂໍ້ຄວາມສ່ວນຕົວຫາ',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'ຂຽນອີເມວທີ່ຖືກຕ້ອງ: ເຈົ້າຈະຢືນຢັນບັນຊີຜ່ານມັນ',
   'Escreva um pouco mais sobre a sua ideia.': 'ຂຽນກ່ຽວກັບແນວຄິດຂອງເຈົ້າຕື່ມອີກໜ້ອຍໜຶ່ງ',
   'Esmeralda': 'ມໍລະກົດ',
@@ -1005,7 +1000,6 @@ export default {
   'Tela de boas-vindas': 'ໜ້າຕ້ອນຮັບ',
   'Tem certeza que quer apagar esta mensagem de': 'ແນ່ໃຈບໍວ່າຈະລຶບຂໍ້ຄວາມນີ້ຂອງ',
   'Tem certeza que quer excluir': 'ແນ່ໃຈບໍວ່າຈະລຶບ',
-  'Tem uma ideia para o Syden?': 'ມີແນວຄິດສຳລັບ Syden ບໍ?',
   'Tentar de novo': 'ລອງໃໝ່',
   'Termos de uso': 'ເງື່ອນໄຂການນຳໃຊ້',
   'Testando… os números aparecem em instantes.': 'ກຳລັງທົດສອບ… ຕົວເລກຈະສະແດງໃນອີກບໍ່ດົນ',
@@ -4916,4 +4910,7 @@ export default {
   "Avisos": "ປະກາດ",
   "O que as suas comunidades avisaram": "ສິ່ງທີ່ຊຸມຊົນຂອງເຈົ້າປະກາດ",
   "Nenhum aviso das suas comunidades por enquanto.": "ຍັງບໍ່ມີປະກາດຈາກຊຸມຊົນຂອງເຈົ້າເທື່ອ.",
+  "Sentiu falta de algo no Syden?": "ຮູ້ສຶກວ່າ Syden ຂາດຫຍັງບໍ?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "ບອກຢູ່ນີ້ ເພື່ອໃຫ້ {nome} ເຮັດມັນໄດ້ ຄຳຕອບຈະມາໃນການສົນທະນາສ່ວນຕົວ",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "ນີ້ແມ່ນສິ່ງທີ່ໝູ່ຂອງເຈົ້າເຫັນຢູ່ນີ້ ແນວຄິດຈະມາເປັນການສົນທະນາສ່ວນຕົວ ມີ 💡 ເມື່ອແນວຄິດໃດເຂົ້າໄປໃນແອັບ ໃຫ້ກົດ 👍 ໃສ່: ຄົນນັ້ນຈະໄດ້ຫຼຽນ",
 } satisfies Record<string, string>;

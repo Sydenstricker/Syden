@@ -33,7 +33,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = seël (o da comunidade), insígnia = kenteken (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', en die antwoord kom terug in dieselfde gesprek.',
   '{dias} dias para trazer de volta': '{dias} dae om terug te bring',
   '{email} — ainda não confirmado': '{email} — nog nie bevestig nie',
   '{email} — confirmado': '{email} — bevestig',
@@ -301,8 +300,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Dit is die eerste ding wat iemand sien wanneer hulle by die gemeenskap aansluit, net een keer. Daarsonder beland hulle direk in die kanaallys.',
   'É assim que os outros veem você na lista e nas conversas.': 'Só sien ander jou in die lys en in gesprekke.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Dit is wat jou vriende hier onder die kamer sien. Wat hulle skryf, kom by jou aan as ’n privaat gesprek met 💡 voor — en Syden antwoord dadelik met ’n dankie. Wanneer die idee in die toep kom, gee die boodskap ’n duim op: aan hulle kant val daar konfetti en die medalje verskyn op die profiel.',
   'é o que você está enviando': 'is wat jy stuur',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Dit is jou enigste manier om in te kom. Stel ’n wagwoord voor jy ontkoppel.',
   'E-mail': 'E-pos',
@@ -541,8 +538,6 @@ export default {
   'Escolher imagem': 'Kies prent',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Versteek omdat hulle nie al die letters van hierdie naam het nie: {n}',
   'Escreva': 'Tik',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Skryf hier wat jy graag sou wou hê — of wat in die pad staan. Dit kom aan as ’n privaat boodskap vir',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Skryf ’n geldige e-posadres: dis waarmee jy die rekening bevestig.',
   'Escreva um pouco mais sobre a sua ideia.': 'Skryf ’n bietjie meer oor jou idee.',
   'Esmeralda': 'Smarag',
@@ -998,7 +993,6 @@ export default {
   'Tela de boas-vindas': 'Welkomskerm',
   'Tem certeza que quer apagar esta mensagem de': 'Is jy seker jy wil hierdie boodskap skrap van',
   'Tem certeza que quer excluir': 'Is jy seker jy wil skrap:',
-  'Tem uma ideia para o Syden?': 'Het jy ’n idee vir Syden?',
   'Tentar de novo': 'Probeer weer',
   'Termos de uso': 'Gebruiksvoorwaardes',
   'Testando… os números aparecem em instantes.': 'Toets… die syfers verskyn binnekort.',
@@ -4909,4 +4903,7 @@ export default {
   "Avisos": "Aankondigings",
   "O que as suas comunidades avisaram": "Wat jou gemeenskappe aangekondig het",
   "Nenhum aviso das suas comunidades por enquanto.": "Nog geen aankondigings van jou gemeenskappe nie.",
+  "Sentiu falta de algo no Syden?": "Mis jy iets in Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Vertel ons hier sodat {nome} dit kan bou. Die antwoord kom in die privaat gesprek.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Dit is wat jou vriende hier sien. Idees kom as ’n privaat gesprek, met 💡. Wanneer een in die toep kom, gee dit ’n duim op: die persoon kry die medalje.",
 } satisfies Record<string, string>;

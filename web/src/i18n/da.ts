@@ -33,7 +33,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = segl (o da comunidade), insígnia = mærke (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', og svaret kommer tilbage i samme samtale.',
   '{dias} dias para trazer de volta': '{dias} dage tilbage til at gendanne',
   '{email} — ainda não confirmado': '{email} — ikke bekræftet endnu',
   '{email} — confirmado': '{email} — bekræftet',
@@ -301,8 +300,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Det er det første, man ser, når man kommer ind i fællesskabet, kun én gang. Uden det lander man direkte i kanallisten.',
   'É assim que os outros veem você na lista e nas conversas.': 'Sådan ser andre dig på listen og i samtalerne.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Det er det, dine venner ser her under værelset. Det, de skriver, kommer til dig som en privat samtale med 💡 foran — og Syden svarer straks med et tak. Når idéen kommer med i appen, så giv beskeden en tommelfinger op: hos dem regner det med konfetti, og medaljen dukker op på profilen.',
   'é o que você está enviando': 'er det, du sender',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Det er din eneste måde at logge ind på. Vælg en adgangskode, før du afbryder.',
   'E-mail': 'E-mail',
@@ -541,8 +538,6 @@ export default {
   'Escolher imagem': 'Vælg billede',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Skjult, fordi de ikke har alle bogstaverne i dette navn: {n}',
   'Escreva': 'Skriv',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Skriv her, hvad du gerne ville have fandtes — eller hvad der er i vejen. Det kommer frem som en privat besked til',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Skriv en gyldig e-mailadresse: det er med den, du bekræfter kontoen.',
   'Escreva um pouco mais sobre a sua ideia.': 'Skriv lidt mere om din idé.',
   'Esmeralda': 'Smaragd',
@@ -998,7 +993,6 @@ export default {
   'Tela de boas-vindas': 'Velkomstskærm',
   'Tem certeza que quer apagar esta mensagem de': 'Er du sikker på, at du vil slette denne besked fra',
   'Tem certeza que quer excluir': 'Er du sikker på, at du vil slette',
-  'Tem uma ideia para o Syden?': 'Har du en idé til Syden?',
   'Tentar de novo': 'Prøv igen',
   'Termos de uso': 'Brugsvilkår',
   'Testando… os números aparecem em instantes.': 'Tester… tallene dukker op om et øjeblik.',
@@ -4909,4 +4903,7 @@ export default {
   "Avisos": "Meddelelser",
   "O que as suas comunidades avisaram": "Hvad dine fællesskaber har meddelt",
   "Nenhum aviso das suas comunidades por enquanto.": "Ingen meddelelser fra dine fællesskaber endnu.",
+  "Sentiu falta de algo no Syden?": "Mangler du noget i Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Fortæl det her, så {nome} kan lave det. Svaret kommer i den private samtale.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Det er det, dine venner ser her. Idéer kommer som en privat samtale med 💡. Når en kommer med i appen, så giv den en tommelfinger op: personen får medaljen.",
 } satisfies Record<string, string>;

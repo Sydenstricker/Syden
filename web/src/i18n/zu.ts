@@ -40,7 +40,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = uphawu (o da comunidade), insígnia = ibheji (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', futhi impendulo ibuya kuyo leyo ngxoxo.',
   '{dias} dias para trazer de volta': 'Izinsuku ezingu-{dias} zokubuyisa',
   '{email} — ainda não confirmado': '{email} — akukaqinisekiswa',
   '{email} — confirmado': '{email} — kuqinisekisiwe',
@@ -308,8 +307,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Yinto yokuqala umuntu ayibonayo lapho engena emphakathini, kanye kuphela. Ngaphandle kwalokhu, ungena ngqo ohlwini leziteshi.',
   'É assim que os outros veem você na lista e nas conversas.': 'Yileyo ndlela abanye abakubona ngayo ohlwini nasezingxoxweni.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Yilokhu abangane bakho abakubona lapha ngaphansi kwegumbi. Abakubhalayo kufika kuwe njengengxoxo eyimfihlo, ne-💡 phambili — futhi i-Syden iphendula ibonga ngaso leso sikhathi. Uma umbono ungena kuhlelo, faka u-👍 emlayezweni: ngakubo kuwa ama-confetti futhi indondo ivela kuphrofayela.',
   'é o que você está enviando': 'yilokho okuthumelayo',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Yiyo kuphela indlela yakho yokungena. Setha iphasiwedi ngaphambi kokunqamula.',
   'E-mail': 'I-imeyili',
@@ -548,8 +545,6 @@ export default {
   'Escolher imagem': 'Khetha isithombe',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Ezifihliwe ngoba azinazo zonke izinhlamvu zaleli gama: {n}',
   'Escreva': 'Bhala',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Bhala lapha into ongathanda ukuthi ibe khona — noma lokho okuphazamisayo. Kufika njengomlayezo oyimfihlo ku-',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Bhala i-imeyili esebenzayo: yiyo oqinisekisa ngayo i-akhawunti.',
   'Escreva um pouco mais sobre a sua ideia.': 'Bhala okwengeziwe kancane ngombono wakho.',
   'Esmeralda': 'I-Emerald',
@@ -1005,7 +1000,6 @@ export default {
   'Tela de boas-vindas': 'Isikrini sokwamukela',
   'Tem certeza que quer apagar esta mensagem de': 'Uqinisekile ukuthi ufuna ukususa lo mlayezo ka-',
   'Tem certeza que quer excluir': 'Uqinisekile ukuthi ufuna ukususa',
-  'Tem uma ideia para o Syden?': 'Unombono we-Syden?',
   'Tentar de novo': 'Zama futhi',
   'Termos de uso': 'Imigomo yokusebenzisa',
   'Testando… os números aparecem em instantes.': 'Iyahlola… izinombolo zivela maduzane.',
@@ -4916,4 +4910,7 @@ export default {
   "Avisos": "Izaziso",
   "O que as suas comunidades avisaram": "Lokho imiphakathi yakho ekumemezele",
   "Nenhum aviso das suas comunidades por enquanto.": "Azikabi khona izaziso ezivela emiphakathini yakho.",
+  "Sentiu falta de algo no Syden?": "Kukhona okushodayo ku-Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kusho lapha, ukuze {nome} akwazi ukukwenza. Impendulo ifika engxoxweni eyimfihlo.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Yilokhu abangane bakho abakubona lapha. Imibono ifika njengengxoxo eyimfihlo, ne-💡. Uma omunye ungena kuhlelo, wufake u-👍: lowo muntu uthola indondo.",
 } satisfies Record<string, string>;

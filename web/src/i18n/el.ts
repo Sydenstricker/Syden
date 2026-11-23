@@ -57,7 +57,6 @@
 // selo = σήμα, vila = χωριό, guarda-roupa = ντουλάπα, soundboard = πίνακας ήχων.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', και η απάντηση έρχεται στην ίδια συνομιλία.',
   '{dias} dias para trazer de volta': '{dias} μέρες για επαναφορά',
   '{email} — ainda não confirmado': '{email} — δεν έχει επιβεβαιωθεί ακόμη',
   '{email} — confirmado': '{email} — επιβεβαιωμένο',
@@ -505,7 +504,6 @@ export default {
   'Escolher GIF': 'Επιλογή GIF',
   'Escolher imagem': 'Επιλογή εικόνας',
   'Escreva': 'Γράψε',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para': 'Γράψε εδώ τι θα ήθελες να υπάρχει — ή τι σε εμποδίζει. Φτάνει ως προσωπικό μήνυμα σε',
   'Esmeralda': 'Σμαράγδι',
   'Espaço desmontado.': 'Ο χώρος διαλύθηκε.',
   'Esperando você responder': 'Περιμένει την απάντησή σου',
@@ -845,7 +843,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'Δεν βρέθηκε ήχος σε αυτή τη σελίδα. Στο MyInstants, αντίγραψε τον σύνδεσμο από το κουμπί λήψης και επικόλλησέ τον εδώ.',
   'Esse endereço não é de um arquivo de áudio.': 'Αυτή η διεύθυνση δεν είναι αρχείο ήχου.',
   'Caixa de ideias (como os outros veem)': 'Κουτί ιδεών (όπως το βλέπουν οι άλλοι)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Αυτό βλέπουν οι φίλοι σου εδώ κάτω από το δωμάτιο. Ό,τι γράψουν σου έρχεται ως ιδιωτική συνομιλία, με 💡 μπροστά — και το Syden απαντά αμέσως με ένα ευχαριστώ. Όταν η ιδέα μπει στην εφαρμογή, βάλε έναν αντίχειρα στο μήνυμα: από τη δική τους πλευρά πέφτει κομφετί και το μετάλλιο εμφανίζεται στο προφίλ.',
   'Entre numa comunidade para ver as salas.': 'Μπες σε μια κοινότητα για να δεις τα δωμάτιά της.',
   'Escreva um pouco mais sobre a sua ideia.': 'Γράψε λίγα παραπάνω για την ιδέα σου.',
   'Esta comunidade ainda não tem sala de voz.': 'Αυτή η κοινότητα δεν έχει ακόμη δωμάτιο φωνής.',
@@ -890,7 +887,6 @@ export default {
   'Tela de boas-vindas': 'Οθόνη υποδοχής',
   'Tem certeza que quer apagar esta mensagem de': 'Σίγουρα θες να σβήσεις αυτό το μήνυμα από',
   'Tem certeza que quer excluir': 'Σίγουρα θες να διαγράψεις',
-  'Tem uma ideia para o Syden?': 'Έχεις μια ιδέα για το Syden;',
   'Tentar de novo': 'Δοκίμασε ξανά',
   'Termos de uso': 'Όροι χρήσης',
   'Testando… os números aparecem em instantes.': 'Δοκιμάζει… οι αριθμοί εμφανίζονται σε λίγο.',
@@ -4852,4 +4848,7 @@ export default {
   "Avisos": "Ανακοινώσεις",
   "O que as suas comunidades avisaram": "Τι ανακοίνωσαν οι κοινότητές σου",
   "Nenhum aviso das suas comunidades por enquanto.": "Καμία ανακοίνωση από τις κοινότητές σου ακόμα.",
+  "Sentiu falta de algo no Syden?": "Σου έλειψε κάτι στο Syden;",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Πες το εδώ, για να μπορεί {nome} να το υλοποιήσει. Η απάντηση έρχεται στην ιδιωτική συνομιλία.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Αυτό βλέπουν οι φίλοι σου εδώ. Οι ιδέες έρχονται ως ιδιωτική συνομιλία, με 💡. Όταν κάποια μπει στην εφαρμογή, βάλε της έναν αντίχειρα: το άτομο παίρνει το μετάλλιο.",
 } satisfies Record<string, string>;

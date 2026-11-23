@@ -32,7 +32,6 @@
 // Gerado por: node scripts/idiomas.mjs --novo ja
 
 export default {
-  ', e a resposta volta pela mesma conversa.': '、返信は同じ会話に戻ってきます。',
   '{dias} dias para trazer de volta': '復元できるのはあと{dias}日',
   '{email} — ainda não confirmado': '{email} — まだ確認されていません',
   '{email} — confirmado': '{email} — 確認済み',
@@ -477,7 +476,6 @@ export default {
   'Escolher GIF': 'GIFを選ぶ',
   'Escolher imagem': '画像を選ぶ',
   'Escreva': '書く',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para': 'あってほしいもの、または困っていることをここに書いてください。次の相手にダイレクトメッセージとして届きます：',
   'Esmeralda': 'エメラルド',
   'Espaço desmontado.': 'この画面をなくしました。',
   'Esperando você responder': 'あなたの返事を待っています',
@@ -814,7 +812,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'そのページの音声が見つかりませんでした。MyInstantsでダウンロードボタンのリンクをコピーして、ここに貼り付けてください。',
   'Esse endereço não é de um arquivo de áudio.': 'このアドレスは音声ファイルではありません。',
   'Caixa de ideias (como os outros veem)': 'アイデア箱（ほかの人からの見え方）',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'これは部屋の下で友達に見えている画面です。友達が書いたことは、先頭に💡が付いた個人チャットとして届き、Sydenがすぐにお礼の返事をします。アイデアがアプリに取り入れられたら、そのメッセージにいいねを付けてください。相手の画面に紙吹雪が舞い、プロフィールにメダルが表示されます。',
   'Entre numa comunidade para ver as salas.': 'チャンネルを見るには、コミュニティに参加してください。',
   'Escreva um pouco mais sobre a sua ideia.': 'アイデアについて、もう少し詳しく書いてください。',
   'Esta comunidade ainda não tem sala de voz.': 'このコミュニティにはまだボイスチャンネルがありません。',
@@ -859,7 +856,6 @@ export default {
   'Tela de boas-vindas': 'ようこそ画面',
   'Tem certeza que quer apagar esta mensagem de': 'このメッセージを削除しますか。送信者：',
   'Tem certeza que quer excluir': '本当に削除しますか：',
-  'Tem uma ideia para o Syden?': 'Sydenへのアイデアはありますか？',
   'Tentar de novo': 'もう一度試す',
   'Termos de uso': '利用規約',
   'Testando… os números aparecem em instantes.': 'テスト中… まもなく数字が出ます。',
@@ -4827,4 +4823,7 @@ export default {
   "Avisos": "お知らせ",
   "O que as suas comunidades avisaram": "参加しているコミュニティからのお知らせ",
   "Nenhum aviso das suas comunidades por enquanto.": "コミュニティからのお知らせはまだありません。",
+  "Sentiu falta de algo no Syden?": "Sydenに足りないものはありましたか？",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "ここで教えてください。{nome}に届いて、実装につながります。返事は個人チャットに届きます。",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "友達にはここがこう見えています。アイデアは💡付きの個人チャットとして届きます。アプリに取り入れたら、そのメッセージにいいねを付けてください。送った人にメダルが付きます。",
 } satisfies Record<string, string>;

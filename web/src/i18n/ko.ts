@@ -13,7 +13,6 @@
 // mensagem = 메시지, senha = 비밀번호, transmissão = 방송, lixeira = 휴지통, tópico = 스레드.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', 답장은 같은 대화로 돌아와요.',
   '{dias} dias para trazer de volta': '되살릴 수 있는 기간 {dias}일',
   '{n} mensagens': '메시지 {n}개',
   '{n} na chamada agora': '지금 통화 중 {n}명',
@@ -385,8 +384,6 @@ export default {
   'Escolher de novo, marcando o som': '소리를 체크하고 다시 고르기',
   'Escolher GIF': 'GIF 고르기',
   Escreva: '쓰기',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    '있었으면 하는 것 — 또는 불편한 것 — 을 여기에 적어 주세요. 개인 메시지로 이 사람에게 갑니다:',
   'Esmeralda': '에메랄드',
   'Espaço desmontado.': '화면을 없앴어요.',
   'Esperando você responder': '답장을 기다리고 있어요',
@@ -655,7 +652,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': '그 페이지에서 오디오를 찾지 못했어요. MyInstants에서 다운로드 버튼의 링크를 복사해 여기에 붙여넣어 주세요.',
   'Esse endereço não é de um arquivo de áudio.': '이 주소는 오디오 파일이 아니에요.',
   'Caixa de ideias (como os outros veem)': '아이디어 상자 (다른 사람에게 보이는 모습)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': '방 아래 이곳에서 친구들이 보는 화면이에요. 친구들이 쓴 내용은 앞에 💡가 붙은 개인 대화로 도착하고, Syden이 바로 감사 답장을 보내요. 아이디어가 앱에 들어가면 그 메시지에 좋아요를 눌러 주세요. 친구 쪽 화면에 색종이가 떨어지고 프로필에 메달이 나타나요.',
   'Entre numa comunidade para ver as salas.': '채널을 보려면 커뮤니티에 참여하세요.',
   'Escreva um pouco mais sobre a sua ideia.': '아이디어를 조금만 더 자세히 써 주세요.',
   'Esta comunidade ainda não tem sala de voz.': '이 커뮤니티에는 아직 음성 채널이 없어요.',
@@ -695,7 +691,6 @@ export default {
   'Tela de boas-vindas': '환영 화면',
   'Tem certeza que quer apagar esta mensagem de': '정말로 이 사람의 메시지를 지울까요:',
   'Tem certeza que quer excluir': '정말로 삭제할까요:',
-  'Tem uma ideia para o Syden?': 'Syden에 대한 아이디어가 있나요?',
   'Tentar de novo': '다시 해 보기',
   'Termos de uso': '이용약관',
   'Testando… os números aparecem em instantes.': '시험 중… 숫자가 곧 나와요.',
@@ -4834,4 +4829,7 @@ export default {
   "Avisos": "공지",
   "O que as suas comunidades avisaram": "내 커뮤니티의 공지",
   "Nenhum aviso das suas comunidades por enquanto.": "아직 내 커뮤니티의 공지가 없어요.",
+  "Sentiu falta de algo no Syden?": "Syden에 아쉬운 점이 있었나요?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "여기에 적어 주세요. {nome}에게 전달되어 앱에 반영될 수 있어요. 답장은 개인 대화로 와요.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "친구들에게는 여기가 이렇게 보여요. 아이디어는 💡가 붙은 개인 대화로 도착해요. 아이디어가 앱에 들어가면 좋아요를 눌러 주세요. 그 사람이 메달을 받아요.",
 } satisfies Record<string, string>;

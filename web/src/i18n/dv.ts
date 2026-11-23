@@ -45,7 +45,6 @@
 // boas-vindas = ނޯޓް. A VILA vira ރަށް — a ilha, que é a "vila" das Maldivas.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': '، އަދި ޖަވާބު އަންނާނީ އެ ޗެޓަށް.',
   '{dias} dias para trazer de volta': 'އަނބުރާ ގެނެވޭނީ {dias} ދުވަސް',
   '{email} — ainda não confirmado': '{email} — އަދި ކޮންފަރމް ކޮށްފައެއް ނުވޭ',
   '{email} — confirmado': '{email} — ކޮންފަރމް ކުރެވިއްޖެ',
@@ -317,8 +316,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'މިއީ ކޮމިއުނިޓީއަށް ވަންނައިރު ފުރަތަމަ ފެންނަ އެއްޗެވެ، އެއްފަހަރު އެކަނި. މިއެއް ނެތިއްޖެނަމަ، ސީދާ ދާނީ ޗެނަލް ލިސްޓަށް.',
   'É assim que os outros veem você na lista e nas conversas.': 'ލިސްޓާއި ޗެޓްތަކުގައި އެހެން މީހުންނަށް ތިބާ ފެންނަނީ މިގޮތަށް.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'ކޮޓަރީގެ ދަށުގައި ތިބާގެ ރަޙުމަތްތެރިންނަށް ފެންނަނީ މިއެވެ. އެމީހުން ލިޔާ އެއްޗެއް ތިބާއަށް ލިބޭނީ ޕްރައިވެޓް ޗެޓެއްގެ ގޮތުގައި، ކުރިމަތީގައި 💡 އާއެކު — އަދި Syden އެވަގުތު ޝުކުރުގެ ޖަވާބެއް ދޭނެ. އެ ޚިޔާލު އެޕަށް ވަދެއްޖެނަމަ، މެސެޖަށް 👍 ދީ: އެމީހުންގެ ފަރާތުން ކޮންފެޓީ ވެއްޓި، މެޑަލް ޕްރޮފައިލަށް އަރާނެ.',
   'é o que você está enviando': 'އަކީ ތިބާ ފޮނުވާ އެއްޗެވެ',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.':
     'މިއީ ތިބާ ވަނުމުގެ ހަމައެކަނި ގޮތް. ނިއްވުމުގެ ކުރިން ޕާސްވޯޑެއް ހަމަޖައްސާ.',
@@ -558,8 +555,6 @@ export default {
   'Escolher imagem': 'ފޮޓޯ ހޮވާ',
   'Escondidas por não terem todas as letras deste nome: {n}': 'މި ނަމުގެ ހުރިހާ އަކުރެއް ނެތުމުން ފޮރުވިފައި: {n}',
   'Escreva': 'ލިޔޭ',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'ހުރުން ބޭނުންވާ އެއްޗެއް — ނުވަތަ ހުރަސްއަޅާ އެއްޗެއް މިތާނގައި ލިޔޭ. ޕްރައިވެޓް މެސެޖެއްގެ ގޮތުގައި ދާނީ:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'ރަނގަޅު އީމެއިލެއް ލިޔޭ: އެކައުންޓް ކޮންފަރމްކުރަނީ އެއިން.',
   'Escreva um pouco mais sobre a sua ideia.': 'ތިބާގެ ޚިޔާލާ ބެހޭގޮތުން ކުޑަކޮށް އިތުރަށް ލިޔޭ.',
   'Esmeralda': 'ޒުމުރުދު',
@@ -1015,7 +1010,6 @@ export default {
   'Tela de boas-vindas': 'މަރުޙަބާ ސްކްރީން',
   'Tem certeza que quer apagar esta mensagem de': 'މި މެސެޖް ފޮހެލަންވީތަ؟ ލިޔުނީ:',
   'Tem certeza que quer excluir': 'ޔަޤީނުންވެސް ފޮހެލަންވީތަ؟',
-  'Tem uma ideia para o Syden?': 'Syden އަށް ޚިޔާލެއް އެބައޮތްތަ؟',
   'Tentar de novo': 'އަލުން މަސައްކަތްކުރޭ',
   'Termos de uso': 'ބޭނުންކުރުމުގެ ޝަރުތުތައް',
   'Testando… os números aparecem em instantes.': 'ޓެސްޓްކުރަނީ… އަދަދުތައް ފެންނާނީ ކުޑަ ވަގުތަކުން.',
@@ -4925,4 +4919,7 @@ export default {
   "Avisos": "އިޢުލާންތައް",
   "O que as suas comunidades avisaram": "ތިބާގެ ކޮމިއުނިޓީތަކުން އިޢުލާނުކުރި ކަންތައް",
   "Nenhum aviso das suas comunidades por enquanto.": "ތިބާގެ ކޮމިއުނިޓީތަކުން އަދި އެއްވެސް އިޢުލާނެއް ނެތް.",
+  "Sentiu falta de algo no Syden?": "Syden ގައި ކޮންމެވެސް އެއްޗެއް މަދުވޭތަ؟",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome} އަށް އެ ހެދޭނެ ގޮތަށް މިތާ ކިޔައިދީ. ޖަވާބު ލިބޭނީ ޕްރައިވެޓް ޗެޓުގައި.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "ތިބާގެ ރަޙުމަތްތެރިންނަށް މިތާ ފެންނަނީ މިއެވެ. ޚިޔާލުތައް 💡 އާއެކު ޕްރައިވެޓް ޗެޓެއްގެ ގޮތުގައި ލިބޭނެ. އެއް ޚިޔާލު އެޕަށް ވަދެއްޖެނަމަ، އެއަށް 👍 ދީ: އެމީހަކަށް މެޑަލް ލިބޭނެ.",
 } satisfies Record<string, string>;

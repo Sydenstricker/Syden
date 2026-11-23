@@ -33,7 +33,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = möhür (o da comunidade), insígnia = nişan (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', cavab da elə bu söhbətə gələcək.',
   '{dias} dias para trazer de volta': 'Geri qaytarmaq üçün {dias} gün',
   '{email} — ainda não confirmado': '{email} — hələ təsdiqlənməyib',
   '{email} — confirmado': '{email} — təsdiqlənib',
@@ -520,8 +519,6 @@ export default {
   'Escolher GIF': 'GIF seç',
   'Escolher imagem': 'Şəkil seç',
   'Escreva': 'Nəsə yaz',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Olmasını istədiyin şeyi — və ya mane olanı — burada yaz. Şəxsi mesaj kimi bu adama çatır:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Düzgün e-poçt yaz: hesabı onunla təsdiqləyirsən.',
   'Esmeralda': 'Zümrüd',
   'Espaço desmontado.': 'Ekran ləğv edildi.',
@@ -900,7 +897,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'O səhifədə səs tapılmadı. MyInstants-da yükləmə düyməsinin linkini kopyala və bura yapışdır.',
   'Esse endereço não é de um arquivo de áudio.': 'Bu ünvan səs faylı deyil.',
   'Caixa de ideias (como os outros veem)': 'İdeya qutusu (başqalarının gördüyü kimi)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Dostlarının otağın aşağısında gördüyü budur. Onların yazdıqları sənə şəxsi söhbət kimi gəlir, önündə 💡 ilə — və Syden dərhal təşəkkür edərək cavab verir. İdeya tətbiqə daxil olanda mesaja baş barmaq qoy: onların tərəfində konfeti yağır və medal profildə görünür.',
   'Entre numa comunidade para ver as salas.': 'Otaqlarını görmək üçün bir icmaya qoşul.',
   'Escreva um pouco mais sobre a sua ideia.': 'İdeyan haqqında bir az daha yaz.',
   'Esta comunidade ainda não tem sala de voz.': 'Bu icmanın hələ səs otağı yoxdur.',
@@ -955,7 +951,6 @@ export default {
   'Tela de boas-vindas': 'Xoş gəldin ekranı',
   'Tem certeza que quer apagar esta mensagem de': 'Bu mesaj həqiqətən silinsin? Müəllif:',
   'Tem certeza que quer excluir': 'Həqiqətən silinsin:',
-  'Tem uma ideia para o Syden?': 'Syden üçün ideyan var?',
   'Tentar de novo': 'Yenə yoxla',
   'Termos de uso': 'İstifadə şərtləri',
   'Testando… os números aparecem em instantes.': 'Yoxlanılır… rəqəmlər bir azdan görünəcək.',
@@ -4886,4 +4881,7 @@ export default {
   "Avisos": "Elanlar",
   "O que as suas comunidades avisaram": "İcmalarının elan etdikləri",
   "Nenhum aviso das suas comunidades por enquanto.": "İcmalarından hələ elan yoxdur.",
+  "Sentiu falta de algo no Syden?": "Syden-də nəyinsə çatışmadığını hiss etdin?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Burada yaz ki, {nome} bunu həyata keçirə bilsin. Cavab şəxsi söhbətə gələcək.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Dostlarının burada gördüyü budur. İdeyalar şəxsi söhbət kimi, 💡 ilə gəlir. Biri tətbiqə daxil olanda ona baş barmaq qoy: həmin adam medal qazanır.",
 } satisfies Record<string, string>;

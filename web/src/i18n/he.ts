@@ -47,7 +47,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = חותם (o da comunidade), insígnia = תג (o da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', והתשובה תחזור באותה שיחה.',
   '{dias} dias para trazer de volta': 'ימים לשחזור: {dias}',
   '{email} — ainda não confirmado': '{email} — עדיין לא אומת',
   '{email} — confirmado': '{email} — אומת',
@@ -538,8 +537,6 @@ export default {
   'Escolher GIF': 'לבחור GIF',
   'Escolher imagem': 'לבחור תמונה',
   'Escreva': 'לכתוב משהו',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'כאן כותבים מה חסר — או מה מפריע. זה מגיע כהודעה פרטית אל',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'צריך כתובת מייל תקינה: דרכה מאמתים את החשבון.',
   'Esmeralda': 'אזמרגד',
   'Espaço desmontado.': 'המסך בוטל.',
@@ -918,7 +915,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'לא נמצא שמע בעמוד הזה. ב-MyInstants אפשר להעתיק את הקישור של כפתור ההורדה ולהדביק אותו כאן.',
   'Esse endereço não é de um arquivo de áudio.': 'הכתובת הזו אינה קובץ שמע.',
   'Caixa de ideias (como os outros veem)': 'תיבת רעיונות (כפי שאחרים רואים אותה)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'זה מה שהחברים שלך רואים כאן מתחת לחדר. מה שהם כותבים מגיע כשיחה פרטית, עם 💡 בהתחלה — ו-Syden עונה מיד בתודה. כשהרעיון נכנס לאפליקציה, אפשר לסמן אגודל למעלה על ההודעה: אצלם נופלים קונפטי והמדליה מופיעה בפרופיל.',
   'Entre numa comunidade para ver as salas.': 'כדי לראות את החדרים צריך להצטרף לקהילה.',
   'Escreva um pouco mais sobre a sua ideia.': 'כדאי לכתוב עוד קצת על הרעיון.',
   'Esta comunidade ainda não tem sala de voz.': 'לקהילה הזו עדיין אין חדר קולי.',
@@ -973,7 +969,6 @@ export default {
   'Tela de boas-vindas': 'מסך הפתיחה',
   'Tem certeza que quer apagar esta mensagem de': 'באמת למחוק את ההודעה הזו של',
   'Tem certeza que quer excluir': 'באמת למחוק את',
-  'Tem uma ideia para o Syden?': 'יש רעיון ל-Syden?',
   'Tentar de novo': 'לנסות שוב',
   'Termos de uso': 'תנאי שימוש',
   'Testando… os números aparecem em instantes.': 'בודק… המספרים יופיעו עוד רגע.',
@@ -4899,4 +4894,7 @@ export default {
   "Avisos": "הכרזות",
   "O que as suas comunidades avisaram": "מה הכריזו הקהילות",
   "Nenhum aviso das suas comunidades por enquanto.": "אין עדיין הכרזות מהקהילות.",
+  "Sentiu falta de algo no Syden?": "חסר משהו ב-Syden?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "אפשר לספר כאן, וזה יגיע אל {nome} כדי שייכנס לאפליקציה. התשובה מגיעה בשיחה הפרטית.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "זה מה שהחברים שלך רואים כאן. רעיונות מגיעים כשיחה פרטית, עם 💡. כשאחד מהם נכנס לאפליקציה, אפשר לסמן עליו אגודל למעלה: מי שכתב אותו מקבל את המדליה.",
 } satisfies Record<string, string>;

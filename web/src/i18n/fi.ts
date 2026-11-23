@@ -39,7 +39,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = sinetti (o da comunidade), insígnia = merkki (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', ja vastaus tulee takaisin samaan keskusteluun.',
   '{dias} dias para trazer de volta': '{dias} päivää aikaa palauttaa',
   '{email} — ainda não confirmado': '{email} — ei vielä vahvistettu',
   '{email} — confirmado': '{email} — vahvistettu',
@@ -307,8 +306,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Se on ensimmäinen asia, jonka uusi tulija näkee yhteisöön liittyessään, vain kerran. Ilman sitä hän päätyy suoraan kanavaluetteloon.',
   'É assim que os outros veem você na lista e nas conversas.': 'Näin muut näkevät sinut luettelossa ja keskusteluissa.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Tämän kaverisi näkevät täällä huoneen alapuolella. Mitä he kirjoittavat, tulee sinulle yksityisenä keskusteluna, 💡 edessä — ja Syden vastaa heti kiittäen. Kun idea päätyy sovellukseen, anna viestille peukku: heidän puolellaan sataa konfetteja ja mitali ilmestyy profiiliin.',
   'é o que você está enviando': 'on se, mitä lähetät',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Se on ainoa tapasi kirjautua. Aseta salasana ennen kuin katkaiset yhteyden.',
   'E-mail': 'Sähköposti',
@@ -547,8 +544,6 @@ export default {
   'Escolher imagem': 'Valitse kuva',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Piilotettu, koska niistä puuttuu tämän nimen kirjaimia: {n}',
   'Escreva': 'Kirjoita',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Kirjoita tähän, mitä toivoisit olevan olemassa — tai mikä on tiellä. Se menee yksityisviestinä vastaanottajalle',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Kirjoita kelvollinen sähköpostiosoite: sen kautta vahvistat tilin.',
   'Escreva um pouco mais sobre a sua ideia.': 'Kirjoita ideastasi vähän enemmän.',
   'Esmeralda': 'Smaragdi',
@@ -1004,7 +999,6 @@ export default {
   'Tela de boas-vindas': 'Tervetulonäkymä',
   'Tem certeza que quer apagar esta mensagem de': 'Poistetaanko varmasti tämä viesti? Lähettäjä:',
   'Tem certeza que quer excluir': 'Poistetaanko varmasti:',
-  'Tem uma ideia para o Syden?': 'Onko sinulla idea Sydeniin?',
   'Tentar de novo': 'Yritä uudelleen',
   'Termos de uso': 'Käyttöehdot',
   'Testando… os números aparecem em instantes.': 'Testataan… luvut tulevat näkyviin hetken päästä.',
@@ -4915,4 +4909,7 @@ export default {
   "Avisos": "Tiedotteet",
   "O que as suas comunidades avisaram": "Mitä yhteisösi ovat tiedottaneet",
   "Nenhum aviso das suas comunidades por enquanto.": "Yhteisöistäsi ei ole vielä tiedotteita.",
+  "Sentiu falta de algo no Syden?": "Jäikö Sydenistä jotain puuttumaan?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kerro tässä, niin {nome} voi toteuttaa sen. Vastaus tulee yksityiseen keskusteluun.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Tämän kaverisi näkevät täällä. Ideat tulevat yksityisenä keskusteluna, 💡 edessä. Kun jokin päätyy sovellukseen, anna sille peukku: ehdottaja saa mitalin.",
 } satisfies Record<string, string>;

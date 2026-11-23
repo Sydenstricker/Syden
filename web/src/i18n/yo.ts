@@ -66,7 +66,6 @@
 // painel de botões que o nome em inglês descreve.
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', ìdáhùn yóò sì padà wá nípasẹ̀ ìbánisọ̀rọ̀ kan náà.',
   '{dias} dias para trazer de volta': 'Ọjọ́ {dias} láti mú un padà',
   '{email} — ainda não confirmado': '{email} — a kò tíì fìdí rẹ̀ múlẹ̀',
   '{email} — confirmado': '{email} — a ti fìdí rẹ̀ múlẹ̀',
@@ -514,7 +513,6 @@ export default {
   'Escolher GIF': 'Yan GIF',
   'Escolher imagem': 'Yan àwòrán',
   'Escreva': 'Ẹ kọ',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para': 'Ẹ kọ ohun tí ẹ fẹ́ kó wà níbí — tàbí ohun tó ń dà yín láàmú. Ó ń dé bí ìfiránṣẹ́ aládàáni sí ',
   'Esmeralda': 'Èsìmáráàdì',
   'Espaço desmontado.': 'A ti tú ààyè náà ká.',
   'Esperando você responder': 'À ń dúró de ìdáhùn yín',
@@ -854,7 +852,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'A kò rí ìró ojú-ewé yẹn. Lórí MyInstants, ẹ ṣe ẹ̀dà ìjápọ̀ bọ́tìnnì ìgbàsílẹ̀ kí ẹ sì lẹ̀ ẹ́ síbí.',
   'Esse endereço não é de um arquivo de áudio.': 'Àdírẹ́sì yìí kì í ṣe fáìlì ohùn.',
   'Caixa de ideias (como os outros veem)': 'Àpótí èrò (bí àwọn míì ṣe ń rí i)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Èyí ni ohun tí àwọn ọ̀rẹ́ yín ń rí níbí ní ìsàlẹ̀ yàrá. Ohun tí wọ́n bá kọ yóò dé ọ̀dọ̀ yín bí ìjíròrò aládàáni, pẹ̀lú 💡 níwájú — Syden sì máa ń dáhùn pẹ̀lú ọpẹ́ lẹ́sẹ̀kẹsẹ̀. Nígbà tí èrò náà bá wọ inú áàpù, ẹ fi àtàǹpàkò sókè sí ìfiránṣẹ́ náà: ní ẹ̀gbẹ́ tiwọn, kọ́nfẹ́tì á rọ̀, mẹ́dàlì á sì hàn lórí profaili.',
   'Entre numa comunidade para ver as salas.': 'Ẹ darapọ̀ mọ́ àwùjọ kan láti rí àwọn yàrá rẹ̀.',
   'Escreva um pouco mais sobre a sua ideia.': 'Ẹ kọ díẹ̀ sí i nípa èrò yín.',
   'Esta comunidade ainda não tem sala de voz.': 'Àwùjọ yìí kò tíì ní yàrá ohùn.',
@@ -899,7 +896,6 @@ export default {
   'Tela de boas-vindas': 'Ojú ìwé ìkíni',
   'Tem certeza que quer apagar esta mensagem de': 'Ṣé ó dájú pé ẹ fẹ́ pa ìfiránṣẹ́ yìí rẹ́ láti ọwọ́ ',
   'Tem certeza que quer excluir': 'Ṣé ó dájú pé ẹ fẹ́ parẹ́ ',
-  'Tem uma ideia para o Syden?': 'Ṣé ẹ ní èrò kan fún Syden?',
   'Tentar de novo': 'Tún gbìyànjú',
   'Termos de uso': 'Àwọn òfin ìlò',
   'Testando… os números aparecem em instantes.': 'Ó ń dán wò… àwọn nọ́ńbà yóò farahàn láìpẹ́.',
@@ -4861,4 +4857,7 @@ export default {
   "Avisos": "Àwọn ìkéde",
   "O que as suas comunidades avisaram": "Ohun tí àwọn àwùjọ rẹ kéde",
   "Nenhum aviso das suas comunidades por enquanto.": "Kò sí ìkéde láti ọ̀dọ̀ àwọn àwùjọ rẹ síbẹ̀.",
+  "Sentiu falta de algo no Syden?": "Ṣé ohun kan kù sí Syden fún yín?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Ẹ sọ ọ́ níbí, kí {nome} lè ṣe é. Èsì máa dé nínú ìjíròrò aládàáni.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Èyí ni ohun tí àwọn ọ̀rẹ́ yín ń rí níbí. Àwọn èrò máa ń dé bí ìjíròrò aládàáni, pẹ̀lú 💡. Nígbà tí ọ̀kan bá wọ inú áàpù, ẹ fi àtàǹpàkò sókè sí i: ẹni náà á gba mẹ́dàlì.",
 } satisfies Record<string, string>;

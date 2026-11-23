@@ -21,7 +21,6 @@
 // Gerado por: node scripts/idiomas.mjs --novo vi
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', và câu trả lời sẽ về lại cùng cuộc trò chuyện này.',
   '{dias} dias para trazer de volta': 'còn {dias} ngày để khôi phục',
   '{email} — ainda não confirmado': '{email} — chưa xác nhận',
   '{email} — confirmado': '{email} — đã xác nhận',
@@ -466,7 +465,6 @@ export default {
   'Escolher GIF': 'Chọn GIF',
   'Escolher imagem': 'Chọn ảnh',
   'Escreva': 'Viết',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para': 'Viết vào đây điều bạn muốn có — hoặc điều đang gây khó. Nó đến như tin nhắn riêng cho',
   'Esmeralda': 'Lục bảo',
   'Espaço desmontado.': 'Đã dỡ màn hình này.',
   'Esperando você responder': 'Đang chờ bạn trả lời',
@@ -803,7 +801,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'Không tìm thấy âm thanh ở trang đó. Trên MyInstants, hãy sao chép liên kết của nút tải xuống rồi dán vào đây.',
   'Esse endereço não é de um arquivo de áudio.': 'Địa chỉ này không phải tệp âm thanh.',
   'Caixa de ideias (como os outros veem)': 'Hộp ý tưởng (như người khác nhìn thấy)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Đây là thứ bạn bè của bạn thấy ở đây, bên dưới căn phòng. Những gì họ viết sẽ đến với bạn dưới dạng cuộc trò chuyện riêng, có 💡 ở đầu — và Syden trả lời cảm ơn ngay lập tức. Khi ý tưởng được đưa vào ứng dụng, hãy thả like vào tin nhắn: bên phía họ sẽ có pháo giấy rơi và huy chương hiện trên hồ sơ.',
   'Entre numa comunidade para ver as salas.': 'Tham gia một cộng đồng để xem các kênh của nó.',
   'Escreva um pouco mais sobre a sua ideia.': 'Viết thêm một chút về ý tưởng của bạn.',
   'Esta comunidade ainda não tem sala de voz.': 'Cộng đồng này chưa có kênh thoại nào.',
@@ -848,7 +845,6 @@ export default {
   'Tela de boas-vindas': 'Màn hình chào mừng',
   'Tem certeza que quer apagar esta mensagem de': 'Bạn chắc muốn xoá tin nhắn này của',
   'Tem certeza que quer excluir': 'Bạn chắc muốn xoá',
-  'Tem uma ideia para o Syden?': 'Có ý tưởng nào cho Syden?',
   'Tentar de novo': 'Thử lại',
   'Termos de uso': 'Điều khoản sử dụng',
   'Testando… os números aparecem em instantes.': 'Đang thử… các con số sẽ hiện trong giây lát.',
@@ -4816,4 +4812,7 @@ export default {
   "Avisos": "Thông báo",
   "O que as suas comunidades avisaram": "Những gì cộng đồng của bạn đã thông báo",
   "Nenhum aviso das suas comunidades por enquanto.": "Chưa có thông báo nào từ cộng đồng của bạn.",
+  "Sentiu falta de algo no Syden?": "Bạn thấy Syden còn thiếu gì không?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kể ở đây để {nome} có thể làm. Câu trả lời sẽ đến trong cuộc trò chuyện riêng.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "Đây là thứ bạn bè của bạn thấy ở đây. Ý tưởng đến dưới dạng cuộc trò chuyện riêng, có 💡. Khi một ý tưởng được đưa vào ứng dụng, hãy thả like vào đó: người ấy sẽ nhận huy chương.",
 } satisfies Record<string, string>;

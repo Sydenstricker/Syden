@@ -41,7 +41,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = pečat (o da comunidade), insígnia = značka (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', odgovor pa pride nazaj v isti pogovor.',
   '{dias} dias para trazer de volta': 'Dni do izbrisa: {dias}',
   '{email} — ainda não confirmado': '{email} — še ni potrjeno',
   '{email} — confirmado': '{email} — potrjeno',
@@ -309,8 +308,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'To je prvo, kar človek vidi ob vstopu v skupnost, samo enkrat. Brez tega pristane naravnost na seznamu kanalov.',
   'É assim que os outros veem você na lista e nas conversas.': 'Tako te drugi vidijo na seznamu in v pogovorih.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'To vidijo tvoji prijatelji tukaj pod sobo. Kar napišejo, ti pride kot zasebni pogovor z 💡 na začetku — in Syden takoj odgovori z zahvalo. Ko ideja pride v aplikacijo, daj sporočilu 👍: pri njih začnejo padati konfeti in na profilu se pojavi medalja.',
   'é o que você está enviando': 'je tisto, kar pošiljaš',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'To je tvoj edini način prijave. Preden prekineš povezavo, nastavi geslo.',
   'E-mail': 'E-pošta',
@@ -549,8 +546,6 @@ export default {
   'Escolher imagem': 'Izberi sliko',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Skrite, ker nimajo vseh črk tega imena: {n}',
   'Escreva': 'Napiši',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'Napiši sem, kaj bi moralo obstajati — ali kaj te moti. Pride kot zasebno sporočilo za:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'Napiši veljaven e-naslov: z njim se potrdi račun.',
   'Escreva um pouco mais sobre a sua ideia.': 'Napiši malo več o svoji ideji.',
   'Esmeralda': 'Smaragd',
@@ -1006,7 +1001,6 @@ export default {
   'Tela de boas-vindas': 'Pozdravni zaslon',
   'Tem certeza que quer apagar esta mensagem de': 'Res izbrisati to sporočilo? Avtor:',
   'Tem certeza que quer excluir': 'Res izbrisati:',
-  'Tem uma ideia para o Syden?': 'Imaš idejo za Syden?',
   'Tentar de novo': 'Poskusi znova',
   'Termos de uso': 'Pogoji uporabe',
   'Testando… os números aparecem em instantes.': 'Preizkušanje… številke se pokažejo v trenutku.',
@@ -4916,4 +4910,7 @@ export default {
   "Avisos": "Obvestila",
   "O que as suas comunidades avisaram": "Kaj so objavile tvoje skupnosti",
   "Nenhum aviso das suas comunidades por enquanto.": "Iz tvojih skupnosti še ni obvestil.",
+  "Sentiu falta de algo no Syden?": "Ti v Sydenu kaj manjka?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Povej tukaj, da {nome} to lahko naredi. Odgovor pride v zasebni pogovor.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "To vidijo tvoji prijatelji tukaj. Ideje pridejo kot zasebni pogovor, z 💡. Ko katera pride v aplikacijo, ji daj 👍: ta oseba dobi medaljo.",
 } satisfies Record<string, string>;

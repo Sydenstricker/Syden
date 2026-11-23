@@ -38,7 +38,6 @@
 // Gerado por: node scripts/idiomas.mjs --novo ur
 
 export default {
-  ', e a resposta volta pela mesma conversa.': '، اور جواب اسی گفتگو میں واپس آئے گا۔',
   '{dias} dias para trazer de volta': 'واپس لانے کے لیے {dias} دن باقی',
   '{email} — ainda não confirmado': '{email} — ابھی تصدیق نہیں ہوئی',
   '{email} — confirmado': '{email} — تصدیق ہو گئی',
@@ -483,7 +482,6 @@ export default {
   'Escolher GIF': 'GIF چنیں',
   'Escolher imagem': 'تصویر چنیں',
   'Escreva': 'لکھیں',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para': 'یہاں لکھیں کہ آپ کیا چاہتے ہیں کہ موجود ہو — یا کیا چیز رکاوٹ بن رہی ہے۔ یہ نجی پیغام بن کر پہنچتا ہے',
   'Esmeralda': 'زمرد',
   'Espaço desmontado.': 'یہ صفحہ ہٹا دیا گیا۔',
   'Esperando você responder': 'آپ کے جواب کا انتظار ہے',
@@ -820,7 +818,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'اس صفحے پر آواز نہیں ملی۔ MyInstants پر ڈاؤن لوڈ بٹن کا لنک کاپی کر کے یہاں چسپاں کریں۔',
   'Esse endereço não é de um arquivo de áudio.': 'یہ پتہ آڈیو فائل کا نہیں ہے۔',
   'Caixa de ideias (como os outros veem)': 'آئیڈیاز باکس (جیسے دوسرے دیکھتے ہیں)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'یہ وہ ہے جو آپ کے دوست یہاں کمرے کے نیچے دیکھتے ہیں۔ وہ جو لکھیں گے، آپ کو نجی گفتگو کی صورت میں ملے گا، آگے 💡 کے ساتھ — اور Syden فوراً شکریے کے ساتھ جواب دیتا ہے۔ جب خیال ایپ میں شامل ہو جائے تو پیغام پر انگوٹھا لگائیں: ان کی طرف کنفیٹی گرتی ہے اور تمغہ پروفائل پر نظر آتا ہے۔',
   'Entre numa comunidade para ver as salas.': 'چینل دیکھنے کے لیے کسی کمیونٹی میں شامل ہوں۔',
   'Escreva um pouco mais sobre a sua ideia.': 'اپنے خیال کے بارے میں تھوڑا اور لکھیں۔',
   'Esta comunidade ainda não tem sala de voz.': 'اس کمیونٹی میں ابھی کوئی وائس چینل نہیں ہے۔',
@@ -865,7 +862,6 @@ export default {
   'Tela de boas-vindas': 'خوش آمدید کا صفحہ',
   'Tem certeza que quer apagar esta mensagem de': 'کیا آپ واقعی یہ پیغام حذف کرنا چاہتے ہیں، از',
   'Tem certeza que quer excluir': 'کیا آپ واقعی حذف کرنا چاہتے ہیں',
-  'Tem uma ideia para o Syden?': 'Syden کے لیے کوئی خیال ہے؟',
   'Tentar de novo': 'دوبارہ کوشش کریں',
   'Termos de uso': 'استعمال کی شرائط',
   'Testando… os números aparecem em instantes.': 'جانچ جاری ہے… اعداد ابھی آ جائیں گے۔',
@@ -4838,4 +4834,7 @@ export default {
   "Avisos": "اعلانات",
   "O que as suas comunidades avisaram": "آپ کی کمیونٹیز نے کیا اعلان کیا",
   "Nenhum aviso das suas comunidades por enquanto.": "ابھی تک آپ کی کمیونٹیز کی طرف سے کوئی اعلان نہیں۔",
+  "Sentiu falta de algo no Syden?": "Syden میں کسی چیز کی کمی محسوس ہوئی؟",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "یہاں بتائیں، تاکہ {nome} اسے بنا سکے۔ جواب نجی گفتگو میں آئے گا۔",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "یہ وہ ہے جو آپ کے دوست یہاں دیکھتے ہیں۔ خیالات 💡 کے ساتھ نجی گفتگو کی صورت میں آتے ہیں۔ جب کوئی ایپ میں شامل ہو جائے تو اس پر انگوٹھا لگائیں: اس شخص کو تمغہ ملتا ہے۔",
 } satisfies Record<string, string>;

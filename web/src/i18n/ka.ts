@@ -53,7 +53,6 @@
 // = პარამეტრები (o nome no Windows e no Android em georgiano).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', და პასუხი იმავე საუბარში ბრუნდება.',
   '{dias} dias para trazer de volta': 'აღსადგენად დარჩა {dias} დღე',
   '{email} — ainda não confirmado': '{email} — ჯერ არ არის დადასტურებული',
   '{email} — confirmado': '{email} — დადასტურებულია',
@@ -325,8 +324,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'ეს პირველია, რასაც ადამიანი საზოგადოებაში შესვლისას ხედავს, მხოლოდ ერთხელ. მის გარეშე პირდაპირ არხების სიაში ხვდება.',
   'É assim que os outros veem você na lista e nas conversas.': 'ასე გხედავენ სხვები სიაში და საუბრებში.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'ამას ხედავენ შენი მეგობრები აქ, ოთახის ქვემოთ. რასაც დაწერენ, პირად საუბრად მოგივა, თავში 💡-ით — და Syden მაშინვე მადლობით უპასუხებს. როცა იდეა აპში მოხვდება, მესიჯს 👍 დაუსვი: მათ მხარეს კონფეტი ჩამოცვივა და მედალი პროფილში გამოჩნდება.',
   'é o que você está enviando': 'არის ის, რასაც აგზავნი',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.':
     'ეს შესვლის ერთადერთი გზაა. გამორთვამდე პაროლი დააყენე.',
@@ -566,8 +563,6 @@ export default {
   'Escolher imagem': 'სურათის არჩევა',
   'Escondidas por não terem todas as letras deste nome: {n}': 'დამალულია, რადგან ამ სახელის ყველა ასო არ აქვთ: {n}',
   'Escreva': 'დაწერე',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'დაწერე აქ, რა გინდა, რომ არსებობდეს — ან რა გიშლის ხელს. პირად მესიჯად მიდის ადრესატთან:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'დაწერე სწორი ელფოსტა: მისით ადასტურებ ანგარიშს.',
   'Escreva um pouco mais sobre a sua ideia.': 'ცოტა მეტი დაწერე შენს იდეაზე.',
   'Esmeralda': 'ზურმუხტი',
@@ -1023,7 +1018,6 @@ export default {
   'Tela de boas-vindas': 'მისალმების ეკრანი',
   'Tem certeza que quer apagar esta mensagem de': 'წაიშალოს ეს მესიჯი? ავტორი:',
   'Tem certeza que quer excluir': 'ნამდვილად წაიშალოს:',
-  'Tem uma ideia para o Syden?': 'Syden-ისთვის იდეა გაქვს?',
   'Tentar de novo': 'ხელახლა ცდა',
   'Termos de uso': 'გამოყენების პირობები',
   'Testando… os números aparecem em instantes.': 'მოწმდება… რიცხვები წამებში გამოჩნდება.',
@@ -4933,4 +4927,7 @@ export default {
   "Avisos": "განცხადებები",
   "O que as suas comunidades avisaram": "რა გამოაცხადეს შენმა თემებმა",
   "Nenhum aviso das suas comunidades por enquanto.": "შენი თემებიდან ჯერ განცხადებები არ არის.",
+  "Sentiu falta de algo no Syden?": "Syden-ში რამე გაკლია?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "აქ მოგვიყევი, რომ {nome} შეძლოს მისი გაკეთება. პასუხი პირად საუბარში მოვა.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "ამას ხედავენ შენი მეგობრები აქ. იდეები პირად საუბრად მოდის, 💡-ით. როცა რომელიმე აპში მოხვდება, დაუსვი 👍: ის ადამიანი მედალს მიიღებს.",
 } satisfies Record<string, string>;

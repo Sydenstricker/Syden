@@ -15,7 +15,6 @@
 // A ESCRITA TEM FONTE PRÓPRIA: 'bengali' → Noto Sans Bengali (ver FONTE_DA_ESCRITA em idiomas.ts).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', আর উত্তর সেই একই কথোপকথনে ফিরে আসে।',
   '{dias} dias para trazer de volta': 'ফিরিয়ে আনতে আর {dias} দিন',
   '{n} mensagens': '{n}টি বার্তা',
   '{n} na chamada agora': 'এখন কলে {n} জন',
@@ -389,8 +388,6 @@ export default {
   'Escolher de novo, marcando o som': 'আবার বেছে নাও, শব্দে টিক দিয়ে',
   'Escolher GIF': 'GIF বেছে নাও',
   Escreva: 'লেখো',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'এখানে লেখো কী থাকলে ভালো হতো — বা কী আটকাচ্ছে। এটা ব্যক্তিগত বার্তা হয়ে পৌঁছায়:',
   'Esmeralda': 'এমারেল্ড',
   'Espaço desmontado.': 'পর্দাটা সরিয়ে দেওয়া হলো।',
   'Esperando você responder': 'তোমার উত্তরের অপেক্ষায়',
@@ -663,7 +660,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'ওই পাতায় শব্দ পাওয়া যায়নি। MyInstants-এ ডাউনলোড বোতামের লিংক কপি করে এখানে পেস্ট করো।',
   'Esse endereço não é de um arquivo de áudio.': 'এই ঠিকানাটা কোনো অডিও ফাইলের নয়।',
   'Caixa de ideias (como os outros veem)': 'ভাবনার বাক্স (অন্যরা যেভাবে দেখে)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'এটাই তোমার বন্ধুরা এখানে ঘরের নিচে দেখে। ওরা যা লিখবে, তা তোমার কাছে ব্যক্তিগত কথোপকথন হিসেবে আসবে, সামনে 💡 নিয়ে — আর Syden সঙ্গে সঙ্গে ধন্যবাদ জানিয়ে উত্তর দেয়। ভাবনাটা অ্যাপে ঢুকলে বার্তায় থাম্বস-আপ দাও: ওদের দিকে কনফেটি পড়ে আর প্রোফাইলে পদক দেখা যায়।',
   'Entre numa comunidade para ver as salas.': 'রুমগুলো দেখতে কোনো কমিউনিটিতে যোগ দাও।',
   'Escreva um pouco mais sobre a sua ideia.': 'তোমার ভাবনা নিয়ে আরেকটু লেখো।',
   'Esta comunidade ainda não tem sala de voz.': 'এই কমিউনিটিতে এখনো কোনো ভয়েস রুম নেই।',
@@ -703,7 +699,6 @@ export default {
   'Tela de boas-vindas': 'স্বাগত পর্দা',
   'Tem certeza que quer apagar esta mensagem de': 'তুমি কি সত্যিই এর এই বার্তাটা মুছতে চাও:',
   'Tem certeza que quer excluir': 'তুমি কি সত্যিই মুছতে চাও:',
-  'Tem uma ideia para o Syden?': 'Syden-এর জন্য কোনো ভাবনা আছে?',
   'Tentar de novo': 'আবার চেষ্টা করো',
   'Termos de uso': 'ব্যবহারের শর্ত',
   'Testando… os números aparecem em instantes.': 'পরীক্ষা চলছে… সংখ্যাগুলো এখনই আসবে।',
@@ -4843,4 +4838,7 @@ export default {
   "Avisos": "ঘোষণা",
   "O que as suas comunidades avisaram": "তোমার কমিউনিটিগুলো যা ঘোষণা করেছে",
   "Nenhum aviso das suas comunidades por enquanto.": "এখনো তোমার কমিউনিটিগুলো থেকে কোনো ঘোষণা নেই।",
+  "Sentiu falta de algo no Syden?": "Syden-এ কিছুর অভাব বোধ করলে?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "এখানে বলো, যাতে {nome} সেটা বানাতে পারে। উত্তর আসবে ব্যক্তিগত কথোপকথনে।",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "এটাই তোমার বন্ধুরা এখানে দেখে। ভাবনাগুলো 💡 নিয়ে ব্যক্তিগত কথোপকথন হিসেবে আসে। কোনোটা অ্যাপে ঢুকলে তাতে থাম্বস-আপ দাও: সেই মানুষটা পদক পায়।",
 } satisfies Record<string, string>;

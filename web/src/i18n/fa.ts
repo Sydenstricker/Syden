@@ -39,7 +39,6 @@
 // Gerado por: node scripts/idiomas.mjs --novo fa
 
 export default {
-  ', e a resposta volta pela mesma conversa.': '، و پاسخ در همین گفتگو برمی‌گردد.',
   '{dias} dias para trazer de volta': '{dias} روز برای بازگرداندن',
   '{email} — ainda não confirmado': '{email} — هنوز تأیید نشده',
   '{email} — confirmado': '{email} — تأیید شد',
@@ -484,7 +483,6 @@ export default {
   'Escolher GIF': 'انتخاب GIF',
   'Escolher imagem': 'انتخاب تصویر',
   'Escreva': 'بنویسید',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para': 'اینجا بنویسید چه چیزی دوست دارید باشد — یا چه چیزی مزاحم است. به‌صورت پیام خصوصی می‌رسد به',
   'Esmeralda': 'زمرد',
   'Espaço desmontado.': 'این صفحه برداشته شد.',
   'Esperando você responder': 'منتظر پاسخ شماست',
@@ -821,7 +819,6 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'صدای آن صفحه پیدا نشد. در MyInstants پیوند دکمهٔ دانلود را کپی کنید و اینجا بچسبانید.',
   'Esse endereço não é de um arquivo de áudio.': 'این نشانی یک فایل صوتی نیست.',
   'Caixa de ideias (como os outros veem)': 'صندوق ایده‌ها (آن‌طور که دیگران می‌بینند)',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'این چیزی است که دوستانتان اینجا پایین اتاق می‌بینند. هرچه بنویسند به‌صورت گفتگوی خصوصی به شما می‌رسد، با 💡 در ابتدا — و Syden همان لحظه با تشکر پاسخ می‌دهد. وقتی ایده وارد برنامه شد، روی پیام لایک بزنید: در طرف آن‌ها کاغذ رنگی می‌ریزد و مدال در نمایه ظاهر می‌شود.',
   'Entre numa comunidade para ver as salas.': 'برای دیدن کانال‌ها به یک انجمن بپیوندید.',
   'Escreva um pouco mais sobre a sua ideia.': 'کمی بیشتر درباره ایده‌تان بنویسید.',
   'Esta comunidade ainda não tem sala de voz.': 'این انجمن هنوز کانال صوتی ندارد.',
@@ -866,7 +863,6 @@ export default {
   'Tela de boas-vindas': 'صفحهٔ خوش‌آمد',
   'Tem certeza que quer apagar esta mensagem de': 'مطمئنید می‌خواهید این پیام را پاک کنید، از',
   'Tem certeza que quer excluir': 'مطمئنید می‌خواهید حذف کنید',
-  'Tem uma ideia para o Syden?': 'ایده‌ای برای Syden دارید؟',
   'Tentar de novo': 'تلاش دوباره',
   'Termos de uso': 'شرایط استفاده',
   'Testando… os números aparecem em instantes.': 'در حال آزمایش… عددها همین حالا پیدا می‌شوند.',
@@ -4839,4 +4835,7 @@ export default {
   "Avisos": "اطلاعیه‌ها",
   "O que as suas comunidades avisaram": "آنچه انجمن‌های شما اطلاع داده‌اند",
   "Nenhum aviso das suas comunidades por enquanto.": "هنوز اطلاعیه‌ای از انجمن‌های شما نیست.",
+  "Sentiu falta de algo no Syden?": "در Syden جای چیزی خالی است؟",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "اینجا بنویسید تا {nome} بتواند آن را بسازد. پاسخ در گفتگوی خصوصی می‌رسد.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "این چیزی است که دوستانتان اینجا می‌بینند. ایده‌ها به‌صورت گفتگوی خصوصی، با 💡، می‌رسند. وقتی یکی وارد برنامه شد، روی آن لایک بزنید: آن شخص مدال را می‌گیرد.",
 } satisfies Record<string, string>;

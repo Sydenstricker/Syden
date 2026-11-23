@@ -39,7 +39,6 @@
 // SELO E INSÍGNIA SEPARADOS: selo = මුද්‍රාව (o da comunidade), insígnia = ලාංඡනය (a da pessoa).
 
 export default {
-  ', e a resposta volta pela mesma conversa.': ', පිළිතුර එම සංවාදයටම නැවත එනවා.',
   '{dias} dias para trazer de volta': 'ආපසු ගෙන ඒමට දින {dias}',
   '{email} — ainda não confirmado': '{email} — තවම තහවුරු කර නැත',
   '{email} — confirmado': '{email} — තහවුරුයි',
@@ -307,8 +306,6 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'ප්‍රජාවට ඇතුළු වන විට යමෙකු දකින පළමු දෙය මෙයයි, එක් වරක් පමණි. මෙය නොමැතිව, කෙළින්ම නාලිකා ලැයිස්තුවට යයි.',
   'É assim que os outros veem você na lista e nas conversas.': 'ලැයිස්තුවේ සහ සංවාදවල අනෙක් අයට ඔබ පෙනෙන්නේ මෙලෙසයි.',
-  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'කාමරයට පහළින් ඔබේ මිතුරන්ට පෙනෙන්නේ මෙයයි. ඔවුන් ලියන දේ 💡 ඉදිරියෙන් ඇතිව පෞද්ගලික සංවාදයක් ලෙස ඔබට ලැබේ — Syden වහාම ස්තූති කරමින් පිළිතුරු දෙයි. අදහස යෙදුමට එකතු වූ විට, පණිවිඩයට 👍 දමන්න: ඔවුන්ගේ පැත්තේ කොන්ෆෙටි වැටෙන අතර පදක්කම පැතිකඩේ දිස් වේ.',
   'é o que você está enviando': 'යනු ඔබ යවන දෙයයි',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'ඔබට ඇතුළු විය හැකි එකම ක්‍රමය එයයි. විසන්ධි කිරීමට පෙර මුරපදයක් සකසන්න.',
   'E-mail': 'ඊමේල්',
@@ -547,8 +544,6 @@ export default {
   'Escolher imagem': 'රූපය තෝරන්න',
   'Escondidas por não terem todas as letras deste nome: {n}': 'මෙම නමේ සියලු අකුරු නොමැති නිසා සඟවා ඇත: {n}',
   'Escreva': 'ටයිප් කරන්න',
-  'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
-    'ඔබ ඇති වෙනවාට කැමති දේ — හෝ බාධාවක් වන දේ — මෙහි ලියන්න. එය පෞද්ගලික පණිවිඩයක් ලෙස යවනු ලබන්නේ:',
   'Escreva um e-mail válido: é por ele que você confirma a conta.': 'වලංගු ඊමේල් ලිපිනයක් ලියන්න: ගිණුම තහවුරු කරන්නේ එමගිනි.',
   'Escreva um pouco mais sobre a sua ideia.': 'ඔබේ අදහස ගැන තව ටිකක් ලියන්න.',
   'Esmeralda': 'මරකත',
@@ -1004,7 +999,6 @@ export default {
   'Tela de boas-vindas': 'පිළිගැනීමේ තිරය',
   'Tem certeza que quer apagar esta mensagem de': 'මෙම පණිවිඩය මකන්න ඔබට විශ්වාසද? යැවූයේ:',
   'Tem certeza que quer excluir': 'මකන්න ඔබට විශ්වාසද:',
-  'Tem uma ideia para o Syden?': 'Syden සඳහා අදහසක් තිබේද?',
   'Tentar de novo': 'නැවත උත්සාහ කරන්න',
   'Termos de uso': 'භාවිත නියම',
   'Testando… os números aparecem em instantes.': 'පරීක්ෂා කරමින්… අංක ක්ෂණිකව දිස් වේ.',
@@ -4914,4 +4908,7 @@ export default {
   "Avisos": "නිවේදන",
   "O que as suas comunidades avisaram": "ඔබේ ප්‍රජාවන් නිවේදනය කළ දේ",
   "Nenhum aviso das suas comunidades por enquanto.": "තවම ඔබේ ප්‍රජාවන්ගෙන් නිවේදන නැත.",
+  "Sentiu falta de algo no Syden?": "Syden එකේ මොනවා හරි අඩුවක් දැනුණාද?",
+  "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome}ට එය කරන්න හැකි වෙන්න මෙහි කියන්න. පිළිතුර පෞද්ගලික සංවාදයට ලැබේ.",
+  "É o que os seus amigos veem aqui. As ideias chegam como conversa privada, com 💡. Quando uma entrar no app, dê joinha nela: a pessoa ganha a medalha.": "මෙහි ඔබේ මිතුරන්ට පෙනෙන්නේ මෙයයි. අදහස් 💡 සමඟ පෞද්ගලික සංවාදයක් ලෙස ලැබේ. එකක් යෙදුමට එකතු වූ විට, එයට 👍 දමන්න: ඒ පුද්ගලයාට පදක්කම ලැබේ.",
 } satisfies Record<string, string>;
