@@ -2432,6 +2432,19 @@ apagada, só de quem era e o canal, NUNCA o texto; o motivo da advertência e as
 delas). A mensagem apagada por quem cuida do Syden aparece como "Quem cuida do Syden", sem o nome. Ação nova de moderação: uma linha em
 `ACOES_DO_REGISTRO` e a frase em `RegistroDeModeracao.tsx`. Teste: `server/test/registro-de-moderacao.test.ts`.
 
+**Convites com prazo e limite de usos (23/11/2026, o próximo da fila).** O código de sempre da comunidade continua igual (o
+"Chamar alguém" e o botão da capa o usam, não expira, e só quem administra o troca). Os A MAIS moram em `convites`
+(`server/src/convites-routes.ts`): qualquer membro cria um com validade (30 min, 1 h, 6 h, 12 h, 1 dia, 7 dias ou nunca) e
+usos (sem limite, 1, 5, 10, 25, 50, 100), no máximo 25 valendo por pessoa; o código tem 10 letras sorteadas pelo crypto e nunca
+bate com o de sempre de outra comunidade. A entrada é a de sempre (`/api/communities/join`, a prévia do link e o cadastro, por
+`comunidadeDoConvite`): banido, comunidade cheia e a barreira da proteção continuam valendo, e o USO só conta para quem entrou.
+Vencido diz "Este convite expirou."; gasto, "Este convite já foi usado o máximo de vezes." (410), e eles só saem da tabela uma
+semana depois, quando alguém olha a lista, para o link não virar "inválido" na hora. Quem administra vê os que valem, com quem
+criou, em Configurações → Membros → Convites, e revoga qualquer um; quem criou vê e revoga os seus na própria janela. A janela
+("Configurar convite", `ConfigurarConvite.tsx`) abre pelo botão direito no ícone da comunidade e pelo botão direito (no toque, o
+toque longo) no botão de convite da capa. Quem criou cada convite está na política (`Dentro de cada comunidade`). O link de aula
+não mudou. Teste: `server/test/convites.test.ts`. As frases novas, à espera de tradução, em `docs/frases-novas/convites.txt`.
+
 ## Trazer a estrutura de um servidor do Discord: canais e cargos, nunca permissões
 
 **Feito em 23/11/2026, pedido dele ("eles copiam a estrutura de uma comunidade do Discord e transferem para o novo app").** Ao

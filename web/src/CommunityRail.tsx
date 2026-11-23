@@ -1,8 +1,9 @@
-import { Link, LogIn, Plus } from 'lucide-react';
+import { Link, LogIn, Plus, SlidersHorizontal } from 'lucide-react';
 import { type FormEvent, type MouseEvent, type ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from './api';
 import { CommunityIcon } from './CommunityIcon';
+import { ConfigurarConvite } from './ConfigurarConvite';
 import { useT } from './i18n';
 import { Logo } from './Logo';
 import type { Community } from './types';
@@ -23,6 +24,8 @@ export function CommunityRail({ communities, currentId, onSelect, onChanged, top
   const t = useT();
   const [dialog, setDialog] = useState<CommunityDialogMode | null>(null);
   const [menu, setMenu] = useState<{ community: Community; x: number; y: number } | null>(null);
+  // O convite com prazo e limite (ConfigurarConvite.tsx), aberto pelo menu.
+  const [configurando, setConfigurando] = useState<Community | null>(null);
 
   return (
     <nav className="rail" aria-label={t('Comunidades')}>
@@ -76,7 +79,19 @@ export function CommunityRail({ communities, currentId, onSelect, onChanged, top
         />
       )}
 
-      {menu && <CommunityMenu community={menu.community} x={menu.x} y={menu.y} onClose={() => setMenu(null)} />}
+      {menu && (
+        <CommunityMenu
+          community={menu.community}
+          x={menu.x}
+          y={menu.y}
+          onClose={() => setMenu(null)}
+          aoConfigurar={() => {
+            setConfigurando(menu.community);
+            setMenu(null);
+          }}
+        />
+      )}
+      {configurando && <ConfigurarConvite communityId={configurando.id} nome={configurando.name} aoFechar={() => setConfigurando(null)} />}
     </nav>
   );
 }
@@ -85,7 +100,19 @@ export function CommunityRail({ communities, currentId, onSelect, onChanged, top
  * Menu do botão direito em cima de uma comunidade na barra: por enquanto, só o link de convite —
  * só existe para quem administra (é quem recebe o código; ver server/src/db.ts, listCommunitiesForUser).
  */
-function CommunityMenu({ community, x, y, onClose }: { community: Community; x: number; y: number; onClose: () => void }) {
+function CommunityMenu({
+  community,
+  x,
+  y,
+  onClose,
+  aoConfigurar,
+}: {
+  community: Community;
+  x: number;
+  y: number;
+  onClose: () => void;
+  aoConfigurar: () => void;
+}) {
   const t = useT();
   const [copied, setCopied] = useState(false);
 
@@ -112,13 +139,18 @@ function CommunityMenu({ community, x, y, onClose }: { community: Community; x: 
     <div
       className="person-menu"
       role="menu"
-      style={{ top: Math.min(y, window.innerHeight - 100), left: Math.min(x, window.innerWidth - 250) }}
+      style={{ top: Math.min(y, window.innerHeight - 140), left: Math.min(x, window.innerWidth - 250) }}
       onPointerDown={(e) => e.stopPropagation()}
     >
       <div className="person-menu-name">{community.name}</div>
       {community.inviteCode ? (
         <button className="person-menu-item" onClick={copyLink}>
           <Link size={16} /> {copied ? t('Link copiado!') : t('Copiar link de convite')}
+        </button>
+      ) : null}
+      {community.inviteCode ? (
+        <button className="person-menu-item" onClick={aoConfigurar}>
+          <SlidersHorizontal size={16} /> {t('Configurar convite')}
         </button>
       ) : (
         <p className="person-menu-hint">{t('Só quem administra pode convidar gente nova.')}</p>
