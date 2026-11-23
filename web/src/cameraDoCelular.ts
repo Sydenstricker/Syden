@@ -251,9 +251,19 @@ export class EmissorDoCelular {
     }
     if (this.fechado) return this.faixa.stop();
     this.canal = await Canal.criar(this.par.segredo, 'cel');
-    const socket = io(`${API_URL}/celular`, { auth: { id: this.par.id, token: this.par.token }, transports: ['websocket'], reconnection: false });
+    const socket = io(`${API_URL}/celular`, { auth: { id: this.par.id, token: this.par.token }, transports: ['websocket'], reconnection: false, timeout: 5000 });
     this.socket = socket;
-    socket.on('connect_error', () => this.aoMudar({ fase: 'recusado' }));
+    // SÓ A RECUSA DO SERVIDOR é "código usado ou vencido" (ele recusa com a mensagem 'par'). Até 23/11/2026 qualquer falha de
+    // conexão (um soluço da internet do celular, o websocket que não abriu de primeira) dizia isso, e a pessoa ia pedir outro
+    // código à toa (relato dele). A falha de rede tenta de novo 5 vezes (cada tentativa espera até 5 s), com o "Ligando…" na tela.
+    let tentativas = 0;
+    socket.on('connect_error', (erro: Error) => {
+      if (this.fechado) return;
+      if (erro.message === 'par') return this.aoMudar({ fase: 'recusado' });
+      if (++tentativas > 5) return this.encerrar('falhou');
+      this.aoMudar({ fase: 'conectando' });
+      setTimeout(() => !this.fechado && !socket.connected && socket.connect(), 2000);
+    });
     socket.on('disconnect', () => {
       if (!this.fechado) this.encerrar('fechado');
     });

@@ -57,6 +57,13 @@ try {
       return c.captureStream(15);
     };
   });
+  // A internet do celular soluça na primeira tentativa (o websocket cai antes de abrir): isso NÃO é "código usado", e ele
+  // tenta de novo sozinho (23/11/2026, relato dele).
+  let derrubadas = 0;
+  await cel.routeWebSocket(/socket\.io/, (ws) => {
+    if (derrubadas++ === 0) return ws.close();
+    ws.connectToServer();
+  });
   await cel.goto(endereco);
   const aoVivo = cel.locator('.camera-do-celular-estado.ao-vivo');
   (await aoVivo.waitFor({ timeout: 20000 }).then(() => true, () => false))
