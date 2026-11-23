@@ -4910,4 +4910,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Još nema obavijesti iz tvojih zajednica.",
   "Sentiu falta de algo no Syden?": "Nedostaje ti nešto u Sydenu?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Napiši ovdje, da {nome} to može napraviti. Odgovor stiže u privatni razgovor.",
+  "Ajustar a imagem": "Prilagodi sliku",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Povuci pregled da uokviriš; kotačić miša približava.",
+  "Preencher 16:9": "Ispuni 16:9",
+  "Espelhar": "Zrcali",
+  "Zoom": "Zum",
+  "Contraste": "Kontrast",
+  "Claridade": "Svjetlina",
 } satisfies Record<string, string>;

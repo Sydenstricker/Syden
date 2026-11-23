@@ -4857,4 +4857,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "ยังไม่มีประกาศจากคอมมูนิตี้ของคุณ",
   "Sentiu falta de algo no Syden?": "รู้สึกว่า Syden ยังขาดอะไรไหม",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "บอกไว้ตรงนี้ เพื่อให้ {nome} นำไปทำได้ คำตอบจะมาทางแชตส่วนตัว",
+  "Ajustar a imagem": "ปรับภาพ",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "ลากตัวอย่างเพื่อจัดเฟรม ล้อเมาส์ใช้ซูมเข้า",
+  "Preencher 16:9": "เต็ม 16:9",
+  "Espelhar": "สะท้อนภาพ",
+  "Zoom": "ซูม",
+  "Contraste": "คอนทราสต์",
+  "Claridade": "ความสว่าง",
 } satisfies Record<string, string>;

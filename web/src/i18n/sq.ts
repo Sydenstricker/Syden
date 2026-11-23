@@ -4903,4 +4903,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Ende asnjë njoftim nga komunitetet e tua.",
   "Sentiu falta de algo no Syden?": "Të ka munguar diçka në Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Tregoje këtu, që {nome} ta realizojë. Përgjigjja vjen në bisedën private.",
+  "Ajustar a imagem": "Rregullo figurën",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Tërhiq parapamjen për ta kuadruar; rrota e miut e afron.",
+  "Preencher 16:9": "Mbush 16:9",
+  "Espelhar": "Pasqyro",
+  "Zoom": "Zmadhimi",
+  "Contraste": "Kontrasti",
+  "Claridade": "Ndriçimi",
 } satisfies Record<string, string>;

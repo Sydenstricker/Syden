@@ -24,6 +24,7 @@ import { Accessibility, Languages,
   Users,
   X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown, CircleOff, Focus, Eraser, Image as ImageIcon, VideoOff, Video as VideoIcon, Smartphone, Ban, ScrollText } from 'lucide-react';
 import {
+  ajusteDaImagemDisponivel,
   type EfeitoDoFundo,
   fundoDaCameraDisponivel,
   guardarImagemDoFundo,
@@ -39,6 +40,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
+  type RefObject,
   useEffect,
   useRef,
   useState,
@@ -63,10 +65,11 @@ import { MOLDURAS } from './guardaRoupa';
 import { IdiomaSection } from './IdiomaSection';
 import { API_URL, api, loadToken, mediaUrl, saveToken } from './api';
 import { soToque } from './CelularComoCamera';
+import { AJUSTE_PADRAO, type AjusteDaCamera, ajusteAtivo, arrastar, entradaDaCamera, ZOOM_MAXIMO } from './ajusteDaCamera';
 import { FamiliaSection } from './Familia';
 import { procurarRepetidos } from './somParecido';
 import { CatalogoDeInsignias } from './CatalogoDeInsignias';
-import { type ScreenQuality, updateSettings, useSettings } from './settings';
+import { getSettings, type ScreenQuality, updateSettings, useSettings } from './settings';
 import { type Recomendacao, recomendarParaEsteComputador } from './recomendarModo';
 import { Avatar } from './Avatar';
 import { CargosDoMembro, EditorDeCargos, EtiquetasDeCargo } from './Cargos';
@@ -2788,7 +2791,8 @@ function FundoDaCameraPicker({ voice }: { voice: Voice }) {
       vivo = false;
     };
   }, []);
-  if (!disponivel) return null;
+  // Sem o app, não há fundo da câmera; a prévia e os ajustes da imagem continuam onde o navegador mexe nos quadros.
+  if (!disponivel && !ajusteDaImagemDisponivel()) return null;
   const OPCOES: [EfeitoDoFundo, string, ReactNode][] = [
     ['nenhum', chave('Nenhum'), <CircleOff size={18} />],
     ['desfocar', chave('Desfocado'), <Focus size={18} />],
@@ -2807,6 +2811,7 @@ function FundoDaCameraPicker({ voice }: { voice: Voice }) {
     }
     await voice.setFundoDaCamera('imagem');
   }
+  if (!disponivel) return <PreviaDaCamera voice={voice} efeito="nenhum" imagem={null} />;
   return (
     <>
       <span className="toggle-label">{t('Fundo da câmera')}</span>
@@ -2866,6 +2871,9 @@ function PreviaDaCamera({ voice, efeito, imagem }: { voice: Voice; efeito: Efeit
   const videoRef = useRef<HTMLVideoElement>(null);
   const processadorRef = useRef<ProcessadorDoFundo | null>(null);
   const comEfeito = efeito !== 'nenhum';
+  // Com os ajustes da imagem (onde o navegador deixa), a prévia passa sempre pelo processador: ele lê o ajuste a cada quadro,
+  // e mexer no zoom ou na luz aparece na hora, sem reabrir a câmera.
+  const comProcessador = comEfeito || ajusteDaImagemDisponivel();
 
   // Abre a câmera (ou pega a da chamada) e, com efeito, o processador. Refeito ao trocar de câmera ou ao ligar e desligar o efeito.
   useEffect(() => {
@@ -2879,8 +2887,18 @@ function PreviaDaCamera({ voice, efeito, imagem }: { voice: Voice; efeito: Efeit
     void (async () => {
       try {
         if (daChamada && !daChamada.isMuted) {
-          // a da chamada já leva o fundo escolhido (aplicarFundo, em useVoice.ts)
-          mostrar((daChamada.getProcessor() as ProcessadorDoFundo | undefined)?.processedTrack ?? daChamada.mediaStreamTrack);
+          // a da chamada já leva o fundo escolhido e os ajustes (aplicarFundo, em useVoice.ts); o processador dela liga e desliga
+          // quando o ajuste começa ou acaba, e a prévia segue a faixa que estiver valendo
+          let mostrada: MediaStreamTrack | null = null;
+          const seguir = () => {
+            const agora = (daChamada.getProcessor() as ProcessadorDoFundo | undefined)?.processedTrack ?? daChamada.mediaStreamTrack;
+            if (agora !== mostrada) {
+              mostrada = agora;
+              mostrar(agora);
+            }
+          };
+          seguir();
+          const relogio = setInterval(() => (vivo ? seguir() : clearInterval(relogio)), 500);
           return;
         }
         // O celular ligado fora de uma chamada (o botão logo abaixo): a imagem dele, que não é desta prévia e não se fecha aqui.
@@ -2895,7 +2913,7 @@ function PreviaDaCamera({ voice, efeito, imagem }: { voice: Voice; efeito: Efeit
           if (!vivo) return propria.stop();
           origem = propria;
         }
-        if (comEfeito) {
+        if (comProcessador) {
           const processador = new ProcessadorDoFundo(efeito);
           await processador.init({ track: origem } as VideoProcessorOptions);
           if (!vivo) return void processador.destroy();
@@ -2918,12 +2936,12 @@ function PreviaDaCamera({ voice, efeito, imagem }: { voice: Voice; efeito: Efeit
       if (videoRef.current) videoRef.current.srcObject = null;
     };
     // o efeito em si (desfocar, apagar, imagem) troca sem reabrir: logo abaixo
-  }, [ligada, videoInput, comEfeito, voice.room, voice.faixaDoCelular]);
+  }, [ligada, videoInput, comProcessador, voice.room, voice.faixaDoCelular]);
 
-  // Trocar entre desfocar, apagar e imagem (ou a imagem em si) não reabre a câmera.
+  // Trocar entre desfocar, apagar e imagem (ou a imagem em si, ou voltar a nenhum) não reabre a câmera.
   useEffect(() => {
-    if (comEfeito) void processadorRef.current?.trocar(efeito);
-  }, [efeito, imagem, comEfeito]);
+    void processadorRef.current?.trocar(efeito);
+  }, [efeito, imagem]);
 
   // O celular acabou de ligar: a prévia acende sozinha, para a pessoa ver o efeito na imagem dele.
   useEffect(() => {
@@ -2938,7 +2956,7 @@ function PreviaDaCamera({ voice, efeito, imagem }: { voice: Voice; efeito: Efeit
       {/* O RETÂNGULO É PERMANENTE (pedido dele, 23/11/2026): parado, ele mostra o ícone da câmera e é onde se clica para ver a
           prévia, para quem chega ao Syden Broadcast saber logo que é ali que se vê o efeito. */}
       {ligada ? (
-        <video ref={videoRef} autoPlay muted playsInline className="previa-da-camera-video" />
+        <EnquadrarNaPrevia voice={voice} videoRef={videoRef} />
       ) : (
         <button
           type="button"
@@ -2982,6 +3000,100 @@ function PreviaDaCamera({ voice, efeito, imagem }: { voice: Voice; efeito: Efeit
           </span>
         )}
       </div>
+      {ajusteDaImagemDisponivel() && <AjustesDaImagem voice={voice} />}
+    </div>
+  );
+}
+
+/**
+ * A PRÉVIA QUE ENQUADRA (23/11/2026): arrastar move o enquadramento (o que está embaixo do dedo anda junto) e a rodinha do mouse
+ * aproxima, em volta do meio. Sem os ajustes da imagem (um navegador que não mexe nos quadros), é só a prévia.
+ */
+function EnquadrarNaPrevia({ voice, videoRef }: { voice: Voice; videoRef: RefObject<HTMLVideoElement | null> }) {
+  const pode = ajusteDaImagemDisponivel();
+  const arrasto = useRef<{ x: number; y: number } | null>(null);
+  /** A área em que a imagem aparece dentro do vídeo (object-fit: contain deixa faixas). */
+  const areaDaImagem = () => {
+    const v = videoRef.current;
+    if (!v || !v.videoWidth) return null;
+    const r = v.getBoundingClientRect();
+    const escala = Math.min(r.width / v.videoWidth, r.height / v.videoHeight);
+    return { largura: v.videoWidth * escala, altura: v.videoHeight * escala };
+  };
+  const mudar = (novo: AjusteDaCamera) => void voice.setAjusteDaCamera(novo);
+  // A RODINHA por um ouvinte de verdade, não passivo: o do React não pode impedir a rolagem, e a rodinha rolava as
+  // Configurações em vez de aproximar.
+  const setAjuste = voice.setAjusteDaCamera;
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || !pode) return;
+    const rodinha = (e: WheelEvent) => {
+      e.preventDefault();
+      const a = getSettings().ajusteDaCamera;
+      void setAjuste({ ...a, zoom: Math.min(ZOOM_MAXIMO, Math.max(1, a.zoom * Math.pow(1.1, -e.deltaY / 100))) });
+    };
+    v.addEventListener('wheel', rodinha, { passive: false });
+    return () => v.removeEventListener('wheel', rodinha);
+  }, [videoRef, pode, setAjuste]);
+  return (
+    <video
+      ref={videoRef}
+      autoPlay
+      muted
+      playsInline
+      className={'previa-da-camera-video' + (pode ? ' previa-enquadravel' : '')}
+      onPointerDown={(e) => {
+        if (!pode) return;
+        arrasto.current = { x: e.clientX, y: e.clientY };
+        e.currentTarget.setPointerCapture(e.pointerId);
+      }}
+      onPointerMove={(e) => {
+        const antes = arrasto.current;
+        const area = areaDaImagem();
+        if (!antes || !area || !entradaDaCamera.largura) return;
+        arrasto.current = { x: e.clientX, y: e.clientY };
+        const a = getSettings().ajusteDaCamera;
+        mudar(arrastar(a, entradaDaCamera.largura, entradaDaCamera.altura, (e.clientX - antes.x) / area.largura, (e.clientY - antes.y) / area.altura));
+      }}
+      onPointerUp={() => (arrasto.current = null)}
+      onPointerCancel={() => (arrasto.current = null)}
+    />
+  );
+}
+
+/** Os controles dos ajustes da imagem, embaixo da prévia (ver ajusteDaCamera.ts). Tudo vale na hora, também numa chamada. */
+function AjustesDaImagem({ voice }: { voice: Voice }) {
+  const t = useT();
+  const { ajusteDaCamera: a } = useSettings();
+  const mudar = (parte: Partial<AjusteDaCamera>) => void voice.setAjusteDaCamera({ ...a, ...parte });
+  const regua = (rotulo: string, valor: number, min: number, max: number, aoMudar: (v: number) => void) => (
+    <label className="ajuste-regua">
+      <span>{rotulo}</span>
+      <input type="range" min={min} max={max} step={0.01} value={valor} onChange={(e) => aoMudar(Number(e.target.value))} />
+    </label>
+  );
+  return (
+    <div className="ajustes-da-imagem">
+      <span className="toggle-label">{t('Ajustar a imagem')}</span>
+      <p className="settings-hint">{t('Arraste a prévia para enquadrar; a rodinha do mouse aproxima.')}</p>
+      <div className="ajustes-da-imagem-linha" role="radiogroup" aria-label={t('Ajustar a imagem')}>
+        <button type="button" className="btn-secondary" aria-pressed={a.formato === 'inteira'} onClick={() => mudar({ formato: 'inteira' })}>
+          {t('Imagem inteira')}
+        </button>
+        <button type="button" className="btn-secondary" aria-pressed={a.formato === '16:9'} onClick={() => mudar({ formato: '16:9' })}>
+          {t('Preencher 16:9')}
+        </button>
+        <label className="ajuste-espelhar">
+          <input type="checkbox" checked={a.espelhar} onChange={(e) => mudar({ espelhar: e.target.checked })} />
+          {t('Espelhar')}
+        </label>
+      </div>
+      {regua(t('Zoom'), a.zoom, 1, ZOOM_MAXIMO, (zoom) => mudar({ zoom }))}
+      {regua(t('Claridade'), a.brilho, -1, 1, (brilho) => mudar({ brilho }))}
+      {regua(t('Contraste'), a.contraste, -1, 1, (contraste) => mudar({ contraste }))}
+      <button type="button" className="link-button" disabled={!ajusteAtivo(a) && a.x === 0.5 && a.y === 0.5} onClick={() => void voice.setAjusteDaCamera(AJUSTE_PADRAO)}>
+        {t('Voltar ao padrão')}
+      </button>
     </div>
   );
 }

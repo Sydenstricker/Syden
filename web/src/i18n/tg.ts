@@ -4921,4 +4921,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Ҳоло аз ҷомеаҳои шумо эълоне нест.",
   "Sentiu falta de algo no Syden?": "Дар Syden чизе намерасад?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Ин ҷо нависед, то {nome} онро амалӣ карда тавонад. Ҷавоб дар сӯҳбати хусусӣ мерасад.",
+  "Ajustar a imagem": "Танзими тасвир",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Барои чорчӯба пешнамоишро кашед; чархи муш наздик мекунад.",
+  "Preencher 16:9": "Пур кардани 16:9",
+  "Espelhar": "Оинавӣ",
+  "Zoom": "Калонкунӣ",
+  "Contraste": "Контраст",
+  "Claridade": "Равшанӣ",
 } satisfies Record<string, string>;

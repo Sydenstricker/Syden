@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Medir a câmera</title>
+    <!-- A PÁGINA DE MEDIÇÃO DA CÂMERA DO CELULAR (23/11/2026, pedido dele): antes de pôr controles da câmera do próprio celular
+         no "celular como câmera" (lente, zoom de verdade, foco, luz, lanterna), medir o que o navegador do aparelho deixa.
+         Não é parte do app: ninguém chega aqui por um link do Syden, e nada sai do celular (o resultado é copiado à mão). -->
+    <style>
+      body { margin: 0; padding: 16px; background: #14161b; color: #e8e6e3; font: 16px/1.45 system-ui, sans-serif; }
+      h1 { font-size: 20px; margin: 0 0 8px; }
+      p { margin: 0 0 12px; color: #b8b4ae; }
+      button { font: inherit; padding: 10px 16px; border-radius: 10px; border: 1px solid #3a3f4a; background: #f5b83d; color: #14161b; font-weight: 600; }
+      button.secundario { background: #232831; color: #e8e6e3; }
+      #estado { margin: 12px 0; }
+      pre { white-space: pre-wrap; word-break: break-word; background: #0c0e12; padding: 12px; border-radius: 10px; font-size: 12px; max-height: 60vh; overflow: auto; }
+      .linha { display: flex; gap: 8px; flex-wrap: wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>Medir a câmera</h1>
+    <p>Mede o que este celular deixa ajustar na câmera pelo navegador. Nada é enviado: no fim, copie o resultado e mande na conversa.</p>
+    <div class="linha">
+      <button id="medir" type="button">Medir</button>
+      <button id="copiar" type="button" class="secundario" hidden>Copiar o resultado</button>
+    </div>
+    <p id="estado" role="status"></p>
+    <pre id="saida" hidden></pre>
+    <script src="./medir-camera.js"></script>
+  </body>
+</html>

@@ -4880,4 +4880,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "သင့်အသိုင်းအဝိုင်းများထံမှ ကြေညာချက် မရှိသေးပါ။",
   "Sentiu falta de algo no Syden?": "Syden မှာ တစ်ခုခု လိုအပ်နေသလား။",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome} လုပ်ပေးနိုင်အောင် ဒီမှာ ပြောပြပါ။ အဖြေက သီးသန့်စကားဝိုင်းထဲ ရောက်လာမယ်။",
+  "Ajustar a imagem": "ပုံကို ချိန်ညှိရန်",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "ဘောင်ချိန်ရန် အစမ်းကြည့်ကို ဆွဲပါ၊ မောက်စ်ဘီးဖြင့် ချဲ့နိုင်သည်။",
+  "Preencher 16:9": "16:9 ဖြည့်ရန်",
+  "Espelhar": "မှန်ပုံ",
+  "Zoom": "ချဲ့ခြင်း",
+  "Contraste": "အလင်းအမှောင်ကွာခြားမှု",
+  "Claridade": "အလင်းအမှောင်",
 } satisfies Record<string, string>;

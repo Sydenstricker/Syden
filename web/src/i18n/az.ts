@@ -4883,4 +4883,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "İcmalarından hələ elan yoxdur.",
   "Sentiu falta de algo no Syden?": "Syden-də nəyinsə çatışmadığını hiss etdin?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Burada yaz ki, {nome} bunu həyata keçirə bilsin. Cavab şəxsi söhbətə gələcək.",
+  "Ajustar a imagem": "Şəkli tənzimlə",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Kadrı qurmaq üçün önizləməni sürüşdür; siçanın təkəri yaxınlaşdırır.",
+  "Preencher 16:9": "16:9 doldur",
+  "Espelhar": "Güzgü",
+  "Zoom": "Yaxınlaşdırma",
+  "Contraste": "Kontrast",
+  "Claridade": "Parlaqlıq",
 } satisfies Record<string, string>;

@@ -4913,4 +4913,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Még nincs hirdetmény a közösségeidtől.",
   "Sentiu falta de algo no Syden?": "Hiányzik valami a Sydenből?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Írd meg itt, hogy {nome} meg tudja csinálni. A válasz a privát beszélgetésbe érkezik.",
+  "Ajustar a imagem": "Kép beállítása",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Húzd az előnézetet a kivágáshoz; az egérgörgő nagyít.",
+  "Preencher 16:9": "16:9 kitöltése",
+  "Espelhar": "Tükrözés",
+  "Zoom": "Nagyítás",
+  "Contraste": "Kontraszt",
+  "Claridade": "Fényerő",
 } satisfies Record<string, string>;

@@ -4910,4 +4910,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "තවම ඔබේ ප්‍රජාවන්ගෙන් නිවේදන නැත.",
   "Sentiu falta de algo no Syden?": "Syden එකේ මොනවා හරි අඩුවක් දැනුණාද?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome}ට එය කරන්න හැකි වෙන්න මෙහි කියන්න. පිළිතුර පෞද්ගලික සංවාදයට ලැබේ.",
+  "Ajustar a imagem": "රූපය සකසන්න",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "රාමුගත කිරීමට පෙරදසුන අදින්න; මූසික රෝදය විශාලනය කරයි.",
+  "Preencher 16:9": "16:9 පුරවන්න",
+  "Espelhar": "දර්පණ",
+  "Zoom": "විශාලනය",
+  "Contraste": "ප්‍රතිවිරෝධය",
+  "Claridade": "දීප්තිය",
 } satisfies Record<string, string>;

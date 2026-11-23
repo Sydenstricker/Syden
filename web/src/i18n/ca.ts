@@ -4907,4 +4907,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Encara no hi ha cap avís de les teves comunitats.",
   "Sentiu falta de algo no Syden?": "Has trobat a faltar alguna cosa al Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Explica-ho aquí, perquè {nome} ho pugui fer. La resposta arriba a la conversa privada.",
+  "Ajustar a imagem": "Ajusta la imatge",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Arrossega la previsualització per enquadrar; la rodeta del ratolí apropa.",
+  "Preencher 16:9": "Omple 16:9",
+  "Espelhar": "Mirall",
+  "Zoom": "Zoom",
+  "Contraste": "Contrast",
+  "Claridade": "Brillantor",
 } satisfies Record<string, string>;

@@ -4829,4 +4829,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "உங்கள் சமூகங்களிடமிருந்து இன்னும் அறிவிப்பு எதுவும் இல்லை.",
   "Sentiu falta de algo no Syden?": "Sydenஇல் ஏதாவது குறையாகத் தெரிந்ததா?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome} அதைச் செயல்படுத்த இங்கே சொல்லுங்கள். பதில் தனிப்பட்ட உரையாடலில் வரும்.",
+  "Ajustar a imagem": "படத்தைச் சரிசெய்யுங்கள்",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "சட்டமிட முன்னோட்டத்தை இழுங்கள்; சுட்டியின் சக்கரம் பெரிதாக்கும்.",
+  "Preencher 16:9": "16:9 நிரப்புக",
+  "Espelhar": "கண்ணாடி பிம்பம்",
+  "Zoom": "பெரிதாக்கல்",
+  "Contraste": "மாறுபாடு",
+  "Claridade": "ஒளிர்வு",
 } satisfies Record<string, string>;

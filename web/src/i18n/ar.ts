@@ -4868,4 +4868,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "لا توجد إعلانات من المجتمعات بعد.",
   "Sentiu falta de algo no Syden?": "هل ينقص Syden شيء؟",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "يمكن كتابة ما ينقص هنا ليصل إلى {nome} ويُضاف إلى التطبيق. يصل الرد في المحادثة الخاصة.",
+  "Ajustar a imagem": "ضبط الصورة",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "سحب المعاينة للتأطير؛ عجلة الفأرة للتكبير.",
+  "Preencher 16:9": "ملء 16:9",
+  "Espelhar": "عكس الصورة",
+  "Zoom": "تكبير",
+  "Contraste": "التباين",
+  "Claridade": "السطوع",
 } satisfies Record<string, string>;

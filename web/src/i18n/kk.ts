@@ -4916,4 +4916,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Қауымдастықтарыңнан әзірге хабарландыру жоқ.",
   "Sentiu falta de algo no Syden?": "Syden-де бір нәрсе жетпей ме?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Осында айт, {nome} оны жасай алсын. Жауап жеке әңгімеге келеді.",
+  "Ajustar a imagem": "Суретті баптау",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Кадрды реттеу үшін алдын ала көріністі сүйре; тінтуір дөңгелегі жақындатады.",
+  "Preencher 16:9": "16:9 толтыру",
+  "Espelhar": "Айнадай",
+  "Zoom": "Масштаб",
+  "Contraste": "Контраст",
+  "Claridade": "Жарықтық",
 } satisfies Record<string, string>;

@@ -4910,4 +4910,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Zatím žádná oznámení z tvých komunit.",
   "Sentiu falta de algo no Syden?": "Chybí ti něco v Sydenu?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Napiš to sem, ať to {nome} může udělat. Odpověď přijde v soukromé konverzaci.",
+  "Ajustar a imagem": "Upravit obraz",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Přetažením náhledu nastavíš záběr; kolečko myši přibližuje.",
+  "Preencher 16:9": "Vyplnit 16:9",
+  "Espelhar": "Zrcadlit",
+  "Zoom": "Přiblížení",
+  "Contraste": "Kontrast",
+  "Claridade": "Jas",
 } satisfies Record<string, string>;

@@ -4881,4 +4881,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Hanga ammaatti hawaasa kee irraa beeksisni hin jiru.",
   "Sentiu falta de algo no Syden?": "Syden keessatti wanti si hir’ate jiraa?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Asitti nutti himi, akka {nome} hojjechuu danda’uuf. Deebiin haasaa dhuunfaatiin dhufa.",
+  "Ajustar a imagem": "Fakkii sirreessi",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Duraa-ilaalcha harkisi fuula qindeessuuf; geengoon maawusii ni dhiheessa.",
+  "Preencher 16:9": "16:9 guuti",
+  "Espelhar": "Calaqqee",
+  "Zoom": "Guddisuu",
+  "Contraste": "Garaagarummaa",
+  "Claridade": "Ifa",
 } satisfies Record<string, string>;

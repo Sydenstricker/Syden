@@ -4910,4 +4910,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Mbola tsy misy filazana avy amin’ireo vondronao.",
   "Sentiu falta de algo no Syden?": "Nisy zavatra tsy hitanao tao amin’ny Syden ve?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Lazao eto, ho tonga any amin’ {nome} izany mba hatao. Tonga amin’ny resaka manokana ny valiny.",
+  "Ajustar a imagem": "Amboary ny sary",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Sintony ny topi-maso hanamboarana ny zoro; ny kodiaran’ny totozy no manakaiky.",
+  "Preencher 16:9": "Fenoy 16:9",
+  "Espelhar": "Fitaratra",
+  "Zoom": "Zoom",
+  "Contraste": "Fifanoherana",
+  "Claridade": "Hazavana",
 } satisfies Record<string, string>;

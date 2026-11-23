@@ -4859,4 +4859,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Għad m’hemm l-ebda avviż mill-komunitajiet tiegħek.",
   "Sentiu falta de algo no Syden?": "Ħassejt in-nuqqas ta' xi ħaġa f'Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Għidilna hawn, biex jasal għand {nome} u jkun jista' jidħol fl-app. It-tweġiba tasal fil-konversazzjoni privata.",
+  "Ajustar a imagem": "Irranġa l-immaġni",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Kaxkar il-preview biex tiffrejmja; ir-rota tal-maws tkabbar.",
+  "Preencher 16:9": "Imla 16:9",
+  "Espelhar": "Mera",
+  "Zoom": "Żum",
+  "Contraste": "Kuntrast",
+  "Claridade": "Luminożità",
 } satisfies Record<string, string>;

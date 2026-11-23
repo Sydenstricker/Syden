@@ -1,3 +1,4 @@
+import { AJUSTE_PADRAO, type AjusteDaCamera, ajusteValido } from './ajusteDaCamera';
 import type { QuadrosDaTela, ResolucaoDaTela } from './telaPersonalizada';
 import { useSyncExternalStore } from 'react';
 import type { Paleta, Theme } from './theme';
@@ -28,6 +29,8 @@ export interface Settings {
    * Personalizado da transmissão). Ver desktop/src/fundo-camera/decisor.js.
    */
   qualidadeDoFundo: 'automatico' | 'leve' | 'completo';
+  /** Enquadrar, formato, espelho e luz da câmera (ver ajusteDaCamera.ts). */
+  ajusteDaCamera: AjusteDaCamera;
   noiseSuppression: boolean;
   echoCancellation: boolean;
   screenQuality: ScreenQuality;
@@ -98,6 +101,7 @@ const DEFAULTS: Settings = {
   videoInput: '',
   fundoDaCamera: 'nenhum',
   qualidadeDoFundo: 'automatico',
+  ajusteDaCamera: AJUSTE_PADRAO,
   noiseSuppression: true,
   echoCancellation: true,
   screenQuality: 'standard',
@@ -147,7 +151,8 @@ export function converterPreferenciasAntigas(guardado: Record<string, unknown>):
 function load(): Settings {
   try {
     const guardado = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
-    return { ...DEFAULTS, ...converterPreferenciasAntigas(guardado) } as Settings;
+    const lido = { ...DEFAULTS, ...converterPreferenciasAntigas(guardado) } as Settings;
+    return { ...lido, ajusteDaCamera: ajusteValido(lido.ajusteDaCamera) };
   } catch {
     return DEFAULTS;
   }

@@ -4924,4 +4924,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "ད་ལྟོ་ཚུན་ཁྱོད་ཀྱི་མི་སྡེ་ཚུ་ལས་གསལ་བསྒྲགས་མེད།",
   "Sentiu falta de algo no Syden?": "Syden ནང་ ག་ཅི་རང་ཅིག་ ཁ་མ་ཚང་པས་ག?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome} གིས་ བཟོ་ཚུགས་ནིའི་དོན་ལུ་ ནཱ་ལུ་སླབ། ལན་འདི་ སྒེར་གྱི་གཏམ་གླེང་ནང་ལྷོད་འོང་།",
+  "Ajustar a imagem": "པར་སྒྲིག",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "བཀོད་ཁྲམ་བཟོ་ནི་ལུ་ སྔོན་ལྟ་འདྲུད། མཱའུསི་གི་འཁོར་ལོས་ ཉེ་རུ་བཏོན།",
+  "Preencher 16:9": "16:9 བཀང་",
+  "Espelhar": "མེ་ལོང་",
+  "Zoom": "ཆེར་བསྐྱེད",
+  "Contraste": "ཁྱད་པར",
+  "Claridade": "གསལ་ཚད།",
 } satisfies Record<string, string>;

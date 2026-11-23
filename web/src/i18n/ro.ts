@@ -4843,4 +4843,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Încă nu există anunțuri de la comunitățile tale.",
   "Sentiu falta de algo no Syden?": "Ți-a lipsit ceva în Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Spune aici, ca {nome} să-l poată face. Răspunsul vine în conversația privată.",
+  "Ajustar a imagem": "Ajustează imaginea",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Trage previzualizarea ca să încadrezi; rotița mouse-ului apropie.",
+  "Preencher 16:9": "Umple 16:9",
+  "Espelhar": "Oglindește",
+  "Zoom": "Zoom",
+  "Contraste": "Contrast",
+  "Claridade": "Luminozitate",
 } satisfies Record<string, string>;

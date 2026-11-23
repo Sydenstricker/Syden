@@ -4912,4 +4912,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Engar tilkynningar frá samfélögunum þínum enn.",
   "Sentiu falta de algo no Syden?": "Saknarðu einhvers í Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Segðu frá því hér, þá berst það til {nome} sem getur útfært það. Svarið kemur í einkasamtali.",
+  "Ajustar a imagem": "Stilla myndina",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Dragðu forskoðunina til að ramma inn; músarhjólið þysjar inn.",
+  "Preencher 16:9": "Fylla 16:9",
+  "Espelhar": "Spegla",
+  "Zoom": "Aðdráttur",
+  "Contraste": "Birtuskil",
+  "Claridade": "Birtustig",
 } satisfies Record<string, string>;

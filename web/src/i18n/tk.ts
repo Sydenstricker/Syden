@@ -4922,4 +4922,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Jemgyýetleriňden entek bildiriş ýok.",
   "Sentiu falta de algo no Syden?": "Syden-de bir zat ýetmezmi?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Şu ýerde aýt, {nome} ony amala aşyryp bilsin. Jogap şahsy söhbete geler.",
+  "Ajustar a imagem": "Suraty sazla",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Kadry düzmek üçin deslapky görnüşi süýşür; syçanjygyň tigirjigi ýakynlaşdyrýar.",
+  "Preencher 16:9": "16:9 doldur",
+  "Espelhar": "Aýna",
+  "Zoom": "Ulaltmak",
+  "Contraste": "Kontrast",
+  "Claridade": "Ýagtylyk",
 } satisfies Record<string, string>;

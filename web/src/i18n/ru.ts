@@ -4861,4 +4861,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Пока нет объявлений от твоих сообществ.",
   "Sentiu falta de algo no Syden?": "Чего-то не хватает в Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Расскажи здесь — так ты поможешь {nome} это сделать. Ответ придёт в личную переписку.",
+  "Ajustar a imagem": "Настроить изображение",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Перетащи предпросмотр, чтобы выбрать кадр; колёсико мыши приближает.",
+  "Preencher 16:9": "Заполнить 16:9",
+  "Espelhar": "Отразить",
+  "Zoom": "Масштаб",
+  "Contraste": "Контраст",
+  "Claridade": "Яркость",
 } satisfies Record<string, string>;

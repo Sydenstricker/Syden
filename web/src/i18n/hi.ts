@@ -4842,4 +4842,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "अभी तक तुम्हारे समुदायों से कोई घोषणा नहीं।",
   "Sentiu falta de algo no Syden?": "Syden में कुछ कमी महसूस हुई?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "यहाँ बताओ, ताकि {nome} उसे बना सके। जवाब निजी बातचीत में आएगा।",
+  "Ajustar a imagem": "तस्वीर एडजस्ट करो",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "फ्रेम करने के लिए प्रीव्यू को खींचो; माउस का पहिया ज़ूम करता है।",
+  "Preencher 16:9": "16:9 भरो",
+  "Espelhar": "मिरर",
+  "Zoom": "ज़ूम",
+  "Contraste": "कंट्रास्ट",
+  "Claridade": "चमक",
 } satisfies Record<string, string>;

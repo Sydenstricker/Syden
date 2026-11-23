@@ -4908,4 +4908,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Sinu kogukondadelt pole veel teadaandeid.",
   "Sentiu falta de algo no Syden?": "Kas sul jäi Sydenis midagi puudu?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kirjuta siia, et {nome} saaks selle teha. Vastus tuleb privaatsesse vestlusse.",
+  "Ajustar a imagem": "Kohanda pilti",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Lohista eelvaadet kaadri sättimiseks; hiireratas suumib.",
+  "Preencher 16:9": "Täida 16:9",
+  "Espelhar": "Peegelda",
+  "Zoom": "Suum",
+  "Contraste": "Kontrast",
+  "Claridade": "Heledus",
 } satisfies Record<string, string>;

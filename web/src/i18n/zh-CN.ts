@@ -4830,4 +4830,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "你的社区暂时还没有公告。",
   "Sentiu falta de algo no Syden?": "觉得 Syden 还缺点什么？",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "在这里说说，好让 {nome} 把它做出来。回复会出现在私聊里。",
+  "Ajustar a imagem": "调整画面",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "拖动预览来取景,鼠标滚轮可放大。",
+  "Preencher 16:9": "填满 16:9",
+  "Espelhar": "镜像",
+  "Zoom": "缩放",
+  "Contraste": "对比度",
+  "Claridade": "亮度",
 } satisfies Record<string, string>;

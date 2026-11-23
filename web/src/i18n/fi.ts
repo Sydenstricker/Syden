@@ -4911,4 +4911,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Yhteisöistäsi ei ole vielä tiedotteita.",
   "Sentiu falta de algo no Syden?": "Jäikö Sydenistä jotain puuttumaan?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kerro tässä, niin {nome} voi toteuttaa sen. Vastaus tulee yksityiseen keskusteluun.",
+  "Ajustar a imagem": "Säädä kuvaa",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Vedä esikatselua rajataksesi; hiiren rulla lähentää.",
+  "Preencher 16:9": "Täytä 16:9",
+  "Espelhar": "Peilaa",
+  "Zoom": "Zoomaus",
+  "Contraste": "Kontrasti",
+  "Claridade": "Kirkkaus",
 } satisfies Record<string, string>;

@@ -4913,4 +4913,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Kol kas nėra skelbimų iš tavo bendruomenių.",
   "Sentiu falta de algo no Syden?": "Ar ko nors pasigedai Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Parašyk čia, kad {nome} galėtų tai padaryti. Atsakymas ateis į privatų pokalbį.",
+  "Ajustar a imagem": "Koreguok vaizdą",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Tempk peržiūrą, kad parinktum kadrą; pelės ratukas priartina.",
+  "Preencher 16:9": "Užpildyti 16:9",
+  "Espelhar": "Veidrodinis",
+  "Zoom": "Mastelis",
+  "Contraste": "Kontrastas",
+  "Claridade": "Ryškumas",
 } satisfies Record<string, string>;

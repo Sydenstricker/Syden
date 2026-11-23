@@ -4847,4 +4847,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "E leʻi iai ni faʻasilasilaga mai au faʻalapotopotoga.",
   "Sentiu falta de algo no Syden?": "E iai se mea e te misia i Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Taʻu mai iinei, ina ia mafai e {nome} ona faia. O le tali e oʻo mai i le talanoaga faʻalilolilo.",
+  "Ajustar a imagem": "Faʻafetaui le ata",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Toso le vaʻaiga muamua e faʻatulaga ai; o le uili o le isumu e faʻalatalata.",
+  "Preencher 16:9": "Faʻatumu 16:9",
+  "Espelhar": "Faʻata",
+  "Zoom": "Faʻalatalata",
+  "Contraste": "Eseesega",
+  "Claridade": "Malamalama",
 } satisfies Record<string, string>;

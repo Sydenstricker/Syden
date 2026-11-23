@@ -4844,4 +4844,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "ከእርስዎ ማህበረሰቦች እስካሁን ምንም ማስታወቂያ የለም።",
   "Sentiu falta de algo no Syden?": "በSyden ውስጥ የጎደለ ነገር አለ?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "እዚህ ይንገሩን፤ ተግባራዊ እንዲሆን ለ{nome} ይደርሳል። መልሱ በግል ውይይት ይደርስዎታል።",
+  "Ajustar a imagem": "ምስሉን ያስተካክሉ",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "ለማቀናበር ቅድመ-እይታውን ይጎትቱ፤ የአይጡ መሽከርከሪያ ያቀርባል።",
+  "Preencher 16:9": "16:9 መሙላት",
+  "Espelhar": "የመስታወት ምስል",
+  "Zoom": "ማጉላት",
+  "Contraste": "ንፅፅር",
+  "Claridade": "ብሩህነት",
 } satisfies Record<string, string>;

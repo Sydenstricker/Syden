@@ -68,7 +68,8 @@ import { ehEfeitoVisual, type EfeitoVisualId } from './efeitosVisuais';
 import type { DisparoVisual } from './CamadaDeEfeitos';
 import { type VoiceEffectId } from './voiceEffects';
 import { ProcessadorDoMicrofone, supressaoDisponivel } from './microfone';
-import { type EfeitoDoFundo, fundoDaCameraDisponivel, ProcessadorDoFundo } from './fundoDaCamera';
+import { ajusteDaImagemDisponivel, type EfeitoDoFundo, fundoDaCameraDisponivel, ProcessadorDoFundo } from './fundoDaCamera';
+import { type AjusteDaCamera, ajusteAtivo } from './ajusteDaCamera';
 import { type AppAudio, captureAppAudio } from './screenAudio';
 import { definirSurdez, sounds } from './sounds';
 import type { MinhaProtecao, Regras } from './protecao';
@@ -1557,10 +1558,12 @@ export function useVoice(socket: Socket | null) {
         fundoRef.current = null;
         return;
       }
-      const efeito = getSettings().fundoDaCamera;
+      // o efeito de fundo só no app; os ajustes da imagem (enquadrar, espelho, luz) onde o navegador mexe nos quadros
+      const efeito = getSettings().fundoDaCamera !== 'nenhum' && (await fundoDaCameraDisponivel()) ? getSettings().fundoDaCamera : 'nenhum';
+      const comAjuste = ajusteAtivo(getSettings().ajusteDaCamera) && ajusteDaImagemDisponivel();
       const atual = faixa.getProcessor() instanceof ProcessadorDoFundo ? (faixa.getProcessor() as ProcessadorDoFundo) : null;
       try {
-        if (efeito === 'nenhum' || !(await fundoDaCameraDisponivel())) {
+        if (efeito === 'nenhum' && !comAjuste) {
           if (atual) await faixa.stopProcessor();
           fundoRef.current = null;
         } else if (atual) {
@@ -1598,6 +1601,16 @@ export function useVoice(socket: Socket | null) {
     (efeito: EfeitoDoFundo) => {
       updateSettings({ fundoDaCamera: efeito });
       return aplicarFundo();
+    },
+    [aplicarFundo],
+  );
+  /** Os ajustes da imagem (ajusteDaCamera.ts): o processador os lê a cada quadro; aqui só se liga ou desliga o processador. */
+  const setAjusteDaCamera = useCallback(
+    (ajuste: AjusteDaCamera) => {
+      const antes = ajusteAtivo(getSettings().ajusteDaCamera);
+      updateSettings({ ajusteDaCamera: ajuste });
+      if (antes !== ajusteAtivo(ajuste)) return aplicarFundo();
+      return Promise.resolve();
     },
     [aplicarFundo],
   );
@@ -2472,6 +2485,7 @@ export function useVoice(socket: Socket | null) {
     abrirCelular,
     fecharCelular,
     setFundoDaCamera,
+    setAjusteDaCamera,
     shareScreen,
     stopScreen,
     switchDevice,

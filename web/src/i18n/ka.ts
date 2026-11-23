@@ -4929,4 +4929,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "შენი თემებიდან ჯერ განცხადებები არ არის.",
   "Sentiu falta de algo no Syden?": "Syden-ში რამე გაკლია?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "აქ მოგვიყევი, რომ {nome} შეძლოს მისი გაკეთება. პასუხი პირად საუბარში მოვა.",
+  "Ajustar a imagem": "გამოსახულების მორგება",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "წინასწარი ხედის გადათრევით კადრი სწორდება; მაუსის ბორბალი აახლოებს.",
+  "Preencher 16:9": "16:9-ით შევსება",
+  "Espelhar": "სარკისებრი",
+  "Zoom": "მასშტაბი",
+  "Contraste": "კონტრასტი",
+  "Claridade": "სიკაშკაშე",
 } satisfies Record<string, string>;

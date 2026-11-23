@@ -4910,4 +4910,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "មិនទាន់មានសេចក្តីប្រកាសពីសហគមន៍របស់អ្នកនៅឡើយទេ។",
   "Sentiu falta de algo no Syden?": "តើ Syden ខ្វះអ្វីមួយទេ?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "ប្រាប់នៅទីនេះ ដើម្បីឱ្យ {nome} អាចធ្វើវាបាន។ ចម្លើយនឹងមកដល់ក្នុងការសន្ទនាឯកជន។",
+  "Ajustar a imagem": "កែរូបភាព",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "អូសការមើលជាមុនដើម្បីដាក់ស៊ុម; កង់កណ្តុរពង្រីក។",
+  "Preencher 16:9": "បំពេញ 16:9",
+  "Espelhar": "ឆ្លុះ",
+  "Zoom": "ពង្រីក",
+  "Contraste": "កម្រិតពន្លឺផ្ទុយ",
+  "Claridade": "ពន្លឺ",
 } satisfies Record<string, string>;

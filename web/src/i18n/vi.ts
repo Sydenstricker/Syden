@@ -4814,4 +4814,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Chưa có thông báo nào từ cộng đồng của bạn.",
   "Sentiu falta de algo no Syden?": "Bạn thấy Syden còn thiếu gì không?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kể ở đây để {nome} có thể làm. Câu trả lời sẽ đến trong cuộc trò chuyện riêng.",
+  "Ajustar a imagem": "Điều chỉnh hình ảnh",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Kéo bản xem trước để căn khung; con lăn chuột để phóng to.",
+  "Preencher 16:9": "Lấp đầy 16:9",
+  "Espelhar": "Lật gương",
+  "Zoom": "Thu phóng",
+  "Contraste": "Độ tương phản",
+  "Claridade": "Độ sáng",
 } satisfies Record<string, string>;

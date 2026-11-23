@@ -4826,4 +4826,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "మీ సంఘాల నుంచి ఇంకా ప్రకటనలు లేవు.",
   "Sentiu falta de algo no Syden?": "Sydenలో ఏదైనా లోటు అనిపించిందా?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "{nome} దాన్ని అమలు చేయగలిగేలా ఇక్కడ చెప్పండి. జవాబు ప్రైవేట్ సంభాషణలో వస్తుంది.",
+  "Ajustar a imagem": "చిత్రాన్ని సర్దుబాటు చేయండి",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "ఫ్రేమ్ చేయడానికి ప్రివ్యూను లాగండి; మౌస్ చక్రం జూమ్ చేస్తుంది.",
+  "Preencher 16:9": "16:9 నింపండి",
+  "Espelhar": "అద్దం",
+  "Zoom": "జూమ్",
+  "Contraste": "కాంట్రాస్ట్",
+  "Claridade": "ప్రకాశం",
 } satisfies Record<string, string>;

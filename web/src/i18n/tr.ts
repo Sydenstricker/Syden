@@ -4845,4 +4845,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Topluluklarından henüz duyuru yok.",
   "Sentiu falta de algo no Syden?": "Syden’da bir şeyin eksikliğini hissettin mi?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Burada anlat ki {nome} bunu yapabilsin. Yanıt özel sohbete gelir.",
+  "Ajustar a imagem": "Görüntüyü ayarla",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Kadrajı ayarlamak için önizlemeyi sürükle; fare tekerleği yakınlaştırır.",
+  "Preencher 16:9": "16:9 doldur",
+  "Espelhar": "Aynala",
+  "Zoom": "Yakınlaştırma",
+  "Contraste": "Kontrast",
+  "Claridade": "Parlaklık",
 } satisfies Record<string, string>;

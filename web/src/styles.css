@@ -21522,3 +21522,47 @@ body.arrastando-barra {
   border-color: var(--green, #23a55a);
   color: var(--green, #23a55a);
 }
+
+/* OS AJUSTES DA IMAGEM (ajusteDaCamera.ts, AjustesDaImagem em SettingsModal.tsx). */
+.previa-enquadravel {
+  cursor: grab;
+  touch-action: none;
+}
+.previa-enquadravel:active {
+  cursor: grabbing;
+}
+.ajustes-da-imagem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 480px;
+  margin-top: 6px;
+}
+.ajustes-da-imagem-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.ajustes-da-imagem-linha button[aria-pressed='true'] {
+  border-color: var(--accent);
+  color: var(--text-strong, var(--text));
+}
+.ajuste-espelhar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-inline-start: 4px;
+}
+.ajuste-regua {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  align-items: center;
+  gap: 10px;
+}
+.ajuste-regua input[type='range'] {
+  width: 100%;
+}
+.ajustes-da-imagem .link-button {
+  align-self: flex-start;
+}

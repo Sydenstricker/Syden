@@ -4859,4 +4859,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Kò sí ìkéde láti ọ̀dọ̀ àwọn àwùjọ rẹ síbẹ̀.",
   "Sentiu falta de algo no Syden?": "Ṣé ohun kan kù sí Syden fún yín?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Ẹ sọ ọ́ níbí, kí {nome} lè ṣe é. Èsì máa dé nínú ìjíròrò aládàáni.",
+  "Ajustar a imagem": "Ṣàtúnṣe àwòrán",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Fa àwòtẹ́lẹ̀ láti ṣe férémù; kẹ̀kẹ́ àsin ń sún mọ́.",
+  "Preencher 16:9": "Kún 16:9",
+  "Espelhar": "Dígí",
+  "Zoom": "Sún mọ́",
+  "Contraste": "Ìyàtọ̀ àwọ̀",
+  "Claridade": "Ìmọ́lẹ̀",
 } satisfies Record<string, string>;

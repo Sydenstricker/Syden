@@ -4912,4 +4912,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "ຍັງບໍ່ມີປະກາດຈາກຊຸມຊົນຂອງເຈົ້າເທື່ອ.",
   "Sentiu falta de algo no Syden?": "ຮູ້ສຶກວ່າ Syden ຂາດຫຍັງບໍ?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "ບອກຢູ່ນີ້ ເພື່ອໃຫ້ {nome} ເຮັດມັນໄດ້ ຄຳຕອບຈະມາໃນການສົນທະນາສ່ວນຕົວ",
+  "Ajustar a imagem": "ປັບຮູບ",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "ລາກການເບິ່ງຕົວຢ່າງເພື່ອຈັດກອບ; ລໍ້ເມົາສ໌ຂະຫຍາຍ.",
+  "Preencher 16:9": "ເຕັມ 16:9",
+  "Espelhar": "ສະທ້ອນ",
+  "Zoom": "ຊູມ",
+  "Contraste": "ຄວາມຄົມຊັດ",
+  "Claridade": "ຄວາມສະຫວ່າງ",
 } satisfies Record<string, string>;

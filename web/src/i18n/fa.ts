@@ -4837,4 +4837,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "هنوز اطلاعیه‌ای از انجمن‌های شما نیست.",
   "Sentiu falta de algo no Syden?": "در Syden جای چیزی خالی است؟",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "اینجا بنویسید تا {nome} بتواند آن را بسازد. پاسخ در گفتگوی خصوصی می‌رسد.",
+  "Ajustar a imagem": "تنظیم تصویر",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "برای کادربندی، پیش‌نمایش را بکشید؛ چرخ موس بزرگ‌نمایی می‌کند.",
+  "Preencher 16:9": "پر کردن 16:9",
+  "Espelhar": "آینه‌ای",
+  "Zoom": "بزرگ‌نمایی",
+  "Contraste": "کنتراست",
+  "Claridade": "روشنایی",
 } satisfies Record<string, string>;

@@ -3027,6 +3027,17 @@ abre a página (sem conta) e a câmera dele vira a câmera da pessoa, no lugar d
 - Testes: `server/test/camera-do-celular.test.ts` e `e2e/celular-como-camera.mjs` (passaram; o "celular" é outro navegador com uma
   câmera em pé de canvas, na mesma máquina). E `e2e/celular-nas-configuracoes-no-app.mjs` (o app, passou).
 
+**OS AJUSTES DA IMAGEM (23/11/2026, pedido dele, depois de usar o celular: "senti falta de mais opções de ajuste na imagem").** O
+**grupo A, feito NO COMPUTADOR**, vale para qualquer câmera (a webcam e o celular) e onde o navegador mexe nos quadros (o app, Chrome,
+Edge): Configurações → Voz e vídeo → "Ajustar a imagem", embaixo da prévia: zoom até 4× (a régua, ou a rodinha em cima da prévia),
+ARRASTAR a prévia para enquadrar, "Imagem inteira" ou "Preencher 16:9" (o celular em pé vira um quadro deitado), espelhar, claridade e
+contraste (`web/src/ajusteDaCamera.ts`). Mora no MESMO processador do fundo da câmera, antes do recorte (o modelo já recebe o quadro
+enquadrado), e o modelo do fundo só abre quando um efeito pede. O recorte NÃO amplia: o zoom sai com menos pixels, sem inventar.
+Fica nas preferências (`ajusteDaCamera`), e vale na hora, também numa chamada. Testes: `web/test/ajusteDaCamera.test.ts` e
+`e2e/ajustes-da-camera.mjs` (no Chrome, passou). **O grupo B (a câmera do próprio celular: lente, zoom de verdade, foco, lanterna)
+espera a MEDIÇÃO no iPhone dele:** `web/public/medir-camera.html` (no ar em /app/medir-camera.html; fora do app, nada é enviado,
+o resultado é copiado à mão), que lista o que cada câmera deixa e testa o zoom e a lanterna de verdade.
+
 ## O app de Android: medido, ainda não começado
 
 **Medido em 23/11/2026, a pedido dele ("transmitir a tela do celular é uma funcionalidade importante").** O Chrome do Android não

@@ -4836,4 +4836,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "ابھی تک آپ کی کمیونٹیز کی طرف سے کوئی اعلان نہیں۔",
   "Sentiu falta de algo no Syden?": "Syden میں کسی چیز کی کمی محسوس ہوئی؟",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "یہاں بتائیں، تاکہ {nome} اسے بنا سکے۔ جواب نجی گفتگو میں آئے گا۔",
+  "Ajustar a imagem": "تصویر ایڈجسٹ کریں",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "فریم کرنے کے لیے پیش منظر کو گھسیٹیں؛ ماؤس کا پہیہ زوم کرتا ہے۔",
+  "Preencher 16:9": "16:9 بھریں",
+  "Espelhar": "آئینہ",
+  "Zoom": "زوم",
+  "Contraste": "کنٹراسٹ",
+  "Claridade": "چمک",
 } satisfies Record<string, string>;

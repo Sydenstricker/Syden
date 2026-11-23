@@ -4854,4 +4854,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Nta matangazo aturuka mu miryango yawe aragera.",
   "Sentiu falta de algo no Syden?": "Hari ikintu ubura muri Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Bitubwire hano, kugira ngo {nome} abashe kubikora. Igisubizo kiza mu kiganiro cyihariye.",
+  "Ajustar a imagem": "Hindura ifoto",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Kurura ibanziriza kugira ngo utunganye ishusho; uruziga rw’imbeba rwegereza.",
+  "Preencher 16:9": "Uzuza 16:9",
+  "Espelhar": "Indorerwamo",
+  "Zoom": "Kwegereza",
+  "Contraste": "Itandukaniro",
+  "Claridade": "Urumuri",
 } satisfies Record<string, string>;

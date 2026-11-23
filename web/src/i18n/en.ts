@@ -4839,4 +4839,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "No announcements from your communities yet.",
   "Sentiu falta de algo no Syden?": "Missing something in Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Tell us here so {nome} can build it. The reply arrives in your private conversation.",
+  "Ajustar a imagem": "Adjust the image",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Drag the preview to frame the shot; the mouse wheel zooms in.",
+  "Preencher 16:9": "Fill 16:9",
+  "Espelhar": "Mirror",
+  "Zoom": "Zoom",
+  "Contraste": "Contrast",
+  "Claridade": "Brightness",
 } satisfies Record<string, string>;

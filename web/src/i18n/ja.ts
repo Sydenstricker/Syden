@@ -4825,4 +4825,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "コミュニティからのお知らせはまだありません。",
   "Sentiu falta de algo no Syden?": "Sydenに足りないものはありましたか？",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "ここで教えてください。{nome}に届いて、実装につながります。返事は個人チャットに届きます。",
+  "Ajustar a imagem": "画像の調整",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "プレビューをドラッグして構図を決め、マウスホイールで拡大できます。",
+  "Preencher 16:9": "16:9 に合わせる",
+  "Espelhar": "左右反転",
+  "Zoom": "ズーム",
+  "Contraste": "コントラスト",
+  "Claridade": "明るさ",
 } satisfies Record<string, string>;

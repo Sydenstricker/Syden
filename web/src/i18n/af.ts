@@ -4905,4 +4905,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Nog geen aankondigings van jou gemeenskappe nie.",
   "Sentiu falta de algo no Syden?": "Mis jy iets in Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Vertel ons hier sodat {nome} dit kan bou. Die antwoord kom in die privaat gesprek.",
+  "Ajustar a imagem": "Pas die beeld aan",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Sleep die voorskou om die beeld te raam; die muiswiel zoem in.",
+  "Preencher 16:9": "Vul 16:9",
+  "Espelhar": "Spieël",
+  "Zoom": "Zoem",
+  "Contraste": "Kontras",
+  "Claridade": "Helderheid",
 } satisfies Record<string, string>;

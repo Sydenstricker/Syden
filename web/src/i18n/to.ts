@@ -4850,4 +4850,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "ʻOku teʻeki ai ha fanongonongo mei hoʻo ngaahi kulupú.",
   "Sentiu falta de algo no Syden?": "ʻOku ʻi ai ha meʻa ʻoku masiva ʻi Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Talanoa mai heni, koeʻuhi ke lava ʻe {nome} ʻo fakahoko. ʻE aʻu mai ʻa e tali ʻi he talanoa fakafoʻituitui.",
+  "Ajustar a imagem": "Fakatonutonu ʻa e ʻīmisi",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Toho ʻa e sio kimuʻá ke fokotuʻu ʻa e fōtunga; ʻoku fakaofi ʻe he veʻeteka ʻo e mouse.",
+  "Preencher 16:9": "Fakafonu 16:9",
+  "Espelhar": "Sioʻata",
+  "Zoom": "Fakaofi",
+  "Contraste": "Faikehekehe",
+  "Claridade": "Maama",
 } satisfies Record<string, string>;

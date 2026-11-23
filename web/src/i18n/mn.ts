@@ -4924,4 +4924,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Чиний бүлгэмүүдээс одоогоор мэдэгдэл алга.",
   "Sentiu falta de algo no Syden?": "Syden-д ямар нэг зүйл дутагдсан уу?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Энд бичээрэй, {nome} үүнийг хийж чадахаар. Хариу хувийн ярианд ирнэ.",
+  "Ajustar a imagem": "Зургийг тохируулах",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Хүрээлэхийн тулд урьдчилсан харагдацыг чир; хулганы дугуй ойртуулна.",
+  "Preencher 16:9": "16:9 дүүргэх",
+  "Espelhar": "Толин тусгал",
+  "Zoom": "Томруулах",
+  "Contraste": "Тодрол",
+  "Claridade": "Гэрэлтүүлэг",
 } satisfies Record<string, string>;

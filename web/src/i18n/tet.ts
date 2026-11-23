@@ -4846,4 +4846,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Seidauk iha avizu husi ó-nia komunidade sira.",
   "Sentiu falta de algo no Syden?": "Ó sente falta buat ruma iha Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Konta iha ne'e, atu {nome} bele halo. Resposta to'o iha konversa privadu.",
+  "Ajustar a imagem": "Ajusta imajen",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Dada previzaun atu enkuadra; roda mouse nian halo boot.",
+  "Preencher 16:9": "Prense 16:9",
+  "Espelhar": "Espellu",
+  "Zoom": "Zoom",
+  "Contraste": "Kontraste",
+  "Claridade": "Naroman",
 } satisfies Record<string, string>;

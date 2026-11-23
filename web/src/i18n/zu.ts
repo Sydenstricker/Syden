@@ -4912,4 +4912,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Azikabi khona izaziso ezivela emiphakathini yakho.",
   "Sentiu falta de algo no Syden?": "Kukhona okushodayo ku-Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kusho lapha, ukuze {nome} akwazi ukukwenza. Impendulo ifika engxoxweni eyimfihlo.",
+  "Ajustar a imagem": "Lungisa isithombe",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Hudula ukubuka kuqala ukuze ulungise uzimele; isondo legundane liyasondeza.",
+  "Preencher 16:9": "Gcwalisa u-16:9",
+  "Espelhar": "Isibuko",
+  "Zoom": "Sondeza",
+  "Contraste": "Umehluko",
+  "Claridade": "Ukukhanya",
 } satisfies Record<string, string>;

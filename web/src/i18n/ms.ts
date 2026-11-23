@@ -4837,4 +4837,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Belum ada pengumuman daripada komuniti kamu.",
   "Sentiu falta de algo no Syden?": "Ada sesuatu yang kurang dalam Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Ceritakan di sini supaya {nome} dapat melaksanakannya. Balasan akan tiba dalam perbualan peribadi.",
+  "Ajustar a imagem": "Laraskan imej",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Seret pratonton untuk membingkai; roda tetikus mengezum masuk.",
+  "Preencher 16:9": "Isi 16:9",
+  "Espelhar": "Cermin",
+  "Zoom": "Zum",
+  "Contraste": "Kontras",
+  "Claridade": "Kecerahan",
 } satisfies Record<string, string>;

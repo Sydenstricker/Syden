@@ -4932,4 +4932,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Hamjamiyatlaringdan hozircha eʼlon yoʻq.",
   "Sentiu falta de algo no Syden?": "Syden-da nimadir yetishmayaptimi?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Shu yerda ayt, {nome} uni amalga oshira olsin. Javob shaxsiy suhbatga keladi.",
+  "Ajustar a imagem": "Rasmni sozla",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Kadrni tanlash uchun oldindan koʻrishni sudra; sichqoncha gʻildiragi yaqinlashtiradi.",
+  "Preencher 16:9": "16:9 toʻldirish",
+  "Espelhar": "Koʻzgu",
+  "Zoom": "Masshtab",
+  "Contraste": "Kontrast",
+  "Claridade": "Yorqinlik",
 } satisfies Record<string, string>;

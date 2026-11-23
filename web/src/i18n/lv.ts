@@ -4912,4 +4912,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Pagaidām nav paziņojumu no tavām kopienām.",
   "Sentiu falta de algo no Syden?": "Vai Syden tev kaut kā pietrūka?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Pastāsti šeit, lai {nome} to varētu izdarīt. Atbilde atnāks privātā sarunā.",
+  "Ajustar a imagem": "Pielāgo attēlu",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Velc priekšskatījumu, lai iekadrētu; peles ritenītis pietuvina.",
+  "Preencher 16:9": "Aizpildīt 16:9",
+  "Espelhar": "Spoguļot",
+  "Zoom": "Tālummaiņa",
+  "Contraste": "Kontrasts",
+  "Claridade": "Spilgtums",
 } satisfies Record<string, string>;

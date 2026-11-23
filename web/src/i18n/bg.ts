@@ -4908,4 +4908,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Все още няма обяви от твоите общности.",
   "Sentiu falta de algo no Syden?": "Липсва ли ти нещо в Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Разкажи тук, за да може {nome} да го направи. Отговорът идва в личния разговор.",
+  "Ajustar a imagem": "Настрой изображението",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Плъзни прегледа, за да нагласиш кадъра; колелцето на мишката приближава.",
+  "Preencher 16:9": "Запълни 16:9",
+  "Espelhar": "Огледално",
+  "Zoom": "Мащаб",
+  "Contraste": "Контраст",
+  "Claridade": "Яркост",
 } satisfies Record<string, string>;

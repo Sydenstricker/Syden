@@ -4846,4 +4846,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Babu sanarwa daga ƙungiyoyinku tukuna.",
   "Sentiu falta de algo no Syden?": "Akwai abin da kuka rasa a Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Ku faɗa a nan, saƙon zai je wurin {nome} don a aiwatar. Amsar za ta zo a tattaunawar sirri.",
+  "Ajustar a imagem": "Daidaita hoto",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Ku ja hangen don tsara firam; ƙafafun linzamin kwamfuta na kusantarwa.",
+  "Preencher 16:9": "Cika 16:9",
+  "Espelhar": "Madubi",
+  "Zoom": "Zuƙowa",
+  "Contraste": "Bambanci",
+  "Claridade": "Haske",
 } satisfies Record<string, string>;

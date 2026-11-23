@@ -4910,4 +4910,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Weli ma jiraan ogeysiisyo ka yimid bulshooyinkaaga.",
   "Sentiu falta de algo no Syden?": "Ma jiraa wax aad ka waysay Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Halkan ku qor si ay u gaarto {nome} oo loo hirgeliyo. Jawaabtu waxay imanaysaa wadahadalka gaarka ah.",
+  "Ajustar a imagem": "Hagaaji sawirka",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Jiid horudhaca si aad u qaabayso; giraangirta jiirka ayaa soo dhoweysa.",
+  "Preencher 16:9": "Buuxi 16:9",
+  "Espelhar": "Muraayad",
+  "Zoom": "Soo dhowee",
+  "Contraste": "Kala duwanaansho",
+  "Claridade": "Iftiinka",
 } satisfies Record<string, string>;

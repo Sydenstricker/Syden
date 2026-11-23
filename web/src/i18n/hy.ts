@@ -4930,4 +4930,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Քո համայնքներից դեռ հայտարարություններ չկան։",
   "Sentiu falta de algo no Syden?": "Syden-ում ինչ-որ բա՞ն է պակասում",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Պատմիր այստեղ, որ {nome} կարողանա դա իրականացնել։ Պատասխանը կգա անձնական զրույցում։",
+  "Ajustar a imagem": "Կարգավորիր պատկերը",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Քաշիր նախադիտումը՝ կադրավորելու համար. մկնիկի անիվը մոտեցնում է։",
+  "Preencher 16:9": "Լցնել 16:9",
+  "Espelhar": "Հայելային",
+  "Zoom": "Մասշտաբ",
+  "Contraste": "Կոնտրաստ",
+  "Claridade": "Պայծառություն",
 } satisfies Record<string, string>;

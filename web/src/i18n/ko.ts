@@ -4831,4 +4831,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "아직 내 커뮤니티의 공지가 없어요.",
   "Sentiu falta de algo no Syden?": "Syden에 아쉬운 점이 있었나요?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "여기에 적어 주세요. {nome}에게 전달되어 앱에 반영될 수 있어요. 답장은 개인 대화로 와요.",
+  "Ajustar a imagem": "화면 조정",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "미리보기를 끌어서 구도를 잡고, 마우스 휠로 확대해요.",
+  "Preencher 16:9": "16:9 채우기",
+  "Espelhar": "좌우 반전",
+  "Zoom": "확대",
+  "Contraste": "대비",
+  "Claridade": "밝기",
 } satisfies Record<string, string>;

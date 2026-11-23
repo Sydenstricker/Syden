@@ -4892,4 +4892,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Поки що немає оголошень від твоїх спільнот.",
   "Sentiu falta de algo no Syden?": "Тобі чогось бракує в Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Розкажи тут — це дійде до {nome}, щоб це можна було реалізувати. Відповідь прийде в приватну розмову.",
+  "Ajustar a imagem": "Налаштувати зображення",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Перетягни попередній перегляд, щоб вибрати кадр; коліщатко миші наближає.",
+  "Preencher 16:9": "Заповнити 16:9",
+  "Espelhar": "Віддзеркалити",
+  "Zoom": "Масштаб",
+  "Contraste": "Контраст",
+  "Claridade": "Яскравість",
 } satisfies Record<string, string>;

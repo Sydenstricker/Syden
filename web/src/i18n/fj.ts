@@ -4843,4 +4843,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Se bera ni dua na vakaro mai na nomu isoqosoqo.",
   "Sentiu falta de algo no Syden?": "E dua na ka e sega ni tiko ena Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Tukuna eke, me rawa ni cakava {nome}. Na isau ena yaco ena veitalanoa vakaitaukei.",
+  "Ajustar a imagem": "Vakadodonutaka na iyaloyalo",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Toboka na raici taumada mo vakaduria; na wiliwili ni mouse e vakalevutaka.",
+  "Preencher 16:9": "Vakasinaita 16:9",
+  "Espelhar": "Iloilo",
+  "Zoom": "Zoom",
+  "Contraste": "Duidui ni roka",
+  "Claridade": "Rarama",
 } satisfies Record<string, string>;

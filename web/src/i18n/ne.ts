@@ -4912,4 +4912,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "अहिलेसम्म तिम्रा समुदायहरूबाट कुनै सूचना छैन।",
   "Sentiu falta de algo no Syden?": "Syden मा केही कमी महसुस भयो?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "यहाँ भन्नुहोस्, ताकि {nome} ले यो बनाउन सकून्। जवाफ निजी कुराकानीमा आउँछ।",
+  "Ajustar a imagem": "तस्बिर मिलाउने",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "पूर्वावलोकन तानेर फ्रेम मिलाउन सकिन्छ; माउसको पाङ्ग्राले जुम हुन्छ।",
+  "Preencher 16:9": "16:9 भर्ने",
+  "Espelhar": "ऐना",
+  "Zoom": "जुम",
+  "Contraste": "कन्ट्रास्ट",
+  "Claridade": "उज्यालोपन",
 } satisfies Record<string, string>;

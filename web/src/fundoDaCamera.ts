@@ -14,6 +14,7 @@
  * Se o processo cair, ou a placa recusar, o quadro passa como veio: a câmera nunca fica preta por causa do efeito.
  * Custo medido em 14–15/11/2026 (e2e/fundo-da-camera/README.md): ~0,17 de um núcleo no processo, a 15 por segundo.
  */
+import { Ajustador, ajusteAtivo, entradaDaCamera } from './ajusteDaCamera';
 import type { Track, TrackProcessor, VideoProcessorOptions } from 'livekit-client';
 import { desktopBridge } from './desktop';
 import { getSettings } from './settings';
@@ -630,13 +631,17 @@ export class ProcessadorDoFundo implements TrackProcessor<Track.Kind.Video, Vide
     }
     if (this.imagemPendente) void this.carregarImagem(this.imagemPendente);
 
-    // a conversa com o processo do modelo
-    const porta = this.montador ? await abrirPorta() : null;
+    // A conversa com o processo do modelo, aberta SÓ QUANDO UM EFEITO DE FUNDO PEDE (23/11/2026): o processador também serve
+    // aos ajustes da imagem (ajusteDaCamera.ts), no navegador inclusive, e ali não há modelo nenhum. Até a porta abrir, o
+    // quadro passa só ajustado.
+    let porta: MessagePort | null = null;
+    let pedindoPorta = false;
+    const ajustador = new Ajustador();
     const reduzido = new OffscreenCanvas(LADO, LADO);
     const ctx2d = reduzido.getContext('2d', { willReadFrequently: true });
     let esperando = false;
     let ultimoEnvio = 0;
-    let vivo = !!porta;
+    let vivo = true;
     let descidas = 0;
     type Resposta = {
       mascara?: Uint8Array;
@@ -648,8 +653,8 @@ export class ProcessadorDoFundo implements TrackProcessor<Track.Kind.Video, Vide
       semRefinado?: boolean;
       erro?: string;
     };
-    if (porta) {
-      porta.onmessage = (ev: MessageEvent<Resposta>) => {
+    const ligarPorta = (p: MessagePort) => {
+      p.onmessage = (ev: MessageEvent<Resposta>) => {
         esperando = false;
         const r = ev.data;
         if (r.mascara && this.montador) {
@@ -674,11 +679,28 @@ export class ProcessadorDoFundo implements TrackProcessor<Track.Kind.Video, Vide
           }
         } else if (r.erro) console.warn('[syden] fundo da câmera:', r.erro);
       };
-      porta.onmessageerror = () => {
+      p.onmessageerror = () => {
         vivo = false;
       };
-      porta.start();
-    }
+      p.start();
+    };
+    const pedirPorta = () => {
+      pedindoPorta = true;
+      // sem o app (no navegador), não há modelo: o efeito de fundo não vale, e o quadro segue só ajustado
+      if (!this.montador || !desktopBridge?.fundoCamera) {
+        vivo = false;
+        return;
+      }
+      void abrirPorta().then((p) => {
+        if (!p || !ativo) {
+          p?.close();
+          vivo = false;
+          return;
+        }
+        porta = p;
+        ligarPorta(p);
+      });
+    };
 
     let ativo = true;
     this.parar = () => {
@@ -693,10 +715,27 @@ export class ProcessadorDoFundo implements TrackProcessor<Track.Kind.Video, Vide
 
     const laco = async () => {
       while (ativo) {
-        const { value: quadro, done } = await leitor.read().catch(() => ({ value: undefined, done: true }));
-        if (done || !quadro) break;
+        const { value: chegou, done } = await leitor.read().catch(() => ({ value: undefined, done: true }));
+        if (done || !chegou) break;
+        // os AJUSTES DA IMAGEM primeiro (enquadrar, formato, espelho, luz): o modelo do fundo já recebe o quadro enquadrado
+        let quadro: VideoFrame = chegou;
+        entradaDaCamera.largura = chegou.displayWidth;
+        entradaDaCamera.altura = chegou.displayHeight;
+        const ajuste = getSettings().ajusteDaCamera;
+        if (ajusteAtivo(ajuste)) {
+          try {
+            const ajustado = ajustador.ajustar(chegou, ajuste);
+            if (ajustado) {
+              chegou.close();
+              quadro = ajustado;
+            }
+          } catch (e) {
+            console.warn('[syden] ajuste da câmera: falhou; o quadro segue como veio.', e);
+          }
+        }
         const efeito = this.efeito;
         const m = this.montador;
+        if (efeito !== 'nenhum' && !pedindoPorta) pedirPorta();
         if (efeito === 'nenhum' || !m || !vivo || m.perdido) {
           await escritor.write(quadro).catch(() => quadro.close());
           continue;
@@ -762,4 +801,10 @@ export class ProcessadorDoFundo implements TrackProcessor<Track.Kind.Video, Vide
     this.processedTrack?.stop();
     this.processedTrack = undefined;
   }
+}
+
+/** Este navegador sabe mexer nos quadros da câmera (Chrome, Edge e o app): é o que os ajustes da imagem pedem. */
+export function ajusteDaImagemDisponivel(): boolean {
+  const g = globalThis as ComProcessador;
+  return Boolean(g.MediaStreamTrackProcessor && g.MediaStreamTrackGenerator && typeof OffscreenCanvas !== 'undefined');
 }

@@ -4921,4 +4921,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Poko gen anons nan kominote ou yo.",
   "Sentiu falta de algo no Syden?": "Ou santi yon bagay manke nan Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Rakonte l isit la pou {nome} ka fè l. Repons lan ap rive nan konvèsasyon prive a.",
+  "Ajustar a imagem": "Ajiste imaj la",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Trennen apèsi a pou kadre; wou sourit la rapwoche.",
+  "Preencher 16:9": "Ranpli 16:9",
+  "Espelhar": "Miwa",
+  "Zoom": "Zoum",
+  "Contraste": "Kontras",
+  "Claridade": "Klète",
 } satisfies Record<string, string>;

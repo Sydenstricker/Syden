@@ -4840,4 +4840,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "এখনো তোমার কমিউনিটিগুলো থেকে কোনো ঘোষণা নেই।",
   "Sentiu falta de algo no Syden?": "Syden-এ কিছুর অভাব বোধ করলে?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "এখানে বলো, যাতে {nome} সেটা বানাতে পারে। উত্তর আসবে ব্যক্তিগত কথোপকথনে।",
+  "Ajustar a imagem": "ছবি ঠিক করো",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "ফ্রেমে আনতে প্রিভিউ টেনে নাও; মাউসের চাকা জুম করে।",
+  "Preencher 16:9": "16:9 ভরাও",
+  "Espelhar": "মিরর",
+  "Zoom": "জুম",
+  "Contraste": "কনট্রাস্ট",
+  "Claridade": "উজ্জ্বলতা",
 } satisfies Record<string, string>;

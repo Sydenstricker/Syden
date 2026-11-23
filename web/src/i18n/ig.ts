@@ -4852,4 +4852,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Enweghị ọkwa ọ bụla site n’obodo gị ugbu a.",
   "Sentiu falta de algo no Syden?": "Ọ dị ihe na-adịghị na Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Kọọ ya ebe a ka {nome} nwee ike ime ya. Azịza ga-abịa na nkata nzuzo.",
+  "Ajustar a imagem": "Hazie onyonyo",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Dọkpụ nlele mbụ ka ịhazie etiti; wiil òké na-eme ka ọ bịaruo nso.",
+  "Preencher 16:9": "Jupụta 16:9",
+  "Espelhar": "Enyo",
+  "Zoom": "Zoom",
+  "Contraste": "Ọdịiche",
+  "Claridade": "Ìhè",
 } satisfies Record<string, string>;

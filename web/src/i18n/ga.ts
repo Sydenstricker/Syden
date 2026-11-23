@@ -4850,4 +4850,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Níl aon fhógra ó do phobail fós.",
   "Sentiu falta de algo no Syden?": "An airíonn tú uait rud éigin in Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Inis anseo é, ionas gur féidir le {nome} é a dhéanamh. Tagann an freagra sa chomhrá príobháideach.",
+  "Ajustar a imagem": "Coigeartaigh an íomhá",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Tarraing an réamhamharc chun an fráma a shocrú; zúmálann roth na luiche isteach.",
+  "Preencher 16:9": "Líon 16:9",
+  "Espelhar": "Scáthánaigh",
+  "Zoom": "Zúmáil",
+  "Contraste": "Codarsnacht",
+  "Claridade": "Gile",
 } satisfies Record<string, string>;

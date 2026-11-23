@@ -4896,4 +4896,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "אין עדיין הכרזות מהקהילות.",
   "Sentiu falta de algo no Syden?": "חסר משהו ב-Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "אפשר לספר כאן, וזה יגיע אל {nome} כדי שייכנס לאפליקציה. התשובה מגיעה בשיחה הפרטית.",
+  "Ajustar a imagem": "כוונון התמונה",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "אפשר לגרור את התצוגה המקדימה כדי למסגר; גלגלת העכבר מקרבת.",
+  "Preencher 16:9": "מילוי 16:9",
+  "Espelhar": "היפוך מראה",
+  "Zoom": "זום",
+  "Contraste": "ניגודיות",
+  "Claridade": "בהירות",
 } satisfies Record<string, string>;

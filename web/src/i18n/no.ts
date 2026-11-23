@@ -4910,4 +4910,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Ingen kunngjøringer fra fellesskapene dine ennå.",
   "Sentiu falta de algo no Syden?": "Savner du noe i Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Fortell det her, så {nome} kan lage det. Svaret kommer i den private samtalen.",
+  "Ajustar a imagem": "Juster bildet",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Dra i forhåndsvisningen for å beskjære; musehjulet zoomer inn.",
+  "Preencher 16:9": "Fyll 16:9",
+  "Espelhar": "Speilvend",
+  "Zoom": "Zoom",
+  "Contraste": "Kontrast",
+  "Claridade": "Lysstyrke",
 } satisfies Record<string, string>;

@@ -4850,4 +4850,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Καμία ανακοίνωση από τις κοινότητές σου ακόμα.",
   "Sentiu falta de algo no Syden?": "Σου έλειψε κάτι στο Syden;",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Πες το εδώ, για να μπορεί {nome} να το υλοποιήσει. Η απάντηση έρχεται στην ιδιωτική συνομιλία.",
+  "Ajustar a imagem": "Ρύθμιση εικόνας",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Σύρε την προεπισκόπηση για να καδράρεις· η ροδέλα του ποντικιού κάνει ζουμ.",
+  "Preencher 16:9": "Γέμισμα 16:9",
+  "Espelhar": "Κατοπτρισμός",
+  "Zoom": "Ζουμ",
+  "Contraste": "Αντίθεση",
+  "Claridade": "Φωτεινότητα",
 } satisfies Record<string, string>;

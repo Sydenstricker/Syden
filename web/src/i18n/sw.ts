@@ -4843,4 +4843,11 @@ export default {
   "Nenhum aviso das suas comunidades por enquanto.": "Bado hakuna matangazo kutoka kwa jumuiya zako.",
   "Sentiu falta de algo no Syden?": "Kuna kitu ulichokikosa kwenye Syden?",
   "Conte aqui, para {nome} poder implementar. A resposta chega na conversa privada.": "Eleza hapa, ili {nome} aweze kukitekeleza. Jibu linafika kwenye mazungumzo ya faragha.",
+  "Ajustar a imagem": "Rekebisha picha",
+  "Arraste a prévia para enquadrar; a rodinha do mouse aproxima.": "Buruta onyesho la awali ili kupanga fremu; gurudumu la kipanya linakuza.",
+  "Preencher 16:9": "Jaza 16:9",
+  "Espelhar": "Kioo",
+  "Zoom": "Kukuza",
+  "Contraste": "Utofautishaji",
+  "Claridade": "Mwangaza",
 } satisfies Record<string, string>;
