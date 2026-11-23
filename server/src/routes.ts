@@ -187,6 +187,14 @@ export function poderDeOperador(user: db.User, action: string, sobre: { target?:
 
 export const manages = (role: db.Role | undefined) => role === 'owner' || role === 'admin';
 
+/** A frase de um código que não abre nada: o convite a mais diz se expirou ou se acabaram os usos (convites-routes.ts). */
+function erroDoConvite(achado: ReturnType<typeof db.comunidadeDoConvite>): string {
+  if (achado && 'motivo' in achado) {
+    return achado.motivo === 'expirou' ? 'Este convite expirou.' : 'Este convite já foi usado o máximo de vezes.';
+  }
+  return 'Código de convite inválido.';
+}
+
 /**
  * O QUE ALGUÉM PODE PUBLICAR NUMA SALA, numa conta só, porque três travas mexem na mesma permissão do LiveKit e cada
  * troca a substitui INTEIRA: a apresentação (só quem tem a palavra fala), o corte da tela e da câmera (parar-video) e
@@ -386,9 +394,11 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const code = request.body?.inviteCode?.trim() ?? '';
       // Fechado por padrão: ou o código geral do Syden, ou o convite de alguma comunidade. Cadastro aberto
       // para qualquer pessoa da internet só acontece se estiver escrito CADASTRO_ABERTO=sim no .env.
+      // O convite a mais de uma comunidade (convites-routes.ts) também abre o cadastro, enquanto valer.
+      const doConvite = code ? db.comunidadeDoConvite(code) : undefined;
       const convidado =
-        config.cadastroAberto || (!!config.inviteCode && code === config.inviteCode) || !!db.findCommunityByInvite(code);
-      if (!convidado) return reply.code(403).send({ error: 'Código de convite inválido.' });
+        config.cadastroAberto || (!!config.inviteCode && code === config.inviteCode) || (!!doConvite && !('motivo' in doConvite));
+      if (!convidado) return reply.code(403).send({ error: erroDoConvite(doConvite) });
 
       // A prova de que é gente, quando o Turnstile está configurado. Fica antes de gastar processador
       // com a senha e antes de escrever qualquer coisa no banco.
@@ -449,9 +459,6 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
        * Quem chega sem convite fica sem comunidade nenhuma e vê a tela de "você ainda não participa de
        * nenhuma": pode criar a sua ou entrar com um código depois.
        */
-      const convidadoPara = code ? db.findCommunityByInvite(code) : undefined;
-      const temEspaco = convidadoPara && db.countMembers(convidadoPara.id) < config.maxMembersPerCommunity;
-
       // Nasce PRECISANDO CONFIRMAR: é o que separa "alguém digitou um endereço" de "alguém tem acesso
       // àquela caixa", e é o que garante que toda conta nova tenha recuperação de senha funcionando.
       //
@@ -461,12 +468,19 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const user = db.createUser(username, await hashPassword(password), email, exigir);
       if (nascimento) db.guardarNascimento(user.id, nascimento, 'declarada');
 
+      // Resolvido DEPOIS da senha (que espera): um convite de um uso só não pode servir a dois cadastros ao mesmo tempo.
+      const resolvido = code ? db.comunidadeDoConvite(code) : undefined;
+      const convidadoPara = resolvido && !('motivo' in resolvido) ? resolvido.community : undefined;
+      const conviteUsado = resolvido && !('motivo' in resolvido) ? resolvido.convite : undefined;
+      const temEspaco = convidadoPara && db.countMembers(convidadoPara.id) < config.maxMembersPerCommunity;
+
       if (!db.defaultCommunity()) {
         // Primeiro cadastro do Syden inteiro: ganha a comunidade inicial.
         const community = db.createCommunity('Syden', user.id, config.inviteCode || db.newInviteCode());
         seedExpressions(community.id);
       } else if (temEspaco) {
         db.addMember(convidadoPara.id, user.id);
+        if (conviteUsado) db.usarConvite(conviteUsado.code);
         io.to(communityRoom(convidadoPara.id)).emit('member:updated', {
           communityId: convidadoPara.id,
           member: { ...user, role: 'member' },
@@ -1015,8 +1029,9 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
      * ninguém numa comunidade. Quem tem o código já poderia entrar, então ver isto não conta nada a mais.
      */
     authed.get<{ Params: { code: string } }>('/api/convite/:code', async (request, reply) => {
-      const community = db.findCommunityByInvite(request.params.code ?? '');
-      if (!community) return reply.code(404).send({ error: 'Código de convite inválido.' });
+      const achado = db.comunidadeDoConvite(request.params.code ?? '');
+      if (!achado || 'motivo' in achado) return reply.code(achado ? 410 : 404).send({ error: erroDoConvite(achado) });
+      const { community } = achado;
       return {
         id: community.id,
         name: community.name,
@@ -1029,8 +1044,10 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     authed.post<{ Body: { code?: string } }>('/api/communities/join', async (request, reply) => {
       if (barrarTemporario(request, reply)) return reply;
       const code = request.body?.code?.trim() ?? '';
-      const community = code ? db.findCommunityByInvite(code) : undefined;
-      if (!community) return reply.code(404).send({ error: 'Código de convite inválido.' });
+      // O código de sempre da comunidade, ou um convite a mais (convites-routes.ts) que ainda vale.
+      const achado = db.comunidadeDoConvite(code);
+      if (!achado || 'motivo' in achado) return reply.code(achado ? 410 : 404).send({ error: erroDoConvite(achado) });
+      const { community, convite } = achado;
       if (db.memberRole(community.id, request.user.id)) {
         return reply.code(409).send({ error: 'Você já participa desta comunidade.' });
       }
@@ -1042,6 +1059,8 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         return reply.code(409).send({ error: 'Esta comunidade já está cheia.' });
       }
       db.addMember(community.id, request.user.id);
+      // O uso só conta para quem entrou de verdade: quem foi barrado acima não gasta o convite.
+      if (convite) db.usarConvite(convite.code);
       // Os cargos de entrada (pacote MEE6) chegam antes do aviso: a comunidade já vê a pessoa com eles.
       db.entregarCargosDeEntrada(community.id, request.user.id);
       joinCommunityRoom(io, request.user.id, community.id);

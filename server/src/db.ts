@@ -8468,3 +8468,132 @@ export function mensagensFixadas(channelId: number, viewerId: number): Message[]
     .all(channelId, viewerId) as unknown as MessageRow[];
   return hydrate(rows.map(toMessage), viewerId);
 }
+
+// ---------- Convites com prazo e limite de usos ----------
+
+db.exec(`
+  -- Os convites a mais de uma comunidade (convites-routes.ts). O código de sempre continua em communities.invite_code;
+  -- estes são os que um membro cria com prazo e número de usos, como no Discord. Somem com a comunidade e com a conta
+  -- de quem criou.
+  CREATE TABLE IF NOT EXISTS convites (
+    code         TEXT PRIMARY KEY COLLATE NOCASE,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    criado_por   INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    -- NULL é "nunca expira"; senão, a hora em ISO, comparável com strftime.
+    expira_em    TEXT,
+    -- NULL é "sem limite".
+    usos_max     INTEGER,
+    usos         INTEGER NOT NULL DEFAULT 0,
+    criado_em    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+  CREATE INDEX IF NOT EXISTS convites_da_comunidade ON convites (community_id);
+`);
+
+const AGORA_ISO = `strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`;
+
+export type Convite = {
+  code: string;
+  communityId: number;
+  criadoPor: number;
+  expiraEm: string | null;
+  usosMax: number | null;
+  usos: number;
+  criadoEm: string;
+};
+
+const colunasDoConvite =
+  'code, community_id AS communityId, criado_por AS criadoPor, expira_em AS expiraEm, usos_max AS usosMax, usos, criado_em AS criadoEm';
+
+/** Código que ninguém adivinha: 10 letras do mesmo alfabeto do convite de sempre, sorteadas pelo crypto. */
+function codigoSorteado(): string {
+  const alfabeto = 'abcdefghjkmnpqrstuvwxyz23456789';
+  let codigo = '';
+  while (codigo.length < 10) {
+    for (const byte of randomBytes(16)) {
+      // 248 = 31 × 8: acima disso o resto puxaria para as primeiras letras.
+      if (byte < 248 && codigo.length < 10) codigo += alfabeto[byte % alfabeto.length];
+    }
+  }
+  return codigo;
+}
+
+/**
+ * Os convites que já não servem (vencidos ou gastos) saem quando alguém olha a lista: não há relógio para isso. Ficam uma
+ * semana antes de sair, para quem abrir o link nesse tempo ler "expirou" ou "já foi usado", e não "inválido".
+ */
+export function limparConvitesVencidos() {
+  db.prepare(
+    `DELETE FROM convites WHERE (expira_em IS NOT NULL AND expira_em <= strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-7 days'))
+       OR (usos_max IS NOT NULL AND usos >= usos_max AND criado_em <= strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-7 days'))`,
+  ).run();
+}
+
+export function criarConvite(communityId: number, criadoPor: number, validadeMs: number | null, usosMax: number | null): Convite {
+  let code = codigoSorteado();
+  // O código não pode bater com o de sempre de nenhuma comunidade, nem com outro convite.
+  while (findCommunityByInvite(code) || db.prepare('SELECT 1 FROM convites WHERE code = ?').get(code)) code = codigoSorteado();
+  const expiraEm = validadeMs === null ? null : new Date(Date.now() + validadeMs).toISOString();
+  db.prepare('INSERT INTO convites (code, community_id, criado_por, expira_em, usos_max) VALUES (?, ?, ?, ?, ?)').run(
+    code,
+    communityId,
+    criadoPor,
+    expiraEm,
+    usosMax,
+  );
+  return db.prepare(`SELECT ${colunasDoConvite} FROM convites WHERE code = ?`).get(code) as unknown as Convite;
+}
+
+export function acharConvite(code: string): Convite | undefined {
+  return db.prepare(`SELECT ${colunasDoConvite} FROM convites WHERE code = ?`).get(code.trim()) as Convite | undefined;
+}
+
+/**
+ * O que um código abre: a comunidade pelo código de sempre, ou por um convite a mais que ainda vale. O convite vencido ou
+ * gasto devolve o MOTIVO (a frase da tela diz qual), e só sai da tabela na limpeza, para a pessoa saber o que houve.
+ */
+export function comunidadeDoConvite(
+  code: string,
+): { community: Community; convite?: Convite } | { motivo: 'expirou' | 'esgotou' } | undefined {
+  const codigo = code.trim();
+  if (!codigo) return undefined;
+  const daComunidade = findCommunityByInvite(codigo);
+  if (daComunidade) return { community: daComunidade };
+  const convite = acharConvite(codigo);
+  if (!convite) return undefined;
+  if (convite.expiraEm !== null && Date.parse(convite.expiraEm) <= Date.now()) return { motivo: 'expirou' };
+  if (convite.usosMax !== null && convite.usos >= convite.usosMax) return { motivo: 'esgotou' };
+  const community = findCommunity(convite.communityId);
+  return community ? { community, convite } : undefined;
+}
+
+/** Conta um uso: só depois de a pessoa entrar de verdade. */
+export function usarConvite(code: string) {
+  db.prepare('UPDATE convites SET usos = usos + 1 WHERE code = ?').run(code);
+}
+
+/** Os convites que ainda valem, com o nome de quem criou, do mais novo para o mais antigo. */
+export function convitesDaComunidade(communityId: number) {
+  limparConvitesVencidos();
+  return db
+    .prepare(
+      `SELECT c.code, c.criado_por AS criadoPor, u.username AS criadoPorNome, u.nome_exibicao AS criadoPorExibicao,
+              c.expira_em AS expiraEm, c.usos_max AS usosMax, c.usos, c.criado_em AS criadoEm
+       FROM convites c JOIN users u ON u.id = c.criado_por
+       WHERE c.community_id = ? AND (c.expira_em IS NULL OR c.expira_em > ${AGORA_ISO}) AND (c.usos_max IS NULL OR c.usos < c.usos_max)
+       ORDER BY c.criado_em DESC`,
+    )
+    .all(communityId) as unknown as {
+    code: string;
+    criadoPor: number;
+    criadoPorNome: string;
+    criadoPorExibicao: string | null;
+    expiraEm: string | null;
+    usosMax: number | null;
+    usos: number;
+    criadoEm: string;
+  }[];
+}
+
+export function revogarConvite(code: string): boolean {
+  return Number(db.prepare('DELETE FROM convites WHERE code = ?').run(code).changes) > 0;
+}

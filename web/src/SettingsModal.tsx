@@ -84,6 +84,7 @@ import { CargosAutomaticosSection } from './CargosAutomaticos';
 import { DestaquesSection } from './Destaques';
 import { ConfirmDialog } from './ConfirmDialog';
 import { BanidosDaComunidade } from './BanidosDaComunidade';
+import { ConvitesDaComunidade } from './ConfigurarConvite';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { NOME_DO_MOTOR, aoMudarMotor, lerEstadoDaSupressao, supressaoPrevista, type EstadoDaSupressao } from './microfone';
 import { nomeDaConta, nomeDe, useDirectory } from './directory';
@@ -1451,6 +1452,7 @@ function MembersSection({ user, community }: { user: User; community: Community 
         ))}
       </div>
       {canManage && <BanidosDaComunidade key={vezDosBanidos} communityId={community.id} />}
+      {canManage && <ConvitesDaComunidade communityId={community.id} />}
       {banindo && (
         <ConfirmDialog
           title={t('Banir da comunidade')}

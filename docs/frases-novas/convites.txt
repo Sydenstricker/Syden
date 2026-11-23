@@ -1,0 +1,29 @@
+Configurar convite
+Um link a mais, que vence e se gasta como você escolher. O link de sempre continua valendo.
+Validade
+Limite de usos
+30 minutos
+1 hora
+6 horas
+12 horas
+1 dia
+7 dias
+Nunca
+Sem limite
+1 uso
+{n} usos
+{usos} de {max} usos
+Gerar link
+Seus convites
+Convites
+Nenhum convite ativo.
+Expira em {data}
+Não expira
+Revogar convite
+erros:
+Este convite expirou.
+Este convite já foi usado o máximo de vezes.
+Escolha uma validade e um limite de usos da lista.
+Você já tem convites demais nesta comunidade. Revogue algum antes de criar outro.
+Convite não encontrado.
+Só quem criou o convite, ou quem administra a comunidade, pode revogá-lo.

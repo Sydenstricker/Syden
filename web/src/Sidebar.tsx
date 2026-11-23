@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { ROTULO_DO_SILENCIO } from './silencioDoJogo';
 import { mandarConvite } from './linkDeConvite';
+import { ConfigurarConvite } from './ConfigurarConvite';
 import { nivelDoPing, usePing } from './ping';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { ALGORITMOS_DA_CHAMADA } from './chaveDaChamada';
@@ -152,6 +153,8 @@ export function Sidebar({
   // Comunidade, rolando até achar. Para os outros a faixa continua sendo só desenho.
   const capaEditavel = !directMode && managesCommunity && aoEditarCapa;
   const [conviteCopiado, setConviteCopiado] = useState(false);
+  // O convite com prazo e limite (ConfigurarConvite.tsx): o botão direito no botão da capa (no toque, o toque longo).
+  const [configurandoConvite, setConfigurandoConvite] = useState(false);
   // Assistindo junto: a sala ganha a pipoca, e quem está na plateia também (ver assistindo.ts).
   const assistindoJunto = (channelId: number) => salaAssistindoJunto(voiceMembers, channelId);
   const plateia = quemAssiste(voiceMembers);
@@ -222,6 +225,10 @@ export function Sidebar({
             className={`convite-da-capa${conviteCopiado ? ' copiado' : ''}`}
             title={conviteCopiado ? t('Link copiado!') : t('Copiar link de convite')}
             aria-label={conviteCopiado ? t('Link copiado!') : t('Copiar link de convite')}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              setConfigurandoConvite(true);
+            }}
             onClick={async () => {
               const r = await mandarConvite(community.inviteCode!, community.name);
               if (r === 'copiado') {
@@ -240,6 +247,9 @@ export function Sidebar({
           </button>
         )}
       </header>
+      {configurandoConvite && (
+        <ConfigurarConvite communityId={community.id} nome={community.name} aoFechar={() => setConfigurandoConvite(false)} />
+      )}
 
       {!directMode && <FaixaDeContadores community={community} online={online} voiceMembers={voiceMembers} selfId={user.id} />}
 
