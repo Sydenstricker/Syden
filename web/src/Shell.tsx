@@ -22,6 +22,7 @@ import { oferecerAvisoDeLigacao, PedidoDeAvisoDeLigacao } from './PedidoDeAvisoD
 import { sounds } from './sounds';
 import { aplicarComunidade, buscarComunidade, clearDirectory, loadDirectory, nomeDe, syncDirectory, useDirectory } from './directory';
 import { ligarDigitacao } from './digitando';
+import { ligarStatusDasSalas } from './statusDasSalas';
 import { EmptyCommunities } from './EmptyCommunities';
 import { Home } from './Home';
 import { lugarDaBarra } from './lugarDaBarra';
@@ -702,10 +703,12 @@ export function Shell({
     });
     const unsync = syncDirectory(s);
     const desligarDigitacao = ligarDigitacao(s, loggedUser.id);
+    const desligarStatusDasSalas = ligarStatusDasSalas(s);
     setSocket(s);
     return () => {
       unsync();
       desligarDigitacao();
+      desligarStatusDasSalas();
       s.disconnect();
     };
   }, [token, loggedUser.id]);

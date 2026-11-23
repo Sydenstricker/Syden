@@ -42,6 +42,7 @@ import { CapaDaComunidade } from './CapaDaComunidade';
 import { efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
 import { Avatar } from './Avatar';
 import { ConvidarParaVoz } from './ConvidarParaVoz';
+import { LinhaDoStatusDaSala, MenuDoStatusDaSala, useMenuDoStatusDaSala } from './StatusDaSala';
 import { Mascote } from './Mascote';
 import { useT } from './i18n';
 import { Puxador } from './Puxador';
@@ -156,6 +157,12 @@ export function Sidebar({
   // Assistindo junto: a sala ganha a pipoca, e quem está na plateia também (ver assistindo.ts).
   const assistindoJunto = (channelId: number) => salaAssistindoJunto(voiceMembers, channelId);
   const plateia = quemAssiste(voiceMembers);
+  // O STATUS DA SALA (StatusDaSala.tsx): o botão direito na sala o muda, para quem está nela ou administra, e só com
+  // alguém lá dentro (ele some quando a sala esvazia).
+  const menuDoStatus = useMenuDoStatusDaSala();
+  const [statusDe, setStatusDe] = useState<number | null>(null);
+  const podeMudarStatus = (channelId: number) =>
+    voiceMembers.some((m) => m.channelId === channelId) && (voice.channelId === channelId || managesCommunity);
 
   const row = (channel: Channel, icon: ReactNode) => (
     <ChannelRow
@@ -287,6 +294,16 @@ export function Sidebar({
             .filter((c) => c.type === 'voice')
             .map((c) => (
               <div key={c.id}>
+                <div
+                  onContextMenu={
+                    podeMudarStatus(c.id)
+                      ? (e) => {
+                          setStatusDe(c.id);
+                          menuDoStatus.abrir(e);
+                        }
+                      : undefined
+                  }
+                >
                 {row(
                   c,
                   assistindoJunto(c.id) ? (
@@ -300,6 +317,8 @@ export function Sidebar({
                     <Volume2 size={18} />
                   ),
                 )}
+                </div>
+                <LinhaDoStatusDaSala channelId={c.id} />
                 {voiceMembers
                   .filter((m) => m.channelId === c.id)
                   .map((m) => (
@@ -480,6 +499,16 @@ export function Sidebar({
           onClose={() => setPerfil(null)}
           onSendMessage={onSendMessage}
           aoEditar={aoEditarPerfil}
+        />
+      )}
+      {menuDoStatus.aberto && statusDe !== null && (
+        <MenuDoStatusDaSala
+          key={statusDe}
+          channelId={statusDe}
+          x={menuDoStatus.aberto.x}
+          y={menuDoStatus.aberto.y}
+          editando={menuDoStatus.aberto.editando}
+          onClose={menuDoStatus.fechar}
         />
       )}
       {statusMenu.open && (

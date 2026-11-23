@@ -2412,6 +2412,15 @@ marcado), usada pelas rotas de apagar, fixar, enquete e tópico; a tela tira o m
 cargos de cada membro e a lista de cargos que ela já tem, e por isso acompanha sozinha o `member:updated` e o `cargos:updated`.
 As mensagens de erro de antes ("quem administra") não mudaram. Teste: `server/test/pode-moderar.test.ts`.
 
+**O status da sala de voz** (23/11/2026; `server/src/status-da-sala.ts`, `web/src/StatusDaSala.tsx`): uma linha curta (até 60
+caracteres, emoji vale) embaixo do nome da sala, como "ranqueada, não chamar". Muda quem está NA sala, ou quem administra; o texto
+vazio tira. **Some sozinho quando a última pessoa sai** (a regra do "Jogando agora": status que ninguém atualiza vira enfeite
+morto), e por isso só se põe com alguém lá dentro; as salas temporárias seguem igual. Só na memória do servidor, como quem está em
+chamada, e vai junto do `voice:state` (`statusDasSalas`). A moderação da comunidade vale (palavras, links e o silêncio; quem
+administra não passa por ela, como nas mensagens), e uma mudança a cada 3 s por pessoa. Pelo botão direito na sala ("Definir status
+da sala"; no toque, o toque longo) e pelo lápis no cabeçalho do palco, para quem está na sala. Teste:
+`server/test/status-da-sala.test.ts` (pelo socket de verdade). Sem e2e.
+
 ## Trazer a estrutura de um servidor do Discord: canais e cargos, nunca permissões
 
 **Feito em 23/11/2026, pedido dele ("eles copiam a estrutura de uma comunidade do Discord e transferem para o novo app").** Ao

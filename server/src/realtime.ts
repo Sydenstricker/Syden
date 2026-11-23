@@ -9,6 +9,7 @@ import { pontuarMensagem, pontuarMinutoDeVoz } from './niveis.js';
 import { barreiraDe, hojeEmBrasilia, podeConversarNoParticular, podeVerVideo, regrasDe } from './protecao.js';
 import { motivoDoSilencio } from './silencio-do-jogo.js';
 import { eventosDaCameraDoCelular, ligarCameraDoCelular } from './camera-do-celular.js';
+import { definirStatusDaSala, esquecerStatusDaSala, statusDaComunidade } from './status-da-sala.js';
 
 /** Os gêneros que a TV do salão sabe desenhar (a mesma lista de web/src/generoDoJogo.ts). */
 const GENEROS_DE_JOGO = new Set(['moba', 'tiro', 'futebol', 'corrida', 'luta', 'aventura', 'construcao', 'fazenda', 'estrategia', 'cartas', 'terror', 'plataforma', 'festa', 'espaco', 'quebracabeca', 'esportes', 'voo', 'turnos', 'historia', 'ritmo']);
@@ -155,8 +156,13 @@ function voiceState(communityId: number): VoiceMember[] {
     }));
 }
 
+/** O que vai em cada voice:state: quem está em cada sala, e o status de cada sala (ver status-da-sala.ts). */
+function estadoDaVoz(communityId: number) {
+  return { communityId, members: voiceState(communityId), statusDasSalas: statusDaComunidade(communityId) };
+}
+
 function broadcastVoice(io: IOServer, communityId: number) {
-  io.to(communityRoom(communityId)).emit('voice:state', { communityId, members: voiceState(communityId) });
+  io.to(communityRoom(communityId)).emit('voice:state', estadoDaVoz(communityId));
 }
 
 /** A lista das salas da comunidade de novo, para quem está nelas ver o que mudou (o microfone que o jogo desligou). */
@@ -362,6 +368,8 @@ function endVoiceSession(userId: number) {
   if (!session) return;
   db.touchUsageSessions(activeUsageSessionIds(session));
   voiceMembers.delete(userId);
+  // A última pessoa saiu: o status da sala vai junto (quem chamou anuncia a voz em seguida, já sem ele).
+  if (pessoasNaSala(session.channelId) === 0) esquecerStatusDaSala(session.channelId);
   if (session.communityId === null) saiuDaChamadaEm.set(`${userId}:${session.channelId}`, Date.now());
   // Era a última pessoa numa sala temporária: ela some. Depois desta volta, para quem chamou terminar de
   // avisar a saída antes de a sala desaparecer da lista.
@@ -575,7 +583,7 @@ export function setupRealtime(io: IOServer) {
     const myCommunities = db.communityIdsForUser(user.id);
     for (const id of myCommunities) {
       socket.join(communityRoom(id));
-      socket.emit('voice:state', { communityId: id, members: voiceState(id) });
+      socket.emit('voice:state', estadoDaVoz(id));
     }
     // E também as conversas privadas de que ela participa.
     // Inclusive as que ela apagou: é pela sala que chega a mensagem nova que traz a conversa de volta.
@@ -756,6 +764,22 @@ export function setupRealtime(io: IOServer) {
         member.screenSessionId = null;
       }
       anunciarVoz(io, member);
+    });
+
+    // O STATUS DA SALA (ver status-da-sala.ts): quem está na sala, ou quem administra, escreve uma linha embaixo do
+    // nome dela; o texto vazio tira. A turma vê pelo voice:state de sempre.
+    socket.on('voice:status', (payload: { channelId?: unknown; texto?: unknown }, ack?: Ack) => {
+      const channelId = Number(payload?.channelId);
+      const r = definirStatusDaSala({
+        channelId,
+        userId: user.id,
+        texto: payload?.texto,
+        naSala: voiceMembers.get(user.id)?.channelId === channelId,
+        pessoasNaSala: pessoasNaSala(channelId),
+      });
+      if (!r.ok) return ack?.(r);
+      if (r.mudou) broadcastVoice(io, r.communityId);
+      ack?.({ ok: true, communityId: r.communityId });
     });
 
     // A CHAMADA DE PONTA A PONTA (web/src/chaveDaChamada.ts): o servidor só REPASSA, entre duas pessoas da mesma
