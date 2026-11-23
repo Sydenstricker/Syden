@@ -2462,7 +2462,7 @@ vira a sugestão de nome. **Quem fala com o Discord é o servidor** (`server/src
 (`muitosLinks`); a resposta fica 10 min na memória, e o "Criar" não pede de novo. Texto, anúncios, fórum e mídia viram canal de
 texto; voz e palco, de voz. **O Syden não tem categoria**: elas são achatadas como o Discord mostra (os sem categoria primeiro,
 depois cada categoria pela posição; dentro de cada uma, texto antes de voz). Até 100 canais (o Syden não tinha teto de canais:
-o número é meu, a confirmar com ele) e os 50 cargos de sempre. **Cargo vem só com NOME e COR**: permissões não, porque cargo é
+confirmado por ele no mesmo dia) e os 50 cargos de sempre. **Cargo vem só com NOME e COR**: permissões não, porque cargo é
 identidade (db.ts); o @everyone e os cargos de robô ficam de fora; sem cor, o cinza. Mensagens não vêm (o modelo não as tem).
 Sem canal de texto no modelo, entra o primeiro inicial. A comunidade nasce numa transação só (erro do Discord não deixa
 comunidade pela metade). Na política, `#modelo-do-discord`. Teste: `server/test/modelo-do-discord.test.ts` (sem rede).
