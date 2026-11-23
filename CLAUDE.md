@@ -2404,6 +2404,14 @@ Testes: `server/test/banir-e-fixar.test.ts`, `e2e/banir-e-fixar.mjs` (passaram).
   feita. Nem quem administra edita o texto dos outros (apaga, se precisar).
 Testes: `server/test/avisos-e-editar.test.ts`, `e2e/avisos-e-editar.mjs` (passaram).
 
+**"Pode moderar a conversa" no cargo (23/11/2026, o segundo da fila):** o interruptor fixo, ao lado do "Pode arrumar o salão"
+(Cargos.tsx; a coluna `cargos.modera`), e a SEGUNDA EXCEÇÃO ao "cargo é identidade" (db.ts). Quem tem o cargo apaga a mensagem
+dos outros, fixa e desafixa, encerra a enquete e apaga o tópico dos outros, só na comunidade do cargo. Banir, tirar alguém,
+dar cargo, mudar papel e configurações seguem só de quem administra. A conta é uma só, `db.podeModerar` (dono, admin ou cargo
+marcado), usada pelas rotas de apagar, fixar, enquete e tópico; a tela tira o mesmo de `usePodeModerar` (directory.ts), com os
+cargos de cada membro e a lista de cargos que ela já tem, e por isso acompanha sozinha o `member:updated` e o `cargos:updated`.
+As mensagens de erro de antes ("quem administra") não mudaram. Teste: `server/test/pode-moderar.test.ts`.
+
 ## Trazer a estrutura de um servidor do Discord: canais e cargos, nunca permissões
 
 **Feito em 23/11/2026, pedido dele ("eles copiam a estrutura de uma comunidade do Discord e transferem para o novo app").** Ao

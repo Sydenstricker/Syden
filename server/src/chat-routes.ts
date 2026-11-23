@@ -9,7 +9,7 @@ import { pontuarMensagem } from './niveis.js';
 import { entregarArquivo } from './entregar.js';
 import { decodeDataUrl, sniffAttachmentMime } from './media.js';
 import { channelRoom, communityRoom, publicarMensagem } from './realtime.js';
-import { canUseChannel, cotaEsgotada, manages, poderDeOperador, requireUser, roleIn } from './routes.js';
+import { canUseChannel, cotaEsgotada, poderDeOperador, requireUser } from './routes.js';
 
 const MB = 1024 * 1024;
 export const MAX_ATTACHMENT_BYTES = 8 * MB;
@@ -297,8 +297,8 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
      * conteúdo ilegal sem esperar o dono da comunidade acordar —, mas por um caminho separado e registrado
      * na auditoria, e não por ser confundido com administrador daquela comunidade.
      */
-    const managesChannel = (channel: db.Channel, user: db.User) =>
-      channel.communityId !== null && manages(roleIn(user, channel.communityId));
+    // Quem administra, ou quem tem um cargo marcado "Pode moderar a conversa" (ver A SEGUNDA EXCEÇÃO em db.ts).
+    const managesChannel = (channel: db.Channel, user: db.User) => channel.communityId !== null && db.podeModerar(channel.communityId, user.id);
 
     const podeModerarMensagem = (channel: db.Channel, user: db.User, oQue: string) =>
       managesChannel(channel, user) ||

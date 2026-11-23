@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
-import type { Cargo, CommunityMember, Emoji, PublicUser, Sound } from './types';
+import type { Cargo, CommunityMember, Emoji, PublicUser, Role, Sound } from './types';
 
 // Dados da comunidade aberta agora: quem participa (para nomes e avatares), emojis e sons dela.
 // Carrega ao abrir a comunidade e se mantém atualizado pelos eventos do socket.
@@ -194,4 +194,19 @@ function subscribe(listener: () => void) {
 
 export function useDirectory(): Directory {
   return useSyncExternalStore(subscribe, getDirectory);
+}
+
+/**
+ * QUEM MODERA A CONVERSA na comunidade aberta (server/src/db.ts, A SEGUNDA EXCEÇÃO): quem administra, ou quem tem um cargo
+ * marcado "Pode moderar a conversa". Sai do que o diretório já tem (os cargos de cada membro e os cargos com o interruptor),
+ * então muda sozinho com o member:updated e o cargos:updated. O servidor confere de novo: a tela só esconde os botões.
+ * `communityId` é a do canal (null na conversa privada, onde ninguém modera).
+ */
+export function usePodeModerar(communityId: number | null, role: Role | undefined, userId: number): boolean {
+  const { communityId: aberta, members, cargos } = useDirectory();
+  if (communityId === null) return false;
+  if (role === 'owner' || role === 'admin') return true;
+  if (aberta !== communityId) return false;
+  const meus = members.get(userId)?.cargos ?? [];
+  return cargos.some((c) => c.modera === true && meus.includes(c.id));
 }

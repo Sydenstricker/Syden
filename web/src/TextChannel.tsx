@@ -4,7 +4,7 @@ import type { Socket } from 'socket.io-client';
 import { api } from './api';
 import { useBloqueados } from './bloqueios';
 import { useT } from './i18n';
-import { nomeDe, useDirectory } from './directory';
+import { nomeDe, useDirectory, usePodeModerar } from './directory';
 import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem, MessageText } from './MessageItem';
@@ -159,14 +159,16 @@ export function TextChannel({
     });
   }
 
-  const canManage = (message: Message) => message.author.id === user.id || role === 'owner' || role === 'admin';
+  // Quem administra, ou quem tem um cargo que modera a conversa (o servidor confere de novo).
+  const modera = usePodeModerar(channel.communityId, role, user.id);
+  const canManage = (message: Message) => message.author.id === user.id || modera;
 
   /**
    * O joinha nas ideias que chegam pela tela inicial: marca que aquilo entrou no Syden. Do outro lado
    * cai confete e a pessoa ganha a medalha; aqui a mensagem só troca de cara, sem recarregar nada.
    */
-  // Quem fixa: quem administra a comunidade; na conversa privada, quem está nela (fixadas-routes.ts).
-  const podeFixar = privada || role === 'owner' || role === 'admin';
+  // Quem fixa: quem administra a comunidade ou tem um cargo que modera; na conversa privada, quem está nela (fixadas-routes.ts).
+  const podeFixar = privada || modera;
   async function fixar(message: Message, sim: boolean) {
     try {
       await api(`/api/messages/${message.id}/fixar`, { method: 'POST', body: { fixar: sim } });
@@ -310,6 +312,7 @@ export function TextChannel({
           socket={socket}
           user={user}
           role={role}
+          modera={modera}
           onClose={() => setOpenThread(null)}
           onDeleteMessage={requestDelete}
           onParentReactionsChange={(id, reactions) => setMessages((list) => replaceReactions(list, id, reactions))}

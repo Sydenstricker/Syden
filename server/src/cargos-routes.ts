@@ -10,7 +10,8 @@ import { manages, requireUser } from './routes.js';
  * e apaga, e dá ou tira de quem quiser. Todo membro vê a lista, porque ela aparece no perfil e na lista
  * de membros.
  *
- * Cargo é identidade, não poder — com UMA exceção de propósito: "Pode arrumar o salão" (ver A EXCEÇÃO em db.ts).
+ * Cargo é identidade, não poder — com DUAS exceções de propósito: "Pode arrumar o salão" (ver A EXCEÇÃO em db.ts) e
+ * "Pode moderar a conversa" (A SEGUNDA EXCEÇÃO).
  */
 const NOME_MAXIMO = 32;
 const COR_RE = /^#[0-9a-f]{6}$/i;
@@ -93,14 +94,14 @@ export function registerCargosRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.patch<{
       Params: { id: string; cargoId: string };
-      Body: { nome?: string; cor?: string; separado?: boolean; posicao?: number; arrumaSalao?: boolean };
+      Body: { nome?: string; cor?: string; separado?: boolean; posicao?: number; arrumaSalao?: boolean; modera?: boolean };
     }>('/api/communities/:id/cargos/:cargoId', async (request, reply) => {
       const communityId = Number(request.params.id);
       const papel = db.memberRole(communityId, request.user.id);
       if (!papel) return reply.code(404).send({ error: NAO_ENCONTRADA });
       if (!manages(papel)) return reply.code(403).send({ error: 'Só quem administra a comunidade edita cargos.' });
       const corpo = request.body ?? {};
-      const mudanca: { nome?: string; cor?: string; separado?: boolean; posicao?: number; arrumaSalao?: boolean } = {};
+      const mudanca: { nome?: string; cor?: string; separado?: boolean; posicao?: number; arrumaSalao?: boolean; modera?: boolean } = {};
       if (corpo.nome !== undefined) {
         const nome = lerNome(corpo.nome);
         if (!nome) return reply.code(400).send({ error: `O nome do cargo deve ter de 1 a ${NOME_MAXIMO} caracteres.` });
@@ -113,6 +114,9 @@ export function registerCargosRoutes(app: FastifyInstance, io: IOServer) {
       if (corpo.separado !== undefined) mudanca.separado = corpo.separado === true;
       // O único poder de um cargo (ver A EXCEÇÃO em db.ts): quem tem o cargo passa a poder arrumar o salão.
       if (corpo.arrumaSalao !== undefined) mudanca.arrumaSalao = corpo.arrumaSalao === true;
+      // O outro (A SEGUNDA EXCEÇÃO): quem tem o cargo apaga a mensagem dos outros e fixa. A tela de cada um descobre pelo
+      // cargos:updated, que leva o cargo com o interruptor, junto com os cargos de cada membro que ela já tem.
+      if (corpo.modera !== undefined) mudanca.modera = corpo.modera === true;
       if (corpo.posicao !== undefined) {
         if (!Number.isInteger(corpo.posicao) || corpo.posicao < 0 || corpo.posicao > 10_000) {
           return reply.code(400).send({ error: 'Posição inválida.' });
