@@ -337,8 +337,10 @@ test('Mancala: 3 a 6 sementes por casa, e o estado de antes para a tela animar',
   assert.equal(v.casas[0], 6);
   assert.equal(v.escolhas.sementes, 6);
   assert.equal(partida(mancala, { corpo: { sementes: 9 } }).ver().casas[0], 4, 'fora da faixa, o padrão');
-  if (v.vez !== 0) p.andar();
+  // na Mancala o robô joga de novo quando a última semente cai na casa dele: andar até a vez ser da pessoa
+  for (let k = 0; k < 20 && p.ver().vez !== 0; k++) p.andar();
   v = p.ver();
+  assert.equal(v.vez, 0);
   const casa = [0, 1, 2, 3, 4, 5].find((c) => v.casas[c] > 0)!;
   const antes = v.casas.slice();
   assert.equal(p.jogo.acao(anaId, { tipo: 'jogada', casa }), null);

@@ -3037,6 +3037,14 @@ Fica nas preferências (`ajusteDaCamera`), e vale na hora, também numa chamada.
 `e2e/ajustes-da-camera.mjs` (no Chrome, passou). **O grupo B (a câmera do próprio celular: lente, zoom de verdade, foco, lanterna)
 espera a MEDIÇÃO no iPhone dele:** `web/public/medir-camera.html` (no ar em /app/medir-camera.html; fora do app, nada é enviado,
 o resultado é copiado à mão), que lista o que cada câmera deixa e testa o zoom e a lanterna de verdade.
+**O GRUPO B ESTÁ FEITO (24/11/2026), pela medição no iPhone dele (iOS 18.7):** o zoom da LENTE e a lanterna funcionam pelo Safari;
+o foco não (só informa a distância mínima), nem o balanço de branco. **Os controles moram NA TELA DO CELULAR** (decisão dele): os
+atalhos 0,5× · 1× · 2× · 5× que a câmera alcança, a pinça no vídeo e a lanterna (só onde existe); o que o aparelho não deixa não
+aparece (`controles`, `zoom`, `lanterna` em cameraDoCelular.ts; PaginaDoCelular.tsx). **Pedindo só "a de trás", o iPhone entrega a
+traseira comum, que começa em 1×**; a que chega a 0,5× é a câmera virtual "dupla" (ou "tripla"), que junta as lentes. Os nomes vêm
+traduzidos e o Safari não diz o que uma câmera faz sem abri-la, então na primeira vez o celular abre cada câmera de trás, uma de cada
+vez, e fica a primeira cujo zoom começa abaixo de 1, lembrada no aparelho (`syden.celularTraseira`; `procurarGrandeAngular`). O zoom
+do computador (grupo A) continua valendo por cima. O e2e simula as três câmeras do iPhone.
 
 ## O app de Android: medido, ainda não começado
 

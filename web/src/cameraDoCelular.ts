@@ -222,6 +222,34 @@ export type EstadoDoEmissor =
   | { fase: 'falhou' }
   | { fase: 'fechado' };
 
+function zoomDe(f: MediaStreamTrack): { min: number; max: number } | null {
+  const z = (f.getCapabilities?.() as { zoom?: { min?: number; max?: number } } | undefined)?.zoom;
+  return z && typeof z.min === 'number' && typeof z.max === 'number' ? { min: z.min, max: z.max } : null;
+}
+
+const CHAVE_DA_TRASEIRA = 'syden.celularTraseira';
+function lerTraseira(): string | null {
+  try {
+    return localStorage.getItem(CHAVE_DA_TRASEIRA);
+  } catch {
+    return null;
+  }
+}
+function lembrarTraseira(id: string | undefined) {
+  try {
+    if (id) localStorage.setItem(CHAVE_DA_TRASEIRA, id);
+  } catch {
+    /* sem guardar, procura de novo da próxima vez */
+  }
+}
+function esquecerTraseira() {
+  try {
+    localStorage.removeItem(CHAVE_DA_TRASEIRA);
+  } catch {
+    /* nada */
+  }
+}
+
 /**
  * O lado do CELULAR: abre a câmera, apresenta-se ao servidor com o par e manda a imagem ao computador. `virar` troca entre
  * a câmera da frente e a de trás sem refazer a conexão (replaceTrack).
@@ -272,12 +300,85 @@ export class EmissorDoCelular {
   }
 
   private async abrirCamera() {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { ...VIDEO_DO_CELULAR, facingMode: this.frente ? 'user' : 'environment' },
-      audio: false,
-    });
+    const pedir = (id?: string) =>
+      navigator.mediaDevices.getUserMedia({
+        video: id ? { ...VIDEO_DO_CELULAR, deviceId: { exact: id } } : { ...VIDEO_DO_CELULAR, facingMode: this.frente ? 'user' : 'environment' },
+        audio: false,
+      });
+    let stream: MediaStream;
+    const lembrada = this.frente ? null : lerTraseira();
+    try {
+      stream = await pedir(lembrada ?? undefined);
+    } catch (erro) {
+      if (!lembrada) throw erro;
+      esquecerTraseira();
+      stream = await pedir();
+    }
+    if (!this.frente && !lembrada) stream = await this.procurarGrandeAngular(stream);
     this.aoTerImagem(stream);
     return stream.getVideoTracks()[0];
+  }
+
+  /**
+   * A CÂMERA DE TRÁS QUE CHEGA A 0,5× (medido num iPhone em 24/11/2026). Pedindo só "a de trás", o iPhone entrega a traseira
+   * comum, que começa em 1×; a "dupla" (ou "tripla"), uma câmera virtual que junta as lentes, vai de 0,5× a 10× sem trocar
+   * de câmera, como o app Câmera. Os nomes vêm traduzidos e o Safari não diz o que uma câmera faz sem abri-la: então, uma
+   * vez, abre-se cada câmera de trás (uma de cada vez: duas abertas juntas costumam falhar no celular) e fica a primeira
+   * cujo zoom começa abaixo de 1. A escolhida fica lembrada no aparelho. Sem nenhuma assim, a de sempre.
+   */
+  private async procurarGrandeAngular(atual: MediaStream): Promise<MediaStream> {
+    const faixa = atual.getVideoTracks()[0];
+    if ((zoomDe(faixa)?.min ?? 1) < 1) {
+      lembrarTraseira(faixa.getSettings().deviceId);
+      return atual;
+    }
+    const idAtual = faixa.getSettings().deviceId;
+    const outras = (await navigator.mediaDevices.enumerateDevices().catch(() => [])).filter(
+      (d) => d.kind === 'videoinput' && d.deviceId && d.deviceId !== idAtual,
+    );
+    if (!outras.length) return atual;
+    faixa.stop();
+    for (const d of outras.slice(0, 4)) {
+      if (this.fechado) break;
+      const s = await navigator.mediaDevices
+        .getUserMedia({ video: { ...VIDEO_DO_CELULAR, deviceId: { exact: d.deviceId } }, audio: false })
+        .catch(() => null);
+      const f = s?.getVideoTracks()[0];
+      if (!s || !f) continue;
+      if (f.getSettings().facingMode !== 'user' && (zoomDe(f)?.min ?? 1) < 1) {
+        lembrarTraseira(d.deviceId);
+        return s;
+      }
+      f.stop();
+    }
+    lembrarTraseira(idAtual);
+    return navigator.mediaDevices.getUserMedia({
+      video: idAtual ? { ...VIDEO_DO_CELULAR, deviceId: { exact: idAtual } } : { ...VIDEO_DO_CELULAR, facingMode: 'environment' },
+      audio: false,
+    });
+  }
+
+  /** O que a câmera aberta deixa mexer: a faixa do zoom (só se vai além de 1×) e se tem lanterna. */
+  controles(): { zoom: { min: number; max: number; agora: number } | null; lanterna: boolean } {
+    const f = this.faixa;
+    if (!f || f.readyState !== 'live') return { zoom: null, lanterna: false };
+    const z = zoomDe(f);
+    const c = (f.getCapabilities?.() ?? {}) as { torch?: boolean };
+    const agora = (f.getSettings() as { zoom?: number }).zoom ?? 1;
+    return { zoom: z && z.max > z.min ? { ...z, agora } : null, lanterna: c.torch === true };
+  }
+
+  /** O zoom DA LENTE (não um recorte): o pedido fica dentro do que a câmera deixa. */
+  async zoom(n: number) {
+    const f = this.faixa;
+    const z = f && zoomDe(f);
+    if (!f || !z) return;
+    const valor = Math.min(z.max, Math.max(z.min, n));
+    await f.applyConstraints({ advanced: [{ zoom: valor } as MediaTrackConstraintSet] }).catch(() => {});
+  }
+
+  async lanterna(acesa: boolean) {
+    await this.faixa?.applyConstraints({ advanced: [{ torch: acesa } as MediaTrackConstraintSet] }).catch(() => {});
   }
 
   private async oferecer() {

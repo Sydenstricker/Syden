@@ -21312,6 +21312,35 @@ body.arrastando-barra {
 .camera-do-celular-botoes button.parar {
   background: #e5484d;
 }
+.camera-do-celular-botoes button.aceso {
+  background: #f5d90a;
+  color: #000;
+}
+/* O zoom da lente, como no app Câmera: os atalhos numa pílula, o aceso em amarelo. */
+.camera-do-celular-zoom {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 999px;
+  background: #1c1c1f;
+}
+.camera-do-celular-zoom button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+.camera-do-celular-zoom button[aria-pressed='true'] {
+  background: #2a2a2e;
+  color: #f5d90a;
+  font-weight: 600;
+}
 
 /* AS MENSAGENS FIXADAS (FixadasDoCanal.tsx): o alfinete no cabeçalho e a lista que ele abre. */
 .fixadas-ancora {

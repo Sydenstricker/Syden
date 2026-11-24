@@ -43,8 +43,21 @@ try {
   const ctxCel = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, permissions: ['camera'] });
   const cel = vigiar(await ctxCel.newPage());
   // A câmera EM PÉ, como a de um celular de verdade (a falsa do Chromium é deitada): um canvas de 360 × 640 que muda de cor.
+  // E COMO O IPHONE MEDIDO EM 24/11/2026: três câmeras; pedindo só "a de trás" vem a comum (zoom de 1×), e a "dupla", que só
+  // se acha abrindo cada uma, vai de 0,5× e tem lanterna. Os pedidos de zoom e lanterna ficam em window.pedidosDaCamera.
   await cel.addInitScript(() => {
-    navigator.mediaDevices.getUserMedia = async () => {
+    const CAMERAS = {
+      frente: { facingMode: 'user', zoom: { min: 1, max: 10 } },
+      tras: { facingMode: 'environment', zoom: { min: 1, max: 10 }, torch: true },
+      dupla: { facingMode: 'environment', zoom: { min: 0.5, max: 10 }, torch: true },
+    };
+    window.pedidosDaCamera = [];
+    navigator.mediaDevices.enumerateDevices = async () =>
+      Object.keys(CAMERAS).map((deviceId) => ({ kind: 'videoinput', deviceId, groupId: '', label: deviceId }));
+    navigator.mediaDevices.getUserMedia = async (pedido) => {
+      const v = pedido.video;
+      const id = v.deviceId?.exact ?? (v.facingMode === 'user' ? 'frente' : 'tras');
+      const cam = CAMERAS[id];
       const c = document.createElement('canvas');
       c.width = 360;
       c.height = 640;
@@ -54,7 +67,18 @@ try {
         g.fillStyle = 'hsl(' + ((n += 7) % 360) + ' 70% 50%)';
         g.fillRect(0, 0, 360, 640);
       }, 66);
-      return c.captureStream(15);
+      const s = c.captureStream(15);
+      const f = s.getVideoTracks()[0];
+      let zoom = 1;
+      f.getCapabilities = () => ({ facingMode: [cam.facingMode], zoom: cam.zoom, ...(cam.torch ? { torch: true } : {}) });
+      f.getSettings = () => ({ deviceId: id, facingMode: cam.facingMode, zoom, width: 360, height: 640 });
+      f.applyConstraints = async (r) => {
+        for (const a of r.advanced ?? []) {
+          if ('zoom' in a) zoom = a.zoom;
+          window.pedidosDaCamera.push({ id, ...a });
+        }
+      };
+      return s;
     };
   });
   // A internet do celular soluça na primeira tentativa (o websocket cai antes de abrir): isso NÃO é "código usado", e ele
@@ -100,12 +124,36 @@ try {
     inteira ? ok('a câmera em pé aparece inteira no quadro (' + quem + ')') : falhou('a câmera em pé saiu cortada no quadro (' + quem + ')');
   }
 
-  // Virar a câmera não derruba nada.
+  // Os controles da lente: a câmera de trás abriu na "dupla" (o 0,5× aparece), o atalho e a lanterna vão à câmera.
+  const atalhos = async () => (await cel.locator('.camera-do-celular-zoom button').allInnerTexts()).join(' ').replace('0.5', '0,5');
+  (await atalhos()) === '0,5× 1× 2× 5×' ? ok('a de trás abre na câmera que chega a 0,5×: ' + (await atalhos())) : falhou('atalhos do zoom: "' + (await atalhos()) + '"');
+  (await cel.evaluate(() => localStorage.getItem('syden.celularTraseira'))) === 'dupla'
+    ? ok('a câmera achada fica lembrada no aparelho')
+    : falhou('a câmera de trás não ficou lembrada');
+  await cel.locator('.camera-do-celular-zoom button', { hasText: '2×' }).click();
+  await cel.waitForTimeout(300);
+  const zoomPedido = await cel.evaluate(() => window.pedidosDaCamera.filter((p) => 'zoom' in p).at(-1));
+  zoomPedido?.zoom === 2 && zoomPedido.id === 'dupla' ? ok('o 2× vai à lente') : falhou('o zoom não chegou à câmera: ' + JSON.stringify(zoomPedido));
+  (await cel.locator('.camera-do-celular-zoom button[aria-pressed="true"]').innerText()) === '2×'
+    ? ok('o atalho aceso acompanha o zoom')
+    : falhou('o atalho aceso não acompanhou');
+  const botaoDaLanterna = cel.locator('.camera-do-celular-botoes button[aria-label="Lanterna"]');
+  await botaoDaLanterna.click();
+  await cel.waitForTimeout(200);
+  (await cel.evaluate(() => window.pedidosDaCamera.some((p) => p.torch === true))) && (await botaoDaLanterna.getAttribute('aria-pressed')) === 'true'
+    ? ok('a lanterna acende')
+    : falhou('a lanterna não acendeu');
+  await cel.screenshot({ path: 'e2e/fotos/celular-como-camera-controles.png' });
+
+  // Virar a câmera não derruba nada; a da frente não tem lanterna nem 0,5×.
   await cel.locator('.camera-do-celular-botoes button').first().click();
   await cel.waitForTimeout(1500);
   (await cel.locator('.camera-do-celular-estado.ao-vivo').count()) === 1
     ? ok('virar a câmera mantém o celular ao vivo')
     : falhou('virar a câmera derrubou o celular');
+  (await atalhos()) === '1× 2× 5×' && (await botaoDaLanterna.count()) === 0
+    ? ok('na câmera da frente, sem 0,5× e sem lanterna')
+    : falhou('a câmera da frente mostrou: "' + (await atalhos()) + '", lanterna ' + (await botaoDaLanterna.count()));
 
   // O celular para: a câmera some da chamada.
   await cel.locator('.camera-do-celular-botoes button.parar').click();
