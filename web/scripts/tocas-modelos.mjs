@@ -20,12 +20,15 @@ const SAIDA = path.join(RAIZ, 'web', 'public', 'tocas');
 
 /** Do Medieval Hexagon (caminho dentro de Assets/gltf, sem extensão); "{cor}" vira um arquivo por time. */
 const MEDIEVAL = [
-  ...['townhall', 'castle', 'home_A', 'home_B', 'barracks', 'archeryrange', 'tower_A', 'tower_B', 'tower_base', 'windmill', 'blacksmith', 'market'].map((n) => `buildings/{cor}/building_${n}_{cor}`),
-  ...['catapult', 'projectile_arrow', 'spear', 'bow', 'sword', 'shield'].map((n) => `units/{cor}/${n}_{cor}_accent`),
+  ...['townhall', 'castle', 'home_A', 'home_B', 'barracks', 'archeryrange', 'tower_A', 'tower_B', 'tower_base', 'windmill', 'blacksmith', 'market', 'workshop', 'tower_cannon'].map((n) => `buildings/{cor}/building_${n}_{cor}`),
+  ...['catapult', 'cannon', 'projectile_arrow', 'spear', 'bow', 'sword', 'shield'].map((n) => `units/{cor}/${n}_{cor}_accent`),
   'decoration/props/flag_{cor}',
   ...['building_grain', 'wall_straight', 'wall_straight_gate', 'building_stage_A', 'building_stage_B', 'building_stage_C', 'building_destroyed'].map((n) => `buildings/neutral/${n}`),
   'units/neutral/catapult',
   'units/neutral/projectile_catapult',
+  // a era 3 (24/11/2026): o canhão tombado e a bala dele (a oficina, o bastião e o canhão de cada time entram nas listas de cima)
+  'units/neutral/cannon',
+  'units/neutral/projectile_cannonball',
   'units/neutral/hammer',
   ...['tree_single_A', 'tree_single_B', 'trees_A_small', 'tree_single_A_cut', 'mountain_A', 'rock_single_D', 'rock_single_E'].map((n) => `decoration/nature/${n}`),
 ];

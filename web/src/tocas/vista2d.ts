@@ -1,4 +1,4 @@
-import { PREDIOS, TAMANHO, ePredio, eFonte, type Dono, type Sim, type TipoPredio, type TipoUnidade } from './sim';
+import { PREDIOS, TAMANHO, ePredio, eFonte, ehCerco, type Dono, type Sim, type TipoPredio, type TipoUnidade } from './sim';
 import { CORES, golpeDoMartelo, passeioNaFazenda, type Vista } from './vista';
 
 /**
@@ -10,7 +10,7 @@ import { CORES, golpeDoMartelo, passeioNaFazenda, type Vista } from './vista';
 
 const T = TAMANHO;
 
-const SINAL_DA_UNIDADE: Record<TipoUnidade, string> = { trabalhador: 'ferramenta', lanceiro: 'lanca', arqueiro: 'arco', cavaleiro: 'espada', catapulta: 'roda' };
+const SINAL_DA_UNIDADE: Record<TipoUnidade, string> = { trabalhador: 'ferramenta', lanceiro: 'lanca', arqueiro: 'arco', cavaleiro: 'espada', catapulta: 'roda', guarda: 'escudo', canhao: 'cano' };
 const COR_DO_PREDIO: Record<TipoPredio, string> = {
   centro: '#c9a46a',
   casa: '#c78b5c',
@@ -23,6 +23,8 @@ const COR_DO_PREDIO: Record<TipoPredio, string> = {
   maravilha: '#e8d79a',
   ferreiro: '#6f6a74',
   mercado: '#c2a24e',
+  oficina: '#8a6f4e',
+  bastiao: '#7d7d86',
 };
 
 export class Vista2D implements Vista {
@@ -162,7 +164,7 @@ export class Vista2D implements Vista {
         y = p.y;
       }
       const s = this.paraTela(x, y);
-      const r = e * (u.tipo === 'catapulta' ? 0.42 : u.tipo === 'cavaleiro' ? 0.36 : 0.28);
+      const r = e * (ehCerco(u.tipo) ? 0.42 : u.tipo === 'cavaleiro' || u.tipo === 'guarda' ? 0.36 : 0.28);
       g.beginPath();
       g.arc(s.x, s.y, r, 0, Math.PI * 2);
       g.fillStyle = CORES[u.dono];
@@ -306,6 +308,18 @@ export class Vista2D implements Vista {
       case 'torre':
         g.fillRect(x - r * 0.5, y - r, r, r * 2);
         return;
+      case 'bastiao':
+        g.fillRect(x - r * 0.7, y - r, r * 1.4, r * 2);
+        return;
+      case 'oficina':
+        // a roda do canhão
+        g.arc(x, y, r * 0.8, 0, Math.PI * 2);
+        g.moveTo(x - r * 0.8, y);
+        g.lineTo(x + r * 0.8, y);
+        g.moveTo(x, y - r * 0.8);
+        g.lineTo(x, y + r * 0.8);
+        g.stroke();
+        return;
       case 'maravilha':
         g.moveTo(x - r, y + r);
         g.lineTo(x, y - r * 1.2);
@@ -339,6 +353,19 @@ export class Vista2D implements Vista {
       g.lineTo(x, y + r * 0.5);
       g.moveTo(x - r * 0.3, y + r * 0.15);
       g.lineTo(x + r * 0.3, y + r * 0.15);
+      g.stroke();
+    } else if (sinal === 'escudo') {
+      g.moveTo(x - r * 0.4, y - r * 0.45);
+      g.lineTo(x + r * 0.4, y - r * 0.45);
+      g.lineTo(x + r * 0.4, y + r * 0.1);
+      g.lineTo(x, y + r * 0.55);
+      g.lineTo(x - r * 0.4, y + r * 0.1);
+      g.closePath();
+      g.stroke();
+    } else if (sinal === 'cano') {
+      g.arc(x - r * 0.15, y + r * 0.2, r * 0.3, 0, Math.PI * 2);
+      g.moveTo(x - r * 0.1, y);
+      g.lineTo(x + r * 0.55, y - r * 0.45);
       g.stroke();
     } else if (sinal === 'roda') {
       g.arc(x, y, r * 0.45, 0, Math.PI * 2);

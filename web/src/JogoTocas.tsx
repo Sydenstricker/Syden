@@ -17,8 +17,10 @@ import {
   ePredio,
   aliados,
   equipeDe,
-  ERA2,
   eUnidade,
+  podeAvancarEra,
+  proximaEra,
+  type Era,
   limparComando,
   LISTA_DE_DESAFIOS,
   lugarDeColeta,
@@ -139,6 +141,8 @@ const NOME: Record<TipoUnidade | TipoPredio, string> = {
   arqueiro: chave('Arqueiro'),
   cavaleiro: chave('Cavaleiro'),
   catapulta: chave('Catapulta'),
+  guarda: chave('Guarda'),
+  canhao: chave('Canhão'),
   centro: chave('Centro da vila'),
   casa: chave('Casa'),
   fazenda: chave('Fazenda'),
@@ -150,6 +154,8 @@ const NOME: Record<TipoUnidade | TipoPredio, string> = {
   maravilha: chave('Maravilha'),
   ferreiro: chave('Ferreiro'),
   mercado: chave('Mercado'),
+  oficina: chave('Oficina'),
+  bastiao: chave('Bastião'),
 };
 const NOME_DO_RECURSO: Record<Recurso, string> = { comida: chave('Comida'), madeira: chave('Madeira'), ouro: chave('Ouro') };
 const NOME_DO_NIVEL: Record<Nivel, string> = { facil: chave('Fácil'), normal: chave('Normal'), dificil: chave('Difícil') };
@@ -178,6 +184,9 @@ const NOME_DA_MELHORIA: Record<Melhoria, string> = {
   machado: chave('Machado afiado'),
   picareta: chave('Picareta'),
   arado: chave('Arado'),
+  forja: chave('Forja'),
+  cota: chave('Cota de malha'),
+  carrinho: chave('Carrinho de mão'),
 };
 /**
  * Os ÍCONES do painel (05/11/2026, pedido dele: "temos os recursos com assets, não podemos usá-los como UI?"): os próprios
@@ -202,6 +211,8 @@ const LETRA_DO_PREDIO: Partial<Record<TipoPredio, string>> = {
   muralha: 'm',
   portao: 'p',
   mercado: 'k',
+  oficina: 'o',
+  bastiao: 'b',
   maravilha: 'v',
 };
 const LETRA_DA_UNIDADE: Record<TipoUnidade, string> = {
@@ -210,8 +221,10 @@ const LETRA_DA_UNIDADE: Record<TipoUnidade, string> = {
   arqueiro: 'r',
   cavaleiro: 'c',
   catapulta: 'p',
+  guarda: 'u',
+  canhao: 'n',
 };
-const CONSTRUIVEIS: TipoPredio[] = ['casa', 'fazenda', 'quartel', 'arquearia', 'ferreiro', 'torre', 'muralha', 'portao', 'mercado', 'maravilha'];
+const CONSTRUIVEIS: TipoPredio[] = ['casa', 'fazenda', 'quartel', 'arquearia', 'ferreiro', 'torre', 'muralha', 'portao', 'mercado', 'oficina', 'bastiao', 'maravilha'];
 /** O Solo manda os comandos ao servidor a cada tanto, em trechos de no máximo tanto (o servidor recusa mais de 1200). */
 const TRECHO_MS = 2000;
 const MAIOR_TRECHO = 1000;
@@ -606,7 +619,7 @@ interface Painel {
   /** Quanto entrou de cada um por minuto (a média do último minuto). */
   taxa: Record<Recurso, number>;
   pop: { usada: number; max: number };
-  era: 1 | 2;
+  era: Era;
   passo: number;
   /** Os passos de Maravilha de pé de cada dono. */
   maravilha: number[];
@@ -897,14 +910,18 @@ function Partida({
             }
             break;
           case 'golpe':
-            if (vis[Math.floor(e.y1) * TAMANHO + Math.floor(e.x1)]) som(e.arma === 'corpo' ? 'soco' : 'tiro', 220);
+            if (vis[Math.floor(e.y1) * TAMANHO + Math.floor(e.x1)]) som(e.arma === 'corpo' ? 'soco' : e.arma === 'bala' ? 'explosao' : 'tiro', 220);
             break;
           case 'morte':
             if (e.predio && vis[Math.floor(e.y) * TAMANHO + Math.floor(e.x)]) som('queda', 400);
             break;
           case 'era':
             som('vez');
-            if (meu(e.dono)) avisar(t('Você avançou para a era 2!'));
+            if (sim.jogadores[e.dono].era === 3) {
+              if (meu(e.dono)) avisar(t('Você avançou para a era 3!'));
+              else if (nomes) avisar(t('{nome} avançou para a era 3.', { nome: nomeDe(e.dono) }));
+              else avisar(t('O computador avançou para a era 3.'));
+            } else if (meu(e.dono)) avisar(t('Você avançou para a era 2!'));
             else if (nomes) avisar(t('{nome} avançou para a era 2.', { nome: nomeDe(e.dono) }));
             else avisar(t('O computador avançou para a era 2.'));
             break;
@@ -1591,7 +1608,7 @@ function Partida({
         disabled={travado}
         aria-disabled={!pode}
         aria-keyshortcuts={travado ? undefined : LETRA_DO_PREDIO[tipo]}
-        title={travado ? t('Pede a era 2') : undefined}
+        title={travado ? (d.era === 3 ? t('Pede a era 3') : t('Pede a era 2')) : undefined}
         onClick={aoClicar}
       >
         <span className="tocas-botao-nome">{t(NOME[tipo])}</span>
@@ -1628,7 +1645,7 @@ function Partida({
         disabled={travado}
         aria-disabled={!pode}
         aria-keyshortcuts={travado ? undefined : LETRA_DA_UNIDADE[tipo]}
-        title={travado ? t('Pede a era 2') : undefined}
+        title={travado ? (d.era === 3 ? t('Pede a era 3') : t('Pede a era 2')) : undefined}
         onClick={aoClicar}
       >
         <span className="tocas-botao-nome">{t(NOME[tipo])}</span>
@@ -1646,14 +1663,17 @@ function Partida({
   const botaoMelhoria = (m: Melhoria) => {
     const d = MELHORIAS[m];
     const ocupado = !!predio?.estudo || sim.predios.some((p) => p.dono === eu && p.estudo === m);
-    const pode = !ocupado && podePagar(sim, eu, d.custo);
+    // as da era 3 aparecem antes, apagadas (para quem joga saber o que vem)
+    const travado = painel.era < (d.era ?? 1);
+    const pode = !ocupado && !travado && podePagar(sim, eu, d.custo);
     return (
       <button
         key={m}
         type="button"
         className="tocas-botao"
-        disabled={ocupado}
+        disabled={ocupado || travado}
         aria-disabled={!pode}
+        title={travado ? t('Pede a era 3') : undefined}
         onClick={() => {
           if (!predio) return;
           if (!pode) {
@@ -1668,6 +1688,37 @@ function Partida({
       >
         <span className="tocas-botao-nome">{t(NOME_DA_MELHORIA[m])}</span>
         {custo(d.custo)}
+      </button>
+    );
+  };
+
+  /**
+   * AVANÇAR DE ERA, no centro: da 1 para a 2, e da 2 para a 3 (24/11/2026), que pede um mercado pronto (o botão diz, e fica
+   * apagado até ele existir). Na era 3, não há mais botão.
+   */
+  const botaoDaEra = (predioId: number) => {
+    const prox = proximaEra(painel.era);
+    if (!prox) return null;
+    const falta = !podeAvancarEra(sim, eu);
+    const pode = !falta && podePagar(sim, eu, prox.custo);
+    return (
+      <button
+        type="button"
+        className="tocas-botao era"
+        aria-disabled={!pode}
+        title={falta ? t('Pede um mercado pronto') : undefined}
+        onClick={() => {
+          if (!pode) {
+            tocar('erro');
+            if (falta) avisar(t('Pede um mercado pronto'));
+            return;
+          }
+          ordenar({ t: 'era', predio: predioId });
+          tocar('clique');
+        }}
+      >
+        <span className="tocas-botao-nome">{painel.era === 2 ? t('Avançar para a era 3') : t('Avançar de era')}</span>
+        {custo(prox.custo)}
       </button>
     );
   };
@@ -1896,7 +1947,7 @@ function Partida({
                 <div className="tocas-fila">
                   {predio.pesquisa > 0 ? (
                     <span className="tocas-fila-item">
-                      {t('Avançando de era…')} {Math.floor((predio.pesquisa / ERA2.tempo) * 100)}%
+                      {t('Avançando de era…')} {Math.floor((predio.pesquisa / (proximaEra(painel.era)?.tempo ?? 1)) * 100)}%
                     </span>
                   ) : predio.estudo ? (
                     <span className="tocas-fila-item">
@@ -1950,21 +2001,7 @@ function Partida({
               {predio.tipo === 'centro' && botaoSino('tocas-botao')}
               {predio.tipo === 'ferreiro' && ORDEM_DAS_MELHORIAS.filter((m) => !temMelhoria(sim, eu, m)).map(botaoMelhoria)}
               {predio.tipo === 'mercado' && botoesDoMercado(predio.id)}
-              {predio.tipo === 'centro' && painel.era === 1 && predio.pesquisa === 0 && (
-                <button
-                  type="button"
-                  className="tocas-botao era"
-                  aria-disabled={!podePagar(sim, eu, ERA2.custo)}
-                  onClick={() => {
-                    if (!podePagar(sim, eu, ERA2.custo)) return void tocar('erro');
-                    ordenar({ t: 'era', predio: predio.id });
-                    tocar('clique');
-                  }}
-                >
-                  <span className="tocas-botao-nome">{t('Avançar de era')}</span>
-                  {custo(ERA2.custo)}
-                </button>
-              )}
+              {predio.tipo === 'centro' && predio.pesquisa === 0 && botaoDaEra(predio.id)}
             </>
           )}
           {atacarAndando && <p className="tocas-dica">{t('Escolha para onde ir: quem aparecer no caminho é atacado.')}</p>}

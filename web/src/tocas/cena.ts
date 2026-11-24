@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { PREDIOS, TAMANHO, eFonte, ePredio, eUnidade, type Fonte, type Predio, type Recurso, type Dono, type Sim, type TipoPredio, type Unidade } from './sim';
+import { PREDIOS, TAMANHO, eFonte, ePredio, eUnidade, ehCerco, type Fonte, type Predio, type Recurso, type Dono, type Sim, type TipoPredio, type Unidade } from './sim';
 import { CORES, golpeDoMartelo, passeioNaFazenda, type Vista } from './vista';
 
 /**
@@ -30,8 +30,13 @@ const T = TAMANHO;
  * dois lados). Com '+', mais de um modelo junto; "@x,z,k" põe a parte em (x, z), na medida do PRIMEIRO modelo, com o
  * tamanho vezes k (o moinho no canto do trigo).
  */
-const MODELOS_DOS_PREDIOS: Record<TipoPredio, [string, string]> = {
-  centro: ['m/building_townhall_{cor}', 'm/building_townhall_{cor}+m/building_tower_B_{cor}@-0.62,-0.55,0.62+m/building_tower_B_{cor}@0.62,-0.55,0.62'],
+const MODELOS_DOS_PREDIOS: Record<TipoPredio, string[]> = {
+  centro: [
+    'm/building_townhall_{cor}',
+    'm/building_townhall_{cor}+m/building_tower_B_{cor}@-0.62,-0.55,0.62+m/building_tower_B_{cor}@0.62,-0.55,0.62',
+    // a era 3 (24/11/2026): as torrinhas viram as do canhão
+    'm/building_townhall_{cor}+m/building_tower_cannon_{cor}@-0.62,-0.55,0.62+m/building_tower_cannon_{cor}@0.62,-0.55,0.62',
+  ],
   casa: ['m/building_home_A_{cor}', 'm/building_home_B_{cor}'],
   fazenda: ['m/building_grain', 'm/building_grain+m/building_windmill_{cor}@0.45,-0.5,0.85'],
   quartel: ['m/building_barracks_{cor}', 'm/building_barracks_{cor}'],
@@ -42,7 +47,12 @@ const MODELOS_DOS_PREDIOS: Record<TipoPredio, [string, string]> = {
   maravilha: ['m/building_castle_{cor}', 'm/building_castle_{cor}'],
   ferreiro: ['m/building_blacksmith_{cor}', 'm/building_blacksmith_{cor}'],
   mercado: ['m/building_market_{cor}', 'm/building_market_{cor}'],
+  // os da era 3 (24/11/2026): a oficina do canhão e o bastião (a torre do canhão)
+  oficina: ['m/building_workshop_{cor}'],
+  bastiao: ['m/building_tower_cannon_{cor}'],
 };
+/** O modelo do prédio na era (o que não muda na era 3 fica com o da 2). */
+const modeloNaEra = (tipo: TipoPredio, era: number) => { const l = MODELOS_DOS_PREDIOS[tipo]; return l[Math.min(era, l.length) - 1]; };
 /** As obras: o canteiro, as paredes subindo e o andaime, pelo andamento. */
 const OBRAS = ['m/building_stage_A', 'm/building_stage_B', 'm/building_stage_C'];
 const TIME = ['blue', 'red'] as const;
@@ -59,7 +69,9 @@ const PILHAS: Record<Recurso, string[]> = {
 };
 const CARGAS: Record<Recurso, string> = { comida: 'recursos/Food_Basket_A_Berries', madeira: 'recursos/Wood_Log_A', ouro: 'recursos/Gold_Nugget_Medium' };
 /** As armas de cada coelho (as do pacote, na cor do time). */
-const ARMAS: Record<string, string> = { lanceiro: 'm/spear_{cor}_accent', arqueiro: 'm/bow_{cor}_accent', cavaleiro: 'm/sword_{cor}_accent', escudo: 'm/shield_{cor}_accent' };
+const ARMAS: Record<string, string> = { lanceiro: 'm/spear_{cor}_accent', arqueiro: 'm/bow_{cor}_accent', cavaleiro: 'm/sword_{cor}_accent', escudo: 'm/shield_{cor}_accent', guarda: 'm/spear_{cor}_accent' };
+/** As máquinas de cerco: o modelo de cada time, e o que tomba quando ela cai. */
+const CERCO: Record<string, [string, string]> = { catapulta: ['m/catapult_{cor}_accent', 'm/catapult'], canhao: ['m/cannon_{cor}_accent', 'm/cannon'] };
 const TODOS = [
   ...new Set(
     [
@@ -72,6 +84,9 @@ const TODOS = [
       'm/catapult_{cor}_accent',
       'm/catapult',
       'm/projectile_catapult',
+      'm/cannon_{cor}_accent',
+      'm/cannon',
+      'm/projectile_cannonball',
       'm/projectile_arrow_{cor}_accent',
       'm/hammer',
       'm/flag_{cor}',
@@ -88,7 +103,7 @@ const TODOS = [
 ];
 
 /** A altura do coelho por tipo (o cavaleiro é o veterano: maior). */
-const ALTURA: Record<string, number> = { trabalhador: 0.82, lanceiro: 0.92, arqueiro: 0.9, cavaleiro: 1.2 };
+const ALTURA: Record<string, number> = { trabalhador: 0.82, lanceiro: 0.92, arqueiro: 0.9, cavaleiro: 1.2, guarda: 1.05 };
 const PELO = '#f1ebe1';
 
 const carregados = new Map<string, Promise<GLTF>>();
@@ -527,13 +542,13 @@ export class CenaDasTocas implements Vista {
   /** As armas do pacote, na cor de cada time: a lança, o arco, a espada com o escudo (o meio de cada uma na mão). */
   private montarArmas() {
     // [altura, quanto desce da mão (a fração da altura)]
-    const medidas: Record<string, [number, number]> = { lanceiro: [0.95, 0.47], arqueiro: [0.45, 0.5], cavaleiro: [0.45, 0.18], escudo: [0.34, 0.5] };
+    const medidas: Record<string, [number, number]> = { lanceiro: [0.95, 0.47], arqueiro: [0.45, 0.5], cavaleiro: [0.45, 0.18], escudo: [0.34, 0.5], guarda: [1.0, 0.47] };
     for (const dono of [0, 1])
       for (const [tipo, nome] of Object.entries(ARMAS)) {
         const [alto, desce] = medidas[tipo];
         const a = this.copiaNormalizada(doTime(nome, dono), 0, alto);
         a.children[0].position.y -= alto * desce;
-        if (tipo === 'lanceiro') a.rotation.x = 0.25;
+        if (tipo === 'lanceiro' || tipo === 'guarda') a.rotation.x = 0.25;
         a.traverse((o) => {
           const m = o as THREE.Mesh;
           if (m.isMesh) m.receiveShadow = false;
@@ -594,7 +609,7 @@ export class CenaDasTocas implements Vista {
   private modeloDoPredio(p: Predio): { obj: THREE.Object3D; chave: string } {
     const era = p.pronto ? p.era : this.sim.jogadores[p.dono].era;
     const obra = this.obra(p);
-    let nome = doTime(obra >= 0 ? OBRAS[obra] : MODELOS_DOS_PREDIOS[p.tipo][era - 1], p.dono);
+    let nome = doTime(obra >= 0 ? OBRAS[obra] : modeloNaEra(p.tipo, era), p.dono);
     let giro = 0;
     const muro = p.tipo === 'muralha' || p.tipo === 'portao';
     if (muro) {
@@ -619,8 +634,8 @@ export class CenaDasTocas implements Vista {
       // o trecho do pacote tem duas casas de comprido: encolhe no comprimento e engrossa, para a muralha não ficar rasa
       obj = this.copiaNormalizada(nome, 1.0);
       obj.scale.set(1, 1.5, 1.5);
-    } else if (obra >= 0) obj = this.copiaNormalizada(nome, PREDIOS[p.tipo].tam * (p.tipo === 'torre' ? 1 : 0.85));
-    else obj = this.copiaNormalizada(nome, PREDIOS[p.tipo].tam * (p.tipo === 'torre' ? 1.25 : 0.94));
+    } else if (obra >= 0) obj = this.copiaNormalizada(nome, PREDIOS[p.tipo].tam * (p.tipo === 'torre' || p.tipo === 'bastiao' ? 1 : 0.85));
+    else obj = this.copiaNormalizada(nome, PREDIOS[p.tipo].tam * (p.tipo === 'torre' || p.tipo === 'bastiao' ? 1.25 : 0.94));
     const dentro = new THREE.Group();
     dentro.add(obj);
     dentro.rotation.y = giro;
@@ -723,8 +738,8 @@ export class CenaDasTocas implements Vista {
     let corpo: THREE.Object3D;
     let mixer: THREE.AnimationMixer | null = null;
     const acoes = new Map<string, THREE.AnimationAction>();
-    if (u.tipo === 'catapulta') {
-      corpo = this.copiaNormalizada(doTime('m/catapult_{cor}_accent', u.dono), 1.15);
+    if (ehCerco(u.tipo)) {
+      corpo = this.copiaNormalizada(doTime(CERCO[u.tipo][0], u.dono), u.tipo === 'canhao' ? 1.05 : 1.15);
     } else {
       const g = this.modelos.get('coelho')!;
       const c = SkeletonUtils.clone(g.scene);
@@ -749,7 +764,7 @@ export class CenaDasTocas implements Vista {
       const arma = this.armas.get(`${u.tipo}|${u.dono & 1}`);
       if (arma) {
         const a = arma.clone();
-        if (u.tipo === 'cavaleiro') {
+        if (u.tipo === 'cavaleiro' || u.tipo === 'guarda') {
           a.position.set(0, 0.05, 0.05);
           const e = this.armas.get(`escudo|${u.dono & 1}`)!.clone();
           e.position.set(0.32 * h / 0.7, -0.05, 0.08);
@@ -816,8 +831,8 @@ export class CenaDasTocas implements Vista {
       let delta = quer - b.corpo.rotation.y;
       delta = Math.atan2(Math.sin(delta), Math.cos(delta));
       b.corpo.rotation.y += delta * Math.min(1, dt * 12);
-      if (u.tipo === 'catapulta') {
-        const atira = u.acao === 'atacando' && u.recarga > 40;
+      if (ehCerco(u.tipo)) {
+        const atira = u.acao === 'atacando' && u.recarga > (u.tipo === 'canhao' ? 50 : 40);
         b.corpo.position.y = atira ? 0.03 : 0;
         continue;
       }
@@ -877,7 +892,7 @@ export class CenaDasTocas implements Vista {
       if (eUnidade(e)) {
         const b = this.bonecos.get(id);
         if (b) a.position.set(b.raiz.position.x, 0.03, b.raiz.position.z);
-        a.scale.setScalar(e.tipo === 'catapulta' ? 1.8 : e.tipo === 'cavaleiro' ? 1.3 : 1);
+        a.scale.setScalar(ehCerco(e.tipo) ? 1.8 : e.tipo === 'cavaleiro' ? 1.3 : 1);
       } else {
         const tam = ePredio(e) ? e.tam : 1;
         a.position.set(e.gx + tam / 2, 0.03, e.gy + tam / 2);
@@ -927,7 +942,7 @@ export class CenaDasTocas implements Vista {
       if (u.vida >= u.vidaMax && !this.selecao.has(u.id)) continue;
       const b = this.bonecos.get(u.id);
       if (!b || !b.raiz.visible) continue;
-      const h = u.tipo === 'catapulta' ? 0.9 : ALTURA[u.tipo];
+      const h = ehCerco(u.tipo) ? 0.9 : ALTURA[u.tipo];
       barra(u.id, b.raiz.position.x, h + 0.18, b.raiz.position.z, 0.5, u.vida / u.vidaMax, (u.dono & 1) !== (this.eu & 1));
     }
     for (const p of this.sim.predios) {
@@ -996,24 +1011,38 @@ export class CenaDasTocas implements Vista {
       if (e.t === 'golpe' && e.arma !== 'corpo') {
         if (!vis[Math.floor(e.y1) * T + Math.floor(e.x1)] && !vis[Math.floor(e.y0) * T + Math.floor(e.x0)]) continue;
         const pedra = e.arma === 'pedra';
+        // a bala do canhão e do bastião (era 3): voa mais reta e mais depressa que a pedra
+        const bala = e.arma === 'bala';
         // a pedra da catapulta (a bola de ferro do pacote) e a flecha na cor de quem atirou; a torre e o centro atiram flecha
-        const obj = pedra ? this.molde('m/projectile_catapult', 0.3) : this.molde(doTime('m/projectile_arrow_{cor}_accent', e.dono), 0.42);
+        const obj = pedra
+          ? this.molde('m/projectile_catapult', 0.3)
+          : bala
+            ? this.molde('m/projectile_cannonball', 0.2)
+            : this.molde(doTime('m/projectile_arrow_{cor}_accent', e.dono), 0.42);
         // a bola gira em volta do meio dela
         if (pedra) obj.children[0].position.y -= 0.15;
         const atirador = sim.porId.get(e.de);
         // a flecha da torre sai do alto dela; a pedra, da colher da catapulta
-        const alto = pedra ? 0.6 : ePredio(atirador) ? (atirador.tipo === 'torre' ? 1.9 : 1.6) : 0.5;
+        const alto = pedra ? 0.6 : ePredio(atirador) ? (atirador.tipo === 'torre' || atirador.tipo === 'bastiao' ? 1.9 : 1.6) : bala ? 0.4 : 0.5;
         const de = new THREE.Vector3(e.x0, alto, e.y0);
         const para = new THREE.Vector3(e.x1, 0.35, e.y1);
         const dist = de.distanceTo(para);
         obj.position.copy(de);
         this.cena.add(obj);
-        this.tiros.push({ obj, de, para, inicio: agora, dura: pedra ? 700 : 120 + dist * 45, arco: pedra ? 1.5 + dist * 0.15 : 0.15 + dist * 0.06, pedra });
+        this.tiros.push({
+          obj,
+          de,
+          para,
+          inicio: agora,
+          dura: pedra ? 700 : bala ? 250 + dist * 30 : 120 + dist * 45,
+          arco: pedra ? 1.5 + dist * 0.15 : bala ? 0.4 + dist * 0.06 : 0.15 + dist * 0.06,
+          pedra: pedra || bala,
+        });
       } else if (e.t === 'morte' && !vis[Math.floor(e.y) * T + Math.floor(e.x)]) {
         continue;
-      } else if (e.t === 'morte' && e.tipo === 'catapulta') {
-        // a catapulta tomba de lado e fica uns segundos
-        const o = this.molde('m/catapult', 1.15);
+      } else if (e.t === 'morte' && !e.predio && (e.tipo === 'catapulta' || e.tipo === 'canhao')) {
+        // a catapulta (e o canhão) tomba de lado e fica uns segundos
+        const o = this.molde(CERCO[e.tipo][1], e.tipo === 'canhao' ? 1.05 : 1.15);
         o.position.set(e.x, -0.08, e.y);
         o.rotation.set(0, sorte(e.id) * 6.28, 1.25);
         this.cena.add(o);
@@ -1102,8 +1131,8 @@ export class CenaDasTocas implements Vista {
       this.fantasmaObj.add(m);
     }
     if (f.tipo !== 'muralha' && f.casas.length === 1) {
-      const nome = doTime(MODELOS_DOS_PREDIOS[f.tipo][this.sim.jogadores[this.eu].era - 1], this.eu);
-      const o = this.copiaNormalizada(nome, tam * (f.tipo === 'torre' ? 1.25 : 0.94));
+      const nome = doTime(modeloNaEra(f.tipo, this.sim.jogadores[this.eu].era), this.eu);
+      const o = this.copiaNormalizada(nome, tam * (f.tipo === 'torre' || f.tipo === 'bastiao' ? 1.25 : 0.94));
       o.traverse((q) => {
         const m = q as THREE.Mesh;
         if (!m.isMesh) return;
@@ -1200,7 +1229,7 @@ export class CenaDasTocas implements Vista {
     for (const u of this.sim.unidades) {
       const b = this.bonecos.get(u.id);
       if (!b || !b.raiz.visible) continue;
-      const h = u.tipo === 'catapulta' ? 0.45 : ALTURA[u.tipo] / 2;
+      const h = ehCerco(u.tipo) ? 0.45 : ALTURA[u.tipo] / 2;
       const s = this.naTela(b.raiz.position.x, h, b.raiz.position.z);
       const q = (s.x - px) * (s.x - px) + (s.y - py) * (s.y - py);
       if (q < dist) {

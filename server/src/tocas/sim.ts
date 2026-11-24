@@ -46,8 +46,9 @@ export const equipeDe = (d: number): 0 | 1 => (d & 1) as 0 | 1;
 /** Da mesma equipe (o próprio dono incluído): não se atacam, dividem a visão e passam pelo portão um do outro. */
 export const aliados = (a: number, b: number): boolean => (a & 1) === (b & 1);
 export type Recurso = 'comida' | 'madeira' | 'ouro';
-export type TipoUnidade = 'trabalhador' | 'lanceiro' | 'arqueiro' | 'cavaleiro' | 'catapulta';
-export type TipoPredio = 'centro' | 'casa' | 'fazenda' | 'quartel' | 'arquearia' | 'torre' | 'muralha' | 'portao' | 'maravilha' | 'ferreiro' | 'mercado';
+export type TipoUnidade = 'trabalhador' | 'lanceiro' | 'arqueiro' | 'cavaleiro' | 'catapulta' | 'guarda' | 'canhao';
+export type TipoPredio = 'centro' | 'casa' | 'fazenda' | 'quartel' | 'arquearia' | 'torre' | 'muralha' | 'portao' | 'maravilha' | 'ferreiro' | 'mercado' | 'oficina' | 'bastiao';
+export type Era = 1 | 2 | 3;
 export type Custo = Partial<Record<Recurso, number>>;
 export const RECURSOS: Recurso[] = ['comida', 'madeira', 'ouro'];
 
@@ -72,16 +73,22 @@ export type Melhoria =
   | 'armaduraArqueiro'
   | 'machado'
   | 'picareta'
-  | 'arado';
-export const ORDEM_DAS_MELHORIAS: Melhoria[] = ['ataqueLanceiro', 'armaduraLanceiro', 'ataqueCavaleiro', 'armaduraCavaleiro', 'ataqueArqueiro', 'armaduraArqueiro', 'machado', 'picareta', 'arado'];
+  | 'arado'
+  // as da era 3 (24/11/2026): valem para todas as tropas, ou para a carga do trabalhador
+  | 'forja'
+  | 'cota'
+  | 'carrinho';
+export const ORDEM_DAS_MELHORIAS: Melhoria[] = ['ataqueLanceiro', 'armaduraLanceiro', 'ataqueCavaleiro', 'armaduraCavaleiro', 'ataqueArqueiro', 'armaduraArqueiro', 'machado', 'picareta', 'arado', 'forja', 'cota', 'carrinho'];
 export interface DadosDaMelhoria {
   custo: Custo;
   /** Passos de estudo no ferreiro. */
   tempo: number;
   /** A tropa que ela melhora (ataque ou armadura), ou o recurso que se colhe mais depressa. */
   linha?: TipoUnidade;
-  tipo: 'ataque' | 'armadura' | 'coleta';
+  tipo: 'ataque' | 'armadura' | 'coleta' | 'ataqueGeral' | 'armaduraGeral' | 'carga';
   recurso?: Recurso;
+  /** A era que ela pede (sem: a 1). */
+  era?: 3;
 }
 export const MELHORIAS: Record<Melhoria, DadosDaMelhoria> = {
   ataqueLanceiro: { custo: { comida: 100, ouro: 50 }, tempo: 300, linha: 'lanceiro', tipo: 'ataque' },
@@ -93,9 +100,16 @@ export const MELHORIAS: Record<Melhoria, DadosDaMelhoria> = {
   machado: { custo: { comida: 100, madeira: 50 }, tempo: 250, tipo: 'coleta', recurso: 'madeira' },
   picareta: { custo: { comida: 100, madeira: 75 }, tempo: 250, tipo: 'coleta', recurso: 'ouro' },
   arado: { custo: { madeira: 125 }, tempo: 250, tipo: 'coleta', recurso: 'comida' },
+  forja: { custo: { comida: 250, ouro: 150 }, tempo: 400, tipo: 'ataqueGeral', era: 3 },
+  cota: { custo: { comida: 250, ouro: 150 }, tempo: 400, tipo: 'armaduraGeral', era: 3 },
+  carrinho: { custo: { comida: 100, madeira: 250 }, tempo: 350, tipo: 'carga', era: 3 },
 };
-/** O que cada melhoria faz: o golpe da linha ×1,25, o golpe que a linha leva ×0,75, e 3 passos a menos por unidade colhida. */
-export const EFEITO_DAS_MELHORIAS = { ataque: 1.25, armadura: 0.75, coleta: 3 } as const;
+/**
+ * O que cada melhoria faz: o golpe da linha ×1,25, o golpe que a linha leva ×0,75, e 3 passos a menos por unidade colhida. As da
+ * era 3 (24/11/2026): o golpe de TODA tropa ×1,15 (a forja), o golpe que toda tropa leva ×0,85 (a cota de malha), e o trabalhador
+ * carrega 15 de uma vez (o carrinho).
+ */
+export const EFEITO_DAS_MELHORIAS = { ataque: 1.25, armadura: 0.75, coleta: 3, ataqueGeral: 1.15, armaduraGeral: 0.85, carga: 15 } as const;
 /** O MERCADO (a era 2): 100 de um recurso por outro, ao preço de quem troca (o que se vende barateia, o que se compra encarece). */
 export const MERCADO = { lote: 100, taxa: 70, passo: 6, min: 40, max: 250 } as const;
 /** De quanto em quanto tempo a partida guarda o gráfico do fim (recursos colhidos e o tamanho do exército): 15 s. */
@@ -119,7 +133,9 @@ export interface DadosDaUnidade {
   /** Passos para treinar. */
   tempo: number;
   de: TipoPredio;
-  era: 1 | 2;
+  era: Era;
+  /** A linha do ferreiro (as melhorias de ataque e armadura que ela usa); sem: a dela mesma. A guarda é da linha do lanceiro. */
+  linha?: TipoUnidade;
   /** A pedra-papel-tesoura: o golpe contra este tipo vale `vezes` mais. */
   bonus?: { contra: TipoUnidade; vezes: number };
   combate: boolean;
@@ -132,7 +148,13 @@ export const UNIDADES: Record<TipoUnidade, DadosDaUnidade> = {
   cavaleiro: { vida: 100, ataque: 8, contraPredio: 4, alcance: 1.05, alcanceMin: 0, recarga: 18, velocidade: 0.2, visao: 6, custo: { comida: 70, ouro: 60 }, tempo: 140, de: 'quartel', era: 1, bonus: { contra: 'arqueiro', vezes: 2.5 }, combate: true },
   arqueiro: { vida: 35, ataque: 4, contraPredio: 1, alcance: 5, alcanceMin: 0, recarga: 20, velocidade: 0.12, visao: 7, custo: { madeira: 25, ouro: 40 }, tempo: 110, de: 'arquearia', era: 1, bonus: { contra: 'lanceiro', vezes: 2.5 }, combate: true },
   catapulta: { vida: 90, ataque: 6, contraPredio: 50, alcance: 7, alcanceMin: 2.5, recarga: 50, velocidade: 0.07, visao: 8, custo: { madeira: 180, ouro: 120 }, tempo: 200, de: 'quartel', era: 2, combate: true },
+  // A ERA 3 (24/11/2026): a guarda (a lança com escudo, o lanceiro veterano: a mesma linha no ferreiro) e o canhão (de longe, o que
+  // mais derruba prédio, e acerta gente melhor que a catapulta), feito na oficina
+  guarda: { vida: 110, ataque: 8, contraPredio: 4, alcance: 0.95, alcanceMin: 0, recarga: 15, velocidade: 0.125, visao: 5, custo: { comida: 60, madeira: 30, ouro: 35 }, tempo: 130, de: 'quartel', era: 3, linha: 'lanceiro', bonus: { contra: 'cavaleiro', vezes: 3 }, combate: true },
+  canhao: { vida: 130, ataque: 12, contraPredio: 80, alcance: 8, alcanceMin: 2.5, recarga: 60, velocidade: 0.06, visao: 9, custo: { madeira: 225, ouro: 125 }, tempo: 240, de: 'oficina', era: 3, combate: true },
 };
+/** Quem é de cerco (prefere prédio, e de perto não atira): a catapulta e o canhão. */
+export const ehCerco = (t: TipoUnidade): boolean => t === 'catapulta' || t === 'canhao';
 
 export interface DadosDoPredio {
   tam: number;
@@ -140,7 +162,7 @@ export interface DadosDoPredio {
   custo: Custo;
   /** Passos de trabalho (com um trabalhador; dois fazem na metade). */
   tempo: number;
-  era: 1 | 2;
+  era: Era;
   pop?: number;
   ataque?: number;
   alcance?: number;
@@ -162,10 +184,36 @@ export const PREDIOS: Record<TipoPredio, DadosDoPredio> = {
   maravilha: { tam: 4, vida: 2400, custo: { comida: 400, madeira: 600, ouro: 500 }, tempo: 1500, era: 2, visao: 6, construivel: true },
   ferreiro: { tam: 2, vida: 600, custo: { madeira: 120 }, tempo: 250, era: 1, visao: 3, construivel: true },
   mercado: { tam: 3, vida: 800, custo: { madeira: 175 }, tempo: 300, era: 2, visao: 4, construivel: true },
+  // a era 3: a oficina (onde se faz o canhão) e o bastião (a torre do canhão: mais vida, mais longe e golpe maior, mais devagar)
+  oficina: { tam: 3, vida: 900, custo: { madeira: 250 }, tempo: 320, era: 3, visao: 4, construivel: true },
+  bastiao: { tam: 1, vida: 1000, custo: { madeira: 175, ouro: 75 }, tempo: 400, era: 3, ataque: 10, alcance: 7.5, recarga: 22, visao: 9, construivel: true },
 };
 
 /** Avançar de era: no centro da vila, com o custo e o tempo; a era 2 deixa a vida e o golpe maiores, e abre a catapulta e a Maravilha. */
 export const ERA2 = { custo: { comida: 400, ouro: 200 } as Custo, tempo: 400, vidaUnidade: 1.2, ataque: 1.25, vidaPredio: 1.5 };
+/**
+ * A ERA 3 (24/11/2026, a segunda auditoria, lote E): da era 2, com um MERCADO pronto (a novidade da era 2 é o degrau para a 3).
+ * Vida e golpe maiores ainda, e abre a guarda, a oficina com o canhão, o bastião e as três melhorias gerais do ferreiro. Quem não
+ * chega a ela joga a partida de antes, número por número (o teste confere contra a versão anterior).
+ */
+export const ERA3 = { custo: { comida: 500, ouro: 300 } as Custo, tempo: 500, vidaUnidade: 1.4, ataque: 1.5, vidaPredio: 1.8 };
+/** Os multiplicadores de cada era (na 1, nenhum). */
+const FATOR_DA_ERA: Record<Era, { vidaUnidade: number; ataque: number; vidaPredio: number }> = {
+  1: { vidaUnidade: 1, ataque: 1, vidaPredio: 1 },
+  2: ERA2,
+  3: ERA3,
+};
+/** O avanço que sai da era `de` (o custo e o tempo); null na última. */
+export function proximaEra(de: Era): { custo: Custo; tempo: number } | null {
+  return de === 1 ? ERA2 : de === 2 ? ERA3 : null;
+}
+/** Dá para pedir o avanço de era agora? Da 1, sempre; da 2, só com um mercado pronto. */
+export function podeAvancarEra(sim: Sim, dono: Dono): boolean {
+  const era = sim.jogadores[dono].era;
+  if (era === 1) return true;
+  if (era === 2) return sim.predios.some((p) => p.dono === dono && p.tipo === 'mercado' && p.pronto);
+  return false;
+}
 
 /** Passos de trabalho por unidade de recurso. */
 const RITMO: Record<Recurso, number> = { comida: 13, madeira: 12, ouro: 14 };
@@ -235,7 +283,7 @@ export interface Predio {
   pesquisa: number;
   recarga: number;
   /** A era em que ficou pronto (a tela escolhe o modelo). */
-  era: 1 | 2;
+  era: Era;
   /**
    * O PONTO DE REUNIÃO (05/11/2026, pedido dele: "clicar com o direito deveria alterar o local de geração da unidade"): quem
    * nasce aqui vai para lá sozinho. Com `alvo` (uma fonte, a fazenda, um inimigo), quem nasce recebe o mesmo clique direito
@@ -260,7 +308,7 @@ export interface Fonte {
 
 export interface Jogador {
   recursos: Record<Recurso, number>;
-  era: 1 | 2;
+  era: Era;
   /** Passos com a Maravilha pronta e de pé. */
   maravilha: number;
   visivel: Uint8Array;
@@ -272,7 +320,7 @@ export interface Jogador {
 }
 
 export type Evento =
-  | { t: 'golpe'; de: number; alvo: number; dono: Dono; arma: 'corpo' | 'flecha' | 'pedra'; x0: number; y0: number; x1: number; y1: number }
+  | { t: 'golpe'; de: number; alvo: number; dono: Dono; arma: 'corpo' | 'flecha' | 'pedra' | 'bala'; x0: number; y0: number; x1: number; y1: number }
   | { t: 'morte'; id: number; dono: Dono; tipo: TipoUnidade | TipoPredio; predio: boolean; x: number; y: number }
   | { t: 'pronto'; id: number; dono: Dono; tipo: TipoPredio }
   | { t: 'treinou'; id: number; dono: Dono; tipo: TipoUnidade }
@@ -839,7 +887,7 @@ function juntarMinas(sim: Sim) {
 
 function novaUnidade(sim: Sim, dono: Dono, tipo: TipoUnidade, x: number, y: number): Unidade {
   const d = UNIDADES[tipo];
-  const vida = Math.round(d.vida * (sim.jogadores[dono].era === 2 ? ERA2.vidaUnidade : 1));
+  const vida = Math.round(d.vida * FATOR_DA_ERA[sim.jogadores[dono].era].vidaUnidade);
   const u: Unidade = {
     id: sim.proximoId++,
     tipo,
@@ -871,7 +919,7 @@ function novaUnidade(sim: Sim, dono: Dono, tipo: TipoUnidade, x: number, y: numb
 function novoPredio(sim: Sim, dono: Dono, tipo: TipoPredio, gx: number, gy: number): Predio {
   const d = PREDIOS[tipo];
   const era = sim.jogadores[dono].era;
-  const vidaMax = Math.round(d.vida * (era === 2 ? ERA2.vidaPredio : 1));
+  const vidaMax = Math.round(d.vida * FATOR_DA_ERA[era].vidaPredio);
   const p: Predio = {
     id: sim.proximoId++,
     tipo,
@@ -1379,7 +1427,7 @@ function aplicar(sim: Sim, dono: Dono, c: Comando) {
       const p = sim.porId.get(c.predio);
       if (!ePredio(p) || p.dono !== dono) return;
       if (p.pesquisa > 0) {
-        pagar(sim, dono, ERA2.custo, -1);
+        pagar(sim, dono, proximaEra(j.era)!.custo, -1);
         p.pesquisa = 0;
         return;
       }
@@ -1397,16 +1445,19 @@ function aplicar(sim: Sim, dono: Dono, c: Comando) {
     }
     case 'era': {
       const p = sim.porId.get(c.predio);
-      if (!ePredio(p) || p.dono !== dono || p.tipo !== 'centro' || !p.pronto || j.era !== 1 || p.pesquisa > 0) return;
-      if (!podePagar(sim, dono, ERA2.custo)) return;
-      pagar(sim, dono, ERA2.custo);
+      const prox = proximaEra(j.era);
+      if (!ePredio(p) || p.dono !== dono || p.tipo !== 'centro' || !p.pronto || !prox || p.pesquisa > 0) return;
+      // a era 3 pede um mercado pronto; e um avanço por vez, mesmo com dois centros
+      if (!podeAvancarEra(sim, dono) || sim.predios.some((q) => q.dono === dono && q.pesquisa > 0)) return;
+      if (!podePagar(sim, dono, prox.custo)) return;
+      pagar(sim, dono, prox.custo);
       p.pesquisa = 1;
       return;
     }
     case 'melhorar': {
       const p = sim.porId.get(c.predio);
       const d = MELHORIAS[c.m];
-      if (!ePredio(p) || p.dono !== dono || p.tipo !== 'ferreiro' || !p.pronto || p.estudo || !d) return;
+      if (!ePredio(p) || p.dono !== dono || p.tipo !== 'ferreiro' || !p.pronto || p.estudo || !d || (d.era ?? 1) > j.era) return;
       // a mesma melhoria em dois ferreiros ao mesmo tempo também não
       if (temMelhoria(sim, dono, c.m) || sim.predios.some((q) => q.dono === dono && q.estudo === c.m)) return;
       if (!podePagar(sim, dono, d.custo)) return;
@@ -1442,11 +1493,17 @@ export function temMelhoria(sim: Sim, dono: Dono, m: Melhoria): boolean {
 
 /** A melhoria de ataque ou armadura da linha de `tipo`, se o dono já a tem. */
 function comMelhoria(sim: Sim, dono: Dono, tipo: TipoUnidade, qual: 'ataque' | 'armadura'): boolean {
+  const linha = UNIDADES[tipo].linha ?? tipo;
   for (const m of ORDEM_DAS_MELHORIAS) {
     const d = MELHORIAS[m];
-    if (d.linha === tipo && d.tipo === qual && temMelhoria(sim, dono, m)) return true;
+    if (d.linha === linha && d.tipo === qual && temMelhoria(sim, dono, m)) return true;
   }
   return false;
+}
+
+/** Quanto o trabalhador leva de uma vez (o carrinho da era 3 leva mais). */
+export function cargaDe(sim: Sim, dono: Dono): number {
+  return temMelhoria(sim, dono, 'carrinho') ? EFEITO_DAS_MELHORIAS.carga : CARGA;
 }
 
 /** Os passos de trabalho para colher uma unidade do recurso (a melhoria de coleta tira alguns). */
@@ -1552,7 +1609,7 @@ function predioPensa(sim: Sim, p: Predio) {
   // o avanço de era segura a fila do centro
   if (p.pesquisa > 0) {
     p.pesquisa++;
-    if (p.pesquisa >= ERA2.tempo) {
+    if (p.pesquisa >= proximaEra(j.era)!.tempo) {
       p.pesquisa = 0;
       avancarEra(sim, p.dono);
     }
@@ -1603,11 +1660,11 @@ function predioPensa(sim: Sim, p: Predio) {
         let dentro = 0;
         if (p.tipo === 'centro') for (const u of sim.unidades) if (u.abrigado === p.id) dentro++;
         const flechas = 1 + Math.min(FLECHAS_DO_SINO.max, Math.floor(dentro / FLECHAS_DO_SINO.cada));
-        const dano = d.ataque * (j.era === 2 ? ERA2.ataque : 1);
+        const dano = d.ataque * FATOR_DA_ERA[j.era].ataque;
         for (let k = 0; k < flechas; k++) {
           const alvo = perto[k % perto.length].u;
           ferir(sim, alvo, dano, p.id);
-          sim.eventos.push({ t: 'golpe', de: p.id, alvo: alvo.id, dono: p.dono, arma: 'flecha', x0: c.x, y0: c.y, x1: alvo.x, y1: alvo.y });
+          sim.eventos.push({ t: 'golpe', de: p.id, alvo: alvo.id, dono: p.dono, arma: p.tipo === 'bastiao' ? 'bala' : 'flecha', x0: c.x, y0: c.y, x1: alvo.x, y1: alvo.y });
         }
         p.recarga = d.recarga!;
       }
@@ -1639,25 +1696,27 @@ function soltarDoSino(sim: Sim, p: Predio) {
 
 function avancarEra(sim: Sim, dono: Dono) {
   const j = sim.jogadores[dono];
-  j.era = 2;
+  j.era = (j.era + 1) as Era;
   for (const u of sim.unidades)
     if (u.dono === dono) {
-      const novo = Math.round(UNIDADES[u.tipo].vida * ERA2.vidaUnidade);
+      const novo = Math.round(UNIDADES[u.tipo].vida * FATOR_DA_ERA[j.era].vidaUnidade);
       u.vida += novo - u.vidaMax;
       u.vidaMax = novo;
     }
   for (const p of sim.predios)
     if (p.dono === dono) {
-      const novo = Math.round(PREDIOS[p.tipo].vida * ERA2.vidaPredio);
+      const novo = Math.round(PREDIOS[p.tipo].vida * FATOR_DA_ERA[j.era].vidaPredio);
       p.vida = Math.round((p.vida * novo) / p.vidaMax);
       p.vidaMax = novo;
-      p.era = 2;
+      p.era = j.era;
     }
   sim.eventos.push({ t: 'era', dono });
 }
 
 function ferir(sim: Sim, alvo: Unidade | Predio, dano: number, de: number) {
   if (eUnidade(alvo) && comMelhoria(sim, alvo.dono, alvo.tipo, 'armadura')) dano *= EFEITO_DAS_MELHORIAS.armadura;
+  // a cota de malha (era 3): toda tropa leva menos
+  if (eUnidade(alvo) && UNIDADES[alvo.tipo].combate && temMelhoria(sim, alvo.dono, 'cota')) dano *= EFEITO_DAS_MELHORIAS.armaduraGeral;
   alvo.vida -= dano;
   if (eUnidade(alvo)) {
     alvo.atacadoPor = de;
@@ -1678,9 +1737,11 @@ function ferir(sim: Sim, alvo: Unidade | Predio, dano: number, de: number) {
 function danoDe(sim: Sim, u: Unidade, alvo: Unidade | Predio): number {
   const d = UNIDADES[u.tipo];
   let dano = ePredio(alvo) ? d.contraPredio : d.ataque;
-  if (eUnidade(alvo) && d.bonus && d.bonus.contra === alvo.tipo) dano *= d.bonus.vezes;
-  if (sim.jogadores[u.dono].era === 2) dano *= ERA2.ataque;
+  if (eUnidade(alvo) && d.bonus && d.bonus.contra === (UNIDADES[alvo.tipo].linha ?? alvo.tipo)) dano *= d.bonus.vezes;
+  if (sim.jogadores[u.dono].era >= 2) dano *= FATOR_DA_ERA[sim.jogadores[u.dono].era].ataque;
   if (comMelhoria(sim, u.dono, u.tipo, 'ataque')) dano *= EFEITO_DAS_MELHORIAS.ataque;
+  // a forja (era 3): toda tropa bate mais
+  if (d.combate && temMelhoria(sim, u.dono, 'forja')) dano *= EFEITO_DAS_MELHORIAS.ataqueGeral;
   return dano;
 }
 
@@ -1701,16 +1762,16 @@ function procurarInimigo(sim: Sim, u: Unidade, raio: number): number {
       melhorU = o.id;
     }
   }
-  if (melhorU && u.tipo !== 'catapulta') return melhorU;
+  if (melhorU && !ehCerco(u.tipo)) return melhorU;
   for (const p of sim.predios) {
     if (aliados(p.dono, u.dono) || p.vida <= 0) continue;
     const dist = distancia(u.x, u.y, p);
-    if (dist <= raio + (u.tipo === 'catapulta' ? 2 : 0) && dist < distP) {
+    if (dist <= raio + (ehCerco(u.tipo) ? 2 : 0) && dist < distP) {
       distP = dist;
       melhorP = p.id;
     }
   }
-  if (u.tipo === 'catapulta') return melhorP || (d.alcanceMin < Math.sqrt(distU) ? melhorU : 0);
+  if (ehCerco(u.tipo)) return melhorP || (d.alcanceMin < Math.sqrt(distU) ? melhorU : 0);
   return melhorP;
 }
 
@@ -1897,7 +1958,7 @@ function pensar(sim: Sim, u: Unidade) {
         if (u.recarga <= 0) {
           ferir(sim, alvo, danoDe(sim, u, alvo), u.id);
           u.recarga = d.recarga;
-          sim.eventos.push({ t: 'golpe', de: u.id, alvo: alvo.id, dono: u.dono, arma: u.tipo === 'arqueiro' ? 'flecha' : u.tipo === 'catapulta' ? 'pedra' : 'corpo', x0: u.x, y0: u.y, x1: c.x, y1: c.y });
+          sim.eventos.push({ t: 'golpe', de: u.id, alvo: alvo.id, dono: u.dono, arma: u.tipo === 'arqueiro' ? 'flecha' : u.tipo === 'catapulta' ? 'pedra' : u.tipo === 'canhao' ? 'bala' : 'corpo', x0: u.x, y0: u.y, x1: c.x, y1: c.y });
         }
         return;
       }
@@ -1921,7 +1982,7 @@ function pensar(sim: Sim, u: Unidade) {
         return;
       }
       if (u.carga && u.carga.rec !== rec) u.carga = null;
-      if (u.carga && u.carga.qtd >= CARGA) {
+      if (u.carga && u.carga.qtd >= cargaDe(sim, u.dono)) {
         u.ordem = { tipo: 'entregar', volta: alvo.id };
         u.caminho = [];
         return;
@@ -2198,7 +2259,9 @@ export function pontos(sim: Sim, dono: Dono): number {
   let p = 0;
   for (const u of sim.unidades) if (u.dono === dono) p += soma(UNIDADES[u.tipo].custo);
   for (const q of sim.predios) if (q.dono === dono && q.pronto) p += soma(PREDIOS[q.tipo].custo) + (q.tipo === 'centro' ? 500 : 0);
-  if (sim.jogadores[dono].era === 2) p += 600;
+  if (sim.jogadores[dono].era >= 2) p += 600;
+  // a era 3 vale mais (24/11/2026): o que custou chegar lá
+  if (sim.jogadores[dono].era === 3) p += 1300;
   return p;
 }
 

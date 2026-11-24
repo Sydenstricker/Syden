@@ -29,6 +29,11 @@ import {
   type TipoUnidade,
   type Unidade,
   ERA2,
+  ERA3,
+  RECURSOS,
+  ehCerco,
+  podeAvancarEra,
+  type Custo,
   alcancavel,
   passavel,
   acessivel,
@@ -68,6 +73,15 @@ export interface Perfil {
   pacifico?: boolean;
   /** O alvo do ataque é a Maravilha do outro, quando há uma (o desafio da Maravilha). */
   mirarMaravilha?: boolean;
+  /**
+   * A ERA 3 (24/11/2026): já na era 2, a partir deste passo, levanta o mercado, troca nele o que sobra pelo que falta e avança.
+   * Sem: nunca (o piloto dos testes, o tutorial e os desafios jogam como antes).
+   */
+  era3Desde?: number;
+  /** Na era 3: quantos canhões mantém (a oficina sai sozinha), quantos bastiões levanta, e as melhorias gerais do ferreiro. */
+  canhoes?: number;
+  bastioes?: number;
+  melhorias3?: Melhoria[];
 }
 
 /**
@@ -79,11 +93,19 @@ export interface Perfil {
 export type Nivel = 'facil' | 'normal' | 'dificil';
 export const NIVEIS: Nivel[] = ['facil', 'normal', 'dificil'];
 
+/**
+ * Quando cada nível começa a buscar a era 3 (já na era 2): o fácil aos 12 minutos, o normal aos 11, o difícil aos 10. Antes disso,
+ * cada nível joga exatamente como jogava (o teste confere contra a versão anterior).
+ */
+const ERA3_FACIL = 12 * 60 * 10;
+const ERA3_NORMAL = 11 * 60 * 10;
+const ERA3_DIFICIL = 10 * 60 * 10;
+
 export const PERFIS: Record<'computador' | 'piloto' | 'tutorial' | Nivel, Perfil> = {
   computador: { trabalhadores: 16, quartelCom: 9, arqueariaCom: 12, eraCom: 14, torres: 1, catapultas: 1, primeiroAtaque: 4800, onda: 7, intervalo: 1500, recuo: 2, exercitoCom: 11 },
   piloto: { trabalhadores: 22, quartelCom: 9, arqueariaCom: 11, eraCom: 15, torres: 1, catapultas: 3, primeiroAtaque: 5400, onda: 12, intervalo: 600, recuo: 3, exercitoCom: 15 },
-  facil: { trabalhadores: 10, quartelCom: 8, arqueariaCom: 10, eraCom: 10, torres: 0, catapultas: 0, primeiroAtaque: 7200, onda: 5, intervalo: 2400, recuo: 2, exercitoCom: 9, pensa: 20, fazendasNaEra: true },
-  normal: { trabalhadores: 16, quartelCom: 9, arqueariaCom: 12, eraCom: 14, torres: 1, catapultas: 1, primeiroAtaque: 4800, onda: 7, intervalo: 1500, recuo: 2, exercitoCom: 11 },
+  facil: { trabalhadores: 10, quartelCom: 8, arqueariaCom: 10, eraCom: 10, torres: 0, catapultas: 0, primeiroAtaque: 7200, onda: 5, intervalo: 2400, recuo: 2, exercitoCom: 9, pensa: 20, fazendasNaEra: true, era3Desde: ERA3_FACIL, canhoes: 1, bastioes: 0, melhorias3: ['carrinho'] },
+  normal: { trabalhadores: 16, quartelCom: 9, arqueariaCom: 12, eraCom: 14, torres: 1, catapultas: 1, primeiroAtaque: 4800, onda: 7, intervalo: 1500, recuo: 2, exercitoCom: 11, era3Desde: ERA3_NORMAL, canhoes: 2, bastioes: 1, melhorias3: ['forja', 'carrinho'] },
   dificil: {
     trabalhadores: 24,
     quartelCom: 9,
@@ -100,6 +122,10 @@ export const PERFIS: Record<'computador' | 'piloto' | 'tutorial' | Nivel, Perfil
     fazendasNaEra: true,
     ferreiroCom: 13,
     melhorias: ['machado', 'arado', 'ataqueLanceiro', 'picareta', 'armaduraLanceiro', 'ataqueArqueiro', 'ataqueCavaleiro', 'armaduraArqueiro', 'armaduraCavaleiro'],
+    era3Desde: ERA3_DIFICIL,
+    canhoes: 3,
+    bastioes: 2,
+    melhorias3: ['carrinho', 'forja', 'cota'],
   },
   tutorial: { trabalhadores: 6, quartelCom: 99, arqueariaCom: 99, eraCom: 99, torres: 0, catapultas: 0, primeiroAtaque: 1e9, onda: 99, intervalo: 1e9, recuo: 0, exercitoCom: 99, pensa: 20, pacifico: true },
 };
@@ -109,8 +135,9 @@ export const PERFIS: Record<'computador' | 'piloto' | 'tutorial' | Nivel, Perfil
  * exército (sim.ts, montarDesafio) e vai direto nela; o relâmpago é contra o fácil, e a colheita contra quem não ataca.
  */
 export const PERFIL_DO_DESAFIO: Record<Desafio, Perfil> = {
-  cerco: { ...PERFIS.dificil, primeiroAtaque: 2400, onda: 7, intervalo: 700, recuo: 2 },
-  maravilha: { ...PERFIS.normal, primeiroAtaque: 150, onda: 7, intervalo: 800, recuo: 2, exercitoCom: 4, quartelCom: 4, arqueariaCom: 5, catapultas: 2, mirarMaravilha: true },
+  // (a era 3 fica fora dos desafios: eles são curtos, e o recorde de cada um continua comparável com o de antes)
+  cerco: { ...PERFIS.dificil, primeiroAtaque: 2400, onda: 7, intervalo: 700, recuo: 2, era3Desde: undefined },
+  maravilha: { ...PERFIS.normal, primeiroAtaque: 150, onda: 7, intervalo: 800, recuo: 2, exercitoCom: 4, quartelCom: 4, arqueariaCom: 5, catapultas: 2, mirarMaravilha: true, era3Desde: undefined },
   relampago: PERFIS.facil,
   colheita: PERFIS.tutorial,
 };
@@ -169,9 +196,13 @@ export function criarIA(dono: Dono, perfil: Perfil = PERFIS.computador): IA {
     }
     // guardar para a era: quando chega a hora, a tropa espera
     const querEra = j.era === 1 && trab.length >= perfil.eraCom && tem('quartel', true).length > 0 && centro.pesquisa === 0;
+    // A ERA 3 (24/11/2026): na era 2, a partir da hora do perfil, guarda para ela (com o mercado, que ela pede)
+    const querEra3 = perfil.era3Desde !== undefined && j.era === 2 && sim.passo >= perfil.era3Desde && trab.length >= perfil.eraCom && centro.pesquisa === 0;
+    const guardando = querEra || querEra3;
 
     // ---- a era ----
     if (querEra && podePagar(sim, dono, ERA2.custo)) comandar(sim, dono, { t: 'era', predio: centro.id });
+    if (querEra3 && podeAvancarEra(sim, dono) && podePagar(sim, dono, ERA3.custo)) comandar(sim, dono, { t: 'era', predio: centro.id });
 
     // ---- trabalhadores ----
     const trabNaFila = centro.fila.filter((t) => t === 'trabalhador').length;
@@ -201,15 +232,29 @@ export function criarIA(dono: Dono, perfil: Perfil = PERFIS.computador): IA {
     const querComida = Math.round(trab.length * 0.34);
     if (fazendas < querComida && emObra('fazenda') < 2 && (!querEra || (!!perfil.fazendasNaEra && j.recursos.comida < ERA2.custo.comida! / 2))) construir('fazenda', lugarPara(sim, dono, 'fazenda', c, 3));
     if (trab.length >= perfil.quartelCom && !tem('quartel').length) construir('quartel', lugarPara(sim, dono, 'quartel', c, 4, frente), 2);
-    if (trab.length >= perfil.arqueariaCom && !tem('arquearia').length && !querEra) construir('arquearia', lugarPara(sim, dono, 'arquearia', c, 4, frente), 2);
-    if (tem('arquearia').length && tem('torre').length < perfil.torres && !querEra) construir('torre', lugarParaTorre(sim, dono, c));
+    if (trab.length >= perfil.arqueariaCom && !tem('arquearia').length && !guardando) construir('arquearia', lugarPara(sim, dono, 'arquearia', c, 4, frente), 2);
+    if (tem('arquearia').length && tem('torre').length < perfil.torres && !guardando) construir('torre', lugarParaTorre(sim, dono, c));
     // o ferreiro, e as melhorias na ordem do perfil (uma por vez; guardando para a era, espera)
-    if (perfil.ferreiroCom !== undefined && trab.length >= perfil.ferreiroCom && !tem('ferreiro').length && tem('quartel').length && !querEra)
+    if (perfil.ferreiroCom !== undefined && trab.length >= perfil.ferreiroCom && !tem('ferreiro').length && tem('quartel').length && !guardando)
       construir('ferreiro', lugarPara(sim, dono, 'ferreiro', c, 4, atras));
+    // a era 3: o mercado, para chegar; lá, a oficina, os bastiões e o ferreiro das melhorias gerais
+    if (querEra3 && !tem('mercado').length) construir('mercado', lugarPara(sim, dono, 'mercado', c, 4, atras), 2);
+    if (j.era === 3) {
+      if ((perfil.canhoes ?? 0) > 0 && !tem('oficina').length) construir('oficina', lugarPara(sim, dono, 'oficina', c, 4, frente), 2);
+      if (tem('bastiao').length < (perfil.bastioes ?? 0) && emObra('bastiao') === 0) construir('bastiao', lugarParaTorre(sim, dono, c, 'bastiao'));
+      if (perfil.melhorias3?.length && !tem('ferreiro').length) construir('ferreiro', lugarPara(sim, dono, 'ferreiro', c, 4, atras));
+    }
     const ferreiro = tem('ferreiro', true)[0];
-    if (ferreiro && !ferreiro.estudo && !querEra && perfil.melhorias) {
-      const m = perfil.melhorias.find((k) => !temMelhoria(sim, dono, k));
+    const estudos = j.era === 3 ? [...(perfil.melhorias ?? []), ...(perfil.melhorias3 ?? [])] : perfil.melhorias;
+    if (ferreiro && !ferreiro.estudo && !guardando && estudos) {
+      const m = estudos.find((k) => !temMelhoria(sim, dono, k));
       if (m && podePagar(sim, dono, MELHORIAS[m].custo)) comandar(sim, dono, { t: 'melhorar', predio: ferreiro.id, m });
+    }
+    // o mercado: guardando para a era 3, troca o que sobra pelo que falta; na era 3, o que sobra por ouro (o canhão e a guarda o pedem)
+    const mercado = tem('mercado', true)[0];
+    if (mercado && (querEra3 || j.era === 3)) {
+      const troca = querEra3 ? trocaQueFalta(j.recursos, ERA3.custo, 0) : trocaQueFalta(j.recursos, { ouro: 150 }, 200);
+      if (troca) comandar(sim, dono, { t: 'trocar', predio: mercado.id, de: troca.de, para: troca.para });
     }
 
     // ---- os trabalhadores parados vão trabalhar, na proporção; e quem colhe o que sobra muda para o que falta ----
@@ -258,18 +303,26 @@ export function criarIA(dono: Dono, perfil: Perfil = PERFIS.computador): IA {
     if (perfil.pacifico) return;
     const inimigos = sim.unidades.filter((u) => !aliados(u.dono, dono));
     const perto = inimigos.filter((u) => dist2(u, c.x, c.y) < 14 * 14);
-    if ((!querEra || exercito.length < 4) && (trab.length >= perfil.exercitoCom || perto.length > 0)) {
+    if ((!querEra || exercito.length < 4) && (!querEra3 || exercito.length < Math.ceil(perfil.onda / 2) || perto.length > 0) && (trab.length >= perfil.exercitoCom || perto.length > 0)) {
       const escolha = tropaContra(inimigos, exercito.length);
-      for (const p of [...tem('quartel', true), ...tem('arquearia', true)]) {
+      // na era 3, os canhões que faltam vêm antes (a oficina primeiro, e a guarda, que pede ouro, só com eles feitos)
+      const faltamCanhoes = exercito.filter((u) => u.tipo === 'canhao').length + tem('oficina', true).reduce((n, p) => n + p.fila.length, 0) < (perfil.canhoes ?? 0);
+      for (const p of [...tem('oficina', true), ...tem('quartel', true), ...tem('arquearia', true)]) {
         if (p.fila.length >= 2 || pop.usada + naFila >= pop.max) continue;
         let tipo: TipoUnidade | null = null;
         const catapultas = exercito.filter((u) => u.tipo === 'catapulta').length + p.fila.filter((t) => t === 'catapulta').length;
-        if (p.tipo === 'quartel' && j.era === 2 && catapultas < perfil.catapultas && exercito.length >= 4) tipo = 'catapulta';
+        const canhoes = exercito.filter((u) => u.tipo === 'canhao').length + p.fila.filter((t) => t === 'canhao').length;
+        if (p.tipo === 'oficina') tipo = canhoes < (perfil.canhoes ?? 0) && exercito.length >= 4 ? 'canhao' : null;
+        else if (p.tipo === 'quartel' && j.era >= 2 && catapultas < perfil.catapultas && exercito.length >= 4) tipo = 'catapulta';
         else if (p.tipo === 'arquearia') tipo = escolha === 'arqueiro' || escolha === null ? 'arqueiro' : null;
         else tipo = escolha === 'arqueiro' ? 'lanceiro' : (escolha ?? 'lanceiro');
         if (!tipo) continue;
         if (p.tipo === 'quartel' && tipo === 'arqueiro') tipo = 'lanceiro';
+        // na era 3, a guarda no lugar do lanceiro (quando dá para pagar)
+        if (tipo === 'lanceiro' && j.era === 3 && !faltamCanhoes && podePagar(sim, dono, UNIDADES.guarda.custo)) tipo = 'guarda';
         if (podePagar(sim, dono, UNIDADES[tipo].custo)) comandar(sim, dono, { t: 'treinar', predio: p.id, unidade: tipo });
+        // o canhão que falta e não dá para pagar: guarda para ele (o resto espera), a não ser com o inimigo na porta
+        else if (tipo === 'canhao' && !perto.length) break;
       }
     }
 
@@ -295,7 +348,7 @@ export function criarIA(dono: Dono, perfil: Perfil = PERFIS.computador): IA {
       // o piloto vai direto ao centro com quem está perto dele (as catapultas, de longe)
       const centroInimigo = sim.predios.find((p) => p.dono === inimigo && p.tipo === 'centro');
       if (centroInimigo) {
-        const cats = exercito.filter((u) => u.tipo === 'catapulta' && u.ordem.tipo !== 'atacar' && dist2(u, alvoFinal.x, alvoFinal.y) < 12 * 12);
+        const cats = exercito.filter((u) => ehCerco(u.tipo) && u.ordem.tipo !== 'atacar' && dist2(u, alvoFinal.x, alvoFinal.y) < 12 * 12);
         if (cats.length) comandar(sim, dono, { t: 'alvo', ids: cats.map((u) => u.id), alvo: maravilhaInimiga ?? centroInimigo.id });
       }
       return;
@@ -340,7 +393,12 @@ function fontePerto(sim: Sim, tipo: 'arvore' | 'ouro', x: number, y: number, don
 /** A tropa que ganha da que o outro mais tem; sem exército do outro, uma mistura. */
 function tropaContra(inimigos: Unidade[], meus: number): TipoUnidade | null {
   const conta: Partial<Record<TipoUnidade, number>> = {};
-  for (const u of inimigos) if (UNIDADES[u.tipo].combate && u.tipo !== 'catapulta') conta[u.tipo] = (conta[u.tipo] ?? 0) + 1;
+  for (const u of inimigos) {
+    if (!UNIDADES[u.tipo].combate || ehCerco(u.tipo)) continue;
+    // a guarda conta como lanceiro (a mesma linha)
+    const t = UNIDADES[u.tipo].linha ?? u.tipo;
+    conta[t] = (conta[t] ?? 0) + 1;
+  }
   let maior: TipoUnidade | null = null;
   for (const t of ['lanceiro', 'arqueiro', 'cavaleiro'] as TipoUnidade[]) if ((conta[t] ?? 0) > (maior ? conta[maior] ?? 0 : 0)) maior = t;
   if (maior === 'cavaleiro') return 'lanceiro';
@@ -398,11 +456,39 @@ function folga(sim: Sim, gx: number, gy: number, tam: number): boolean {
 }
 
 /** A torre fica entre a base e o meio do mapa, onde o ataque chega. */
-function lugarParaTorre(sim: Sim, dono: Dono, c: { x: number; y: number }): { gx: number; gy: number } | null {
+function lugarParaTorre(sim: Sim, dono: Dono, c: { x: number; y: number }, tipo: TipoPredio = 'torre'): { gx: number; gy: number } | null {
   const mx = TAMANHO / 2 - c.x;
   const my = TAMANHO / 2 - c.y;
   const d = Math.sqrt(mx * mx + my * my) || 1;
   const p = { x: c.x + (mx / d) * 6, y: c.y + (my / d) * 6 };
-  return lugarPara(sim, dono, 'torre', c, 3, p);
+  return lugarPara(sim, dono, tipo, c, 3, p);
+}
+
+/**
+ * Uma troca no mercado para chegar a `quer`: o recurso que mais falta, pago com o que mais sobra além de `quer` e de uma reserva.
+ * Null quando não falta nada, ou nada sobra.
+ */
+function trocaQueFalta(rec: Record<Recurso, number>, quer: Custo, reserva: number): { de: Recurso; para: Recurso } | null {
+  let para: Recurso | null = null;
+  let falta = 0;
+  for (const k of RECURSOS) {
+    const f = (quer[k] ?? 0) - rec[k];
+    if (f > falta) {
+      falta = f;
+      para = k;
+    }
+  }
+  if (!para) return null;
+  let de: Recurso | null = null;
+  let sobra = 0;
+  for (const k of RECURSOS) {
+    if (k === para) continue;
+    const s = rec[k] - (quer[k] ?? 0) - reserva;
+    if (s >= 100 && s > sobra) {
+      sobra = s;
+      de = k;
+    }
+  }
+  return de ? { de, para } : null;
 }
 
