@@ -4,6 +4,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { caixa, carregar, copia, FACE_PARA_CIMA, juntar, textura, type Bloco } from '../cidades3d/cena';
 import { carregarCoelho, copiarCoelho, CORES_DO_MASCOTE, type MaterialDoCoelho } from '../coelho3d';
 import { carregarModelo as carregarDaMesa } from '../mesa3d/base';
+import { carregarNosso, geometriaComCor } from '../modelosNossos';
 import type { CenaDeMesa } from '../mesa3d/useCena3D';
 import {
   ANEL,
@@ -81,6 +82,9 @@ const LOJAS = ['comercio/building-j.glb', 'comercio/building-l.glb'];
 const ARVORES = ['suburbio/tree-large.glb', 'suburbio/tree-small.glb'];
 const CARROS = ['carros/taxi.glb', 'carros/sedan.glb', 'carros/delivery.glb', 'carros/suv.glb', 'carros/van.glb', 'carros/sedan.glb'];
 const TREM = ['trem/train-locomotive-a.glb', 'trem/train-carriage-box.glb', 'trem/train-carriage-container-red.glb'];
+/** Os modelos nossos, feitos por script (24/11/2026); sem eles, as peças por código. */
+const CENOURA = 'comum/cenoura.glb';
+const NOSSOS = [CENOURA, ...['barraca-dourada', 'toca', 'chafariz', 'banco', 'cerca', 'pedras'].map((n) => `tabuleiro3d/${n}.glb`)];
 const TODOS = [...new Set([...CASAS_DO_SUBURBIO, ...LOJAS, ...ARVORES, ...CARROS, ...TREM, 'suburbio/planter.glb', 'comercio/detail-parasol-a.glb', 'comercio/detail-parasol-b.glb'])];
 
 /** O mundo pintado no chão vai de -MUNDO_X a MUNDO_X e de -MUNDO_Z a MUNDO_Z. */
@@ -349,6 +353,8 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
   private cena = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera(34, 1.6, 0.1, 120);
   private modelos = new Map<string, GLTF>();
+  /** Os modelos nossos (24/11/2026, web/scripts/modelos/tabuleiro-capitais/): o que faltar fica com a peça por código. */
+  private nossos = new Map<string, GLTF>();
   private coelho: GLTF | null = null;
   private pecas = new Map<number, Peca>();
   private dados: DadosDoTabuleiro3D | null = null;
@@ -456,6 +462,14 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     if (import.meta.env.DEV) (window as unknown as { cenaDoTabuleiro?: CenaDoTabuleiro }).cenaDoTabuleiro = this;
   }
 
+  /** A geometria com cor por vértice de um modelo nosso (ou de um nó dele), ou null para ficar com a peça por código. */
+  private nosso(arquivo: string, no?: string): THREE.BufferGeometry | null {
+    const g = this.nossos.get(arquivo);
+    const geo = g ? geometriaComCor(g, no) : null;
+    if (geo) this.descartaveis.push(geo);
+    return geo;
+  }
+
   /** O ponto (x, z) fica dentro da volta (o miolo)? Pela regra do raio que cruza o contorno das casas. */
   private dentroDaVolta(x: number, z: number): boolean {
     const c = this.geo.casasDaVolta;
@@ -467,13 +481,15 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
   }
 
   async montar(): Promise<void> {
-    const [lista, coelho, dado] = await Promise.all([
+    const [lista, coelho, dado, nossos] = await Promise.all([
       Promise.all(TODOS.map((a) => carregar(a).then((g) => [a, g] as const))),
       carregarCoelho(),
       carregarDaMesa('D6_A'),
+      Promise.all(NOSSOS.map((a) => carregarNosso(a).then((g) => [a, g] as const))),
     ]);
     if (this.morta) return;
     for (const [a, g] of lista) this.modelos.set(a, g);
+    for (const [a, g] of nossos) if (g) this.nossos.set(a, g);
     this.coelho = coelho;
     this.montarFixo();
     const d = dado.scene.clone(true);
@@ -806,6 +822,7 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     // AS PEDRAS DA SERRA (24/11/2026): rochas de cantos vivos entre a volta e a rua, longe das casas e das árvores
     if (this.tema.pedras) {
       const rochas: THREE.Matrix4[] = [];
+      const deitadas: THREE.Matrix4[] = [];
       const perto: [number, number][] = [];
       for (let k = 0; k < 300 && rochas.length < 18; k++) {
         const x = (sorte() * 2 - 1) * (ANEL.rx - ANEL.largura / 2 - 0.35);
@@ -815,18 +832,36 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
         if (Math.hypot(x - PRACA.x, z - PRACA.z) < PRACA.raio + 0.3 || Math.hypot(x - TOCA.x, z - TOCA.z) < TOCA.raio + 0.3) continue;
         if (x > HORTA.x0 - 0.3 && x < HORTA.x1 + 0.3 && z > HORTA.z0 - 0.3 && z < HORTA.z1 + 0.3) continue;
         const s = 0.14 + sorte() * 0.2;
-        rochas.push(new THREE.Matrix4().compose(new THREE.Vector3(x, s * 0.45, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(sorte() * 3, sorte() * 3, sorte() * 3)), new THREE.Vector3(s, s * 0.75, s)));
+        const [ax, ay, az] = [sorte() * 3, sorte() * 3, sorte() * 3];
+        rochas.push(new THREE.Matrix4().compose(new THREE.Vector3(x, s * 0.45, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(ax, ay, az)), new THREE.Vector3(s, s * 0.75, s)));
+        // a pedra do modelo (base plana no chão): só gira em pé, um pouco afundada
+        deitadas.push(matriz(x, -0.02 * s, z, ay * 2.1, s));
         perto.push([x, z]);
       }
-      const geo = new THREE.DodecahedronGeometry(1, 0);
-      const mat = new THREE.MeshStandardMaterial({ color: '#9a948a', roughness: 0.95, flatShading: true });
-      const im = new THREE.InstancedMesh(geo, mat, rochas.length);
-      rochas.forEach((m, k) => im.setMatrixAt(k, m));
-      im.castShadow = this.sombras;
-      im.receiveShadow = this.sombras;
-      this.cena.add(im);
-      this.descartaveis.push(geo, mat);
-      this.instancias.push(im);
+      // as três pedras do modelo (tabuleiro3d/pedras.glb), revezando; sem ele, o dodecaedro
+      const jeitos = [1, 2, 3].map((k) => this.nosso('tabuleiro3d/pedras.glb', `pedra-${k}`));
+      if (jeitos.every((g) => g)) {
+        jeitos.forEach((g, j) => {
+          const minhas = deitadas.filter((_, k) => k % 3 === j);
+          if (!minhas.length) return;
+          const im = new THREE.InstancedMesh(g!, this.matCor, minhas.length);
+          minhas.forEach((m, k) => im.setMatrixAt(k, m));
+          im.castShadow = this.sombras;
+          im.receiveShadow = this.sombras;
+          this.cena.add(im);
+          this.instancias.push(im);
+        });
+      } else {
+        const geo = new THREE.DodecahedronGeometry(1, 0);
+        const mat = new THREE.MeshStandardMaterial({ color: '#9a948a', roughness: 0.95, flatShading: true });
+        const im = new THREE.InstancedMesh(geo, mat, rochas.length);
+        rochas.forEach((m, k) => im.setMatrixAt(k, m));
+        im.castShadow = this.sombras;
+        im.receiveShadow = this.sombras;
+        this.cena.add(im);
+        this.descartaveis.push(geo, mat);
+        this.instancias.push(im);
+      }
     }
     // no miolo, nos cantos livres
     for (const [x, z] of [
@@ -938,8 +973,17 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
       blocos.push(caixa(HORTA.x1 - HORTA.x0 - 0.35, 0.07, 0.26, (HORTA.x0 + HORTA.x1) / 2, 0, z, '#7d5a40'));
       for (let x = HORTA.x0 + 0.32; x < HORTA.x1 - 0.25; x += 0.24) cenouras.push(matriz(x + (sorte() - 0.5) * 0.04, 0.07, z + (sorte() - 0.5) * 0.06, sorte() * 6, 0.85 + sorte() * 0.3));
     }
-    // uma cerquinha baixa em volta da horta
+    // as peças dos modelos nossos (24/11/2026): cópias postas no lugar, juntadas com os blocos numa geometria só
+    const extras: THREE.BufferGeometry[] = [];
+    const por = (geo: THREE.BufferGeometry | null, x: number, z: number, ry = 0, sx = 1, sz = 1, y = 0) => {
+      if (!geo) return false;
+      extras.push(geo.clone().scale(sx, 1, sz).rotateY(ry).translate(x, y, z));
+      return true;
+    };
+    // uma cerquinha baixa em volta da horta (as estacas e duas tábuas do modelo; sem ele, as caixas)
     const cerca = '#f1e6cf';
+    const estaca = this.nosso('tabuleiro3d/cerca.glb', 'cerca-estaca');
+    const tabua = this.nosso('tabuleiro3d/cerca.glb', 'cerca-tabua');
     const { x0, x1, z0, z1 } = HORTA;
     for (const [ax, az, bx, bz] of [
       [x0, z0, x1, z0],
@@ -949,12 +993,17 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     ] as const) {
       const comp = Math.hypot(bx - ax, bz - az);
       const ang = Math.atan2(bx - ax, bz - az);
-      blocos.push({ geo: new THREE.BoxGeometry(0.02, 0.02, comp), x: (ax + bx) / 2, y: 0.1, z: (az + bz) / 2, cor: cerca, ry: ang });
       const n = Math.round(comp / 0.25);
+      if (estaca && tabua) {
+        for (const y of [0.055, 0.1]) por(tabua, (ax + bx) / 2, (az + bz) / 2, ang, 1, comp, y);
+        for (let k = 0; k <= n; k++) por(estaca, ax + ((bx - ax) * k) / n, az + ((bz - az) * k) / n, ang);
+        continue;
+      }
+      blocos.push({ geo: new THREE.BoxGeometry(0.02, 0.02, comp), x: (ax + bx) / 2, y: 0.1, z: (az + bz) / 2, cor: cerca, ry: ang });
       for (let k = 0; k <= n; k++) blocos.push(caixa(0.03, 0.13, 0.03, ax + ((bx - ax) * k) / n, 0, az + ((bz - az) * k) / n, cerca));
     }
     // a toca: o morrinho de grama com a porta redonda virada para a câmera
-    {
+    if (!por(this.nosso('tabuleiro3d/toca.glb'), TOCA.x, TOCA.z)) {
       const morro = new THREE.SphereGeometry(TOCA.raio, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2);
       morro.scale(1, 0.62, 1);
       blocos.push({ geo: morro, x: TOCA.x, y: 0, z: TOCA.z, cor: '#7fbf5f' });
@@ -967,19 +1016,27 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     // a praça: o chafariz (a bacia, a coluna, a taça) e os bancos virados para ele
     {
       const { x, z } = PRACA;
-      blocos.push({ geo: new THREE.CylinderGeometry(0.42, 0.45, 0.14, 24), x, y: 0.07, z, cor: '#d9cdb6' });
-      blocos.push({ geo: new THREE.CylinderGeometry(0.06, 0.08, 0.38, 10), x, y: 0.19, z, cor: '#d9cdb6' });
-      blocos.push({ geo: new THREE.CylinderGeometry(0.16, 0.08, 0.06, 16), x, y: 0.4, z, cor: '#e7dcc6' });
+      if (!por(this.nosso('tabuleiro3d/chafariz.glb'), x, z)) {
+        blocos.push({ geo: new THREE.CylinderGeometry(0.42, 0.45, 0.14, 24), x, y: 0.07, z, cor: '#d9cdb6' });
+        blocos.push({ geo: new THREE.CylinderGeometry(0.06, 0.08, 0.38, 10), x, y: 0.19, z, cor: '#d9cdb6' });
+        blocos.push({ geo: new THREE.CylinderGeometry(0.16, 0.08, 0.06, 16), x, y: 0.4, z, cor: '#e7dcc6' });
+      }
+      const banco = this.nosso('tabuleiro3d/banco.glb');
       for (let k = 0; k < 4; k++) {
         const a = (k / 4) * Math.PI * 2 + Math.PI / 4;
         const bx = x + Math.cos(a) * 0.82;
         const bz = z + Math.sin(a) * 0.82;
+        // o banco do modelo tem a frente no +z: virado para o chafariz
+        if (por(banco, bx, bz, Math.atan2(x - bx, z - bz))) continue;
         const ry = Math.atan2(x - bx, z - bz) + Math.PI / 2;
         blocos.push({ geo: new THREE.BoxGeometry(0.34, 0.03, 0.12), x: bx, y: 0.12, z: bz, cor: '#b0784c', ry });
         blocos.push({ geo: new THREE.BoxGeometry(0.3, 0.1, 0.02), x: bx - Math.cos(ry + Math.PI / 2) * 0.0, y: 0.06, z: bz, cor: '#6a5a4c', ry });
       }
     }
-    const geo = juntar(blocos);
+    const feitos = juntar(blocos);
+    const geo = extras.length ? (mergeGeometries([feitos, ...extras]) ?? feitos) : feitos;
+    if (geo !== feitos) feitos.dispose();
+    for (const e of extras) e.dispose();
     const miolo = new THREE.Mesh(geo, this.matCor);
     miolo.castShadow = this.sombras;
     miolo.receiveShadow = this.sombras;
@@ -1001,7 +1058,10 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
         { geo: new THREE.ConeGeometry(0.02, 0.1, 5), x: -0.015, y: 0.1, z: 0, cor: '#6fae4a', rz: 0.3 },
         { geo: new THREE.ConeGeometry(0.02, 0.11, 5), x: 0.015, y: 0.1, z: 0, cor: '#7fbe5a', rz: -0.3 },
       ];
-      const g = juntar(pecas);
+      // a cenoura do modelo comum (comum/cenoura.glb), menor e meio enterrada: o ombro laranja e as folhas para fora
+      const modelo = this.nosso(CENOURA);
+      const g = modelo ? modelo.clone().scale(0.5, 0.5, 0.5).translate(0, -0.055, 0) : juntar(pecas);
+      if (modelo) for (const p of pecas) p.geo.dispose();
       const im = new THREE.InstancedMesh(g, this.matCor, cenouras.length);
       cenouras.forEach((m, k) => im.setMatrixAt(k, m));
       im.castShadow = this.sombras;
@@ -1028,16 +1088,27 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     ]);
   }
 
-  /** A cenoura dourada (feita por código, dourada de verdade) em cima da barraca dela, e o brilho na casa. */
+  /** A cenoura dourada (a cenoura comum com o ouro; os cones de código de reserva) em cima da barraca dela, e o brilho na casa. */
   private montarDourada() {
     const ouro = new THREE.MeshStandardMaterial({ color: '#f2c046', metalness: 0.65, roughness: 0.28, emissive: '#7a5200', emissiveIntensity: 0.45 });
     const folha = new THREE.MeshStandardMaterial({ color: '#8fd06a', metalness: 0.2, roughness: 0.4, emissive: '#2e5a12', emissiveIntensity: 0.3 });
-    const corpo = new THREE.ConeGeometry(0.085, 0.32, 14).rotateX(Math.PI);
-    const folhas = mergeGeometries([
-      new THREE.ConeGeometry(0.03, 0.13, 6).rotateZ(0.35).translate(-0.03, 0.2, 0),
-      new THREE.ConeGeometry(0.03, 0.15, 6).translate(0, 0.21, 0),
-      new THREE.ConeGeometry(0.03, 0.13, 6).rotateZ(-0.35).translate(0.03, 0.2, 0),
-    ])!;
+    // o corpo e as folhas da cenoura comum (comum/cenoura.glb), com o ouro; sem ela, os cones de antes
+    const doModelo = this.nossos.get(CENOURA);
+    const corpoDoModelo = doModelo ? geometriaComCor(doModelo, 'corpo') : null;
+    const folhasDoModelo = doModelo ? geometriaComCor(doModelo, 'folhas') : null;
+    const doCodigo = !corpoDoModelo || !folhasDoModelo;
+    if (doCodigo) {
+      corpoDoModelo?.dispose();
+      folhasDoModelo?.dispose();
+    }
+    const corpo = doCodigo ? new THREE.ConeGeometry(0.085, 0.32, 14).rotateX(Math.PI) : corpoDoModelo!;
+    const folhas = doCodigo
+      ? mergeGeometries([
+          new THREE.ConeGeometry(0.03, 0.13, 6).rotateZ(0.35).translate(-0.03, 0.2, 0),
+          new THREE.ConeGeometry(0.03, 0.15, 6).translate(0, 0.21, 0),
+          new THREE.ConeGeometry(0.03, 0.13, 6).rotateZ(-0.35).translate(0.03, 0.2, 0),
+        ])!
+      : folhasDoModelo!;
     const c = new THREE.Mesh(corpo, ouro);
     const f = new THREE.Mesh(folhas, folha);
     c.castShadow = f.castShadow = this.sombras;
@@ -1047,14 +1118,18 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     this.descartaveis.push(ouro, folha, corpo, folhas);
     // a barraca: o balcão de madeira, dois postes e o toldo listrado
     // (a cenoura flutua acima do toldo, para a câmera de cima a ver sempre)
-    const blocos: Bloco[] = [caixa(0.36, 0.18, 0.2, 0, 0, 0, '#b0784c'), caixa(0.38, 0.03, 0.22, 0, 0.18, 0, '#d7a06a')];
-    for (const s of [-1, 1]) blocos.push(caixa(0.025, 0.3, 0.025, s * 0.17, 0.18, -0.08, '#f4efe6'));
-    for (let k = 0; k < 6; k++) blocos.push({ geo: new THREE.BoxGeometry(0.07, 0.02, 0.28), x: -0.175 + k * 0.07, y: 0.5, z: 0.0, cor: k % 2 ? '#fffaf0' : '#e2a33a', rx: 0.3 });
-    const geo = juntar(blocos);
+    // (o modelo tabuleiro3d/barraca-dourada.glb, com as mesmas medidas; sem ele, as caixas)
+    let geo = this.nosso('tabuleiro3d/barraca-dourada.glb');
+    if (!geo) {
+      const blocos: Bloco[] = [caixa(0.36, 0.18, 0.2, 0, 0, 0, '#b0784c'), caixa(0.38, 0.03, 0.22, 0, 0.18, 0, '#d7a06a')];
+      for (const s of [-1, 1]) blocos.push(caixa(0.025, 0.3, 0.025, s * 0.17, 0.18, -0.08, '#f4efe6'));
+      for (let k = 0; k < 6; k++) blocos.push({ geo: new THREE.BoxGeometry(0.07, 0.02, 0.28), x: -0.175 + k * 0.07, y: 0.5, z: 0.0, cor: k % 2 ? '#fffaf0' : '#e2a33a', rx: 0.3 });
+      geo = juntar(blocos);
+      this.descartaveis.push(geo);
+    }
     const b = new THREE.Mesh(geo, this.matCor);
     b.castShadow = this.sombras;
     this.barraca.add(b);
-    this.descartaveis.push(geo);
     this.dourada.add(this.barraca, this.cenoura);
     this.cena.add(this.dourada);
     const t = pintarBrilho('rgba(255,214,90,0.95)');

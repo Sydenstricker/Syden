@@ -3,6 +3,7 @@ import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { carregarModelo as carregarDaMesa } from '../mesa3d/base';
+import { carregarNosso } from '../modelosNossos';
 import { copiarCoelho, type MaterialDoCoelho } from '../coelho3d';
 import { colunaLinhaDasCidades, voltaDasCidades } from '../cidadesVolta';
 
@@ -118,6 +119,9 @@ const TODOS = [
   'trem/train-carriage-box.glb',
   'trem/train-carriage-container-red.glb',
 ];
+
+/** O avião do aeroporto, feito por nós (em web/public/cidades3d/nossos/). */
+const AVIAO = 'nossos/aviao.glb';
 
 const carregados = new Map<string, Promise<GLTF>>();
 export function carregar(arquivo: string): Promise<GLTF> {
@@ -632,9 +636,15 @@ export class CenaDasCidades {
 
   /** Carrega os modelos e monta o que não muda. Rejeita se algo falhar (a tela fica no desenho de reserva). */
   async montar(): Promise<void> {
-    const [lista, dado] = await Promise.all([Promise.all(TODOS.map((a) => carregar(a).then((g) => [a, g] as const))), carregarDaMesa('D6_A')]);
+    const [lista, dado, aviao] = await Promise.all([
+      Promise.all(TODOS.map((a) => carregar(a).then((g) => [a, g] as const))),
+      carregarDaMesa('D6_A'),
+      // o avião é nosso (24/11/2026, web/scripts/modelos/tabuleiro-capitais/aviao.py); sem ele, o de código
+      carregarNosso('cidades3d/' + AVIAO),
+    ]);
     if (this.morta) return;
     for (const [a, g] of lista) this.modelos.set(a, g);
+    if (aviao) this.modelos.set(AVIAO, aviao);
     this.montarFixo();
     // os dois dados do meio (KayKit Board Game Bits, CC0, em web/public/mesa3d/)
     for (let k = 0; k < 2; k++) {
@@ -1130,24 +1140,24 @@ export class CenaDasCidades {
           if (boia) boia.rotation.z = Math.sin(t * 2.1) * 0.12;
         });
       } else if (casa.nome === 'aeroporto') {
-        // o avião (feito por código: a Kenney não tem) e a biruta
+        // o avião (a Kenney não tem: o modelo nosso, com o de código de reserva) e a biruta
         const aviao = new THREE.Group();
         aviao.position.set(0, 0.04, -ad * 0.02);
         aviao.rotation.y = Math.PI / 2;
         meio.add(aviao);
-        const fus = new THREE.CapsuleGeometry(0.045, 0.3, 4, 10);
-        feito(
-          [
-            { geo: fus, x: 0, y: 0.06, z: 0, cor: '#f6f2ea', rx: Math.PI / 2 },
-            { geo: new THREE.BoxGeometry(0.5, 0.016, 0.1), x: 0, y: 0.055, z: 0.02, cor: '#e0684a' },
-            { geo: new THREE.BoxGeometry(0.18, 0.012, 0.055), x: 0, y: 0.07, z: -0.17, cor: '#e0684a' },
-            { geo: new THREE.BoxGeometry(0.012, 0.09, 0.07), x: 0, y: 0.11, z: -0.17, cor: '#3f6fb0' },
-            { geo: new THREE.BoxGeometry(0.06, 0.03, 0.03), x: 0, y: 0.075, z: 0.12, cor: '#4f86c6' },
-            { geo: new THREE.CylinderGeometry(0.012, 0.012, 0.06, 6), x: -0.1, y: 0.02, z: 0.02, cor: '#3a3434' },
-            { geo: new THREE.CylinderGeometry(0.012, 0.012, 0.06, 6), x: 0.1, y: 0.02, z: 0.02, cor: '#3a3434' },
-          ],
-          aviao,
-        );
+        if (!por(AVIAO, 0.5, 0, 0, 0, Infinity, aviao))
+          feito(
+            [
+              { geo: new THREE.CapsuleGeometry(0.045, 0.3, 4, 10), x: 0, y: 0.06, z: 0, cor: '#f6f2ea', rx: Math.PI / 2 },
+              { geo: new THREE.BoxGeometry(0.5, 0.016, 0.1), x: 0, y: 0.055, z: 0.02, cor: '#e0684a' },
+              { geo: new THREE.BoxGeometry(0.18, 0.012, 0.055), x: 0, y: 0.07, z: -0.17, cor: '#e0684a' },
+              { geo: new THREE.BoxGeometry(0.012, 0.09, 0.07), x: 0, y: 0.11, z: -0.17, cor: '#3f6fb0' },
+              { geo: new THREE.BoxGeometry(0.06, 0.03, 0.03), x: 0, y: 0.075, z: 0.12, cor: '#4f86c6' },
+              { geo: new THREE.CylinderGeometry(0.012, 0.012, 0.06, 6), x: -0.1, y: 0.02, z: 0.02, cor: '#3a3434' },
+              { geo: new THREE.CylinderGeometry(0.012, 0.012, 0.06, 6), x: 0.1, y: 0.02, z: 0.02, cor: '#3a3434' },
+            ],
+            aviao,
+          );
         aviao.position.y = 0;
         const biruta = new THREE.Group();
         biruta.position.set(aw * 0.42, 0, -ad * 0.32);
