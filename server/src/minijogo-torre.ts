@@ -19,11 +19,18 @@
  * A COPA DO CELEIRO (20/11/2026, o lote C da segunda auditoria), só na sala: as cinco torres seguidas, como a Copa do Pulo,
  * com 10 s de placar entre uma e outra. A ordem da copa é a de quem subiu MAIS torres, e entre esses a SOMA DOS TEMPOS menor;
  * o pódio dela (pista 'copa-do-celeiro', o tempo é a soma) é só de quem subiu as cinco e ficou até o fim.
+ *
+ * A SUBIDA SEM FIM (24/11/2026, o lote E), só no Solo: a torre montada pela semente que o SERVIDOR sorteia a cada subida, com a
+ * água que sobe (torre/semfim.ts, em duas cópias iguais com a física e as torres). O site manda os comandos de cada passo, e o
+ * servidor refaz a subida inteira: o recorde é o andar mais alto que ELE contou (tabela comum: jogo 'torre', variante
+ * 'sem-fim'), e a subida não pode ter mais passos do que passou desde que começou. Sem fantasmas (cada subida é outra torre).
  */
 import * as db from './db.js';
 import type { Definicao } from './minijogo-motor.js';
 import { comPosicoes, RECOMECO_PASSOS } from './minijogo-plataforma.js';
 import { COPA_DO_CELEIRO, TORRE_PADRAO, TORRES_DA_COPA, TORRES_DO_CELEIRO, validarTorre } from './torre.js';
+import { SEM_FIM } from './torre/fases.js';
+import { refazerSemFim } from './torre/semfim.js';
 
 export const LARGADA_MS = 4000;
 export const PRAZO_MS = 30_000;
@@ -57,7 +64,7 @@ export function criarTorre(agora: () => number = Date.now): Definicao {
     comecar(ctx, { naSala, corpo }) {
       const pedida = typeof corpo.pista === 'string' ? corpo.pista : typeof corpo.categoria === 'string' ? corpo.categoria : TORRE_PADRAO;
       if (!ctx.solo && pedida === COPA_DO_CELEIRO) return sala(ctx, naSala, TORRES_DA_COPA, agora, true);
-      const id = TORRES_DO_CELEIRO[pedida] ? pedida : TORRE_PADRAO;
+      const id = TORRES_DO_CELEIRO[pedida] || (ctx.solo && pedida === SEM_FIM) ? pedida : TORRE_PADRAO;
       return ctx.solo ? solo(ctx, naSala[0], id, agora) : sala(ctx, naSala, [id], agora, false);
     },
   };
@@ -73,7 +80,9 @@ function solo(ctx: Ctx, eu: number, torreInicial: string, agora: () => number) {
   let rodada = 0;
   let subiuEm = 0;
   let fantasmas: { userId: number; nome: string; avatar: number | string | null; tempoMs: number; amostras: number[] }[] = [];
-  let resultado: { tempoMs: number; recorde: boolean; anterior: number | null } | null = null;
+  let resultado: { tempoMs: number; recorde: boolean; anterior: number | null; andares?: number } | null = null;
+  /** A semente da subida sem fim de agora (o servidor a sorteia a cada subida). */
+  let semente = 0;
   const evento = `torre-solo-${eu}-${agora()}`;
   const parado = () => ctx.agendar(SOLO_PARADO_MS, () => ctx.terminar(false));
   parado();
@@ -83,9 +92,11 @@ function solo(ctx: Ctx, eu: number, torreInicial: string, agora: () => number) {
       fase,
       solo: true,
       pista: id,
-      recordes: db.recordesDaTorre(eu, id).map(({ userId, username, nomeDeExibicao, avatarPronto, tempoMs }) => ({ userId, nome: nomeDeExibicao || username, avatar: avatarPronto, tempoMs })),
+      recordes: (id === SEM_FIM ? [] : db.recordesDaTorre(eu, id)).map(({ userId, username, nomeDeExibicao, avatarPronto, tempoMs }) => ({ userId, nome: nomeDeExibicao || username, avatar: avatarPronto, tempoMs })),
       meuAvatar: db.avatarDoJogo(eu),
       fantasmas: fase === 'correndo' ? fantasmas : [],
+      semente: id === SEM_FIM && fase !== 'escolha' ? semente : null,
+      recordeSemFim: db.recordeDoSolo(eu, 'torre', SEM_FIM)?.valor ?? null,
       rodada,
       resultado,
       partidaId: evento,
@@ -95,7 +106,7 @@ function solo(ctx: Ctx, eu: number, torreInicial: string, agora: () => number) {
       parado();
       if (c.tipo === 'pista') {
         if (fase === 'correndo') return 'A subida está andando.';
-        if (typeof c.pista !== 'string' || !TORRES_DO_CELEIRO[c.pista]) return 'Torre desconhecida.';
+        if (typeof c.pista !== 'string' || (!TORRES_DO_CELEIRO[c.pista] && c.pista !== SEM_FIM)) return 'Torre desconhecida.';
         id = c.pista;
         fase = 'escolha';
         resultado = null;
@@ -113,6 +124,11 @@ function solo(ctx: Ctx, eu: number, torreInicial: string, agora: () => number) {
         // correr de novo no meio da subida (a pessoa desistiu e recomeçou) vale: a subida anterior só não conta
         const pedidos = Array.isArray(c.fantasmas) ? [...new Set(c.fantasmas.filter((v): v is number => Number.isInteger(v) && (v as number) > 0))].slice(0, MAX_FANTASMAS) : [];
         fantasmas = [];
+        // a subida sem fim: uma torre nova a cada vez, sem fantasmas
+        if (id === SEM_FIM) {
+          semente = 1 + Math.floor(Math.random() * 0x7ffffffe);
+          pedidos.length = 0;
+        }
         for (const outro of pedidos) {
           if (outro !== eu && (db.amizadeEntre(eu, outro)?.situacao !== 'aceita' || db.haBloqueio(eu, outro))) continue;
           const r = db.recordeDaTorre(outro, id);
@@ -129,6 +145,16 @@ function solo(ctx: Ctx, eu: number, torreInicial: string, agora: () => number) {
       }
       if (c.tipo === 'chegada') {
         if (fase !== 'correndo') return 'A subida não está andando.';
+        if (id === SEM_FIM) {
+          // o servidor refaz a subida: os andares são os dele, e os passos não passam do que passou desde o começo
+          const r = refazerSemFim(semente, c.entradas);
+          if (!r || (r.passos * 1000) / 60 > agora() - subiuEm + FOLGA_MS) return 'Subida inválida.';
+          const g = db.guardarRecordeDoSolo(eu, 'torre', SEM_FIM, r.andares, false, { passos: r.passos });
+          fase = 'resultado';
+          resultado = { tempoMs: Math.round((r.passos * 1000) / 60), recorde: g.novo, anterior: g.antes, andares: r.andares };
+          ctx.avisar();
+          return null;
+        }
         const v = validarTorre(id, c);
         if ('erro' in v) return v.erro;
         // o tempo não passa do que de fato passou desde que a subida começou (a contagem de 3 s fica de folga)

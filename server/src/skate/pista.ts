@@ -276,6 +276,43 @@ function montarPraca(): { pecas: Peca[]; trilhos: Trilho[] } {
   return { pecas, trilhos };
 }
 
+/**
+ * A QUADRA (24/11/2026, o lote E): as mesmas pontas de quarter, e no meio as LINHAS LONGAS: um corrimão comprido do lado
+ * esquerdo e uma caixa comprida do direito (ao longo do z), cada uma com o seu kicker na ponta de cá, e uma caixa de través
+ * no fundo, com dois kickers para saltar por cima dela. Só as peças e os perfis que o parque já usa.
+ */
+function montarQuadra(): { pecas: Peca[]; trilhos: Trilho[] } {
+  const pecas: Peca[] = [];
+  quarters(pecas);
+  // o corrimão comprido da esquerda e a caixa comprida da direita
+  for (let j = 5; j < 12; j++) {
+    pecas.push({ modelo: 'rail-low', x: 2.5, z: j + 0.5, rot: 0, perfil: 'corrimao' });
+    pecas.push({ modelo: 'obstacle-box-grind', x: 9.5, z: j + 0.5, rot: 0, perfil: 'caixa' });
+  }
+  // os kickers perto do quarter do z = 0, virados para as linhas (para quem anda para +z)
+  pecas.push({ modelo: 'ramp', x: 2.5, z: 2.5, rot: 2, perfil: 'rampa' });
+  pecas.push({ modelo: 'ramp', x: 9.5, z: 2.5, rot: 2, perfil: 'rampa' });
+  // a caixa de través, no fundo
+  for (let i = 4; i < 8; i++) pecas.push({ modelo: 'obstacle-box-grind', x: i + 0.5, z: 12.5, rot: 1, perfil: 'caixa' });
+  // os kickers perto do quarter de lá, para quem anda para −z: saltam por cima da caixa de través
+  pecas.push({ modelo: 'ramp', x: 5.5, z: 15.5, rot: 0, perfil: 'rampa' });
+  pecas.push({ modelo: 'ramp', x: 6.5, z: 15.5, rot: 0, perfil: 'rampa' });
+  // enfeite, do lado de fora da cerca
+  for (const z of [3.5, 13.5]) {
+    pecas.push({ modelo: 'bench', x: -0.7, z, rot: 1 });
+    pecas.push({ modelo: 'bench', x: LARGURA + 0.7, z, rot: 3 });
+  }
+  pecas.push({ modelo: 'pallet', x: -1.2, z: 9, rot: 0 });
+  pecas.push({ modelo: 'structure-wood-platform', x: LARGURA + 1.6, z: 8.5, rot: 3 });
+  const trilhos = [
+    linha(2.5, 5, 2.5, 12, 0.25, 0.22),
+    linha(9.5, 5, 9.5, 12, 0.21, 0.3),
+    linha(4, 12.5, 8, 12.5, 0.21, 0.3),
+    ...linhasDaBorda(),
+  ];
+  return { pecas, trilhos };
+}
+
 export interface Pista {
   id: string;
   pecas: Peca[];
@@ -367,6 +404,41 @@ export const PISTAS: Pista[] = [
       { x: 1.5, y: 0.9, z: 8.4 },
     ],
     fita: { x: 11.4, y: 2.3, z: 17.7 },
+    pontos: 20000,
+    combo: 5000,
+    saltos: [],
+    giro: 540,
+    manual: 3,
+  }),
+  // a terceira (24/11/2026): a Quadra, no FIM da lista
+  criarPista('quadra-1', montarQuadra(), {
+    // T acima da caixa de través, O acima do corrimão, C no alto do quarter de lá, A no fim da caixa comprida
+    letras: [
+      { x: 6, y: 0.9, z: 12.5 },
+      { x: 2.5, y: 0.95, z: 8.5 },
+      { x: 9, y: 1.55, z: 17.55 },
+      { x: 9.5, y: 0.9, z: 11.4 },
+    ],
+    fita: { x: 0.7, y: 2.3, z: 17.7 },
+    pontos: 12000,
+    combo: 2500,
+    saltos: [
+      // dos kickers de lá, por cima da caixa de través
+      { id: 'caixote', de: { x0: 5, x1: 7, z0: 14.8, z1: 16.2 }, ate: { x0: 3.5, x1: 8.5, z0: 2, z1: 12.2 }, pontos: 400 },
+      // do kicker da esquerda até o corrimão comprido
+      { id: 'corrimao', de: { x0: 2, x1: 3, z0: 1.8, z1: 3.2 }, ate: { x0: 2.2, x1: 2.8, z0: 5, z1: 12 }, pontos: 350 },
+      // do kicker da direita até a caixa comprida
+      { id: 'caixa', de: { x0: 9, x1: 10, z0: 1.8, z1: 3.2 }, ate: { x0: 9.2, x1: 9.8, z0: 5, z1: 12 }, pontos: 350 },
+    ],
+  }, {
+    // o segundo: P acima dos kickers de lá, U na outra ponta do corrimão, L no alto do quarter de cá, O na outra ponta da caixa
+    letras: [
+      { x: 6, y: 1.0, z: 15.4 },
+      { x: 2.5, y: 0.95, z: 5.6 },
+      { x: 3, y: 1.55, z: 0.45 },
+      { x: 9.5, y: 0.9, z: 5.6 },
+    ],
+    fita: { x: 11.3, y: 2.3, z: 0.3 },
     pontos: 20000,
     combo: 5000,
     saltos: [],

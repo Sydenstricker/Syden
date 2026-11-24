@@ -8,6 +8,8 @@ export const NOMES_DAS_TORRES: Record<string, string> = {
   'moinho-1': chave('Moinho'),
   'pombal-1': chave('Pombal'),
   'copa-do-celeiro': chave('Copa do Celeiro'),
+  // a subida sem fim (24/11/2026)
+  'sem-fim': chave('Sem fim'),
 };
 
 export const nomeDaTorre = (t: (texto: string) => string, id: string) => t(NOMES_DAS_TORRES[id] ?? id);

@@ -241,7 +241,7 @@ async function rodarDe(pista: number, x: number, z: number, rx: number, rz: numb
 
 test('a segunda pista (a praça) e as duas pistas no mesmo arquivo: ids diferentes, e o parque é o de sempre', async () => {
   const p = await import('../src/skate/pista');
-  assert.deepEqual(p.IDS_DAS_PISTAS, ['parque-1', 'praca-1']);
+  assert.deepEqual(p.IDS_DAS_PISTAS.slice(0, 2), ['parque-1', 'praca-1']);
   assert.notDeepEqual(p.PISTAS[1].trilhos.length, 0);
   assert.ok(p.PISTAS[1].objetivos.saltos.length >= 2 && p.PISTAS[0].objetivos.letras.length === p.PALAVRA.length);
   // o piloto automático do parque continua fazendo a sessão inteira na praça sem travar (os objetivos dela ficam para quem joga)
@@ -341,7 +341,7 @@ test('o segundo conjunto: outra palavra e outra fita, as mesmas peças; os ponto
     assert.equal(q.segundo.saltos.length, 0, 'os saltos (e os pontos deles) são os do primeiro conjunto');
     assert.ok(q.segundo.pontos > q.objetivos.pontos && q.segundo.combo > q.objetivos.combo);
   }
-  for (const pista of [0, 1]) {
+  for (const pista of [0, 1, 2]) {
     const um = f.novoSkatista(pista, 0);
     const dois = f.novoSkatista(pista, 1);
     const g = f.gravador();
@@ -385,4 +385,63 @@ test('o segundo conjunto: as manobras (o maior giro e o manual mais longo) conta
   k.maiorManual = 3.2;
   assert.ok(f.objetivos(k).find((o) => o.id === 'giro')!.feito);
   assert.ok(f.objetivos(k).find((o) => o.id === 'manual')!.feito);
+});
+
+// ---------------- A terceira pista, a Quadra (24/11/2026) ----------------
+
+test('a Quadra (a terceira pista): id novo no fim, os três saltos com nome e as letras dos dois conjuntos alcançáveis', async () => {
+  const p = await import('../src/skate/pista');
+  const f = await import('../src/skate/fisica');
+  assert.equal(p.IDS_DAS_PISTAS[2], 'quadra-1');
+  const q = p.PISTAS[2];
+  assert.deepEqual(q.objetivos.saltos.map((s) => s.id), ['caixote', 'corrimao', 'caixa']);
+  // por cima da caixa de través (pega o T no caminho)
+  const a = await rodarDe(2, 6, 17, 0, -1, 5.5, 200);
+  assert.ok(a.nomes.includes('gap:caixote'), a.nomes.join(','));
+  assert.ok(a.k.letras & 1, 'o T acima da caixa de través');
+  // do kicker da esquerda ao corrimão comprido, e do da direita à caixa comprida (o O e o A no caminho)
+  const b = await rodarDe(2, 2.5, 1.9, 0, 1, 5.5, 150);
+  assert.ok(b.nomes.includes('gap:corrimao') && b.nomes.includes('Grind'), b.nomes.join(','));
+  assert.ok(b.k.letras & 2, 'o O acima do corrimão');
+  const c = await rodarDe(2, 9.5, 1.9, 0, 1, 5.5, 150);
+  assert.ok(c.nomes.includes('gap:caixa') && c.nomes.includes('Grind'), c.nomes.join(','));
+  assert.ok(c.k.letras & 8, 'o A no fim da caixa comprida');
+  // o C no alto do quarter de lá, e a fita no canto (o vert embalado)
+  assert.ok((await rodarDe(2, 9, 14, 0, 1, 5.5, 200)).k.letras & 4);
+  assert.ok((await rodarDe(2, 0.7, 14, 0, 1, 6.5, 200)).k.fita);
+  // o segundo conjunto: o L no quarter de cá e a fita no outro canto
+  assert.ok((await rodarNoConjunto(1, 2, 3, 4, 0, -1, 5.5, 200)).letras & 4);
+  assert.ok((await rodarNoConjunto(1, 2, 11.3, 4, 0, -1, 6.5, 200)).fita);
+  // o piloto automático do parque faz a sessão inteira nela sem travar, e o servidor a refaz igual
+  const s = await import('../../server/src/skate/fisica');
+  const g = f.gravador();
+  const k = f.novoSkatista(2);
+  const piloto = criarPiloto();
+  while (!k.terminou) {
+    const cmd = piloto(k);
+    g.anotar(cmd);
+    f.passo(k, cmd);
+  }
+  assert.ok(k.pontos > 0);
+  const r = s.refazer(g.entradas, 2);
+  assert.equal(r.k.pontos, k.pontos);
+  assert.deepEqual(s.objetivos(r.k), f.objetivos(k));
+  p.usarPista(0);
+});
+
+test('a Quadra, o segundo conjunto: o P, o U e o O nas linhas', async () => {
+  const f = await import('../src/skate/fisica');
+  const rodar = (x: number, z: number, rz: number, vel: number, n: number) => {
+    const k = f.novoSkatista(2, 1);
+    for (let j = 0; j < 2; j++) {
+      Object.assign(k, { x, z, rx: 0, rz, cx: 0, cz: rz, vel });
+      if (!j) f.passo(k, f.NADA);
+    }
+    for (let i = 0; i < n; i++) f.passo(k, f.NADA);
+    return k;
+  };
+  assert.ok(rodar(6, 17, -1, 5.5, 200).letras & 1, 'o P');
+  assert.ok(rodar(2.5, 1.9, 1, 5.5, 150).letras & 2, 'o U');
+  assert.ok(rodar(9.5, 1.9, 1, 5.5, 150).letras & 8, 'o O');
+  (await import('../src/skate/pista')).usarPista(0);
 });

@@ -571,3 +571,158 @@ export const torrePorId = (id: string) => TORRES.find((f) => f.id === id) ?? TOR
 /** A Copa do Celeiro (20/11/2026), só na sala: as cinco torres seguidas (COPA_DO_CELEIRO em server/src/minijogo-torre.ts). */
 export const COPA_DO_CELEIRO = 'copa-do-celeiro';
 export const TORRES_DA_COPA = ['celeiro-1', 'paiol-1', 'silo-1', 'moinho-1', 'pombal-1'];
+
+// =====================================================================================================================
+// A TORRE SEM FIM (24/11/2026, o lote E): uma torre montada por SEMENTE, com os mesmos trechos das torres de sempre, que
+// fica mais difícil quanto mais alto (mais coisa caindo, corvos mais ligeiros). A regra da subida sem fim (a água que sobe,
+// o fim e a conferência) mora em semfim.ts. Este arquivo mora em DUAS CÓPIAS IGUAIS (web/src/torre/ e server/src/torre/),
+// com a física e o semfim.ts: o servidor monta a mesma torre pela semente e refaz a subida.
+// =====================================================================================================================
+
+/** O id da subida sem fim (não é uma torre de TORRES: a torre é montada pela semente de cada subida). */
+export const SEM_FIM = 'sem-fim';
+/** Quantos trechos a torre sem fim tem: mais do que alguém sobe antes de a água chegar (o topo, se alguém chegar, é o fim). */
+export const TRECHOS_DO_SEM_FIM = 40;
+
+/** O sorteio da semente: só inteiros (Math.imul), o mesmo número em qualquer computador. */
+export function sorteioDaSemente(semente: number): () => number {
+  let s = semente >>> 0;
+  return () => {
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** As escadas que as torres de sempre já usam (todas sobem; a primeira tábua fica a 2 linhas do andar, de qualquer lado). */
+const ESCADAS: number[][] = [
+  [6, 11, 14, 10, 6, 2],
+  [4, 9, 13, 9, 5, 1, 5],
+  [13, 9, 5, 1, 4, 8, 12],
+  [12, 8, 4, 0, 4, 8],
+  [2, 6, 10, 14, 10],
+  [10, 6, 2, 6, 10, 14],
+  [2, 6, 10, 14, 10, 6, 2],
+  [13, 9, 5, 1, 5, 9],
+  [12, 8, 4, 0, 4, 8, 12],
+  [11, 7, 3, 7, 11],
+  [3, 7, 11, 15, 11, 7, 3],
+  [6, 10, 14, 10, 6],
+  [13, 9, 5, 1, 5, 9, 13],
+];
+/** Os fardos das torres de sempre. */
+const FENOS: [number, number][][] = [
+  [
+    [12, 3],
+    [15, 3],
+    [11, 3],
+    [7, 3],
+    [3, 3],
+    [0, 2],
+  ],
+  [
+    [2, 3],
+    [6, 3],
+    [10, 3],
+    [14, 3],
+    [15, 3],
+    [11, 3],
+    [7, 3],
+  ],
+  [
+    [13, 3],
+    [9, 3],
+    [5, 3],
+    [1, 3],
+    [0, 3],
+    [4, 3],
+    [8, 3],
+  ],
+  [
+    [11, 3],
+    [14, 3],
+    [10, 3],
+    [6, 3],
+    [2, 3],
+  ],
+  [
+    [2, 3],
+    [6, 3],
+    [10, 3],
+    [14, 3],
+    [15, 3],
+  ],
+];
+const TEMAS: Tema[] = ['celeiro', 'paiol', 'silo', 'moinho', 'pombal'];
+const FERRAMENTAS: Ferramenta[] = ['pa', 'saco', 'regador', 'ancinho'];
+
+/**
+ * A torre sem fim da semente. `trechos` só muda nos testes. Os dois primeiros trechos não têm nada caindo; depois, a cada 5
+ * trechos, cabe mais uma coisa (até 4), e o ritmo do que cai e dos corvos aperta até 80% do de começo.
+ */
+export function torreSemFim(semente: number, trechos = TRECHOS_DO_SEM_FIM): Torre {
+  const r = sorteioDaSemente(semente);
+  const inteiro = (n: number) => Math.floor(r() * n);
+  const m = montador(SEM_FIM, TEMAS[inteiro(TEMAS.length)]);
+  // o tipo de cada trecho, sorteado antes (o posto de cada andar depende do trecho que vem depois)
+  const tipos: number[] = [];
+  for (let i = 0; i < trechos; i++) {
+    // nunca dois trechos iguais seguidos; a escada sai mais (é onde cabe o que cai)
+    let t = inteiro(5);
+    if (t === 4) t = 0;
+    if (i > 0 && t === tipos[i - 1]) t = (t + 1) % 4;
+    tipos.push(t);
+  }
+  const fenosDe = tipos.map((t) => (t === 3 ? FENOS[inteiro(FENOS.length)] : null));
+  /** O posto do andar antes do trecho i: longe do primeiro fardo (cair dentro de um fardo prenderia o coelho). */
+  const postoAntes = (i: number) => {
+    const fe = fenosDe[i];
+    if (fe) return fe[0][0] >= 8 ? 2 : 15;
+    return 2 + inteiro(14);
+  };
+  m.chao(postoAntes(0));
+  let b = 0;
+  for (let i = 0; i < trechos; i++) {
+    const nivel = Math.min(4, i < 2 ? 0 : 1 + Math.floor((i - 2) / 5));
+    const ritmo = Math.max(0.8, 1 - i * 0.008);
+    const periodo = (base: number) => Math.round((base + inteiro(40)) * ritmo);
+    const e0 = b;
+    const tipo = tipos[i];
+    if (tipo === 0) {
+      const cols = ESCADAS[inteiro(ESCADAS.length)];
+      b = escada(m, b, cols);
+      // o que cai: do andar de cima até um degrau, sobre a tábua (nunca dois no mesmo degrau)
+      const degraus = cols.map((_, j) => j).filter((j) => j < cols.length - 1);
+      for (let q = 0; q < nivel && degraus.length; q++) {
+        const j = degraus.splice(inteiro(degraus.length), 1)[0];
+        m.queda(FERRAMENTAS[inteiro(FERRAMENTAS.length)], cols[j] + 1 + inteiro(2), b, e0 + 2 + 2 * j, periodo(160), inteiro(200));
+      }
+      if (nivel >= 3) {
+        const ida = r() < 0.5;
+        m.corvo(e0 + 3 + 2 * inteiro(cols.length - 1), ida ? 0 : 17, ida ? 17 : 0, periodo(250), inteiro(200));
+      }
+    } else if (tipo === 1) {
+      b = elevadores(m, b, r() < 0.5 ? 'esquerda' : 'direita', 240 + 20 * inteiro(4));
+    } else if (tipo === 2) {
+      const n = 3 + inteiro(2);
+      const ps: number[] = [];
+      for (let j = 0; j < n; j++) ps.push(180 + 10 * inteiro(9));
+      b = prateleiras(m, b, ps);
+      if (nivel >= 2) {
+        const ida = r() < 0.5;
+        m.corvo(e0 + 3 + 2 * inteiro(n - 1), ida ? 0 : 17, ida ? 17 : 0, periodo(260), inteiro(200));
+      }
+    } else {
+      b = fenos(m, b, fenosDe[i]!);
+      if (nivel >= 1) {
+        const ida = r() < 0.5;
+        m.corvo(e0 + 5 + 2 * inteiro(3), ida ? 0 : 17, ida ? 17 : 0, periodo(260), inteiro(200));
+      }
+    }
+    if (i < trechos - 1) m.andar(b, postoAntes(i + 1));
+  }
+  m.topo(b);
+  return m.pronto();
+}

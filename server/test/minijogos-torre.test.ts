@@ -155,3 +155,50 @@ test('a posição ao vivo é conferida e carimbada, e o quanto subiu não pula p
   assert.equal(m.terminou(), true);
   assert.deepEqual((j.publico(anaId).pilotos as { userId: number }[]).map((p) => p.userId), [biaId, anaId], 'a Bia subiu mais de verdade');
 });
+
+test('24/11/2026: a subida sem fim no Solo: o servidor sorteia a semente, refaz a subida e guarda os andares DELE', async () => {
+  const { torreSemFim } = await import('../src/torre/fases.js');
+  const sf = await import('../src/torre/semfim.js');
+  const { planejar } = await import('../../web/src/torre/piloto.ts');
+  const m = contexto(() => [caioId], { solo: true, comunidadeId: 0 });
+  const j = torre.comecar(m.ctx, { naSala: [caioId], criadaPor: caioId, corpo: { pista: 'sem-fim' } });
+  assert.ok(typeof j !== 'string');
+  assert.equal(j.publico(caioId).pista, 'sem-fim');
+  assert.equal(j.acao(caioId, { tipo: 'correr', fantasmas: [anaId] }), null);
+  const p = j.publico(caioId) as unknown as { semente: number; fantasmas: unknown[] };
+  assert.ok(Number.isInteger(p.semente) && p.semente > 0);
+  assert.deepEqual(p.fantasmas, [], 'sem fantasmas: cada subida é outra torre');
+  // o piloto sobe dois andares e para (como quem sai pela pausa)
+  const f = torreSemFim(p.semente);
+  const s = sf.novaSubidaSemFim(p.semente, f);
+  const g = sf.gravadorSemFim();
+  while (s.k.posto < 2) {
+    const alvo = s.k.posto;
+    const plano = planejar(f, { ...s.k }, 400, 5, 60 * 60, (k) => k.posto > alvo || k.terminou);
+    assert.ok(plano);
+    for (const c of plano) {
+      g.anotar(c);
+      sf.passoSemFim(s, c);
+    }
+  }
+  // antes da hora, não: os passos não cabem no tempo que passou
+  assert.equal(j.acao(caioId, { tipo: 'chegada', entradas: g.entradas }), 'Subida inválida.');
+  assert.equal(j.acao(caioId, { tipo: 'chegada', entradas: [5, 9] }), 'Subida inválida.');
+  agora += Math.ceil((s.k.passos * 1000) / 60);
+  assert.equal(j.acao(caioId, { tipo: 'chegada', entradas: g.entradas }), null);
+  const r = j.publico(caioId).resultado as { andares: number; recorde: boolean };
+  assert.deepEqual([r.andares, r.recorde], [2, true]);
+  assert.equal(db.recordeDoSolo(caioId, 'torre', 'sem-fim')?.valor, 2);
+  assert.equal(j.publico(caioId).recordeSemFim, 2);
+  // a outra subida, parada na largada: a água alcança, zero andares, e o recorde continua o de antes
+  assert.equal(j.acao(caioId, { tipo: 'correr' }), null);
+  agora += 60_000;
+  assert.equal(j.acao(caioId, { tipo: 'chegada', entradas: [3000, 0] }), null);
+  assert.deepEqual((j.publico(caioId).resultado as { andares: number; recorde: boolean }).andares, 0);
+  assert.equal(db.recordeDoSolo(caioId, 'torre', 'sem-fim')?.valor, 2);
+  // na sala não há subida sem fim: vira a torre de sempre
+  const sala = contexto(() => [anaId, biaId]);
+  const js = torre.comecar(sala.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { pista: 'sem-fim' } });
+  assert.ok(typeof js !== 'string');
+  assert.equal(js.publico(anaId).pista, 'celeiro-1');
+});

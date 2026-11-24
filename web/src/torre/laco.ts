@@ -5,6 +5,7 @@ import { altura, type Torre } from './fases';
 import { barraDaSubida, pintar, prepararPintura, type Figura } from './desenho';
 import { AMOSTRA, amostrar, fantasmaEm, novoCoelho, PASSO, passo, progresso, type Coelho, type Comandos } from './fisica';
 import { planejar } from './piloto';
+import { andaresDaSubida, gravadorSemFim, novaSubidaSemFim, passoSemFim, type SubidaSemFim } from './semfim';
 
 /**
  * O LAÇO DA TORRE DO CELEIRO (05/11/2026), o do Pulo do coelho (plataforma/laco.ts) com a câmera que SOBE: a física em
@@ -51,7 +52,12 @@ export interface OpcoesDaTorre {
   calmo?: boolean;
   /** A pausa do ESC (pausaDosJogos.tsx), só no Solo: lida a cada quadro, como a janela sem foco. */
   pausa?: { readonly ativa: boolean };
-  aoPlacar: (p: { ms: number; pausado: boolean; quedas: number }) => void;
+  aoPlacar: (p: { ms: number; pausado: boolean; quedas: number; andares?: number }) => void;
+  /**
+   * A SUBIDA SEM FIM (24/11/2026): a torre é a da semente (quem chama a monta com torreSemFim), a água sobe, e no fim o laço
+   * entrega os comandos gravados (o servidor refaz a subida) e os andares que a tela contou.
+   */
+  semFim?: { semente: number; aoFim: (entradas: number[], andares: number) => void };
   aoOrdem?: (ordem: LinhaDaOrdem[]) => void;
   aoPosicao?: (p: PosicaoDoRival) => void;
   aoChegar?: (passos: number, caminho: number[]) => void;
@@ -69,7 +75,9 @@ export function rodarTorre(o: OpcoesDaTorre): () => void {
   void (async () => {
     p.coelho = await coelho();
     if (!vivo) return;
-    const k: Coelho = novoCoelho(f);
+    const sub: SubidaSemFim | null = o.semFim ? novaSubidaSemFim(o.semFim.semente, f) : null;
+    const gravador = gravadorSemFim();
+    const k: Coelho = sub ? sub.k : novoCoelho(f);
     const caminho: number[] = [];
     let camY = Math.max(0, altura(f) - H);
     let contagem = o.contagem;
@@ -90,12 +98,18 @@ export function rodarTorre(o: OpcoesDaTorre): () => void {
       }
       if (!o.piloto) return;
       const auto = import.meta.env.DEV && (window as { torrePilotoAutomatico?: boolean }).torrePilotoAutomatico;
-      if (auto && !plano) plano = planejar(f, k) ?? [];
+      if (auto && sub && !plano?.length) {
+        const alvo = k.posto;
+        plano = planejar(f, { ...k }, 400, 5, 60 * 60, (q) => q.posto > alvo || q.terminou) ?? [];
+      } else if (auto && !plano) plano = planejar(f, k) ?? [];
       const c = auto && plano ? (plano.shift() ?? { esquerda: false, direita: false, pula: false }) : o.comandos;
       const jaTinha = k.terminou;
       const noChaoAntes = k.noChao;
       const quedasAntes = k.quedas;
-      passo(k, c, f);
+      if (sub) {
+        if (!sub.fim) gravador.anotar(c);
+        passoSemFim(sub, c);
+      } else passo(k, c, f);
       if (noChaoAntes && !k.noChao && k.vy < 0) tocar('pulo');
       if (k.quedas > quedasAntes) tocar('queda');
       if (k.terminou && !jaTinha) tocar('chegada');
@@ -155,7 +169,8 @@ export function rodarTorre(o: OpcoesDaTorre): () => void {
         });
       }
       pintar(p, camY, n, figuras);
-      barraDaSubida(p.ctx, [
+      if (sub) agua(p.ctx, sub.agua - camY, n, !!o.calmo);
+      else barraDaSubida(p.ctx, [
         ...(o.fantasmas ?? []).map((fa) => {
           const g = fantasmaEm(fa.amostras, n);
           return { andou: g ? progresso(g, f) : 1, cor: '#c8c0cc' };
@@ -202,11 +217,15 @@ export function rodarTorre(o: OpcoesDaTorre): () => void {
         nAssistindo = Math.min(Math.max(nAssistindo, ultimo - 12), ultimo);
       }
       if (!document.hidden) desenhar();
-      o.aoPlacar({ ms: Math.round(((k.terminou ? k.chegouEm : k.passos) * 1000) / 60), pausado: pausado && o.piloto, quedas: k.quedas });
-      if (k.terminou && !fimEm) fimEm = agora;
+      o.aoPlacar({ ms: Math.round(((k.terminou ? k.chegouEm : k.passos) * 1000) / 60), pausado: pausado && o.piloto, quedas: k.quedas, andares: sub ? andaresDaSubida(sub) : undefined });
+      if ((sub ? sub.fim : k.terminou) && !fimEm) {
+        fimEm = agora;
+        if (sub && !k.terminou) tocar('agua');
+      }
       if (fimEm && agora - fimEm > 1200 && !avisou) {
         avisou = true;
-        o.aoChegar?.(k.chegouEm, caminho);
+        if (sub) o.semFim!.aoFim(gravador.entradas, andaresDaSubida(sub));
+        else o.aoChegar?.(k.chegouEm, caminho);
       }
       quadro = requestAnimationFrame(ciclo);
     };
@@ -217,4 +236,17 @@ export function rodarTorre(o: OpcoesDaTorre): () => void {
     vivo = false;
     cancelAnimationFrame(quadro);
   };
+}
+
+/** A água da subida sem fim, da superfície (y na tela) para baixo: azul translúcido, com a crista que ondula (parada com "menos movimento"). */
+function agua(ctx: CanvasRenderingContext2D, y: number, n: number, calmo: boolean) {
+  if (y > H + 4) return;
+  const topo = Math.max(-4, Math.round(y));
+  ctx.fillStyle = '#3a78b866';
+  ctx.fillRect(0, topo, W, H - topo);
+  ctx.fillStyle = '#9fd0f0b0';
+  for (let x = 0; x < W; x += 8) {
+    const onda = calmo ? 0 : ((x >> 3) + (n >> 4)) % 2;
+    ctx.fillRect(x, topo - onda, 6, 2);
+  }
 }

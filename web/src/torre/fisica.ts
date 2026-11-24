@@ -1,4 +1,4 @@
-import { Bloco, blocoEm, corvoEm, COLUNAS, movelEm, quedaEm, T, type Torre } from './fases';
+import { Bloco, blocoEm, corvoEm, COLUNAS, movelEm, quedaEm, T, type Torre } from './fases.js';
 
 /**
  * A FÍSICA DA TORRE DO CELEIRO (05/11/2026): a do Pulo do coelho (web/src/plataforma/fisica.ts, de onde foi copiada), com

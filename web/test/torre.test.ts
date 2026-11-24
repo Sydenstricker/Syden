@@ -214,3 +214,75 @@ test('o pulo correndo sobe mais que o pulo parado', async () => {
   };
   assert.ok(altura(true) > altura(false), `correndo ${altura(true).toFixed(0)}, parado ${altura(false).toFixed(0)}`);
 });
+
+// ---------------- A subida sem fim (24/11/2026) ----------------
+
+test('a subida sem fim: as torres, a física e a regra dela são as MESMAS do servidor, byte a byte (ele refaz a subida)', async () => {
+  const { readFileSync } = await import('node:fs');
+  for (const nome of ['fases.ts', 'fisica.ts', 'semfim.ts']) {
+    const web = readFileSync(new URL(`../src/torre/${nome}`, import.meta.url), 'utf8');
+    const srv = readFileSync(new URL(`../../server/src/torre/${nome}`, import.meta.url), 'utf8');
+    assert.equal(web, srv, `${nome}: as duas cópias diferem`);
+  }
+});
+
+test('a torre sem fim: a mesma semente dá a mesma torre, outra dá outra, e nenhum posto fica dentro de um fardo', async () => {
+  const { torreSemFim, TRECHOS_DO_SEM_FIM, blocoEm, Bloco } = await import('../src/torre/fases');
+  const a = torreSemFim(12345);
+  const b = torreSemFim(12345);
+  assert.deepEqual([...a.blocos], [...b.blocos]);
+  assert.deepEqual(a.quedas, b.quedas);
+  assert.notDeepEqual([...torreSemFim(54321).blocos], [...a.blocos]);
+  for (const semente of [1, 2, 3, 99, 4242, 777777]) {
+    const f = torreSemFim(semente);
+    assert.equal(f.postos.length, TRECHOS_DO_SEM_FIM, 'a largada e um posto por andar');
+    for (const p of f.postos) {
+      const c = Math.floor(p.x / T);
+      const l = Math.floor((p.y - 1) / T);
+      assert.equal(blocoEm(f, c, l), Bloco.Vazio, `semente ${semente}: o posto (${p.x}, ${p.y}) não tem onde ficar`);
+      assert.notEqual(blocoEm(f, c, l - 1), Bloco.Feno);
+    }
+  }
+});
+
+test('a subida sem fim: o piloto sobe andar a andar sem pancada, e o servidor refaz e conta os mesmos andares', async () => {
+  const { torreSemFim } = await import('../src/torre/fases');
+  const sf = await import('../src/torre/semfim');
+  const srv = await import('../../server/src/torre/semfim.ts');
+  for (const semente of [8, 4242]) {
+    const f = torreSemFim(semente);
+    const s = sf.novaSubidaSemFim(semente, f);
+    const g = sf.gravadorSemFim();
+    // os primeiros 5 andares (o resto é igual e lento para o teste); quem para no meio vale até onde chegou
+    while (s.k.posto < 5 && !s.fim) {
+      const alvo = s.k.posto;
+      const plano = planejar(f, { ...s.k }, 400, 5, 60 * 60, (k) => k.posto > alvo || k.terminou);
+      assert.ok(plano, `semente ${semente}: sem caminho no andar ${alvo}`);
+      for (const c of plano) {
+        g.anotar(c);
+        sf.passoSemFim(s, c);
+      }
+    }
+    assert.equal(s.fim, false, 'a água não alcança o piloto nos primeiros andares');
+    assert.equal(s.k.quedas, 0);
+    const r = srv.refazerSemFim(semente, g.entradas);
+    assert.ok(r);
+    assert.equal(r.andares, sf.andaresDaSubida(s));
+    assert.equal(r.passos, s.k.passos);
+    // a mesma subida noutra torre não chega aos mesmos andares
+    assert.notEqual(srv.refazerSemFim(semente + 1, g.entradas)?.andares, 5);
+  }
+});
+
+test('a subida sem fim: parado, a água alcança; e o servidor recusa entradas tortas', async () => {
+  const sf = await import('../src/torre/semfim');
+  const parado = sf.refazerSemFim(7, [60000, 0]);
+  assert.ok(parado && parado.fim && parado.andares === 0);
+  // a água espera e depois sobe: parado na largada, acaba entre 6 e 30 s
+  assert.ok(parado.passos > sf.AGUA_ESPERA && parado.passos < 30 * 60, `passos: ${parado.passos}`);
+  assert.equal(sf.refazerSemFim(7, [10, 8]), null, 'bits fora');
+  assert.equal(sf.refazerSemFim(7, [0, 1]), null, 'vezes zero');
+  assert.equal(sf.refazerSemFim(7, [1]), null, 'par incompleto');
+  assert.equal(sf.refazerSemFim(1.5, [1, 0]), null, 'semente torta');
+  assert.equal(sf.refazerSemFim(7, Array.from({ length: 30 }, (_, i) => (i % 2 ? 0 : 60000))), null, 'mais passos que o máximo');
+});

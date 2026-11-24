@@ -23,7 +23,8 @@ interface No {
   acao: number;
 }
 
-export function planejar(f: Torre, inicio: Coelho, largura = 400, bloco = 5, limite = 60 * 150): Comandos[] | null {
+/** `meta`: quando o plano acaba (de fábrica, no topo); a subida sem fim (24/11/2026) planeja andar a andar. */
+export function planejar(f: Torre, inicio: Coelho, largura = 400, bloco = 5, limite = 60 * 150, meta: (k: Coelho) => boolean = (k) => k.terminou): Comandos[] | null {
   let feixe: No[] = [{ k: { ...inicio }, pai: null, acao: -1 }];
   for (let t = 0; t * bloco < limite; t++) {
     const vistos = new Map<string, No>();
@@ -37,11 +38,11 @@ export function planejar(f: Torre, inicio: Coelho, largura = 400, bloco = 5, lim
             caiu = true;
             break;
           }
-          if (k.terminou) break;
+          if (meta(k)) break;
         }
         if (caiu) continue;
         const filho = { k, pai: no, acao: a };
-        if (k.terminou) return desenrolar(filho, bloco, k.chegouEm - inicio.passos);
+        if (meta(k)) return desenrolar(filho, bloco, (k.terminou ? k.chegouEm : k.passos) - inicio.passos);
         const chave = `${Math.round(k.x / 4)},${Math.round(k.y / 3)},${Math.round(k.vy / 80)},${k.noChao ? 1 : 0},${k.sobre},${k.pulaAntes ? 1 : 0}`;
         if (!vistos.has(chave)) vistos.set(chave, filho);
       }

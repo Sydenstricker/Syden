@@ -83,6 +83,11 @@ function nomeDaManobra(t: T, nome: string): string {
       return t('Salto da rampa da esquerda');
     case 'gap:quarter':
       return t('Salto até o quarter');
+    // os da Quadra (24/11/2026); o 'caixa' dela é o mesmo nome do parque
+    case 'gap:caixote':
+      return t('Salto por cima da caixa');
+    case 'gap:corrimao':
+      return t('Salto até o corrimão');
     default:
       return nome;
   }
@@ -110,7 +115,7 @@ function textoDoObjetivo(t: T, o: Objetivo, conjunto = 0): string {
 }
 
 /** O nome de uma pista. */
-const nomeDaPista = (t: T, id: string) => (id === 'praca-1' ? t('Praça') : t('Parque'));
+const nomeDaPista = (t: T, id: string) => (id === 'praca-1' ? t('Praça') : id === 'quadra-1' ? t('Quadra') : t('Parque'));
 
 /** A lista dos objetivos, com o ✓ dos cumpridos (sem pressão: o que falta só fica sem o ✓). */
 function ListaDeObjetivos({ lista, conjunto = 0 }: { lista: Objetivo[]; conjunto?: number }) {

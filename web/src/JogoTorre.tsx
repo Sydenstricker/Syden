@@ -1,6 +1,6 @@
-import { Trophy } from 'lucide-react';
+import { Infinity as SemFim, Trophy } from 'lucide-react';
 import { ComandosDoJogo } from './ComandosDosJogos';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { tempoLegivel } from './corrida/fisica';
 import { chave, useT } from './i18n';
@@ -10,7 +10,7 @@ import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
 import { H, W } from './plataforma/desenho';
 import { guardarPosicaoDoRival, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './plataforma/laco';
-import { Bloco, COLUNAS, COPA_DO_CELEIRO, MEDALHAS_DA_TORRE, medalhaDaTorre, TEMPO_DO_PILOTO, TORRES, TORRES_DA_COPA, torrePorId, type Torre } from './torre/fases';
+import { Bloco, COLUNAS, COPA_DO_CELEIRO, MEDALHAS_DA_TORRE, medalhaDaTorre, SEM_FIM, TEMPO_DO_PILOTO, TORRES, TORRES_DA_COPA, torrePorId, torreSemFim, type Torre } from './torre/fases';
 import type { Comandos } from './torre/fisica';
 import { rodarTorre } from './torre/laco';
 import { nomeDaTorre } from './torre/nomes';
@@ -51,7 +51,12 @@ export interface EstadoTorre {
     tempoMs: number;
     recorde: boolean;
     anterior: number | null;
+    /** Na subida sem fim (24/11/2026): os andares que o servidor contou; `anterior` é o recorde de andares. */
+    andares?: number;
   } | null;
+  /** A subida sem fim: a semente da torre de agora (o servidor sorteia) e o recorde de andares. */
+  semente?: number | null;
+  recordeSemFim?: number | null;
   // a sala
   pilotos?: {
     userId: number;
@@ -169,27 +174,32 @@ function BotoesDeToque({ controles }: { controles: ReturnType<typeof useControle
 }
 
 function usePlacar() {
-  const [placar, setPlacar] = useState({ ms: 0, pausado: false, quedas: 0 });
-  const atualizar = (p: { ms: number; pausado: boolean; quedas: number }) =>
-    setPlacar((a) => (Math.floor(a.ms / 10) === Math.floor(p.ms / 10) && a.pausado === p.pausado && a.quedas === p.quedas ? a : p));
+  const [placar, setPlacar] = useState<{ ms: number; pausado: boolean; quedas: number; andares?: number }>({ ms: 0, pausado: false, quedas: 0 });
+  const atualizar = (p: { ms: number; pausado: boolean; quedas: number; andares?: number }) =>
+    setPlacar((a) => (Math.floor(a.ms / 10) === Math.floor(p.ms / 10) && a.pausado === p.pausado && a.quedas === p.quedas && a.andares === p.andares ? a : p));
   return [placar, atualizar] as const;
 }
 
-function Placar({ placar }: { placar: { ms: number; quedas: number } }) {
+function Placar({ placar }: { placar: { ms: number; quedas: number; andares?: number } }) {
   return (
     <div className="pulo-placar" aria-live="off">
+      {placar.andares !== undefined && <strong aria-hidden="true">⬆ {placar.andares}</strong>}
       <span className="corrida-relogio">{tempoLegivel(placar.ms)}</span>
       {placar.quedas > 0 && <span aria-hidden="true">✖ {placar.quedas}</span>}
     </div>
   );
 }
 
-function Comandos({ solo = false }: { solo?: boolean }) {
+function Comandos({ solo = false, semFim = false }: { solo?: boolean; semFim?: boolean }) {
   const t = useT();
   return (
     <>
       <ComandosDoJogo itens={[{ teclas: ['setas-lado'], rotulo: t('Andar') }, { teclas: ['espaco'], rotulo: t('Pular') }, ...(solo ? [comandoDaPausa(t)] : [])]} />
-      <p className="settings-hint">{t('Suba até o cata-vento. O que cai e os corvos levam de volta ao último andar.')}</p>
+      <p className="settings-hint">
+        {semFim
+          ? t('Suba o quanto puder: a água vem subindo atrás. O que cai e os corvos levam de volta ao último andar.')
+          : t('Suba até o cata-vento. O que cai e os corvos levam de volta ao último andar.')}
+      </p>
     </>
   );
 }
@@ -378,7 +388,9 @@ function TorreDaSala(props: {
 function TorreSolo({ estado, eu, agir }: { estado: EstadoTorre & Partida; eu: number; agir: Agir }) {
   const t = useT();
   const recordes = estado.recordes ?? [];
-  const def = torrePorId(estado.pista);
+  const semFim = estado.pista === SEM_FIM;
+  // a torre sem fim é a da semente que o servidor sorteou para esta subida
+  const def = useMemo(() => (semFim && estado.semente ? torreSemFim(estado.semente) : torrePorId(estado.pista)), [semFim, estado.semente, estado.pista]);
   const [escolhidos, setEscolhidos] = useState<Set<number> | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [quedas, setQuedas] = useState(0);
@@ -397,7 +409,7 @@ function TorreSolo({ estado, eu, agir }: { estado: EstadoTorre & Partida; eu: nu
     setErro(null);
     agir(corpo).catch((e) => setErro((e as Error).message));
   };
-  const correr = () => tentar({ tipo: 'correr', fantasmas: [...marcados] });
+  const correr = () => tentar({ tipo: 'correr', fantasmas: semFim ? [] : [...marcados] });
   const alternar = (id: number) => {
     const n = new Set(marcados);
     if (n.has(id)) n.delete(id);
@@ -428,7 +440,29 @@ function TorreSolo({ estado, eu, agir }: { estado: EstadoTorre & Partida; eu: nu
               </button>
             </li>
           ))}
+          {/* a subida sem fim (24/11/2026): uma torre nova a cada vez, até a água alcançar */}
+          <li>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={semFim}
+              className={`torre-botao torre-copa${semFim ? ' escolhida' : ''}`}
+              onClick={() => !semFim && tentar({ tipo: 'pista', pista: SEM_FIM })}
+            >
+              <span className="torre-copa-figura" aria-hidden="true">
+                <SemFim size={28} />
+              </span>
+              <strong>{nomeDaTorre(t, SEM_FIM)}</strong>
+            </button>
+          </li>
         </ul>
+        {semFim ? (
+          <div className="corrida-pista-nome">
+            {estado.recordeSemFim != null && <span>{t('Seu recorde: {tempo}', { tempo: `⬆ ${estado.recordeSemFim}` })}</span>}
+            <Comandos solo semFim />
+          </div>
+        ) : (
+        <>
         <div className="corrida-pista-nome">
           {meu && (
             <span>
@@ -460,6 +494,8 @@ function TorreSolo({ estado, eu, agir }: { estado: EstadoTorre & Partida; eu: nu
           )}
           {outros.length === 0 && <p className="settings-hint">{t('Nenhum amigo subiu esta torre ainda.')}</p>}
         </fieldset>
+        </>
+        )}
         <div className="minijogo-acoes">
           <button type="button" className="btn-primary" onClick={correr}>
             {t('Começar')}
@@ -478,10 +514,23 @@ function TorreSolo({ estado, eu, agir }: { estado: EstadoTorre & Partida; eu: nu
         {estado.fase === 'resultado' && r && (
           <div className="corrida-fim">
             {r.recorde && <strong className="corrida-recorde">{t('Novo recorde!')}</strong>}
-            <span className="corrida-relogio grande">{tempoLegivel(r.tempoMs)}</span>
-            <MedalhasDaTorre torre={estado.pista} tempoMs={r.tempoMs} />
+            {r.andares !== undefined ? (
+              <>
+                <span className="corrida-relogio grande">⬆ {r.andares}</span>
+                <span className="corrida-relogio">{tempoLegivel(r.tempoMs)}</span>
+              </>
+            ) : (
+              <>
+                <span className="corrida-relogio grande">{tempoLegivel(r.tempoMs)}</span>
+                <MedalhasDaTorre torre={estado.pista} tempoMs={r.tempoMs} />
+              </>
+            )}
             {quedas > 0 && <span aria-hidden="true">✖ {quedas}</span>}
-            {!r.recorde && r.anterior !== null && <span className="settings-hint">{t('Seu recorde: {tempo}', { tempo: tempoLegivel(r.anterior) })}</span>}
+            {!r.recorde && r.anterior !== null && (
+              <span className="settings-hint">
+                {r.andares !== undefined ? t('Seu recorde: {tempo}', { tempo: `⬆ ${r.anterior}` }) : t('Seu recorde: {tempo}', { tempo: tempoLegivel(r.anterior) })}
+              </span>
+            )}
             <div className="minijogo-acoes">
               <button type="button" className="btn-primary" onClick={correr}>
                 {t('Jogar de novo')}
@@ -493,7 +542,7 @@ function TorreSolo({ estado, eu, agir }: { estado: EstadoTorre & Partida; eu: nu
           </div>
         )}
       </div>
-      {estado.fase === 'correndo' && <Comandos solo />}
+      {estado.fase === 'correndo' && <Comandos solo semFim={semFim} />}
       {erro && <p className="form-error small">{erro}</p>}
     </div>
   );
@@ -540,6 +589,18 @@ function SubidaSolo({
       })),
       contagem: CONTAGEM,
       calmo: menosMovimento(),
+      // a subida sem fim: no fim, os comandos vão ao servidor, que refaz a subida e conta os andares
+      semFim:
+        estado.pista === SEM_FIM && estado.semente
+          ? {
+              semente: estado.semente,
+              aoFim: (entradas) => {
+                setAcabou(true);
+                aoQuedas(quedas.current);
+                agir({ tipo: 'chegada', entradas }).catch((e) => aoErro((e as Error).message));
+              },
+            }
+          : undefined,
       aoPlacar: (p) => {
         quedas.current = p.quedas;
         setPlacar(p);

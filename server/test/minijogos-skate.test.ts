@@ -277,3 +277,24 @@ test('21/11/2026: o segundo conjunto de objetivos no Solo: a sessão é refeita 
   assert.equal(outro.jogo.acao(anaId, { tipo: 'pista', pista: 'praca-1', conjunto: 7 }), null);
   assert.equal(outro.jogo.publico(anaId).conjunto, 0);
 });
+
+test('24/11/2026: a Quadra (a terceira pista) no Solo: o recorde dela na tabela comum, como a praça', () => {
+  const { jogo } = comecar([anaId], { solo: true });
+  assert.equal(jogo.acao(anaId, { tipo: 'pista', pista: 'quadra-1' }), null);
+  assert.equal(jogo.publico(anaId).pista, 'quadra-1');
+  const g = fisica.gravador();
+  const k = fisica.novoSkatista(2);
+  const piloto = criarPiloto();
+  while (!k.terminou) {
+    const c = piloto(k);
+    g.anotar(c);
+    fisica.passo(k, c);
+  }
+  agora += ((k.passo / 60) * 1000) | 0;
+  assert.equal(jogo.acao(anaId, { tipo: 'fim', entradas: g.entradas }), null);
+  const p = jogo.publico(anaId) as unknown as { objetivos: { id: string; feito: boolean }[]; placar: { pontos: number }[] };
+  assert.equal(p.placar[0].pontos, k.pontos);
+  assert.deepEqual(p.objetivos, fisica.objetivos(k));
+  assert.ok(p.objetivos.some((o) => o.id === 'gap:caixote'));
+  assert.equal(db.recordeDoSolo(anaId, 'skate', 'quadra-1')?.valor, k.pontos);
+});
