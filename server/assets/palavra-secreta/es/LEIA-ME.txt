@@ -1,0 +1,14 @@
+A Palavra secreta em ESPANHOL (24/11/2026)
+
+- sorteio.txt, sorteio-4.txt, sorteio-6.txt: as palavras que podem SAIR. NOSSAS, escritas para o Syden (comuns, sem nome
+  próprio, sem palavrão), com o acento, cada uma conferida contra o dicionário abaixo.
+- validas.txt, validas-4.txt, validas-6.txt: as que se pode CHUTAR, tiradas dos dicionários do RLA-ES (Santiago Bosio e
+  colaboradores), os do LibreOffice, juntando as variantes es_ES, es_MX, es_AR, es_CO, es_CL, es_PE, es_VE e es_US, pelo
+  server/scripts/palavras-do-vero.py:
+    python -I palavras-do-vero.py validas.txt 5 --final --lingua=es --dic=es_ES --dic=es_MX --dic=es_AR --dic=es_CO --dic=es_CL --dic=es_PE --dic=es_VE --dic=es_US
+  Fonte: https://github.com/LibreOffice/dictionaries/tree/master/es (versão 2.9 da extensão, commit
+  c0865a85eb67dc377f2cf8e8fe2c4fa9e53f0dcb, baixados em 24/11/2026).
+- Licença: o RLA-ES é TRIPLA e disjunta (GPLv3+, LGPLv3+ ou MPL 1.1+, à escolha de quem usa; LICENCA.md, ao lado). O Syden
+  usa a LGPLv3 / MPL 1.1 (nunca a GPL). O leia-me original está em LEIA-ME-hunspell-es.txt.
+- A chave: sem acento (á → a, ü → u), mas o Ñ é uma letra à parte, como nos jogos de palavra em espanhol ("niño" não é
+  "nino"). Fica só no servidor.

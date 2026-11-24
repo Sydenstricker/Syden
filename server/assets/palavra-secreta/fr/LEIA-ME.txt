@@ -1,0 +1,14 @@
+A Palavra secreta em FRANCÊS (24/11/2026)
+
+- sorteio.txt, sorteio-4.txt, sorteio-6.txt: as palavras que podem SAIR. NOSSAS, escritas para o Syden (comuns, sem nome
+  próprio, sem palavrão), com o acento, cada uma conferida contra o dicionário abaixo.
+- validas.txt, validas-4.txt, validas-6.txt: as que se pode CHUTAR, tiradas do dicionário francês "Classique" do Grammalecte
+  (Olivier R. e colaboradores), o do LibreOffice, pelo server/scripts/palavras-do-vero.py:
+    python -I palavras-do-vero.py validas.txt 5 --final --lingua=fr --dic=fr
+  Fonte: https://github.com/LibreOffice/dictionaries/tree/master/fr_FR/dictionaries (fr.aff e fr.dic, versão 7.7, commit
+  c0865a85eb67dc377f2cf8e8fe2c4fa9e53f0dcb, baixados em 24/11/2026).
+  Ficam fora as palavras marcadas NOSUGGEST e FORBIDDENWORD, as raízes NEEDAFFIX sozinhas e uma lista curta de ofensas (no
+  script).
+- Licença: Mozilla Public License 2.0 (http://www.mozilla.org/MPL/2.0/). O leia-me original está em LEIA-ME-dict-fr.txt. As
+  listas daqui são uma forma derivada (só as palavras de 4 a 6 letras, sem acento na chave); a fonte é a do link acima.
+- A chave: sem acento, o ç vira c; as palavras com œ ou æ ficam de fora. Fica só no servidor.

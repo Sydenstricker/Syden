@@ -1,0 +1,14 @@
+A Palavra secreta em INGLÊS (24/11/2026)
+
+- sorteio.txt, sorteio-4.txt, sorteio-6.txt: as palavras que podem SAIR. NOSSAS, escritas para o Syden (comuns, sem nome
+  próprio, sem palavrão), cada uma conferida contra o dicionário abaixo.
+- validas.txt, validas-4.txt, validas-6.txt: as que se pode CHUTAR, tiradas do dicionário en_US do hunspell, o do
+  LibreOffice (derivado do SCOWL, de Kevin Atkinson), pelo server/scripts/palavras-do-vero.py:
+    python -I palavras-do-vero.py validas.txt 5 --final --lingua=en --dic=en_US
+  Fonte: https://github.com/LibreOffice/dictionaries/tree/master/en (en_US.aff e en_US.dic, versão 2025.04.01 da
+  extensão, commit c0865a85eb67dc377f2cf8e8fe2c4fa9e53f0dcb, baixados em 24/11/2026).
+  Ficam fora as palavras que o próprio dicionário marca para nunca sugerir (NOSUGGEST: os palavrões e as ofensas) e uma
+  lista curta de ofensas que ele deixa passar (no script).
+- Licença: a do SCOWL, permissiva (no estilo MIT/BSD: usar, copiar, modificar, distribuir e vender, mantendo o aviso de
+  copyright), e a do affix file, a BSD do Ispell de Geoff Kuenning. O aviso inteiro está em LEIA-ME-en_US.txt, ao lado.
+- A chave é só a-z (sem acento). Fica só no servidor: o site manda o chute e recebe as cores.

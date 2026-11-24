@@ -9,6 +9,12 @@ import './jogosDePalavras.css';
 const PALAVRA_MS = 3 * 60_000;
 const PALAVRA_SOLO_MS = 10 * 60_000;
 const TECLADO = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
+/** O teclado da tela no espanhol (24/11/2026): o Ñ é uma letra à parte, no fim da fileira do meio, como no teclado de lá. */
+const TECLADO_ES = ['qwertyuiop', 'asdfghjklñ', 'zxcvbnm'];
+/** E no francês, o AZERTY, o teclado de lá (as letras são as mesmas a-z). */
+const TECLADO_FR = ['azertyuiop', 'qsdfghjklm', 'wxcvbn'];
+/** E no alemão, o QWERTZ (só a-z: o Ä do teclado do computador vira AE, como no servidor). */
+const TECLADO_DE = ['qwertzuiop', 'asdfghjkl', 'yxcvbnm'];
 const CLASSE = ['nao-tem', 'outro-lugar', 'no-lugar'];
 
 /** O que o servidor de 19/11/2026 manda a mais: o dueto e o quarteto, o modo difícil e a sequência do Solo. */
@@ -22,15 +28,21 @@ type EstadoPalavraNovo = Omit<EstadoPalavra, 'meu' | 'outros'> & {
   palavrasReveladas?: string[] | null;
   outros: (EstadoPalavra['outros'][number] & { coresTodas?: number[][][] })[];
   sequencia?: { atual: number; recorde: number | null; novo: boolean } | null;
+  /** O idioma das palavras (pt, en, es, fr ou de; 24/11/2026). Servidor antigo: português. */
+  idioma?: string;
 };
 
-/** Sem acento e em minúscula: é assim que o servidor confere o chute. */
-const limpar = (texto: string) =>
-  texto
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/ç/g, 'c');
+/**
+ * Sem acento e em minúscula: é assim que o servidor confere o chute (chaveDe em server/src/minijogo-palavra.ts). No espanhol o
+ * ñ fica, porque lá ele é outra letra; no alemão, ä ö ü ß viram ae oe ue ss.
+ */
+const limpar = (texto: string, idioma = 'pt') => {
+  let t = texto.normalize('NFC').toLowerCase();
+  if (idioma === 'de') t = t.replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss');
+  if (idioma === 'es') t = t.replace(/ñ/g, '\uE000');
+  t = t.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return t.replace(/\uE000/g, 'ñ').replace(/ç/g, 'c');
+};
 
 /** As cores de um chute para cada palavra (servidor antigo: só a primeira). */
 const coresDe = (c: { cores: number[]; coresTodas?: number[][] }) => c.coresTodas ?? [c.cores];
@@ -62,6 +74,10 @@ export function JogoPalavra({
   const estado = estadoBase as unknown as EstadoPalavraNovo & Partida;
   const nPalavras = estado.palavras ?? 1;
   const n = estado.letras ?? 5;
+  const idioma = estado.idioma ?? 'pt';
+  // (no alemão uma tecla pode dar duas letras: Ä é AE)
+  const letra = idioma === 'es' ? /^[a-zñ]$/ : idioma === 'de' ? /^[a-z]{1,2}$/ : /^[a-z]$/;
+  const teclado = idioma === 'es' ? TECLADO_ES : idioma === 'fr' ? TECLADO_FR : idioma === 'de' ? TECLADO_DE : TECLADO;
   const resolvidas = estado.resolvidas ?? [estado.acertei ? estado.meu.length : null];
   const [escrito, setEscrito] = useState('');
   // Um chute por vez (revisão de 16/10/2026): Enter segurado, ou duas vezes com a internet lenta, mandava o mesmo
@@ -97,7 +113,7 @@ export function JogoPalavra({
         void Promise.resolve(agir({ tipo: 'chute', texto: escrito })).finally(() => setEnviando(false));
       }
     } else if (k === 'Backspace') setEscrito((e) => e.slice(0, -1));
-    else if (/^[a-z]$/.test(k)) setEscrito((e) => (e.length < n ? e + k : e));
+    else if (letra.test(k)) setEscrito((e) => (e.length + k.length <= n ? e + k : e));
   };
 
   useEffect(() => {
@@ -110,8 +126,9 @@ export function JogoPalavra({
       const alvo = e.target as HTMLElement | null;
       if (alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.tagName === 'SELECT' || alvo.isContentEditable)) return;
       if (alvo && e.key === 'Enter' && (alvo.tagName === 'BUTTON' || alvo.tagName === 'A')) return;
-      const k = e.key === 'Enter' || e.key === 'Backspace' ? e.key : limpar(e.key);
-      if (k === 'Enter' || k === 'Backspace' || /^[a-z]$/.test(k)) {
+      // (as teclas com nome, como Shift ou F1, têm mais de um caractere: só as de letra viram chute)
+      const k = e.key === 'Enter' || e.key === 'Backspace' ? e.key : e.key.length === 1 ? limpar(e.key, idioma) : '';
+      if (k === 'Enter' || k === 'Backspace' || letra.test(k)) {
         e.preventDefault();
         tecla(k);
       }
@@ -145,7 +162,7 @@ export function JogoPalavra({
   for (const c of estado.meu) {
     coresDe(c).forEach((cs, b) => {
       if (cs.length !== n || (nPalavras > 1 && resolvidas[b] !== null)) return;
-      [...limpar(c.texto)].forEach((letra, i) => corDaTecla.set(letra, Math.max(corDaTecla.get(letra) ?? -1, cs[i])));
+      [...limpar(c.texto, idioma)].forEach((letra, i) => corDaTecla.set(letra, Math.max(corDaTecla.get(letra) ?? -1, cs[i])));
     });
   }
 
@@ -189,7 +206,7 @@ export function JogoPalavra({
       </p>
       {chutando && (
         <div className="palavra-teclado">
-          {TECLADO.map((fileira, f) => (
+          {teclado.map((fileira, f) => (
             <div key={fileira}>
               {f === 2 && (
                 <button type="button" className="larga" onClick={() => tecla('Enter')}>

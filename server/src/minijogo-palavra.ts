@@ -15,7 +15,7 @@ import { guardarRecordeDoSolo, lerRecordeDoSolo } from './recorde-solo-tardio.js
  *   é a palavra sem acento e, quando a grafia é uma só e tem acento, a grafia certa depois do tab.
  * Como no Termo, os acentos não contam: escreve-se "aviao", e a tela mostra "avião".
  *
- * Por enquanto só em português: o dicionário é o que decide se um idioma pode ter o jogo, e tradução não produz um.
+ * O dicionário é o que decide se um idioma pode ter o jogo, e tradução não produz um. Ver IDIOMAS, abaixo.
  */
 
 const PASTA = new URL('../assets/palavra-secreta/', import.meta.url);
@@ -30,6 +30,44 @@ export const TAMANHOS = [4, 5, 6] as const;
 export type Tamanho = (typeof TAMANHOS)[number];
 export const TAMANHO_PADRAO: Tamanho = 5;
 const sufixo = (n: Tamanho) => (n === TAMANHO_PADRAO ? '' : `-${n}`);
+
+/**
+ * OS IDIOMAS (24/11/2026, o lote E da segunda auditoria): português, inglês, espanhol e francês, escolhidos na largada. Cada um tem as
+ * listas dele numa pasta (o português na raiz de server/assets/palavra-secreta/, os outros em en/, es/, fr/ e de/, cada um com o leia-me
+ * e a licença do dicionário): as que SAEM são NOSSAS, e as que se CHUTAM vêm de um corretor do LibreOffice pelo mesmo script
+ * (server/scripts/palavras-do-vero.py com --lingua). O inglês é o en_US (SCOWL, licença permissiva); o espanhol, o RLA-ES
+ * (GPL/LGPL/MPL à escolha: usamos a LGPL/MPL); o francês, o Grammalecte (MPL 2.0). O ALEMÃO não tem corretor que sirva (o
+ * igerman98 é GPL, ou a OASIS, que não deixa modificar e só vale para programas de documentos ODF): os chutes vêm da wortliste
+ * do projeto Trennmuster (MIT), por server/scripts/palavras-do-alemao.mjs, e a chave é só a-z (ä → ae, ß → ss). O italiano
+ * ficou de fora (o corretor e o thesaurus são GPL 3; o Morph-it! tem a licença ambígua).
+ * Quem começa escolhe; sem escolha, o português. O recorde e a sequência do Solo são à parte por idioma (a variante ganha
+ * "~en", "~es"…; o português continua na de sempre).
+ */
+export const IDIOMAS = ['pt', 'en', 'es', 'fr', 'de'] as const;
+export type IdiomaDaPalavra = (typeof IDIOMAS)[number];
+export const IDIOMA_PADRAO: IdiomaDaPalavra = 'pt';
+/** "en-US", "es-419", "pt-BR" → o idioma do jogo; qualquer outro, o português. */
+export const idiomaDaPalavra = (x: unknown): IdiomaDaPalavra => {
+  const base = String(x ?? '').toLowerCase().split(/[-_]/)[0];
+  return (IDIOMAS as readonly string[]).includes(base) ? (base as IdiomaDaPalavra) : IDIOMA_PADRAO;
+};
+/** As letras de cada idioma, já na chave: o ç do português vira c; o ñ do espanhol é uma letra à parte. */
+const LETRAS: Record<IdiomaDaPalavra, string> = { pt: 'a-z', en: 'a-z', es: 'a-zñ', fr: 'a-z', de: 'a-z' };
+/**
+ * A chave de um texto: em minúscula e sem acento, como no Termo. No espanhol o ñ fica (é outra letra: "niño" não é "nino"),
+ * e o ü vira u; no português o ç vira c.
+ */
+export function chaveDe(texto: string, idioma: IdiomaDaPalavra = IDIOMA_PADRAO): string {
+  let t = texto.normalize('NFC').toLowerCase();
+  // no alemão, as letras com trema e o ß viram duas (BÄR é BAER), como nos jogos de palavra em alemão que usam só a-z
+  if (idioma === 'de') t = t.replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss');
+  // (o ñ se esconde num caractere de uso privado enquanto os acentos saem)
+  if (idioma === 'es') t = t.replace(/ñ/g, ESCONDIDO);
+  t = t.normalize('NFD').replace(/\p{Mn}/gu, '');
+  return t.split(ESCONDIDO).join('ñ').replace(/ç/g, 'c');
+}
+const ESCONDIDO = String.fromCharCode(0xe000);
+const pastaDo = (idioma: IdiomaDaPalavra) => (idioma === 'pt' ? '' : `${idioma}/`);
 const lerLinhas = (arquivo: string) =>
   readFileSync(new URL(arquivo, PASTA), 'utf8')
     .split('\n')
@@ -48,21 +86,35 @@ interface Dicionario {
   grafia: Map<string, string>;
   /** A grafia da palavra SORTEADA (a nossa, com acento) vale para quem chuta essa mesma palavra. */
   sorteada: Map<string, string>;
+  /**
+   * As palavras que saem com MAIS DE UMA GRAFIA para a mesma chave ("vovó" e "vovô": o jogo ignora o acento, as duas são VOVO).
+   * Sai uma vez só (antes, o dobro de chance), e a revelação mostra as duas: "vovó / vovô" (a barra, porque o " · " já separa as palavras do dueto na tela). (24/11/2026)
+   */
+  revelada: Map<string, string>;
 }
-function lerDicionario(n: Tamanho): Dicionario {
-  const sorteio = lerLinhas(`sorteio${sufixo(n)}.txt`);
+function lerDicionario(n: Tamanho, idioma: IdiomaDaPalavra = IDIOMA_PADRAO): Dicionario {
+  const linhas = lerLinhas(`${pastaDo(idioma)}sorteio${sufixo(n)}.txt`);
+  const grafias = new Map<string, string[]>();
+  for (const p of linhas) grafias.set(chaveDe(p, idioma), [...(grafias.get(chaveDe(p, idioma)) ?? []), p]);
+  const sorteio = [...grafias.values()].map((gs) => gs[0]);
+  const revelada = new Map([...grafias].filter(([, gs]) => gs.length > 1).map(([k, gs]) => [k, gs.join(' / ')]));
   const grafia = new Map<string, string>();
-  for (const linha of lerLinhas(`validas${sufixo(n)}.txt`)) {
+  for (const linha of lerLinhas(`${pastaDo(idioma)}validas${sufixo(n)}.txt`)) {
     const [chave, g] = linha.split('\t');
     grafia.set(chave, g ?? chave);
   }
   // Antes a grafia sorteada sobrescrevia a do dicionário, e outra palavra válida com as mesmas letras ("avos" contra a
   // sorteada "avós") aparecia com o acento errado: agora ela só vale para quem chuta a sorteada.
-  const sorteada = new Map(sorteio.map((p) => [semAcento(p).replace(/ç/g, 'c'), p]));
+  const sorteada = new Map(sorteio.map((p) => [chaveDe(p, idioma), p]));
   for (const [chave, p] of sorteada) if (!grafia.has(chave)) grafia.set(chave, p);
-  return { sorteio, grafia, sorteada };
+  return { sorteio, grafia, sorteada, revelada };
 }
-export const DICIONARIOS = Object.fromEntries(TAMANHOS.map((n) => [n, lerDicionario(n)])) as Record<Tamanho, Dicionario>;
+/** Os de cada idioma e tamanho. */
+export const DICIONARIOS_POR_IDIOMA = Object.fromEntries(
+  IDIOMAS.map((idioma) => [idioma, Object.fromEntries(TAMANHOS.map((n) => [n, lerDicionario(n, idioma)]))]),
+) as Record<IdiomaDaPalavra, Record<Tamanho, Dicionario>>;
+/** Os do português (o nome de sempre, para os testes). */
+export const DICIONARIOS = DICIONARIOS_POR_IDIOMA.pt;
 /** A frase de cada tamanho escrita inteira: o site traduz o erro pela frase exata (web/src/errosDoServidor.ts). */
 const ERRO_DO_TAMANHO: Record<Tamanho, string> = {
   4: 'Escreva uma palavra de 4 letras.',
@@ -79,7 +131,8 @@ export const PALAVRA_MS = 3 * 60_000;
 export const REVELACAO_MS = 6_000;
 
 /** É uma palavra que se pode chutar? */
-export const valida = (chave: string, n: Tamanho = TAMANHO_PADRAO) => DICIONARIOS[n].grafia.has(chave);
+export const valida = (chave: string, n: Tamanho = TAMANHO_PADRAO, idioma: IdiomaDaPalavra = IDIOMA_PADRAO) =>
+  DICIONARIOS_POR_IDIOMA[idioma][n].grafia.has(chave);
 
 /**
  * As cores de um chute, como no Termo: 2 = letra no lugar, 1 = a letra existe noutro lugar, 0 = não existe. A letra
@@ -170,22 +223,23 @@ export const palavra: Definicao = {
     const modo: ModoDaPalavra = String(corpo.modo) in PALAVRAS_POR_MODO ? (String(corpo.modo) as ModoDaPalavra) : 'normal';
     const dificil = corpo.dificil === true;
     const letras: Tamanho = (TAMANHOS as readonly number[]).includes(Number(corpo.letras)) ? (Number(corpo.letras) as Tamanho) : TAMANHO_PADRAO;
-    const dic = DICIONARIOS[letras];
+    const idioma = idiomaDaPalavra(corpo.idioma);
+    const dic = DICIONARIOS_POR_IDIOMA[idioma][letras];
     const porRodada = PALAVRAS_POR_MODO[modo];
     const maxChutes = CHUTES_POR_MODO[modo];
     const rodadas = ctx.solo ? 1 : RODADAS_PALAVRA;
     const tempo = ctx.solo ? PALAVRA_SOLO_MS : PALAVRA_MS;
     if (dic.sorteio.length < rodadas * porRodada) return 'As palavras não estão no servidor.';
     const sorteadas = _teste.palavras ?? embaralhar([...dic.sorteio]).slice(0, rodadas * porRodada);
-    const largada = { modo, dificil, letras };
+    const largada = { modo, dificil, letras, idioma };
     let rodada = 1;
     let fase: 'chutando' | 'revelando' | 'fim' = 'chutando';
     let inicio = Date.now();
     const quadros = new Map<number, Quadro>();
     const pontos = new Map(naSala.map((id) => [id, 0]));
     // A sequência do Solo (ver SESSAO_MS): mostrada desde o começo, e decidida no fim.
-    // a de 5 letras continua na variante de sempre; a de 4 e a de 6 têm a delas
-    const doTamanho = letras === TAMANHO_PADRAO ? '' : `@${letras}`;
+    // a de 5 letras continua na variante de sempre; a de 4 e a de 6 têm a delas; e cada idioma fora o português, a dele
+    const doTamanho = (letras === TAMANHO_PADRAO ? '' : `@${letras}`) + (idioma === IDIOMA_PADRAO ? '' : `~${idioma}`);
     const chaveDaSequencia = `${criadaPor}:${modo}${dificil ? ':dificil' : ''}${doTamanho}`;
     const varianteDoRecorde = `${modo}${dificil ? ':dificil' : ''}${doTamanho}`;
     let sequencia: { atual: number; recorde: number | null; novo: boolean } | null = null;
@@ -205,7 +259,9 @@ export const palavra: Definicao = {
       return [...quadros.entries()].every(([id, x]) => x.acertouEm !== null || x.chutes.length >= maxChutes || !naSalaAgora.includes(id));
     };
     const daRodada = () => sorteadas.slice((rodada - 1) * porRodada, rodada * porRodada);
-    const secretas = () => daRodada().map((p) => semAcento(p).replace(/ç/g, 'c'));
+    const secretas = () => daRodada().map((p) => chaveDe(p, idioma));
+    /** As palavras da rodada como a revelação mostra (com as duas grafias, quando a chave tem duas). */
+    const reveladas = () => daRodada().map((p) => dic.revelada.get(chaveDe(p, idioma)) ?? p);
     const quadroNovo = (): Quadro => ({ chutes: [], resolvidas: Array<number | null>(porRodada).fill(null), acertouEm: null });
 
     function novaRodada() {
@@ -267,14 +323,15 @@ export const palavra: Definicao = {
           letras,
           dificil,
           modo,
+          idioma,
           largada,
           // O meu quadro com as letras; dos outros, só as cores. `cores` é a da primeira palavra (a tela de antes do dueto).
           meu: (meu?.chutes ?? []).map((c) => ({ texto: c.texto, cores: c.cores[0] ?? [], coresTodas: c.cores })),
           resolvidas: meu?.resolvidas ?? Array<number | null>(porRodada).fill(null),
           acertei: meu !== undefined && meu.acertouEm !== null,
           // A palavra COM acento (a nossa grafia: "avião", "dança").
-          palavra: aberta ? daRodada()[0] : null,
-          palavrasReveladas: aberta ? daRodada() : null,
+          palavra: aberta ? reveladas()[0] : null,
+          palavrasReveladas: aberta ? reveladas() : null,
           outros: [...quadros.entries()].map(([userId, q]) => ({
             userId,
             username: ctx.nome(userId),
@@ -291,10 +348,9 @@ export const palavra: Definicao = {
       acao(quem, corpo) {
         if (corpo.tipo !== 'chute') return 'Ação desconhecida.';
         if (fase !== 'chutando') return 'Esta rodada já acabou.';
-        const chave = semAcento(String(corpo.texto ?? '').trim());
-        if (!new RegExp(`^[a-zç]{${letras}}$`).test(chave)) return ERRO_DO_TAMANHO[letras];
-        const limpa = chave.replace(/ç/g, 'c');
-        if (!valida(limpa, letras)) return 'Essa palavra não está na lista.';
+        const limpa = chaveDe(String(corpo.texto ?? '').trim(), idioma);
+        if (!new RegExp(`^[${LETRAS[idioma]}]{${letras}}$`).test(limpa)) return ERRO_DO_TAMANHO[letras];
+        if (!valida(limpa, letras, idioma)) return 'Essa palavra não está na lista.';
         let q = quadros.get(quem);
         if (!q) {
           q = quadroNovo();

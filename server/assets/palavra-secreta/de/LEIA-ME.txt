@@ -1,0 +1,16 @@
+A Palavra secreta em ALEMÃO (24/11/2026)
+
+- sorteio.txt, sorteio-4.txt, sorteio-6.txt: as palavras que podem SAIR. NOSSAS, escritas para o Syden (comuns, sem nome
+  próprio, sem palavrão), já na chave (ver abaixo), cada uma conferida contra a lista abaixo.
+- validas.txt, validas-4.txt, validas-6.txt: as que se pode CHUTAR, tiradas da WORTLISTE do projeto Trennmuster (Stephan
+  Hennig, Werner Lemberg, Günter Milde e outros), ~500 mil formas do alemão com as flexões, sob a licença MIT
+  (LICENSE-wortliste.txt, ao lado), pelo server/scripts/palavras-do-alemao.mjs:
+    node palavras-do-alemao.mjs wortliste validas.txt 5 th_de_DE_v2.dat
+  Fonte: https://repo.or.cz/wortliste.git (o arquivo `wortliste`, commit 09e5221e88047e22a4cdf1aea7c59dcb13e28ed2, de
+  04/11/2026, baixado em 24/11/2026).
+  O OpenThesaurus (Daniel Naber, LGPL 2.1+, o th_de_DE_v2.dat do LibreOffice) serviu SÓ de filtro: os termos que ele marca
+  como vulgares ou ofensivos (e nunca sem a marca) ficaram fora, com uma lista curta de ofensas do script. Nada dele está aqui.
+- Por que não o corretor do LibreOffice (igerman98/frami): GPL, ou a licença OASIS, que proíbe modificar e só vale para
+  programas de documentos ODF.
+- A CHAVE: minúscula, ä → ae, ö → oe, ü → ue, ß → ss; só a-z (BÄR é BAER, como nos jogos de palavra em alemão que usam só
+  a-z). A tela mostra a chave. Fica só no servidor.
