@@ -24,12 +24,21 @@
  * pista. Como os barcos da Regata, o servidor só diz QUANTOS (`robos` no público): cada computador da sala anda os mesmos
  * robôs pela mesma conta (web/src/corrida/robos.ts, no médio), desde o verde dele, e as pessoas largam na última fila da
  * grade. Os itens dos robôs pegam as pessoas pela regra de sempre (quem leva decide); um robô só é derrubado por item de
- * robô (o das pessoas chega a cada computador numa hora, e os robôs de um computador se separariam dos do outro). Os robôs
- * NÃO ENTRAM NA CLASSIFICAÇÃO do servidor: aparecem na ordem ao vivo da tela, e a posição, os pontos da copa, o pódio e os
- * troféus são só da turma (um robô não tira medalha de ninguém, e o servidor nem os vê).
+ * robô (o das pessoas chega a cada computador numa hora, e os robôs de um computador se separariam dos do outro).
+ *
+ * OS ROBÔS ENTRAM NA CLASSIFICAÇÃO (decisão dele, 24/11/2026): posição, pontos da copa e pódio contam com eles, e no troféu a
+ * pessoa guarda a posição real entre todos (o robô vai nos "contra quem" pelo nome de robô; troféu, só de pessoa). QUEM DIZ O
+ * TEMPO DO ROBÔ É A MAIORIA DOS COMPUTADORES: a física do kart usa seno e cosseno e mora no site (não há cópia no servidor), então
+ * o servidor não refaz a corrida do robô; cada computador que pilota manda, uma vez por segundo, a chegada (o passo, desde o
+ * verde dele) e o quanto cada robô andou (`tipo: 'robos'`), e o tempo que vale é o que MAIS computadores mandaram; no empate, o
+ * MENOR (quem mentisse o robô mais lento para passar na frente dele não ganha: o empate fica com o mais rápido, e o mais rápido
+ * pesa igual para todos). Como todos andam a mesma conta, o normal é todos mandarem o mesmo número. A chegada tem de caber no
+ * relógio (não antes de 3 voltas mínimas, nem depois do passo de quem a mandou, que não passa do relógio do servidor). Quem não
+ * chegou fica pelo quanto andou (a mediana do que os computadores mandaram). O prazo de 30 s só abre com a chegada de uma pessoa.
  */
 import * as db from './db.js';
-import { PISTAS, validarCorrida } from './corrida.js';
+import { PISTAS, validarCorrida, VOLTA_MINIMA } from './corrida.js';
+import { avatarDoPilotoRobo, nomeDoPilotoRobo } from './corrida-pilotos.js';
 import type { Definicao } from './minijogo-motor.js';
 
 const VOLTAS = 3;
@@ -168,8 +177,28 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
       const inscritos = [...naSala];
       /** Os robôs que completam a largada (quem convidou pediu): o mesmo número em toda corrida da copa. */
       const robos = corpo.robos === true ? Math.max(0, Math.min(KARTS_NA_SALA - 1, KARTS_NA_SALA - inscritos.length)) : 0;
+      /** Os ids dos robôs (−1, −2…, como os de web/src/corrida/robos.ts): sempre "na sala", com o nome e o avatar deles. */
+      const idsDosRobos = Array.from({ length: robos }, (_, i) => -(i + 1));
+      /**
+       * O QUE CADA COMPUTADOR DISSE DE CADA ROBÔ nesta corrida: a chegada (o passo, 0 = ainda corre) e o quanto andou. Ver o
+       * topo: vale a chegada que mais computadores mandaram (no empate, a menor).
+       */
+      let votos = new Map<number, Map<number, { chegada: number; andou: number }>>();
+      const resultadoDoRobo = (id: number): { tempoMs: number | null; andou: number } => {
+        const deles = [...(votos.get(id)?.values() ?? [])];
+        const contagem = new Map<number, number>();
+        for (const v of deles) if (v.chegada > 0) contagem.set(v.chegada, (contagem.get(v.chegada) ?? 0) + 1);
+        let melhor = 0, vezes = 0;
+        for (const [c, q] of contagem) if (q > vezes || (q === vezes && c < melhor)) [melhor, vezes] = [c, q];
+        if (melhor > 0) return { tempoMs: Math.round((melhor * 1000) / 60), andou: VOLTAS };
+        const andous = deles.map((v) => v.andou).sort((a, b) => a - b);
+        return { tempoMs: null, andou: andous.length ? andous[Math.floor((andous.length - 1) / 2)] : 0 };
+      };
       /** O coelho de cada um (o avatar pronto), lido uma vez: cada kart corre com as cores do seu. */
-      const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
+      const avatares = new Map<number, number | string | null>([...inscritos.map((id) => [id, db.avatarDoJogo(id)] as const), ...idsDosRobos.map((id) => [id, avatarDoPilotoRobo(id)] as const)]);
+      const nomeDe = (id: number) => (id < 0 ? nomeDoPilotoRobo(id) : ctx.nome(id));
+      /** Quem conta como "na sala": quem está, mais os robôs (que nunca saem). */
+      const naSalaComRobos = () => new Set([...ctx.naSala(), ...idsDosRobos]);
       let pilotos = new Map<number, Piloto>();
       /** Os itens desta corrida que o servidor carimbou, e os que já acertaram alguém: "acertou" só vale para um item de
        * verdade, uma vez (revisão de 03/11/2026: um "acertou" inventado sumia com o item dos outros). */
@@ -177,9 +206,9 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
       let itensQueAcertaram = new Set<string>();
       /** Quem correu cada corrida da copa até o fim dela, presente: só eles contam como "a turma" no troféu e na copa. */
       let correramTodas: Set<number> | null = null;
-      const pontos = new Map<number, number>(inscritos.map((id) => [id, 0]));
+      const pontos = new Map<number, number>([...inscritos, ...idsDosRobos].map((id) => [id, 0]));
       /** A soma dos tempos na copa: desempata os pontos (quem não chegou numa corrida não tem soma). */
-      const somas = new Map<number, number | null>(inscritos.map((id) => [id, 0]));
+      const somas = new Map<number, number | null>([...inscritos, ...idsDosRobos].map((id) => [id, 0]));
       const resultados: { pista: string; pilotos: Linha[] }[] = [];
       /** Quem estava na sala ao fechar a corrida atual (null enquanto ela corre: aí contam os presentes). */
       let ficaramNaCorrida: Set<number> | null = null;
@@ -189,8 +218,10 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
         o.tempoMs !== null && l.tempoMs !== null ? o.tempoMs < l.tempoMs : o.tempoMs !== null ? true : l.tempoMs === null && o.andou > l.andou;
 
       const classificacao = (): Linha[] => {
-        const linhas = [...pilotos.entries()]
-          .map(([userId, p]) => ({ userId, username: ctx.nome(userId), tempoMs: p.tempoMs, voltas: p.voltas, andou: p.andou }))
+        const linhas = [
+          ...[...pilotos.entries()].map(([userId, p]) => ({ userId, username: ctx.nome(userId), tempoMs: p.tempoMs, voltas: p.voltas, andou: p.andou })),
+          ...idsDosRobos.map((userId) => ({ userId, username: nomeDe(userId), voltas: [] as number[], ...resultadoDoRobo(userId) })),
+        ]
           .sort((a, b) =>
             a.tempoMs !== null && b.tempoMs !== null
               ? a.tempoMs - b.tempoMs
@@ -200,7 +231,7 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
                   ? 1
                   : b.andou - a.andou,
           );
-        return comPosicoes(linhas, ficaramNaCorrida ?? new Set(ctx.naSala()), naFrenteNaCorrida);
+        return comPosicoes(linhas, ficaramNaCorrida ?? naSalaComRobos(), naFrenteNaCorrida);
       };
 
       /** Na copa: mais pontos na frente, e no empate a soma menor dos tempos (quem não chegou numa corrida não tem soma). */
@@ -210,10 +241,10 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
       /** A posição é só de quem correu todas as corridas até aqui, presente (antes da primeira fechar, quem está na sala). */
       const placarDaCopa = () =>
         comPosicoes(
-          inscritos
-            .map((userId) => ({ userId, username: ctx.nome(userId), pontos: pontos.get(userId) ?? 0, soma: somas.get(userId) ?? null }))
+          [...inscritos, ...idsDosRobos]
+            .map((userId) => ({ userId, username: nomeDe(userId), pontos: pontos.get(userId) ?? 0, soma: somas.get(userId) ?? null }))
             .sort((a, b) => b.pontos - a.pontos || (a.soma ?? Infinity) - (b.soma ?? Infinity) || a.username.localeCompare(b.username)),
-          correramTodas ?? new Set(ctx.naSala()),
+          correramTodas ?? naSalaComRobos(),
           naFrenteNaCopa,
         );
 
@@ -222,6 +253,7 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
         pilotos = new Map(presentes.map((id) => [id, { tempoMs: null, voltas: [], andou: 0, itens: 0, ultimoItem: 0, acertos: 0, ultima: null, meio: false }]));
         itensDaCorrida = new Map();
         itensQueAcertaram = new Set();
+        votos = new Map(idsDosRobos.map((id) => [id, new Map()]));
         ficaramNaCorrida = null;
         fase = 'largada';
         prazoAberto = false;
@@ -240,10 +272,11 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
        */
       const darTrofeus = (pista: string, linhas: { userId: number; posicao: number | null; tempoMs: number | null; pontos: number | null; chegou: boolean }[]) => {
         const ficou = linhas.filter((l) => l.posicao !== null);
-        if (ficou.length < 2) return;
+        // o troféu é um registro entre amigos: 2 PESSOAS ou mais; a posição é a real, entre todos (robôs incluídos)
+        if (ficou.filter((l) => l.userId > 0).length < 2) return;
         const todos = ficou.map((l) => l.userId);
         for (const l of ficou) {
-          if (!l.chegou || l.posicao === null || l.posicao > 3) continue;
+          if (l.userId < 0 || !l.chegou || l.posicao === null || l.posicao > 3) continue;
           db.guardarTrofeu({
             userId: l.userId,
             evento,
@@ -261,7 +294,7 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
         if (fase !== 'correndo' && fase !== 'largada') return;
         // quem correu esta corrida e ainda está na sala no fim dela: só eles têm posição, pontos e troféu
         const naSalaAgora = new Set(ctx.naSala());
-        const ficaram = new Set([...pilotos.keys()].filter((id) => naSalaAgora.has(id)));
+        const ficaram = new Set([...[...pilotos.keys()].filter((id) => naSalaAgora.has(id)), ...idsDosRobos]);
         ficaramNaCorrida = ficaram;
         const ordem = classificacao();
         resultados.push({ pista: corridas[indice], pilotos: ordem });
@@ -297,7 +330,8 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
         // o fim da copa: o pódio pelos pontos, entre quem correu todas, e a copa da turma
         const turma = correramTodas ?? new Set<number>();
         darTrofeus(pedida, placarDaCopa().map((l) => ({ userId: l.userId, posicao: l.posicao, tempoMs: l.soma, pontos: l.pontos, chegou: l.pontos > 0 })));
-        if (turma.size >= 2) db.registrarCopa(ctx.comunidade ?? 0, turma.size);
+        const pessoas = [...turma].filter((id) => id > 0).length;
+        if (pessoas >= 2) db.registrarCopa(ctx.comunidade ?? 0, pessoas);
         fase = 'fim';
         ctx.terminar();
       };
@@ -360,7 +394,7 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
           voltasDaCorrida: VOLTAS,
           itens: true,
           robos,
-          pilotos: classificacao().map(({ userId, username, tempoMs, voltas, posicao }) => ({ userId, username, tempoMs, voltas, posicao, avatar: avatares.get(userId) ?? null })),
+          pilotos: classificacao().map(({ userId, username, tempoMs, voltas, posicao }) => ({ userId, username, tempoMs, voltas, posicao, avatar: avatares.get(userId) ?? null, ...(userId < 0 ? { robo: true } : {}) })),
           placarDaCopa: copa ? placarDaCopa().map(({ userId, username, pontos: p, posicao }) => ({ userId, username, pontos: p, posicao })) : null,
           ultima: resultados.length ? resultados[resultados.length - 1].pilotos.map(({ userId, username, tempoMs, posicao }) => ({ userId, username, tempoMs, posicao })) : null,
           prazo: prazoAberto,
@@ -434,6 +468,24 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
             p.ultimoItem = agora();
             itensDaCorrida.set(id, { tipo: 'lama', dono: quem, n, x: d.x as number, y: d.y as number });
             return { tipo: 'lama', id, dono: quem, n, x: d.x, y: d.y };
+          }
+          if (d.tipo === 'robos') {
+            // O QUE ESTE COMPUTADOR VIU DOS ROBÔS (ver o topo): [chegada, andou] de cada um, no passo `n` dele. Não vai a ninguém.
+            const n = d.n, r = d.r;
+            if (!robos || !numero(n) || !Number.isInteger(n) || (n as number) > ((agora() - verdeEm) * 60) / 1000 + PASSOS_DE_FOLGA) return null;
+            if (!Array.isArray(r) || r.length !== robos) return null;
+            r.forEach((v, i) => {
+              if (!Array.isArray(v) || !numero(v[0]) || !numero(v[1])) return;
+              const chegada = v[0] as number, andou = v[1] as number;
+              if (!Number.isInteger(chegada) || chegada < 0 || chegada > (n as number) || (chegada > 0 && chegada < VOLTAS * VOLTA_MINIMA)) return;
+              if (andou < 0 || andou > VOLTAS + 1) return;
+              const doRobo = votos.get(idsDosRobos[i]);
+              if (!doRobo) return;
+              const antes = doRobo.get(quem);
+              // a chegada que este computador já disse não muda
+              doRobo.set(quem, { chegada: antes && antes.chegada > 0 ? antes.chegada : chegada, andou: Math.min(VOLTAS, andou) });
+            });
+            return null;
           }
           if (d.tipo === 'gastou') {
             // o escudo de alface segurou um item e acabou: só o dono do escudo diz isso, uma vez

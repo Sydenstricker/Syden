@@ -97,7 +97,7 @@ function destaqueResolvido(userId: number, visitante: number) {
       const rivais =
         visitante === userId
           ? t.rivais
-          : t.rivais.filter((r) => r.userId === visitante || (!db.haBloqueio(visitante, r.userId) && (!menor(r.userId) || saoAmigos(visitante, r.userId))));
+          : t.rivais.filter((r) => r.userId === visitante || r.userId < 0 || (!db.haBloqueio(visitante, r.userId) && (!menor(r.userId) || saoAmigos(visitante, r.userId))));
       itens.push({ tipo: 'trofeu' as const, chave, ...t, rivais });
       continue;
     }

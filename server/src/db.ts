@@ -4,6 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { caminhoDe, guardarArquivo } from './arquivos.js';
 import { config } from './config.js';
 import { imagemAnimada } from './imagemAnimada.js';
+import { nomeDoPilotoRobo } from './corrida-pilotos.js';
 import type { ArquivoGuardado } from './entregar.js';
 import type { NovoServidor, ServidorDeJogo } from './jogos.js';
 
@@ -4793,7 +4794,8 @@ export function trofeusDe(userId: number): TrofeuDaCorrida[] {
   return linhas.map((l) => {
     const ids = JSON.parse(l.rivais) as number[];
     const rivais = ids
-      .map((id) => pessoa.get(id, l.em) as { id: number; username: string; nomeDeExibicao: string | null } | undefined)
+      // os robôs da corrida na sala (id negativo, 24/11/2026): pelo nome de robô, com o 🤖
+      .map((id) => (id < 0 ? { id, username: nomeDoPilotoRobo(id), nomeDeExibicao: null } : (pessoa.get(id, l.em) as { id: number; username: string; nomeDeExibicao: string | null } | undefined)))
       .filter((u): u is { id: number; username: string; nomeDeExibicao: string | null } => !!u)
       .map((u) => ({ userId: u.id, username: u.username, nomeDeExibicao: u.nomeDeExibicao }));
     return { id: l.id, pista: l.pista, posicao: l.posicao, tempoMs: l.tempoMs, pontos: l.pontos, em: l.em, rivais, excluidos: ids.length - rivais.length };

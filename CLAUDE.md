@@ -1108,13 +1108,16 @@ propósito. No Solo os robôs a buscam, perseguem quem a tem e fogem com ela. O 
 segundos. Chute medido contra os robôs.
 
 **A CORRIDA DOS COELHOS, OS ROBÔS NA SALA (24/11/2026, o lote E):** quem convida escolhe "Só a turma" ou "Completar com o
-computador" (`corpo.robos`); o servidor só diz quantos (até 8 karts, `KARTS_NA_SALA`), como os barcos da Regata, e cada computador
-anda os mesmos robôs (médio) pela mesma conta desde o verde dele (`robosNaSala` em corrida/laco.ts). Para não se separarem: o item
-do robô sai da posição entre os robôs, o roxo mira o robô da frente, os eventos deles não vão ao servidor, e **um robô só cai com
-item de robô** (o das pessoas chega a cada computador numa hora). Os itens dos robôs pegam as pessoas pela regra de sempre (quem leva
-decide). A turma larga na última fila (o servidor aceita a primeira posição 30 mais longe só com robôs). **Os robôs não entram na
-classificação** (decisão minha, a confirmar com ele): aparecem na ordem ao vivo; posição, pontos da copa, pódio e troféus são só da
-turma. Quem só assiste não vê os robôs. Ninguém jogou com gente.
+computador" (`corpo.robos`); o servidor diz quantos (até 8 karts, `KARTS_NA_SALA`), e cada computador anda os mesmos robôs (médio)
+pela mesma conta, desde o verde dele (`robosNaSala` em corrida/laco.ts). Para não se separarem: o item do robô sai da posição entre
+os robôs, o roxo mira o robô da frente, os eventos deles não vão ao servidor, e **um robô só cai com item de robô** (o das pessoas
+chega a cada computador numa hora). Os itens dos robôs pegam as pessoas pela regra de sempre (quem leva decide). A turma larga na
+última fila (o servidor aceita a primeira posição 30 mais longe só com robôs). **Os robôs ENTRAM NA CLASSIFICAÇÃO** (decisão dele,
+mesmo dia): posição, pontos da copa e pódio; o troféu é só de pessoa, com a posição real, e o robô vai nos "contra quem" pelo nome
+com o 🤖. **O tempo do robô é o que a MAIORIA dos computadores diz** (cada um manda, a cada segundo, a chegada e o quanto andou
+cada robô; no empate, a chegada menor; tem de caber no relógio): o servidor não refaz a corrida do robô, porque a física do kart
+usa seno e cosseno e mora no site. Quem não chegou fica pela mediana do quanto andou; o prazo de 30 s só abre com a chegada de uma
+pessoa; quem só assiste não vê os robôs. Ninguém jogou com gente.
 
 
 **A PALAVRA SECRETA EM CINCO IDIOMAS (24/11/2026, o lote E da segunda auditoria):** quem começa escolhe o IDIOMA na largada

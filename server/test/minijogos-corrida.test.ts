@@ -9,6 +9,7 @@ import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
 const { app, fechar } = await servidorDeTeste();
 const { criarCorrida, FOLGA_MS } = await import('../src/minijogo-corrida.js');
 const { PISTAS } = await import('../src/corrida.js');
+const db = await import('../src/db.js');
 /** O relógio da corrida, na mão: cada teste anda com ele. */
 let agora = 1_000_000;
 const corrida = criarCorrida(() => agora);
@@ -354,7 +355,7 @@ test('a medalha da tela é a do troféu: quem saiu não tem posição, e empate 
   assert.equal(await trofeu(caio.token), undefined, 'quem saiu não ganha troféu');
 });
 
-test('os robôs na sala (24/11/2026): o servidor só diz quantos; a turma larga da última fila, e a classificação é só da turma', () => {
+test('os robôs na sala (24/11/2026): o servidor só diz quantos; a turma larga da última fila, e eles estão na classificação', () => {
   const m = contexto([anaId, biaId], comunidade.id);
   const jogo = corrida.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { pista: 'horta-1', robos: true } });
   assert.ok(typeof jogo !== 'string');
@@ -366,8 +367,10 @@ test('os robôs na sala (24/11/2026): o servidor só diz quantos; a turma larga 
   assert.ok(jogo.tempoReal!(anaId, { x: lx - 76, y: ly, a: 0, n: 1, andou: 0.97 }), 'a primeira posição da última fila');
   // o item de um robô não existe para o servidor: o "acertou" dele não vale e não vai a ninguém
   assert.equal(jogo.tempoReal!(anaId, { tipo: 'acertou', id: '-1-300' }), null);
-  // a classificação: só a turma
-  assert.deepEqual((jogo.publico(anaId) as { pilotos: { userId: number }[] }).pilotos.map((p) => p.userId).sort(), [anaId, biaId].sort());
+  // a classificação: a turma e os seis robôs, com o nome de robô
+  const linhas = (jogo.publico(anaId) as { pilotos: { userId: number; username: string }[] }).pilotos;
+  assert.equal(linhas.length, 8);
+  assert.ok(linhas.filter((l) => l.userId < 0).every((l) => l.username.startsWith('🤖 ')));
   // sem pedir, nenhum robô; e a largada de sempre
   const m2 = contexto([anaId, biaId], comunidade.id);
   const j2 = corrida.comecar(m2.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { pista: 'horta-1' } });
@@ -376,4 +379,74 @@ test('os robôs na sala (24/11/2026): o servidor só diz quantos; a turma larga 
   m2.relogio[0].depois();
   agora += 10_000;
   assert.equal(j2.tempoReal!(anaId, { x: lx - 76, y: ly, a: 0, n: 1, andou: 0.97 }), null, 'sem robôs, a última fila não existe');
+});
+
+test('os robôs dentro da classificação (24/11/2026): vale a chegada que mais computadores mandaram (no empate, a menor); o troféu é só de pessoa, com a posição real', async () => {
+  const caio = await criarConta(app, 'caio-robos-corrida');
+  const caioId = await idDe(caio.token);
+  const m = contexto([anaId, biaId, caioId], comunidade.id);
+  const jogo = corrida.comecar(m.ctx, { naSala: [anaId, biaId, caioId], criadaPor: anaId, corpo: { pista: 'horta-1', robos: true } });
+  assert.ok(typeof jogo !== 'string');
+  const robos = (jogo.publico(anaId) as { robos: number }).robos;
+  assert.equal(robos, 5);
+  m.relogio[0].depois();
+  const pub = () => jogo.publico(anaId) as { pilotos: { userId: number; tempoMs: number | null; posicao: number | null }[] };
+  const linha = (id: number) => pub().pilotos.find((p) => p.userId === id)!;
+  agora += 70_000;
+  // o robô −1 chega em 3600 passos para a Ana e a Bia, e o Caio diz 4500 (para passar na frente dele): vale 3600
+  const r = (chegada: number) => Array.from({ length: robos }, (_, i) => (i === 0 ? [chegada, 3] : [0, 2.5 - i * 0.1]));
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'robos', n: 3700, r: r(3600) }), null, 'não vai a ninguém');
+  jogo.tempoReal!(biaId, { tipo: 'robos', n: 3700, r: r(3600) });
+  jogo.tempoReal!(caioId, { tipo: 'robos', n: 3700, r: r(4500) });
+  assert.equal(linha(-1).tempoMs, 60_000);
+  // o que não cabe no relógio, ou antes de três voltas mínimas, não conta
+  jogo.tempoReal!(caioId, { tipo: 'robos', n: 900_000, r: r(100) });
+  jogo.tempoReal!(caioId, { tipo: 'robos', n: 3700, r: r(100) });
+  assert.equal(linha(-1).tempoMs, 60_000);
+  // a Ana chega antes do robô, a Bia depois dele; o Caio não chega
+  const ana = corridaDe(1000);
+  const bia = corridaDe(1300);
+  assert.equal(jogo.acao(anaId, ana), null);
+  assert.equal(jogo.acao(biaId, bia), null);
+  assert.equal(linha(anaId).posicao, 1);
+  assert.equal(linha(-1).posicao, 2, 'o robô entre as duas');
+  assert.equal(linha(biaId).posicao, 3);
+  // os outros robôs, sem chegada, ficam pelo quanto andaram, e o Caio, sem nada mandado, por último
+  assert.ok(linha(-2).posicao! < linha(-3).posicao!);
+  m.relogio[0].depois();
+  const trofeus = db.trofeusDe(biaId).filter((t) => t.pista === 'horta-1');
+  const t = trofeus[0];
+  assert.equal(t.posicao, 3, 'a posição real, com o robô na frente');
+  assert.ok(t.rivais.some((x) => x.userId === -1 && x.username.startsWith('🤖 ')), 'o robô nos "contra quem", pelo nome');
+  assert.equal(t.excluidos, 0);
+});
+
+test('os robôs dentro da copa: somam pontos pela posição, e no empate de votos vale a chegada menor', async () => {
+  const m = contexto([anaId, biaId], comunidade.id);
+  const jogo = corrida.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { pista: 'copa-da-cenoura', robos: true } });
+  assert.ok(typeof jogo !== 'string');
+  const robos = (jogo.publico(anaId) as { robos: number }).robos;
+  const pistas = ['horta-1', 'pomar-1', 'praia-1'];
+  for (const pista of pistas) {
+    if (pista !== 'horta-1') m.relogio[0].depois(); // o fim do intervalo
+    m.relogio[0].depois(); // o verde
+    agora += 70_000;
+    // empate: a Ana diz 3000 para o robô −1, a Bia 3100: vale 3000 (na frente das duas)
+    const r = (c: number) => Array.from({ length: robos }, (_, i) => (i === 0 ? [c, 3] : [0, 1]));
+    jogo.tempoReal!(anaId, { tipo: 'robos', n: 3200, r: r(3000) });
+    jogo.tempoReal!(biaId, { tipo: 'robos', n: 3200, r: r(3100) });
+    assert.equal((jogo.publico(anaId) as { pilotos: { userId: number; tempoMs: number | null }[] }).pilotos.find((p) => p.userId === -1)!.tempoMs, 50_000);
+    assert.equal(jogo.acao(anaId, corridaDe(1050, pista)), null);
+    assert.equal(jogo.acao(biaId, corridaDe(1100, pista)), null);
+  }
+  const placar = (jogo.publico(anaId) as { placarDaCopa: { userId: number; pontos: number; posicao: number | null }[] }).placarDaCopa;
+  const de = (id: number) => placar.find((l) => l.userId === id)!;
+  assert.equal(de(-1).pontos, 30, 'o robô venceu as três');
+  assert.equal(de(anaId).pontos, 24);
+  assert.equal(de(biaId).pontos, 18);
+  assert.equal(de(-1).posicao, 1);
+  assert.equal(de(anaId).posicao, 2);
+  const copa = db.trofeusDe(anaId).find((t) => t.pista === 'copa-da-cenoura' && t.posicao === 2);
+  assert.ok(copa, 'a Ana guarda a copa em 2º, a posição real');
+  assert.ok(!db.trofeusDe(anaId).some((t) => t.rivais.some((x) => x.userId < 0 && !x.username.startsWith('🤖'))));
 });

@@ -400,3 +400,13 @@ test('os robôs na sala (24/11/2026): quem larga na última fila da grade passa 
     a.forEach((r, i) => assert.ok(r.kart.x === b[i].kart.x && r.kart.y === b[i].kart.y, `${def.id}: o robô ${i} se separou`));
   }
 });
+
+test('os robôs na classificação da sala (24/11/2026): o servidor dá a cada robô o mesmo nome e avatar do site', async () => {
+  const { NOMES_DOS_PILOTOS, criarRobos } = await import('../src/corrida/robos');
+  const servidor = await import('../../server/src/corrida-pilotos.ts');
+  assert.deepEqual(servidor.NOMES_DOS_PILOTOS, NOMES_DOS_PILOTOS);
+  for (const r of criarRobos(pista, 7, 'medio')) {
+    assert.equal(servidor.nomeDoPilotoRobo(r.id), r.nome);
+    assert.equal(servidor.avatarDoPilotoRobo(r.id), r.avatar);
+  }
+});

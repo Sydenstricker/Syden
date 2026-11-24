@@ -767,9 +767,9 @@ function CorridaDaSala({
   const eventos = useRef<EventoDeItem[]>([]);
   const def = pistaPorId(estado.pista);
 
-  // os rivais: todo mundo da corrida menos eu, com o nome que a turma vê
+  // os rivais: todo mundo da corrida menos eu, com o nome que a turma vê (os robôs, id negativo, o laço põe e anda sozinho)
   for (const p of estado.pilotos) {
-    if (p.userId === eu) continue;
+    if (p.userId === eu || p.userId < 0) continue;
     const r = rivais.current.get(p.userId);
     if (r) r.nome = p.username;
     else rivais.current.set(p.userId, { nome: p.username, avatar: p.avatar ?? null, posicoes: [] });
@@ -824,7 +824,14 @@ function CorridaDaSala({
       rivais: rivais.current,
       itens: estado.itens === false ? undefined : { eventos: eventos.current, aoEvento: enviar, aoItem: (i, usos) => setItem({ item: i, usos }) },
       // OS ROBÔS NA SALA (24/11/2026): os mesmos em todo computador, no médio, só para quem pilota (quem assiste vê a turma)
-      ...(piloto && estado.robos ? { robos: { quantos: estado.robos, dificuldade: 'medio' as const }, robosNaSala: true } : {}),
+      ...(piloto && estado.robos
+        ? {
+            robos: { quantos: estado.robos, dificuldade: 'medio' as const },
+            robosNaSala: true,
+            // o que este computador viu dos robôs vai ao servidor, que fica com o que a maioria disse (eles entram na classificação)
+            aoRobos: (n: number, r: [number, number][]) => socket?.emit('minijogo:tempo-real', { channelId, dados: { tipo: 'robos', n, r } }),
+          }
+        : {}),
       contagem,
       aoPlacar: setPlacar,
       aoOrdem: setOrdem,

@@ -76,7 +76,7 @@ const AMOSTRA = 4;
  */
 export const PASSO_MAXIMO = 135;
 /** Uma volta não leva menos de 8 s, nem a corrida mais de 10 min. */
-const VOLTA_MINIMA = 8 * 60;
+export const VOLTA_MINIMA = 8 * 60;
 const CORRIDA_MAXIMA = 10 * 60 * 60;
 const MUNDO = 10240;
 

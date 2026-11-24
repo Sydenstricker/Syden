@@ -173,6 +173,12 @@ export interface OpcoesDoLaco {
    * derrubado por item de robô. Os itens dos robôs pegam as pessoas pela regra de sempre: quem leva decide.
    */
   robosNaSala?: boolean;
+  /**
+   * Na sala, o que este computador viu dos robôs (24/11/2026: eles entram na classificação, e o tempo que vale é o que mais
+   * computadores mandarem): a cada segundo e quando um chega, o passo e, de cada robô, [o passo da chegada (0: correndo), o
+   * quanto andou].
+   */
+  aoRobos?: (n: number, robos: [number, number][]) => void;
   /** A classe rápida (o teto vezes isto), só contra os robôs. */
   classe?: number;
   /** A classificação na hora em que quem joga cruzou a chegada: quem chegou antes, eu, e quem ainda corria (pelo quanto andou). */
@@ -408,12 +414,16 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       const derivaAntes = kart.deriva, turboAntes = kart.turbo, voltaAntes = kart.volta;
       passo(kart, c, p);
       // OS ROBÔS andam o mesmo passo, e a posição deles entra na lista dos rivais (no passo da minha corrida)
+      let algumChegou = false;
       for (const r of robos) {
-        andarRobo(r, p, o.robosNaSala ? undefined : progresso(kart, p));
+        if (andarRobo(r, p, o.robosNaSala ? undefined : progresso(kart, p))) algumChegou = true;
         const rv = todosOsRivais!.get(r.id)!;
         const andou = r.kart.terminou ? p.def.voltas + 0.5 - r.chegada / 1e6 : progressoDoRobo(r, p);
         rv.posicoes.push({ n: kart.passos, x: r.kart.x, y: r.kart.y, a: r.kart.angulo, andou });
         if (rv.posicoes.length > 240) rv.posicoes.splice(0, 120);
+      }
+      if (o.aoRobos && robos.length && (algumChegou || kart.passos % 60 === 0)) {
+        o.aoRobos(kart.passos, robos.map((r) => [r.chegada, +progressoDoRobo(r, p).toFixed(3)]));
       }
       if (!jaTinhaChegado) {
         amostrar(kart, caminho);
