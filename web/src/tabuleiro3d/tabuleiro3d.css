@@ -167,3 +167,32 @@
     animation: none;
   }
 }
+
+/* A escolha do tabuleiro na largada (24/11/2026, JogoTabuleiro.tsx): a horta, o rio ou a serra. */
+.tab-tabuleiro-botao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 84px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--bg-raised);
+  color: inherit;
+  cursor: pointer;
+}
+
+.tab-tabuleiro-botao:hover,
+.tab-tabuleiro-botao.escolhida {
+  border-color: var(--accent);
+}
+
+.tab-tabuleiro-botao.escolhida {
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.tab-tabuleiro-figura {
+  image-rendering: pixelated;
+  border-radius: 4px;
+}

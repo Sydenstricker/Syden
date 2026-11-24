@@ -7,18 +7,14 @@ import { carregarModelo as carregarDaMesa } from '../mesa3d/base';
 import type { CenaDeMesa } from '../mesa3d/useCena3D';
 import {
   ANEL,
-  CASAS_DA_VOLTA,
-  chaoDaBarraca,
-  COM_RAMAL_POR_FORA,
-  CURVA_DA_VOLTA,
+  geometriaDe,
+  type GeometriaDaVolta,
   HORTA,
   lotesDaCidade,
   PRACA,
   RAIO_DA_CASA,
-  RAMAIS_DA_VOLTA,
   retanguloCurvo,
   RUAS_PARA_FORA,
-  TODAS_AS_CASAS_3D,
   TOCA,
   TRILHO,
 } from './volta';
@@ -101,7 +97,27 @@ const COR_DO_TIPO: Record<string, [string, string]> = {
   // 19/11/2026: a loja de itens e o duelo
   $: ['#5fb8b0', '#3e8a84'],
   d: ['#f0a04a', '#b8702e'],
+  // 24/11/2026: a correnteza do rio e o escorrega da serra
+  c: ['#4f9fd6', '#356f9a'],
+  e: ['#b08a5c', '#7a5c3a'],
 };
+
+/** O jeito de cada tabuleiro (24/11/2026): as cores do chão e do caminho, o céu, e o que se pinta a mais (o rio, as pedras). */
+interface TemaDoTabuleiro {
+  grama: string;
+  borda: string;
+  caminho: string;
+  ceu: string;
+  rio: boolean;
+  pedras: boolean;
+}
+const TEMAS: Record<string, TemaDoTabuleiro> = {
+  horta: { grama: '#8fcf6f', borda: '#c9b48f', caminho: '#ecdfc2', ceu: '#bfe4f2', rio: false, pedras: false },
+  rio: { grama: '#86c97a', borda: '#b4a382', caminho: '#efe6cf', ceu: '#b6e0f5', rio: true, pedras: false },
+  serra: { grama: '#a3c47c', borda: '#8f887d', caminho: '#d9d3c7', ceu: '#d2e4ee', rio: false, pedras: true },
+};
+/** O rio do tabuleiro do rio: um anel de água entre a volta e a rua (a ponte é o ramal, que passa por cima). */
+const RIO = { rx: 5.6, rz: 3.5, canto: 1.4, largura: 0.42 };
 
 interface Peca {
   raiz: THREE.Group;
@@ -212,6 +228,50 @@ function pintarTopo(tipo: string): THREE.CanvasTexture {
     g.strokeText('?', L / 2, L / 2 + 4);
     g.fillStyle = '#ffe9a0';
     g.fillText('?', L / 2, L / 2 + 4);
+  } else if (tipo === 'c') {
+    // a correnteza: três ondas
+    g.lineCap = 'round';
+    for (const [largura, cor] of [
+      [16, contorno],
+      [8, '#fffaf0'],
+    ] as const) {
+      g.lineWidth = largura;
+      g.strokeStyle = cor;
+      for (const dy of [-22, 0, 22]) {
+        g.beginPath();
+        for (let x = -32; x <= 32; x += 2) {
+          const y = L / 2 + dy + Math.sin((x / 32) * Math.PI * 1.5) * 6;
+          if (x === -32) g.moveTo(L / 2 + x, y);
+          else g.lineTo(L / 2 + x, y);
+        }
+        g.stroke();
+      }
+    }
+  } else if (tipo === 'e') {
+    // o escorrega: a seta que volta
+    g.lineCap = 'round';
+    for (const [largura, cor] of [
+      [20, contorno],
+      [11, '#fffaf0'],
+    ] as const) {
+      g.lineWidth = largura;
+      g.strokeStyle = cor;
+      g.beginPath();
+      g.arc(L / 2, L / 2 + 6, 24, -Math.PI * 0.05, Math.PI * 1.05, true);
+      g.stroke();
+    }
+    g.fillStyle = contorno;
+    g.beginPath();
+    g.moveTo(L / 2 - 42, L / 2 + 2);
+    g.lineTo(L / 2 - 8, L / 2 + 2);
+    g.lineTo(L / 2 - 25, L / 2 + 26);
+    g.fill();
+    g.fillStyle = '#fffaf0';
+    g.beginPath();
+    g.moveTo(L / 2 - 36, L / 2 + 5);
+    g.lineTo(L / 2 - 14, L / 2 + 5);
+    g.lineTo(L / 2 - 25, L / 2 + 20);
+    g.fill();
   }
   return textura(c);
 }
@@ -277,16 +337,11 @@ function instanciar(g: GLTF, largura: number, matrizes: THREE.Matrix4[], sombra:
 const matriz = (x: number, y: number, z: number, rumo = 0, s = 1) =>
   new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rumo), new THREE.Vector3(s, s, s));
 
-/** O centro da casa `i` da volta, no chão. */
-export function centroDaCasa(i: number): THREE.Vector3 {
+/** O centro da casa `i` da volta do tabuleiro `geo` (a horta, sem ele), no chão. */
+export function centroDaCasa(i: number, geo: GeometriaDaVolta = geometriaDe()): THREE.Vector3 {
   // a volta e, depois dela, as casas dos ramais (19/11/2026)
-  const c = TODAS_AS_CASAS_3D[i] ?? CASAS_DA_VOLTA[0];
+  const c = geo.todas[i] ?? geo.casasDaVolta[0];
   return new THREE.Vector3(c.x, ALTURA_DA_CASA, c.z);
-}
-/** Onde fica a barraca da dourada quando ela está na casa `i`. */
-function lugarDaBarraca(i: number): THREE.Vector3 {
-  const b = chaoDaBarraca(i, BARRACA_FORA);
-  return new THREE.Vector3(b.x, 0, b.z);
 }
 
 export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
@@ -360,10 +415,17 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
   private intervalos: number[] = [];
   private ultimoQuadro = 0;
 
+  /** A forma do tabuleiro desta partida (24/11/2026: a horta, o rio ou a serra). */
+  private geo: GeometriaDaVolta;
+  private tema: TemaDoTabuleiro;
+
   constructor(
     private caixaDaTela: HTMLElement,
     private avisar: (alvo: number) => void,
+    tabuleiro: string = 'horta',
   ) {
+    this.geo = geometriaDe(tabuleiro);
+    this.tema = TEMAS[tabuleiro] ?? TEMAS.horta;
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -394,6 +456,16 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     if (import.meta.env.DEV) (window as unknown as { cenaDoTabuleiro?: CenaDoTabuleiro }).cenaDoTabuleiro = this;
   }
 
+  /** O ponto (x, z) fica dentro da volta (o miolo)? Pela regra do raio que cruza o contorno das casas. */
+  private dentroDaVolta(x: number, z: number): boolean {
+    const c = this.geo.casasDaVolta;
+    let dentro = false;
+    for (let i = 0, j = c.length - 1; i < c.length; j = i++) {
+      if (c[i].z > z !== c[j].z > z && x < ((c[j].x - c[i].x) * (z - c[i].z)) / (c[j].z - c[i].z) + c[i].x) dentro = !dentro;
+    }
+    return dentro;
+  }
+
   async montar(): Promise<void> {
     const [lista, coelho, dado] = await Promise.all([
       Promise.all(TODOS.map((a) => carregar(a).then((g) => [a, g] as const))),
@@ -417,6 +489,12 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     this.renderer.setAnimationLoop(this.desenhar);
   }
 
+  /** Onde fica a barraca da dourada quando ela está na casa `i`. */
+  private lugarDaBarraca(i: number): THREE.Vector3 {
+    const b = this.geo.chaoDaBarraca(i, BARRACA_FORA);
+    return new THREE.Vector3(b.x, 0, b.z);
+  }
+
   atualizar(d: DadosDoTabuleiro3D) {
     this.dados = d;
     if (!this.pronta || this.morta) return;
@@ -435,8 +513,8 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
 
   private montarFixo() {
     const c = this.cena;
-    c.background = new THREE.Color('#bfe4f2');
-    c.fog = new THREE.Fog('#bfe4f2', 20, 40);
+    c.background = new THREE.Color(this.tema.ceu);
+    c.fog = new THREE.Fog(this.tema.ceu, 20, 40);
     c.add(new THREE.HemisphereLight('#fff6e8', '#7fae6a', 1.6));
     const sol = new THREE.DirectionalLight('#fff1d6', 2.2);
     sol.position.set(-6, 13, 7);
@@ -481,7 +559,7 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     const g = cv.getContext('2d')!;
     const X = (x: number) => (x + MUNDO_X) * P;
     const Z = (z: number) => (z + MUNDO_Z) * P;
-    g.fillStyle = '#8fcf6f';
+    g.fillStyle = this.tema.grama;
     g.fillRect(0, 0, cv.width, cv.height);
     g.fillStyle = 'rgba(255,255,255,0.05)';
     for (let y = 0; y < cv.height; y += 36) g.fillRect(0, y, cv.width, 18);
@@ -540,8 +618,37 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     ruas(ANEL.largura, '#7b7f88');
     g.lineWidth = 3;
     ruas(0.04, 'rgba(255,236,170,0.85)', true);
+    // O RIO (24/11/2026): a margem, a água e o brilho, por baixo do caminho (o ramal passa por cima, como uma ponte)
+    if (this.tema.rio) {
+      for (const [largura, cor] of [
+        [RIO.largura + 0.14, '#c9b48f'],
+        [RIO.largura, '#5aa6d6'],
+        [RIO.largura * 0.35, 'rgba(210,240,255,0.55)'],
+      ] as const) {
+        g.lineWidth = largura * P;
+        g.strokeStyle = cor;
+        if (largura < RIO.largura) g.setLineDash([22, 30]);
+        ret(RIO.rx, RIO.rz, RIO.canto);
+        g.stroke();
+        g.setLineDash([]);
+      }
+    }
+    // A SERRA (24/11/2026): pedras e cascalho espalhados entre a volta e a rua, e o pico de rocha no fundo
+    if (this.tema.pedras) {
+      let semente = 7;
+      const sorte = () => ((semente = (semente * 16807) % 2147483647) / 2147483647);
+      for (let k = 0; k < 90; k++) {
+        const x = (sorte() * 2 - 1) * (ANEL.rx - 0.6);
+        const z = (sorte() * 2 - 1) * (ANEL.rz - 0.6);
+        if (this.dentroDaVolta(x, z) || this.geo.todas.some((c) => Math.hypot(c.x - x, c.z - z) < 0.7)) continue;
+        g.fillStyle = sorte() < 0.5 ? 'rgba(140,132,120,0.55)' : 'rgba(176,168,154,0.5)';
+        g.beginPath();
+        g.ellipse(X(x), Z(z), (0.12 + sorte() * 0.25) * P, (0.08 + sorte() * 0.16) * P, sorte() * 3, 0, Math.PI * 2);
+        g.fill();
+      }
+    }
     // o caminho da volta: pedra clara com a borda
-    const pts = CURVA_DA_VOLTA.getSpacedPoints(240);
+    const pts = this.geo.curva.getSpacedPoints(240);
     const caminho = (largura: number, cor: string) => {
       g.lineWidth = largura * P;
       g.strokeStyle = cor;
@@ -551,24 +658,24 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
       g.closePath();
       g.stroke();
     };
-    caminho(0.98, '#c9b48f');
-    caminho(0.86, '#ecdfc2');
+    caminho(0.98, this.tema.borda);
+    caminho(0.86, this.tema.caminho);
     // os ramais (19/11/2026): da casa da bifurcação, pelas casas deles, até a casa onde voltam
     const ramais = (largura: number, cor: string) => {
       g.lineWidth = largura * P;
       g.strokeStyle = cor;
       g.lineJoin = 'round';
-      let k = CASAS_DA_VOLTA.length;
-      for (const r of RAMAIS_DA_VOLTA) {
-        const pts2 = [CASAS_DA_VOLTA[r.de], ...TODAS_AS_CASAS_3D.slice(k, k + r.tamanho), CASAS_DA_VOLTA[r.ate]];
+      let k = this.geo.casasDaVolta.length;
+      for (const r of this.geo.ramais) {
+        const pts2 = [this.geo.casasDaVolta[r.de], ...this.geo.todas.slice(k, k + r.tamanho), this.geo.casasDaVolta[r.ate]];
         k += r.tamanho;
         g.beginPath();
         pts2.forEach((p, j) => (j ? g.lineTo(X(p.x), Z(p.z)) : g.moveTo(X(p.x), Z(p.z))));
         g.stroke();
       }
     };
-    ramais(0.78, '#c9b48f');
-    ramais(0.66, '#ecdfc2');
+    ramais(0.78, this.tema.borda);
+    ramais(0.66, this.tema.caminho);
     // a horta: a terra e os sulcos
     g.fillStyle = '#9a7556';
     g.fillRect(X(HORTA.x0), Z(HORTA.z0), (HORTA.x1 - HORTA.x0) * P, (HORTA.z1 - HORTA.z0) * P);
@@ -603,7 +710,7 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     this.cena.add(chao);
     // e a grama até o horizonte
     const geoLonge = new THREE.PlaneGeometry(160, 160).rotateX(-Math.PI / 2);
-    const mLonge = new THREE.MeshStandardMaterial({ color: '#8fcf6f', roughness: 1 });
+    const mLonge = new THREE.MeshStandardMaterial({ color: this.tema.grama, roughness: 1 });
     const longe = new THREE.Mesh(geoLonge, mLonge);
     longe.position.y = -0.01;
     this.cena.add(longe);
@@ -615,10 +722,10 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     const geoCorpo = new THREE.CylinderGeometry(RAIO_DA_CASA, RAIO_DA_CASA + 0.025, ALTURA_DA_CASA, 32);
     geoCorpo.translate(0, ALTURA_DA_CASA / 2, 0);
     const matCorpo = new THREE.MeshStandardMaterial({ roughness: 0.6 });
-    this.corpos = new THREE.InstancedMesh(geoCorpo, matCorpo, TODAS_AS_CASAS_3D.length);
+    this.corpos = new THREE.InstancedMesh(geoCorpo, matCorpo, this.geo.todas.length);
     this.corpos.receiveShadow = this.sombras;
     this.corpos.castShadow = this.sombras;
-    TODAS_AS_CASAS_3D.forEach((p, i) => this.corpos!.setMatrixAt(i, matriz(p.x, 0, p.z)));
+    this.geo.todas.forEach((p, i) => this.corpos!.setMatrixAt(i, matriz(p.x, 0, p.z)));
     this.cena.add(this.corpos);
     this.descartaveis.push(geoCorpo, matCorpo);
     const geoTopo = new THREE.CircleGeometry(RAIO_DA_CASA - 0.02, 32).rotateX(-Math.PI / 2);
@@ -626,7 +733,7 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     for (const tipo of Object.keys(COR_DO_TIPO)) {
       const t = pintarTopo(tipo);
       const m = new THREE.MeshStandardMaterial({ map: t, roughness: 0.55 });
-      const im = new THREE.InstancedMesh(geoTopo, m, TODAS_AS_CASAS_3D.length);
+      const im = new THREE.InstancedMesh(geoTopo, m, this.geo.todas.length);
       im.count = 0;
       im.receiveShadow = this.sombras;
       im.frustumCulled = false;
@@ -637,7 +744,7 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     }
     this.instancias.push(this.corpos);
     // a bandeira quadriculada da largada, por dentro da casa 0 (por fora, ficaria entre a câmera e as peças)
-    const c0 = CASAS_DA_VOLTA[0];
+    const c0 = this.geo.casasDaVolta[0];
     const bx = c0.x + c0.fora[0] * -0.5;
     const bz = c0.z + c0.fora[1] * -0.5;
     const blocos: Bloco[] = [caixa(0.03, 0.78, 0.03, bx, 0, bz, '#f4efe6'), caixa(0.05, 0.05, 0.05, bx, 0.78, bz, '#e0b04a')];
@@ -674,9 +781,9 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     const pontos: [number, number, number][] = [];
     const livre = (x: number, z: number, folga: number) => pontos.every(([a, b]) => Math.hypot(a - x, b - z) > folga);
     // (as casas dos ramais também, e o lugar da barraca por dentro das casas que têm ramal por fora)
-    const barracasPorDentro = [...COM_RAMAL_POR_FORA].map((i) => chaoDaBarraca(i, BARRACA_FORA));
+    const barracasPorDentro = [...this.geo.comRamalPorFora].map((i) => this.geo.chaoDaBarraca(i, BARRACA_FORA));
     const longeDaVolta = (x: number, z: number, d: number) =>
-      TODAS_AS_CASAS_3D.every((c) => Math.hypot(c.x - x, c.z - z) > d) && barracasPorDentro.every((b) => Math.hypot(b.x - x, b.z - z) > 0.6);
+      this.geo.todas.every((c) => Math.hypot(c.x - x, c.z - z) > d) && barracasPorDentro.every((b) => Math.hypot(b.x - x, b.z - z) > 0.6);
     // entre a volta e o anel
     for (let k = 0; k < 400 && pontos.length < 26; k++) {
       const x = (sorte() * 2 - 1) * (ANEL.rx - ANEL.largura / 2 - 0.25);
@@ -688,8 +795,38 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
       const qx = Math.abs(x) - (ANEL.rx - ANEL.canto);
       const qz = Math.abs(z) - (ANEL.rz - ANEL.canto);
       const doAnel = ANEL.canto - Math.hypot(Math.max(qx, 0), Math.max(qz, 0)) - Math.min(Math.max(qx, qz), 0);
+      // (no rio, nenhuma árvore na água)
+      const rx = Math.abs(x) - (RIO.rx - RIO.canto);
+      const rz = Math.abs(z) - (RIO.rz - RIO.canto);
+      const doRio = Math.abs(Math.hypot(Math.max(rx, 0), Math.max(rz, 0)) + Math.min(Math.max(rx, rz), 0) - RIO.canto);
+      if (this.tema.rio && doRio < RIO.largura / 2 + 0.35) continue;
       if (dentro || doAnel < ANEL.largura / 2 + 0.3 || !longeDaVolta(x, z, 1.15) || !livre(x, z, 0.55)) continue;
       pontos.push([x, z, 0.32 + sorte() * 0.14]);
+    }
+    // AS PEDRAS DA SERRA (24/11/2026): rochas de cantos vivos entre a volta e a rua, longe das casas e das árvores
+    if (this.tema.pedras) {
+      const rochas: THREE.Matrix4[] = [];
+      const perto: [number, number][] = [];
+      for (let k = 0; k < 300 && rochas.length < 18; k++) {
+        const x = (sorte() * 2 - 1) * (ANEL.rx - ANEL.largura / 2 - 0.35);
+        const z = (sorte() * 2 - 1) * (ANEL.rz - ANEL.largura / 2 - 0.35);
+        // nem na frente da câmera (entre ela e a largada)
+        if ((z > 1.6 && Math.abs(x) < 3) || this.dentroDaVolta(x, z) || !longeDaVolta(x, z, 0.75) || !livre(x, z, 0.5) || perto.some(([a, b]) => Math.hypot(a - x, b - z) < 0.5)) continue;
+        if (Math.hypot(x - PRACA.x, z - PRACA.z) < PRACA.raio + 0.3 || Math.hypot(x - TOCA.x, z - TOCA.z) < TOCA.raio + 0.3) continue;
+        if (x > HORTA.x0 - 0.3 && x < HORTA.x1 + 0.3 && z > HORTA.z0 - 0.3 && z < HORTA.z1 + 0.3) continue;
+        const s = 0.14 + sorte() * 0.2;
+        rochas.push(new THREE.Matrix4().compose(new THREE.Vector3(x, s * 0.45, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(sorte() * 3, sorte() * 3, sorte() * 3)), new THREE.Vector3(s, s * 0.75, s)));
+        perto.push([x, z]);
+      }
+      const geo = new THREE.DodecahedronGeometry(1, 0);
+      const mat = new THREE.MeshStandardMaterial({ color: '#9a948a', roughness: 0.95, flatShading: true });
+      const im = new THREE.InstancedMesh(geo, mat, rochas.length);
+      rochas.forEach((m, k) => im.setMatrixAt(k, m));
+      im.castShadow = this.sombras;
+      im.receiveShadow = this.sombras;
+      this.cena.add(im);
+      this.descartaveis.push(geo, mat);
+      this.instancias.push(im);
     }
     // no miolo, nos cantos livres
     for (const [x, z] of [
@@ -940,13 +1077,13 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
       const n = new Map<string, number>();
       for (const im of this.topos.values()) im.count = 0;
       d.casas.forEach((tipo, i) => {
-        if (i >= TODAS_AS_CASAS_3D.length) return;
+        if (i >= this.geo.todas.length) return;
         const [, lado] = COR_DO_TIPO[tipo] ?? COR_DO_TIPO.i;
         this.corpos?.setColorAt(i, cor.set(lado));
         const im = this.topos.get(tipo) ?? this.topos.get('i')!;
         const k = n.get(tipo) ?? 0;
         n.set(tipo, k + 1);
-        const p = TODAS_AS_CASAS_3D[i];
+        const p = this.geo.todas[i];
         // o quadriculado da largada segue o caminho; os sinais ficam de pé para a câmera de fábrica
         im.setMatrixAt(k, matriz(p.x, ALTURA_DA_CASA + 0.002, p.z, tipo === 'i' ? p.rumo : 0));
         im.count = k + 1;
@@ -956,15 +1093,15 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     }
     // a dourada: na primeira vez, já no lugar; depois, voa
     if (d.dourada !== this.casaDaDourada) {
-      const para = lugarDaBarraca(d.dourada);
+      const para = this.lugarDaBarraca(d.dourada);
       if (this.casaDaDourada < 0 || this.calmo) {
         this.dourada.position.copy(para);
         this.vooDaDourada = null;
       } else this.vooDaDourada = { de: this.dourada.position.clone(), para, inicio: performance.now() };
       this.casaDaDourada = d.dourada;
-      const c = CASAS_DA_VOLTA[d.dourada] ?? CASAS_DA_VOLTA[1];
+      const c = this.geo.casasDaVolta[d.dourada] ?? this.geo.casasDaVolta[1];
       // a barraca olha para a casa (por dentro, quando lá fora há ramal)
-      const lado = chaoDaBarraca(d.dourada, BARRACA_FORA).lado;
+      const lado = this.geo.chaoDaBarraca(d.dourada, BARRACA_FORA).lado;
       this.barraca.rotation.y = Math.atan2(-c.fora[0] * lado, -c.fora[1] * lado);
       this.brilhoDaDourada?.position.set(c.x, ALTURA_DA_CASA + 0.004, c.z);
     }
@@ -1028,7 +1165,7 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
       const ids = porCasa.get(info.pos) ?? [info.userId];
       const k = ids.indexOf(info.userId);
       const n = ids.length;
-      const c = centroDaCasa(info.pos);
+      const c = centroDaCasa(info.pos, this.geo);
       if (n > 1) {
         const a = (k / n) * Math.PI * 2 + Math.PI / 2;
         const r = n > 4 ? 0.2 : 0.16;
@@ -1064,7 +1201,7 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     raiz.add(sombra);
     const marca = new THREE.Mesh(new THREE.OctahedronGeometry(0.06), new THREE.MeshStandardMaterial({ color: info.roupa, emissive: '#ffffff', emissiveIntensity: 0.25 }));
     raiz.add(marca);
-    const c = centroDaCasa(info.pos);
+    const c = centroDaCasa(info.pos, this.geo);
     raiz.position.copy(c);
     this.cena.add(raiz);
     return { raiz, corpo: pulo, sombra, marca, mat: material, descartar, mixer, acoes, tocando: '', casa: info.pos, de: c.clone(), para: c.clone(), inicio: 0, duracao: 0, rumo: 0, pelo: info.pelo, roupa: info.roupa, vez: info.vez };
@@ -1097,7 +1234,7 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     const sinA = Math.sin(this.azimute);
     let largura = 0;
     let fundo = 0;
-    for (const c of TODAS_AS_CASAS_3D) {
+    for (const c of this.geo.todas) {
       largura = Math.max(largura, Math.abs(c.x * cosA - c.z * sinA));
       fundo = Math.max(fundo, Math.abs(c.x * sinA + c.z * cosA));
     }
@@ -1226,7 +1363,7 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
     if (this.brilhoDaVez) {
       this.brilhoDaVez.visible = !!casaDaVez;
       if (casaDaVez) {
-        const c = centroDaCasa(casaDaVez.casa);
+        const c = centroDaCasa(casaDaVez.casa, this.geo);
         this.brilhoDaVez.position.set(c.x, ALTURA_DA_CASA + 0.006, c.z);
         (this.brilhoDaVez.material as THREE.MeshBasicMaterial).opacity = vivo ? 0.6 + Math.sin(tempo * 3.2) * 0.25 : 0.75;
       }
@@ -1383,6 +1520,6 @@ export class CenaDoTabuleiro implements CenaDeMesa<DadosDoTabuleiro3D> {
   }
 }
 
-export function criarCenaDoTabuleiro(caixa: HTMLElement, avisar: (alvo: number) => void): CenaDoTabuleiro {
-  return new CenaDoTabuleiro(caixa, avisar);
+export function criarCenaDoTabuleiro(caixa: HTMLElement, avisar: (alvo: number) => void, tabuleiro = 'horta'): CenaDoTabuleiro {
+  return new CenaDoTabuleiro(caixa, avisar, tabuleiro);
 }

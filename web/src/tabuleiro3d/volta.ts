@@ -13,6 +13,62 @@ import * as THREE from 'three';
 export const NUMERO_DE_CASAS = 30;
 /** O raio do disco de cada casa da volta. */
 export const RAIO_DA_CASA = 0.31;
+export const DISTANCIA_DO_RAMAL = 0.74;
+
+/** Uma casa no chão: o centro, o lado de fora da volta (unitário) e o rumo de quem anda. */
+export type CasaNoChao = { x: number; z: number; fora: [number, number]; rumo: number };
+
+/**
+ * A FORMA DE UM TABULEIRO (24/11/2026, os tabuleiros novos): a volta, os ramais e as contas que dependem deles. Cada tabuleiro
+ * do servidor (TABULEIROS em server/src/minijogo-tabuleiro-da-turma.ts) tem a sua; o teste confere o número de casas e os
+ * ramais, e que nenhuma casa fica em cima da cidade, da rua ou do miolo (que é o mesmo nos três).
+ */
+export interface GeometriaDaVolta {
+  numero: number;
+  curva: THREE.CatmullRomCurve3;
+  casasDaVolta: CasaNoChao[];
+  ramais: { de: number; ate: number; tamanho: number }[];
+  casasDosRamais: CasaNoChao[];
+  todas: CasaNoChao[];
+  comRamalPorFora: Set<number>;
+  chaoDaBarraca(i: number, distancia: number): { x: number; z: number; lado: number };
+}
+
+function montarGeometria(pontos: [number, number][], numero: number, ramais: { de: number; ate: number; tamanho: number }[]): GeometriaDaVolta {
+  const curva = new THREE.CatmullRomCurve3(
+    pontos.map(([x, z]) => new THREE.Vector3(x, 0, z)),
+    true,
+    'centripetal',
+  );
+  const casasDaVolta: CasaNoChao[] = Array.from({ length: numero }, (_, i) => {
+    const u = i / numero;
+    const p = curva.getPointAt(u);
+    const t = curva.getTangentAt(u);
+    // no sentido do relógio visto de cima, o lado de fora é à esquerda de quem anda: (t.z, -t.x)
+    return { x: p.x, z: p.z, fora: [t.z, -t.x], rumo: Math.atan2(t.x, t.z) };
+  });
+  const casasDosRamais = ramais.flatMap((r) =>
+    Array.from({ length: r.tamanho }, (_, j) => {
+      const c = casasDaVolta[(r.de + 1 + j) % numero];
+      return { x: c.x + c.fora[0] * DISTANCIA_DO_RAMAL, z: c.z + c.fora[1] * DISTANCIA_DO_RAMAL, fora: c.fora, rumo: c.rumo };
+    }),
+  );
+  const comRamalPorFora = new Set(ramais.flatMap((r) => Array.from({ length: r.tamanho }, (_, j) => (r.de + 1 + j) % numero)));
+  return {
+    numero,
+    curva,
+    casasDaVolta,
+    ramais,
+    casasDosRamais,
+    todas: [...casasDaVolta, ...casasDosRamais],
+    comRamalPorFora,
+    chaoDaBarraca(i, distancia) {
+      const c = casasDaVolta[((i % numero) + numero) % numero];
+      const lado = comRamalPorFora.has(i) ? -1 : 1;
+      return { x: c.x + c.fora[0] * distancia * lado, z: c.z + c.fora[1] * distancia * lado, lado };
+    },
+  };
+}
 
 /** Os pontos por onde a volta passa: um "osso" com uma reentrância na frente e outra no fundo, onde a cidade entra. */
 const PONTOS: [number, number][] = [
@@ -30,51 +86,76 @@ const PONTOS: [number, number][] = [
   [1.6, 2.65],
 ];
 
-export const CURVA_DA_VOLTA = new THREE.CatmullRomCurve3(
-  PONTOS.map(([x, z]) => new THREE.Vector3(x, 0, z)),
-  true,
-  'centripetal',
-);
-
-/** O centro de cada casa (0 a 29), igualmente espaçadas ao longo da volta. */
-export const CASAS_DA_VOLTA: { x: number; z: number; /** Para fora da volta (unitário). */ fora: [number, number]; rumo: number }[] = Array.from(
-  { length: NUMERO_DE_CASAS },
-  (_, i) => {
-    const u = i / NUMERO_DE_CASAS;
-    const p = CURVA_DA_VOLTA.getPointAt(u);
-    const t = CURVA_DA_VOLTA.getTangentAt(u);
-    // no sentido do relógio visto de cima, o lado de fora é à esquerda de quem anda: (t.z, -t.x)
-    return { x: p.x, z: p.z, fora: [t.z, -t.x], rumo: Math.atan2(t.x, t.z) };
-  },
-);
-
 /**
  * AS BIFURCAÇÕES (19/11/2026): os ramais do servidor (RAMAIS em server/src/minijogo-tabuleiro-da-turma.ts; o teste confere que
  * são os mesmos). Cada casa do ramal fica POR FORA da casa da volta que ela acompanha, a DISTANCIA_DO_RAMAL dela: os dois ramais
  * estão nas pontas da volta (os lados de fora, à esquerda e à direita), onde ela é convexa e há chão até o anel.
  */
-export const RAMAIS_DA_VOLTA: { de: number; ate: number; tamanho: number }[] = [
+const HORTA_3D = montarGeometria(PONTOS, NUMERO_DE_CASAS, [
   { de: 5, ate: 10, tamanho: 4 },
   { de: 20, ate: 25, tamanho: 4 },
-];
-export const DISTANCIA_DO_RAMAL = 0.74;
-/** As casas dos ramais, na numeração do servidor (de NUMERO_DE_CASAS em diante). */
-export const CASAS_DOS_RAMAIS: typeof CASAS_DA_VOLTA = RAMAIS_DA_VOLTA.flatMap((r) =>
-  Array.from({ length: r.tamanho }, (_, j) => {
-    const c = CASAS_DA_VOLTA[r.de + 1 + j];
-    return { x: c.x + c.fora[0] * DISTANCIA_DO_RAMAL, z: c.z + c.fora[1] * DISTANCIA_DO_RAMAL, fora: c.fora, rumo: c.rumo };
-  }),
+]);
+
+/**
+ * O RIO (24/11/2026): uma volta oval e maior, de 32 casas, por fora de todo o miolo, com a ponte (o ramal) no fundo, à direita. O rio
+ * passa entre a volta e o anel (o desenho é da cena).
+ */
+const RIO_3D = montarGeometria(
+  [
+    [0, 2.6],
+    [-2.5, 2.6],
+    [-4.45, 2.2],
+    [-5.0, 0],
+    [-4.45, -2.2],
+    [-2.5, -2.6],
+    [0, -2.6],
+    [2.5, -2.6],
+    [4.45, -2.2],
+    [5.0, 0],
+    [4.45, 2.2],
+    [2.5, 2.6],
+  ],
+  32,
+  [{ de: 16, ate: 21, tamanho: 4 }],
 );
+
+/** A SERRA (24/11/2026): uma volta de 28 casas com o pico no fundo (a subida da serra), e o atalho à esquerda. */
+const SERRA_3D = montarGeometria(
+  [
+    [0, 2.15],
+    [-2.4, 2.25],
+    [-4.35, 1.5],
+    [-4.7, -0.5],
+    [-3.6, -2.0],
+    [-1.6, -2.7],
+    [0, -3.55],
+    [1.6, -2.7],
+    [3.6, -2.0],
+    [4.7, -0.5],
+    [4.35, 1.5],
+    [2.4, 2.25],
+  ],
+  28,
+  [{ de: 3, ate: 8, tamanho: 4 }],
+);
+
+export const GEOMETRIAS: Record<string, GeometriaDaVolta> = { horta: HORTA_3D, rio: RIO_3D, serra: SERRA_3D };
+/** A forma do tabuleiro `id` (sem ele, ou desconhecido, a horta). */
+export const geometriaDe = (id?: string | null): GeometriaDaVolta => GEOMETRIAS[id ?? 'horta'] ?? HORTA_3D;
+
+// os nomes de sempre: a horta
+export const CURVA_DA_VOLTA = HORTA_3D.curva;
+/** O centro de cada casa (0 a 29), igualmente espaçadas ao longo da volta. */
+export const CASAS_DA_VOLTA = HORTA_3D.casasDaVolta;
+export const RAMAIS_DA_VOLTA = HORTA_3D.ramais;
+/** As casas dos ramais, na numeração do servidor (de NUMERO_DE_CASAS em diante). */
+export const CASAS_DOS_RAMAIS = HORTA_3D.casasDosRamais;
 /** Todas as casas, na numeração do servidor: a volta e os ramais. */
-export const TODAS_AS_CASAS_3D = [...CASAS_DA_VOLTA, ...CASAS_DOS_RAMAIS];
+export const TODAS_AS_CASAS_3D = HORTA_3D.todas;
 /** As casas da volta que têm um ramal por fora: a barraca da dourada fica por DENTRO delas. */
-export const COM_RAMAL_POR_FORA = new Set(RAMAIS_DA_VOLTA.flatMap((r) => Array.from({ length: r.tamanho }, (_, j) => r.de + 1 + j)));
+export const COM_RAMAL_POR_FORA = HORTA_3D.comRamalPorFora;
 /** Onde fica a barraca da dourada (no chão) quando ela está na casa `i` da volta: por fora, ou por dentro se lá fora há ramal. */
-export function chaoDaBarraca(i: number, distancia: number): { x: number; z: number; lado: number } {
-  const c = CASAS_DA_VOLTA[((i % NUMERO_DE_CASAS) + NUMERO_DE_CASAS) % NUMERO_DE_CASAS];
-  const lado = COM_RAMAL_POR_FORA.has(i) ? -1 : 1;
-  return { x: c.x + c.fora[0] * distancia * lado, z: c.z + c.fora[1] * distancia * lado, lado };
-}
+export const chaoDaBarraca = HORTA_3D.chaoDaBarraca;
 
 /** As ruas: o anel dos carros em volta da volta, e quatro ruas saindo dele para fora (o resto da cidade). */
 export const ANEL = { rx: 6.3, rz: 4.4, canto: 1.3, largura: 0.8 };

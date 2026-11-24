@@ -1,6 +1,7 @@
 import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
 import { normalizar } from './minijogo-stop.js';
 import { BONUS_DO_NIVEL, nivelDoDesenho, PALAVRAS_NOVAS_DO_DESENHO, type NivelDoDesenho } from './desenho-palavras.js';
+import { comecarTelefone } from './minijogo-telefone.js';
 
 /**
  * O DESENHA E ADIVINHA (o Gartic do Syden). Três rodadas, e em cada uma cada pessoa desenha uma vez: escolhe uma de três
@@ -109,6 +110,9 @@ const nivelDe = (id: string): NivelDoDesenho => (id.startsWith('#') ? 2 : nivelD
 export const desenho: Definicao = {
   minimo: 2,
   comecar(ctx, { naSala, corpo }) {
+    // O TELEFONE SEM FIO (24/11/2026): o outro modo da largada, com as mesmas ferramentas de desenho (minijogo-telefone.ts)
+    if (corpo.modo === 'telefone')
+      return comecarTelefone(ctx, naSala, corpo, { cores: CORES, espessuras: ESPESSURAS, balde: BALDE, baldesPorDesenho: BALDES_POR_DESENHO, tempos: TEMPOS_POSSIVEIS_DO_DESENHO });
     if (naSala.length < 2) return 'O desenho precisa de pelo menos 2 pessoas na sala.';
     const daTurma = [
       ...new Set(

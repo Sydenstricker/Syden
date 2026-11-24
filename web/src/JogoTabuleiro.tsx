@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { coresDoJogador, type AvatarDoJogo } from './coelho/cores';
 import { BotoesDosRobos, cadaUmPorSi } from './EscolhaDosRobos';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 import { RodadaDaFesta } from './JogoFesta';
 import { Placar, Relogio } from './Minijogo';
 import type { EfeitoDaCasa, EstadoTabuleiro, Partida } from './minijogos';
@@ -9,7 +9,7 @@ import { tocar } from './somDosJogos';
 import type { DadosDoTabuleiro3D } from './tabuleiro3d/cena';
 import { TabuleiroDaTurma3D } from './tabuleiro3d/TabuleiroDaTurma3D';
 import { Bifurcacao, EscolhaDoDuelo, ItensDe, Loja, NOME_DO_ITEM, PremiosBonus, UsarItens } from './TabuleiroPaineis';
-import type { ItemDoTabuleiro } from './minijogos';
+import type { IdDoTabuleiro, ItemDoTabuleiro } from './minijogos';
 
 /**
  * O TABULEIRO DA TURMA (03/11/2026, server/src/minijogo-tabuleiro-da-turma.ts): o tabuleiro de festa, só a mecânica, desenhado
@@ -29,36 +29,8 @@ const PREMIO_MS = 2500;
 const PREMIOS_TOTAL_MS = 3 * PREMIO_MS + 2000;
 /** As fases em que a peça de quem jogou anda na tela. */
 const FASES_DO_ANDAR = ['andando', 'loja', 'caminho', 'itens', 'duelo'];
-/** Os ramais de sempre (o servidor manda os dele; estes são só para quem desenha sem estado). */
-const RAMAIS_PADRAO: EstadoTabuleiro['ramais'] = [
-  { de: 5, ate: 10, inicio: 30, tamanho: 4 },
-  { de: 20, ate: 25, inicio: 34, tamanho: 4 },
-];
-
-const CASA = 28;
-const COLUNAS = 11;
-const LINHAS = 6;
-const BORDA = 4;
-
-/** Onde fica cada casa (0 a 29): a fileira de cima da esquerda para a direita, desce pela direita, volta por baixo e sobe. */
-export function lugarDaCasa(i: number, ramais: EstadoTabuleiro['ramais'] = RAMAIS_PADRAO): { x: number; y: number } {
-  // as casas dos ramais (19/11/2026): uma casa para dentro da casa da volta que cada uma acompanha
-  const ramal = ramais.find((r) => i >= r.inicio && i < r.inicio + r.tamanho);
-  if (ramal) {
-    const v = lugarDaCasa(ramal.de + 1 + (i - ramal.inicio), []);
-    const c0 = (v.x - BORDA) / CASA;
-    const l0 = (v.y - BORDA) / CASA;
-    const [c1, l1] = l0 === 0 ? [c0, 1] : l0 === LINHAS - 1 ? [c0, LINHAS - 2] : c0 === COLUNAS - 1 ? [COLUNAS - 2, l0] : [1, l0];
-    return { x: BORDA + c1 * CASA, y: BORDA + l1 * CASA };
-  }
-  let c: number;
-  let l: number;
-  if (i <= 10) [c, l] = [i, 0];
-  else if (i <= 14) [c, l] = [10, i - 10];
-  else if (i <= 25) [c, l] = [25 - i, 5];
-  else [c, l] = [0, 30 - i];
-  return { x: BORDA + c * CASA, y: BORDA + l * CASA };
-}
+import { BORDA, CASA, lugarDaCasa, MEDIDAS_2D, RAMAIS_PADRAO } from './tabuleiroLugares';
+export { lugarDaCasa, MEDIDAS_2D };
 
 const COR_DA_CASA: Record<string, [string, string]> = {
   i: ['#e8d9c0', '#a89276'],
@@ -68,6 +40,9 @@ const COR_DA_CASA: Record<string, [string, string]> = {
   // 19/11/2026: a loja de itens e o duelo
   $: ['#5fb8b0', '#3e8a84'],
   d: ['#f0a04a', '#b8702e'],
+  // 24/11/2026: a correnteza do rio e o escorrega da serra
+  c: ['#4f9fd6', '#356f9a'],
+  e: ['#b08a5c', '#7a5c3a'],
 };
 
 /** As cores de quem não tem avatar pronto: uma por lugar na ordem. */
@@ -102,6 +77,15 @@ function efeitosNaCena(ultimo: EstadoTabuleiro['ultimo'], participantes: EstadoT
       return participantes.map((p) => um(p.userId, `= ${e.valor} 🥕`, true));
     case 'escudo':
       return [um(ultimo.userId, '🛡', true)];
+    // os tabuleiros novos (24/11/2026)
+    case 'correnteza':
+      return [um(ultimo.userId, `🌊 +${e.valor}`, true)];
+    case 'escorrega':
+      return [um(ultimo.userId, `↩ −${e.valor}`, false)];
+    case 'cheia':
+      return participantes.filter((p) => p.presente).map((p) => um(p.userId, `🌊 +${e.valor}`, true));
+    case 'teleferico':
+      return [um(ultimo.userId, '🚡', true)];
     default:
       return [];
   }
@@ -128,6 +112,9 @@ function useSonsDoAndar(ultimo: EstadoTabuleiro['ultimo'], passo: number, chegou
       if (ultimo.comprou) tocar('acerto');
       else if (e && (e.tipo === 'mais' || e.tipo === 'achado' || e.tipo === 'chuva')) tocar('moeda');
       else if (e && e.tipo === 'menos' && e.valor) tocar('erro');
+      else if (e && (e.tipo === 'correnteza' || e.tipo === 'cheia')) tocar('agua');
+      else if (e && e.tipo === 'escorrega') tocar('desliza');
+      else if (e && e.tipo === 'teleferico') tocar('mola');
     }
   }, [ultimo, passo, chegou]);
 }
@@ -216,28 +203,11 @@ export function useAgora(ligado: boolean) {
   return agora;
 }
 
-/** O desenho do tabuleiro: a horta no meio, a volta de casas, a dourada e as peças. */
-function Tabuleiro({ estado, posDe }: { estado: EstadoTabuleiro; posDe: (userId: number) => number }) {
-  const ramais = estado.ramais ?? RAMAIS_PADRAO;
-  const lugar = (i: number) => lugarDaCasa(i, ramais);
-  const largura = BORDA * 2 + COLUNAS * CASA;
-  const altura = BORDA * 2 + LINHAS * CASA;
-  // quantas peças em cada casa, para não ficarem uma em cima da outra
-  const porCasa = new Map<number, number[]>();
-  estado.participantes.forEach((p) => porCasa.set(posDe(p.userId), [...(porCasa.get(posDe(p.userId)) ?? []), p.userId]));
-  const deslocamento = (userId: number) => {
-    const ids = porCasa.get(posDe(userId)) ?? [userId];
-    const i = ids.indexOf(userId);
-    if (ids.length === 1) return { dx: 0, dy: 0 };
-    const col = i % 4;
-    const lin = Math.floor(i / 4);
-    return { dx: (col - (Math.min(ids.length, 4) - 1) / 2) * 6, dy: lin * 5 - 2 };
-  };
-  const dourada = lugar(estado.dourada);
+/** O miolo da horta (o tabuleiro de sempre): a grama, os canteiros, a toca e o lago. */
+function MioloDaHorta() {
   return (
-    <svg className="tab-tabuleiro" viewBox={`0 0 ${largura} ${altura}`} aria-hidden="true" shapeRendering="crispEdges">
-      {/* a grama e a horta do meio */}
-      <rect width={largura} height={altura} fill="#62804a" />
+    <>
+      <rect width={BORDA * 2 + 11 * CASA} height={BORDA * 2 + 6 * CASA} fill="#62804a" />
       <rect x={BORDA + CASA} y={BORDA + CASA} width={CASA * 9} height={CASA * 4} fill="#7a9a5a" />
       {Array.from({ length: 24 }, (_, i) => (
         <rect key={`g${i}`} x={BORDA + CASA + 6 + ((i * 37) % 244)} y={BORDA + CASA + 6 + ((i * 53) % 98)} width="2" height="2" fill="#8eae6a" />
@@ -265,6 +235,111 @@ function Tabuleiro({ estado, posDe }: { estado: EstadoTabuleiro; posDe: (userId:
       <rect x={BORDA + CASA * 7 - 4} y={BORDA + CASA * 2.2 + 6} width="68" height="28" fill="#5f8fa8" />
       <rect x={BORDA + CASA * 7 + 8} y={BORDA + CASA * 2.2 + 8} width="14" height="2" fill="#9cc2d2" />
       <rect x={BORDA + CASA * 7 + 30} y={BORDA + CASA * 2.2 + 22} width="18" height="2" fill="#9cc2d2" />
+    </>
+  );
+}
+
+/** O miolo do rio (24/11/2026): a grama da margem e o rio atravessando o meio, com a ponte e os peixes. */
+function MioloDoRio({ largura, altura }: { largura: number; altura: number }) {
+  const x0 = BORDA + CASA;
+  const y0 = BORDA + CASA;
+  const w = largura - 2 * (BORDA + CASA);
+  const h = altura - 2 * (BORDA + CASA);
+  const meio = y0 + h / 2;
+  return (
+    <>
+      <rect width={largura} height={altura} fill="#5c8a52" />
+      <rect x={x0} y={y0} width={w} height={h} fill="#78a466" />
+      {/* o rio, em degraus (cara de 16 bits) */}
+      {Array.from({ length: Math.ceil(w / 8) }, (_, k) => {
+        const dy = [0, 2, 4, 4, 2, 0, -2, -4, -4, -2][k % 10];
+        return (
+          <g key={k}>
+            <rect x={x0 + k * 8} y={meio - 14 + dy} width="8" height="28" fill="#c9b48f" />
+            <rect x={x0 + k * 8} y={meio - 12 + dy} width="8" height="24" fill="#4f8fc8" />
+            {k % 3 === 0 && <rect x={x0 + k * 8 + 2} y={meio - 6 + dy} width="5" height="2" fill="#9cc8e6" />}
+            {k % 4 === 2 && <rect x={x0 + k * 8} y={meio + 5 + dy} width="6" height="2" fill="#9cc8e6" />}
+          </g>
+        );
+      })}
+      {/* a ponte de tábuas no meio */}
+      <rect x={x0 + w / 2 - 14} y={meio - 18} width="28" height="36" fill="#8e6a4a" />
+      {Array.from({ length: 6 }, (_, k) => (
+        <rect key={k} x={x0 + w / 2 - 14} y={meio - 17 + k * 6} width="28" height="1" fill="#6a4a32" />
+      ))}
+      <rect x={x0 + w / 2 - 16} y={meio - 18} width="2" height="36" fill="#5a3a2a" />
+      <rect x={x0 + w / 2 + 14} y={meio - 18} width="2" height="36" fill="#5a3a2a" />
+      {/* juncos e um peixe */}
+      {[0.12, 0.3, 0.72, 0.88].map((f, k) => (
+        <g key={`j${k}`}>
+          <rect x={x0 + w * f} y={meio - 20} width="2" height="7" fill="#4f7a3a" />
+          <rect x={x0 + w * f + 3} y={meio - 18} width="2" height="5" fill="#6a9a4a" />
+        </g>
+      ))}
+      <rect x={x0 + w * 0.22} y={meio + 2} width="6" height="3" fill="#e3a640" />
+      <rect x={x0 + w * 0.22 - 2} y={meio + 1} width="2" height="5" fill="#e3a640" />
+    </>
+  );
+}
+
+/** O miolo da serra (24/11/2026): os morros em degraus, com neve no pico, e as pedras. */
+function MioloDaSerra({ largura, altura }: { largura: number; altura: number }) {
+  const x0 = BORDA + CASA;
+  const y0 = BORDA + CASA;
+  const w = largura - 2 * (BORDA + CASA);
+  const h = altura - 2 * (BORDA + CASA);
+  const morro = (cx: number, base: number, alto: number, cor: string, neve: boolean) =>
+    Array.from({ length: Math.floor(alto / 6) }, (_, k) => {
+      const meia = ((alto - k * 6) * 1.1) | 0;
+      return (
+        <g key={`${cx}-${k}`}>
+          <rect x={cx - meia} y={base - (k + 1) * 6} width={meia * 2} height="6" fill={cor} />
+          {neve && k >= Math.floor(alto / 6) - 2 && <rect x={cx - meia} y={base - (k + 1) * 6} width={meia * 2} height="3" fill="#f3ead8" />}
+        </g>
+      );
+    });
+  return (
+    <>
+      <rect width={largura} height={altura} fill="#7a8a5a" />
+      <rect x={x0} y={y0} width={w} height={h} fill="#93a46e" />
+      <g>{morro(x0 + w * 0.3, y0 + h - 6, 54, '#8a8478', false)}</g>
+      <g>{morro(x0 + w * 0.62, y0 + h - 4, 72, '#7c766b', true)}</g>
+      <g>{morro(x0 + w * 0.85, y0 + h - 8, 36, '#958f83', false)}</g>
+      {[0.08, 0.18, 0.45, 0.76, 0.93].map((f, k) => (
+        <g key={`p${k}`}>
+          <rect x={x0 + w * f} y={y0 + h - 10 - (k % 2) * 4} width="8" height="5" fill="#a39d90" />
+          <rect x={x0 + w * f + 1} y={y0 + h - 11 - (k % 2) * 4} width="5" height="2" fill="#bdb6a8" />
+        </g>
+      ))}
+    </>
+  );
+}
+
+/** O desenho do tabuleiro: a horta no meio, a volta de casas, a dourada e as peças. */
+function Tabuleiro({ estado, posDe }: { estado: EstadoTabuleiro; posDe: (userId: number) => number }) {
+  const ramais = estado.ramais ?? RAMAIS_PADRAO;
+  const tabuleiro = estado.tabuleiro ?? 'horta';
+  const medidas = MEDIDAS_2D[tabuleiro] ?? MEDIDAS_2D.horta;
+  const lugar = (i: number) => lugarDaCasa(i, ramais, medidas);
+  const largura = BORDA * 2 + medidas.colunas * CASA;
+  const altura = BORDA * 2 + medidas.linhas * CASA;
+  // quantas peças em cada casa, para não ficarem uma em cima da outra
+  const porCasa = new Map<number, number[]>();
+  estado.participantes.forEach((p) => porCasa.set(posDe(p.userId), [...(porCasa.get(posDe(p.userId)) ?? []), p.userId]));
+  const deslocamento = (userId: number) => {
+    const ids = porCasa.get(posDe(userId)) ?? [userId];
+    const i = ids.indexOf(userId);
+    if (ids.length === 1) return { dx: 0, dy: 0 };
+    const col = i % 4;
+    const lin = Math.floor(i / 4);
+    return { dx: (col - (Math.min(ids.length, 4) - 1) / 2) * 6, dy: lin * 5 - 2 };
+  };
+  const dourada = lugar(estado.dourada);
+  return (
+    <svg className="tab-tabuleiro" viewBox={`0 0 ${largura} ${altura}`} aria-hidden="true" shapeRendering="crispEdges">
+      {tabuleiro === 'rio' && <MioloDoRio largura={largura} altura={altura} />}
+      {tabuleiro === 'serra' && <MioloDaSerra largura={largura} altura={altura} />}
+      {tabuleiro === 'horta' && <MioloDaHorta />}
       {/* as casas */}
       {estado.casas.map((tipo, i) => {
         const { x, y } = lugar(i);
@@ -309,6 +384,29 @@ function Tabuleiro({ estado, posDe }: { estado: EstadoTabuleiro; posDe: (userId:
                     ))}
                   </g>
                 ))}
+              </>
+            )}
+            {tipo === 'c' && (
+              <>
+                {/* a correnteza: duas ondas */}
+                {[-4, 2].map((dy) => (
+                  <g key={dy}>
+                    <rect x={cx - 7} y={cy + dy} width="4" height="2" fill="#f3ead8" />
+                    <rect x={cx - 3} y={cy + dy - 2} width="4" height="2" fill="#f3ead8" />
+                    <rect x={cx + 1} y={cy + dy} width="4" height="2" fill="#f3ead8" />
+                    <rect x={cx + 5} y={cy + dy - 2} width="3" height="2" fill="#f3ead8" />
+                  </g>
+                ))}
+              </>
+            )}
+            {tipo === 'e' && (
+              <>
+                {/* o escorrega: a seta para trás */}
+                <rect x={cx - 4} y={cy - 6} width="10" height="2" fill="#f3ead8" />
+                <rect x={cx + 4} y={cy - 6} width="2" height="8" fill="#f3ead8" />
+                <rect x={cx - 4} y={cy + 1} width="10" height="2" fill="#f3ead8" />
+                <rect x={cx - 7} y={cy} width="3" height="4" fill="#f3ead8" />
+                <rect x={cx - 5} y={cy - 1} width="2" height="6" fill="#f3ead8" />
               </>
             )}
             {tipo === 'i' && (
@@ -367,6 +465,15 @@ function textoDoEfeito(efeito: EfeitoDaCasa | null, nome: string, nomeDe: (id: n
       return t('{nome} ganhou um item: {item}.', { nome, item: t(NOME_DO_ITEM[efeito.item]) });
     case 'escudo':
       return t('O escudo segurou a perda.');
+    // os tabuleiros novos (24/11/2026)
+    case 'correnteza':
+      return t('A correnteza levou {nome} {n} casas adiante.', { nome, n: efeito.valor });
+    case 'escorrega':
+      return t('{nome} escorregou {n} casas para trás.', { nome, n: efeito.valor });
+    case 'cheia':
+      return t('O rio encheu: todo mundo andou {n} casas.', { n: efeito.valor });
+    case 'teleferico':
+      return t('{nome} subiu de teleférico até perto da cenoura dourada.', { nome });
     default:
       return null;
   }
@@ -560,6 +667,7 @@ export function JogoTabuleiro({
           ],
         }}
         reserva={<Tabuleiro estado={vista} posDe={posDe} />}
+        tabuleiro={estado.tabuleiro ?? 'horta'}
       />
       <div className="tab-vez" aria-live="polite">
         {estado.retaFinal && estado.fase !== 'reta' && estado.fase !== 'premios' && <span className="tab-reta-selo">{t('Reta final: as casas valem o dobro.')}</span>}
@@ -671,7 +779,57 @@ export function JogoTabuleiro({
   );
 }
 
-/** Antes do convite: quantas rodadas (5, 10 ou 15). */
+/** Os tabuleiros da largada, na ordem (24/11/2026). */
+const TABULEIROS_DA_ESCOLHA: { id: IdDoTabuleiro; nome: string }[] = [
+  { id: 'horta', nome: chave('Horta') },
+  { id: 'rio', nome: chave('Rio') },
+  { id: 'serra', nome: chave('Serra') },
+];
+
+/** A figura de cada tabuleiro no botão da largada, de pixels grandes (16 × 16). */
+function FiguraDoTabuleiro({ id }: { id: IdDoTabuleiro }) {
+  return (
+    <svg className="tab-tabuleiro-figura" width="32" height="32" viewBox="0 0 16 16" aria-hidden="true" shapeRendering="crispEdges">
+      {id === 'horta' && (
+        <>
+          <rect x="0" y="10" width="16" height="6" fill="#8e6a52" />
+          <rect x="0" y="0" width="16" height="10" fill="#9cd0e6" />
+          {[2, 7, 12].map((x) => (
+            <g key={x}>
+              <rect x={x} y="6" width="1" height="4" fill="#7fae5a" />
+              <rect x={x + 1} y="7" width="1" height="3" fill="#6a9a4a" />
+              <rect x={x} y="10" width="2" height="3" fill="#e07a2e" />
+            </g>
+          ))}
+        </>
+      )}
+      {id === 'rio' && (
+        <>
+          <rect x="0" y="0" width="16" height="16" fill="#78a466" />
+          <rect x="0" y="5" width="16" height="6" fill="#4f8fc8" />
+          <rect x="2" y="7" width="4" height="1" fill="#9cc8e6" />
+          <rect x="9" y="9" width="5" height="1" fill="#9cc8e6" />
+          <rect x="6" y="4" width="4" height="8" fill="#8e6a4a" />
+          <rect x="6" y="6" width="4" height="1" fill="#6a4a32" />
+          <rect x="6" y="9" width="4" height="1" fill="#6a4a32" />
+        </>
+      )}
+      {id === 'serra' && (
+        <>
+          <rect x="0" y="0" width="16" height="16" fill="#cfe3ee" />
+          <rect x="7" y="3" width="2" height="2" fill="#f3ead8" />
+          <rect x="5" y="5" width="6" height="2" fill="#8a8478" />
+          <rect x="6" y="5" width="4" height="1" fill="#f3ead8" />
+          <rect x="3" y="7" width="10" height="3" fill="#7c766b" />
+          <rect x="1" y="10" width="14" height="3" fill="#8a8478" />
+          <rect x="0" y="13" width="16" height="3" fill="#93a46e" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+/** Antes do convite: o tabuleiro e quantas rodadas (5, 10 ou 15). */
 export function EscolhaDasRodadas({
   solo = false,
   aoEscolher,
@@ -679,19 +837,36 @@ export function EscolhaDasRodadas({
 }: {
   /** No Solo, antes das rodadas, quantos adversários do computador (pedido dele, 05/11/2026). */
   solo?: boolean;
-  aoEscolher: (rodadas: number, robos?: number) => void;
+  aoEscolher: (rodadas: number, robos: number | undefined, tabuleiro: IdDoTabuleiro) => void;
   aoVoltar: () => void;
 }) {
   const t = useT();
   const [robos, setRobos] = useState(3);
+  const [tabuleiro, setTabuleiro] = useState<IdDoTabuleiro>('horta');
   return (
     <div className="tab-escolha">
       {solo && <BotoesDosRobos opcoes={[1, 2, 3, 4, 5].map(cadaUmPorSi)} escolhida={robos} aoEscolher={setRobos} />}
+      {/* o tabuleiro (24/11/2026): a horta de sempre, o rio ou a serra */}
+      <ul className="tab-rodadas tab-tabuleiros" aria-label={t('Tabuleiro')}>
+        {TABULEIROS_DA_ESCOLHA.map(({ id, nome }) => (
+          <li key={id}>
+            <button
+              type="button"
+              className={`tab-tabuleiro-botao${tabuleiro === id ? ' escolhida' : ''}`}
+              aria-pressed={tabuleiro === id}
+              onClick={() => setTabuleiro(id)}
+            >
+              <FiguraDoTabuleiro id={id} />
+              <strong>{t(nome)}</strong>
+            </button>
+          </li>
+        ))}
+      </ul>
       <p className="minijogo-situacao">{t('Quantas rodadas?')}</p>
       <ul className="tab-rodadas">
         {[5, 10, 15].map((n) => (
           <li key={n}>
-            <button type="button" className="tab-rodadas-botao" onClick={() => aoEscolher(n, solo ? robos : undefined)}>
+            <button type="button" className="tab-rodadas-botao" onClick={() => aoEscolher(n, solo ? robos : undefined, tabuleiro)}>
               <span className="tab-rodadas-dados" aria-hidden="true">
                 {Array.from({ length: n / 5 }, (_, i) => (
                   <Dado key={i} n={6 - i * 2} tamanho={26} />

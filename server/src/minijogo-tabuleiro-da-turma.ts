@@ -26,6 +26,9 @@
  * - OS PRÊMIOS BÔNUS, revelados no fim: quem mais ganhou microjogos, quem mais andou e quem mais caiu em evento ganham uma
  *   dourada cada (empatados ganham todos; com zero, ninguém).
  *
+ * OS TABULEIROS (24/11/2026): na largada, a horta (a de sempre e de fábrica), o rio ou a serra (TABULEIROS, logo abaixo), cada um
+ * com a sua volta, os seus ramais, uma casa própria (a correnteza, o escorrega) e os seus eventos (a cheia, o teleférico).
+ *
  * NINGUÉM SEGURA A TURMA: toda escolha tem tempo (o dado sai sozinho, a loja da dourada compra, o caminho segue a volta, a loja
  * de itens não compra, o duelo sorteia o adversário). Quem saiu da sala é pulado; com menos de 2 na sala, a partida acaba sem
  * troféu.
@@ -47,27 +50,123 @@ import { microjogoDe, rodadaDeFesta, MICROJOGOS, type Microjogo, type RodadaDeFe
 import { embaralhar, type Definicao } from './minijogo-motor.js';
 import { comRobos, ehRobo, idsDosRobos, PAUSA_DO_ROBO, quantosRobos } from './minijogo-robos.js';
 
-export type TipoDeCasa = 'i' | '+' | '-' | '?' | '$' | 'd';
 /**
- * As casas da VOLTA, na ordem: 'i' a largada, '+' ganha 3, '-' perde 3, '?' um evento, '$' a loja de itens, 'd' o duelo.
- * (As quatro primeiras depois da largada são as de sempre: os testes andam por elas.)
+ * 'i' a largada, '+' ganha 3, '-' perde 3, '?' um evento, '$' a loja de itens, 'd' o duelo. Dos tabuleiros novos (24/11/2026):
+ * 'c' a CORRENTEZA do rio (leva a peça CORRENTEZA casas adiante) e 'e' o ESCORREGA da serra (devolve ESCORREGA casas).
  */
-export const CASAS = 'i++-+?+$-+?+d+-?++-$+?+-+?+d-+'.split('') as TipoDeCasa[];
+export type TipoDeCasa = 'i' | '+' | '-' | '?' | '$' | 'd' | 'c' | 'e';
+export type Ramal = { de: number; ate: number; casas: TipoDeCasa[] };
+
+/** Os eventos da casa '?' (cada tabuleiro sorteia entre os dele). */
+export const EVENTOS = ['chuva', 'troca', 'achado', 'vento', 'praga', 'mutirao', 'brinde', 'cheia', 'teleferico'] as const;
+export type Evento = (typeof EVENTOS)[number];
+
+/**
+ * OS TABULEIROS (24/11/2026, o lote E da segunda auditoria): quem começa escolhe na largada; a HORTA é o de sempre e o de fábrica.
+ * Cada um tem a sua volta (o tamanho e a ordem das casas), os seus ramais e os seus eventos. O desenho (a forma da volta, o
+ * cenário) mora no site (tabuleiro3d/volta.ts e JogoTabuleiro.tsx); o teste confere que os ramais batem.
+ * - O RIO: uma volta maior, de 32 casas, com a CORRENTEZA ('c': leva a peça adiante) e uma ponte só (um ramal), e a CHEIA nos
+ *   eventos (o rio sobe e leva todo mundo CHEIA casas adiante; sem a casa agir).
+ * - A SERRA: uma volta menor, de 28 casas, com o ESCORREGA ('e': a peça desce de volta) e o TELEFÉRICO nos eventos (a peça sobe
+ *   até a casa antes da cenoura dourada). Sem o mutirão.
+ */
+export const TABULEIROS = {
+  // (as quatro primeiras depois da largada são as de sempre: os testes andam por elas)
+  horta: {
+    casas: 'i++-+?+$-+?+d+-?++-$+?+-+?+d-+',
+    ramais: [
+      { de: 5, ate: 10, casas: ['+', '?', '+', '+'] },
+      { de: 20, ate: 25, casas: ['-', '$', '+', '-'] },
+    ] as Ramal[],
+    eventos: ['chuva', 'troca', 'achado', 'vento', 'praga', 'mutirao', 'brinde'] as Evento[],
+  },
+  rio: {
+    casas: 'i++c+?-+$+c?+-d+?+c-+$+?+-c+d?+-',
+    ramais: [{ de: 16, ate: 21, casas: ['+', '?', '$', '+'] }] as Ramal[],
+    eventos: ['chuva', 'troca', 'achado', 'vento', 'praga', 'brinde', 'cheia'] as Evento[],
+  },
+  serra: {
+    casas: 'i+?+-e+$+?d+e-+?+$e+-?+d+e?+',
+    ramais: [{ de: 3, ate: 8, casas: ['+', 'e', '?', '+'] }] as Ramal[],
+    eventos: ['chuva', 'troca', 'achado', 'vento', 'praga', 'brinde', 'teleferico'] as Evento[],
+  },
+} satisfies Record<string, { casas: string; ramais: Ramal[]; eventos: Evento[] }>;
+export type IdDoTabuleiro = keyof typeof TABULEIROS;
+export const IDS_DOS_TABULEIROS = Object.keys(TABULEIROS) as IdDoTabuleiro[];
+/** Quantas casas a correnteza leva adiante, o escorrega devolve e a cheia leva todo mundo. */
+export const CORRENTEZA = 3;
+export const ESCORREGA = 3;
+export const CHEIA = 2;
+
+/** A volta de um tabuleiro e as contas de andar nela. */
+export interface Tracado {
+  id: IdDoTabuleiro;
+  casas: TipoDeCasa[];
+  volta: number;
+  ramais: Ramal[];
+  todas: TipoDeCasa[];
+  inicio: number[];
+  eventos: Evento[];
+  ramalEm(pos: number): number;
+  proximaCasa(pos: number, ramal?: boolean): number;
+  casaAnterior(pos: number): number;
+  distancia(de: number, alvo: number, pelo?: boolean | null): number;
+}
+
+export function tracadoDe(id: unknown): Tracado {
+  const chave: IdDoTabuleiro = IDS_DOS_TABULEIROS.includes(id as IdDoTabuleiro) ? (id as IdDoTabuleiro) : 'horta';
+  const def = TABULEIROS[chave];
+  const casas = def.casas.split('') as TipoDeCasa[];
+  const volta = casas.length;
+  const ramais = def.ramais;
+  const todas = [...casas, ...ramais.flatMap((r) => r.casas)];
+  const inicio = ramais.map((_, k) => volta + ramais.slice(0, k).reduce((s, r) => s + r.casas.length, 0));
+  const ramalEm = (pos: number) => ramais.findIndex((r) => r.de === pos);
+  const proximaCasa = (pos: number, ramal = false): number => {
+    if (pos < volta) {
+      const k = ramalEm(pos);
+      if (ramal && k >= 0) return inicio[k];
+      return (pos + 1) % volta;
+    }
+    const k = inicio.findLastIndex((i) => pos >= i);
+    const fim = inicio[k] + ramais[k].casas.length - 1;
+    return pos < fim ? pos + 1 : ramais[k].ate;
+  };
+  /** A casa de trás (o escorrega): na volta, a anterior; no ramal, a anterior dele, e da primeira volta-se à bifurcação. */
+  const casaAnterior = (pos: number): number => {
+    if (pos < volta) return (pos - 1 + volta) % volta;
+    const k = inicio.findLastIndex((i) => pos >= i);
+    return pos > inicio[k] ? pos - 1 : ramais[k].de;
+  };
+  const distancia = (de: number, alvo: number, pelo: boolean | null = null): number => {
+    let pos = de;
+    let primeira = pelo;
+    for (let n = 1; n <= todas.length * 2; n++) {
+      const usar = ramalEm(pos) >= 0 && primeira !== null ? primeira : false;
+      if (ramalEm(pos) >= 0) primeira = null;
+      pos = proximaCasa(pos, usar);
+      if (pos === alvo) return n;
+    }
+    return Infinity;
+  };
+  return { id: chave, casas, volta, ramais, todas, inicio, eventos: def.eventos, ramalEm, proximaCasa, casaAnterior, distancia };
+}
+
+const HORTA = tracadoDe('horta');
+/** As casas da VOLTA da horta (o tabuleiro de sempre), na ordem. */
+export const CASAS = HORTA.casas;
 /** O tamanho da volta (as casas dos ramais vêm depois, de VOLTA em diante). */
-export const VOLTA = CASAS.length;
+export const VOLTA = HORTA.volta;
 /**
  * AS BIFURCAÇÕES: passando por `de`, escolhe-se seguir a volta ou o ramal, que entra de novo na volta em `ate`. O ramal tem o
  * mesmo número de casas que o trecho da volta que ele pula. As casas do ramal são numeradas depois das da volta, na ordem dos
  * ramais (o site desenha cada uma ao lado da casa da volta que ela acompanha).
  */
-export const RAMAIS: { de: number; ate: number; casas: TipoDeCasa[] }[] = [
-  { de: 5, ate: 10, casas: ['+', '?', '+', '+'] },
-  { de: 20, ate: 25, casas: ['-', '$', '+', '-'] },
-];
+export const RAMAIS = HORTA.ramais;
 /** Todas as casas: a volta e depois os ramais. */
-export const TODAS_AS_CASAS: TipoDeCasa[] = [...CASAS, ...RAMAIS.flatMap((r) => r.casas)];
+export const TODAS_AS_CASAS: TipoDeCasa[] = HORTA.todas;
 /** Onde começa cada ramal na numeração de TODAS_AS_CASAS. */
-export const INICIO_DOS_RAMAIS = RAMAIS.map((_, k) => VOLTA + RAMAIS.slice(0, k).reduce((s, r) => s + r.casas.length, 0));
+export const INICIO_DOS_RAMAIS = HORTA.inicio;
 
 export const RODADAS_DO_TABULEIRO = [5, 10, 15];
 export const MAXIMO_DO_TABULEIRO = 8;
@@ -97,8 +196,6 @@ export const RODADAS_DA_RETA = 3;
 /** A revelação de cada prêmio bônus, e o respiro no fim. */
 export const PREMIO_MS = 2500;
 export const PREMIOS_FIM_MS = 2000;
-/** Os eventos da casa '?'. */
-export const EVENTOS = ['chuva', 'troca', 'achado', 'vento', 'praga', 'mutirao', 'brinde'] as const;
 export const CHUVA = 2;
 export const ACHADO = 5;
 export const PRAGA = 5;
@@ -124,10 +221,10 @@ export type Premio = (typeof PREMIOS)[number];
 export type Formato = 'todos' | '2x2' | '1x3';
 
 export type Efeito =
-  | { tipo: 'mais' | 'menos' | 'chuva' | 'achado' | 'praga' | 'mutirao'; valor: number }
+  | { tipo: 'mais' | 'menos' | 'chuva' | 'achado' | 'praga' | 'mutirao' | 'correnteza' | 'escorrega' | 'cheia'; valor: number }
   | { tipo: 'troca'; com: number }
   | { tipo: 'brinde'; item: Item }
-  | { tipo: 'vento' | 'escudo' | 'nada' };
+  | { tipo: 'vento' | 'escudo' | 'nada' | 'teleferico' };
 
 interface Peca {
   userId: number;
@@ -154,33 +251,12 @@ export interface OpcoesDoTabuleiro {
   duelos?: Microjogo[];
 }
 
-/** O ramal que sai da casa `pos`, se houver. */
-export const ramalEm = (pos: number) => RAMAIS.findIndex((r) => r.de === pos);
-
+/** O ramal que sai da casa `pos` (na horta), se houver. */
+export const ramalEm = HORTA.ramalEm;
 /** A casa seguinte: na volta, a próxima; no ramal, a próxima dele, e da última volta-se à volta em `ate`. Na bifurcação, `ramal` decide. */
-export function proximaCasa(pos: number, ramal = false): number {
-  if (pos < VOLTA) {
-    const k = ramalEm(pos);
-    if (ramal && k >= 0) return INICIO_DOS_RAMAIS[k];
-    return (pos + 1) % VOLTA;
-  }
-  const k = INICIO_DOS_RAMAIS.findLastIndex((i) => pos >= i);
-  const fim = INICIO_DOS_RAMAIS[k] + RAMAIS[k].casas.length - 1;
-  return pos < fim ? pos + 1 : RAMAIS[k].ate;
-}
-
+export const proximaCasa = HORTA.proximaCasa;
 /** Quantas casas de `de` até `alvo`, seguindo a volta (e o ramal, se `de` está nele); `pelo` decide a primeira bifurcação. */
-export function distancia(de: number, alvo: number, pelo: boolean | null = null): number {
-  let pos = de;
-  let primeira = pelo;
-  for (let n = 1; n <= TODAS_AS_CASAS.length * 2; n++) {
-    const usar = ramalEm(pos) >= 0 && primeira !== null ? primeira : false;
-    if (ramalEm(pos) >= 0) primeira = null;
-    pos = proximaCasa(pos, usar);
-    if (pos === alvo) return n;
-  }
-  return Infinity;
-}
+export const distancia = HORTA.distancia;
 
 /**
  * O FORMATO DO MICROJOGO pelas cores (0: a casa verde, 1: a vermelha), uma por pessoa, na ordem: só com 4, dois e dois é o
@@ -218,6 +294,13 @@ export function criarTabuleiro({
       const naSala = [...naSalaDaSala.slice(0, MAXIMO_DO_TABULEIRO - robos.length), ...robos];
       if (naSala.length < 2) return 'Ainda falta gente para começar.';
       const rodadas = RODADAS_DO_TABULEIRO.includes(Number(corpo.rodadas)) ? Number(corpo.rodadas) : 10;
+      // O TABULEIRO da largada (24/11/2026): fora da lista, a horta. Os nomes de sempre passam a ser os dele, nesta partida.
+      const T = tracadoDe(corpo.tabuleiro);
+      const VOLTA = T.volta;
+      const TODAS_AS_CASAS = T.todas;
+      const RAMAIS = T.ramais;
+      const INICIO_DOS_RAMAIS = T.inicio;
+      const { ramalEm, proximaCasa, distancia } = T;
       const inteiro = (n: number) => Math.floor(aleatorio() * n);
       // a ordem da vez é sorteada (o corte em 8 já vem das rotas, pelo `maximo`; este é só a garantia)
       const ordem = embaralhar(naSala.slice(0, MAXIMO_DO_TABULEIRO), aleatorio);
@@ -370,7 +453,7 @@ export function criarTabuleiro({
         // chegou: a casa age (quem para na casa da dourada, comprando ou não, não ganha nem perde)
         const tipo = TODAS_AS_CASAS[peca.pos];
         paradas.set(peca.userId, tipo);
-        const efeito: Efeito = peca.pos === dourada || (passos === 0 && lojaFeita) ? { tipo: 'nada' } : agirCasa(peca);
+        const efeito: Efeito = peca.pos === dourada || (passos === 0 && lojaFeita) ? { tipo: 'nada' } : agirCasa(peca, caminho);
         ultimo = { id: ++idDoUltimo, userId: peca.userId, dado, dados, escolhido, caminho, efeito, comprou, antes };
         const andarMs = (caminho.length - 1) * PASSO_MS;
         const robo = ehRobo(peca.userId);
@@ -401,7 +484,11 @@ export function criarTabuleiro({
         return perdeu ? { tipo, valor: perdeu } : { tipo: 'nada' };
       };
 
-      const agirCasa = (peca: Peca): Efeito => {
+      /**
+       * A casa age. A correnteza e o escorrega levam a peça pelo caminho (a tela a vê ser levada, casa a casa, no mesmo andar),
+       * e a casa onde ela fica NÃO age (nada de corrente de efeitos); a cheia e o teleférico também não fazem a casa de chegada agir.
+       */
+      const agirCasa = (peca: Peca, caminho: number[]): Efeito => {
         const x = dobro();
         switch (TODAS_AS_CASAS[peca.pos]) {
           case '+':
@@ -409,13 +496,33 @@ export function criarTabuleiro({
             return { tipo: 'mais', valor: GANHO * x };
           case '-':
             return perder(peca, PERDA * x, 'menos');
+          case 'c':
+            for (let n = 0; n < CORRENTEZA; n++) caminho.push((peca.pos = proximaCasa(peca.pos)));
+            return { tipo: 'correnteza', valor: CORRENTEZA };
+          case 'e':
+            for (let n = 0; n < ESCORREGA; n++) caminho.push((peca.pos = T.casaAnterior(peca.pos)));
+            return { tipo: 'escorrega', valor: ESCORREGA };
           case '?': {
             peca.eventos++;
             const outros = presentes().filter((id) => id !== peca.userId);
-            let e: (typeof EVENTOS)[number] = EVENTOS[inteiro(EVENTOS.length)];
+            let e: Evento = T.eventos[inteiro(T.eventos.length)];
             if (e === 'troca' && !outros.length) e = 'achado';
             if (e === 'brinde' && peca.itens.length >= MAXIMO_DE_ITENS) e = 'achado';
             switch (e) {
+              case 'cheia':
+                // o rio sobe: todo mundo na sala anda CHEIA casas pela volta (sem a casa agir, sem comprar a dourada)
+                for (const id of presentes()) {
+                  const p = pecas.get(id)!;
+                  for (let n = 0; n < CHEIA; n++) p.pos = proximaCasa(p.pos);
+                }
+                return { tipo: 'cheia', valor: CHEIA };
+              case 'teleferico': {
+                // a peça sobe até a casa antes da cenoura dourada (a dourada está sempre na volta)
+                const antes = T.casaAnterior(dourada);
+                if (antes === peca.pos) return { tipo: 'nada' };
+                peca.pos = antes;
+                return { tipo: 'teleferico' };
+              }
               case 'chuva':
                 for (const id of presentes()) pecas.get(id)!.cenouras += CHUVA * x;
                 return { tipo: 'chuva', valor: CHUVA * x };
@@ -779,6 +886,7 @@ export function criarTabuleiro({
             fase,
             rodada,
             rodadas,
+            tabuleiro: T.id,
             casas: TODAS_AS_CASAS,
             volta: VOLTA,
             ramais: RAMAIS.map((r, k) => ({ de: r.de, ate: r.ate, inicio: INICIO_DOS_RAMAIS[k], tamanho: r.casas.length })),

@@ -4,19 +4,20 @@ import { useCena3D, type CriarCena } from '../mesa3d/useCena3D';
 import type { DadosDoTabuleiro3D } from './cena';
 import './tabuleiro3d.css';
 
-/** O three.js e a cena vêm num pedaço à parte, só quando o tabuleiro abre. */
-const importar = (): Promise<CriarCena<DadosDoTabuleiro3D>> => import('./cena').then((m) => m.criarCenaDoTabuleiro);
+/** O three.js e a cena vêm num pedaço à parte, só quando o tabuleiro abre (a forma é a do tabuleiro da partida). */
+const importar = (tabuleiro: string) => (): Promise<CriarCena<DadosDoTabuleiro3D>> =>
+  import('./cena').then((m) => (caixa: HTMLElement, avisar: (alvo: number) => void) => m.criarCenaDoTabuleiro(caixa, avisar, tabuleiro));
 
 /**
  * A caixa do Tabuleiro da turma em 3D (cena.ts), pelo gancho comum das cenas (mesa3d/useCena3D.ts): enquanto carrega, a cor do
  * céu; pronta, o desenho em SVG fica só para o leitor de tela; no estilo 2D, sem WebGL ou se a cena falhar, ele é o tabuleiro.
  * A câmera é de cada um: "Ver tudo" aparece quando ela saiu da vista geral (seguindo quem anda, girada ou aproximada).
  */
-export function TabuleiroDaTurma3D({ dados, reserva }: { dados: Omit<DadosDoTabuleiro3D, 'verTudo'>; reserva: ReactNode }) {
+export function TabuleiroDaTurma3D({ dados, reserva, tabuleiro = 'horta' }: { dados: Omit<DadosDoTabuleiro3D, 'verTudo'>; reserva: ReactNode; tabuleiro?: string }) {
   const t = useT();
   const [verTudo, setVerTudo] = useState(0);
   const [livre, setLivre] = useState(false);
-  const { caixa, estado } = useCena3D(importar, { ...dados, verTudo }, (a) => setLivre(a === 1));
+  const { caixa, estado } = useCena3D(importar(tabuleiro), { ...dados, verTudo }, (a) => setLivre(a === 1));
   if (estado === 'falhou') return <>{reserva}</>;
   return (
     <div className="tab3d">

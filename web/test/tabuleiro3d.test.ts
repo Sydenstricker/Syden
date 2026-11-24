@@ -86,3 +86,74 @@ test('os ramais (19/11/2026): os mesmos do servidor, por fora da volta, sem enco
     assert.ok(dist(b, TOCA) > TOCA.raio + 0.2 && dist(b, PRACA) > PRACA.raio + 0.1);
   }
 });
+
+test('os tabuleiros novos (24/11/2026): cada forma tem as casas e os ramais do servidor, e nada fica em cima de nada', async () => {
+  const { TABULEIROS, tracadoDe } = await import('../../server/src/minijogo-tabuleiro-da-turma');
+  const { GEOMETRIAS } = await import('../src/tabuleiro3d/volta');
+  assert.deepEqual(Object.keys(GEOMETRIAS).sort(), Object.keys(TABULEIROS).sort());
+  for (const id of Object.keys(TABULEIROS)) {
+    const T = tracadoDe(id);
+    const g = GEOMETRIAS[id];
+    const n = g.numero;
+    assert.equal(n, T.volta, id);
+    assert.deepEqual(g.ramais, T.ramais.map((r) => ({ de: r.de, ate: r.ate, tamanho: r.casas.length })), id);
+    assert.equal(g.todas.length, T.todas.length, id);
+    // a largada no meio da frente
+    assert.ok(Math.abs(g.casasDaVolta[0].x) < 0.01 && g.casasDaVolta[0].z > 1, `${id}: a largada`);
+    // igualmente espaçadas, sem encostar
+    const passos = g.casasDaVolta.map((c, i) => dist(c, g.casasDaVolta[(i + 1) % n]));
+    const medio = passos.reduce((s, x) => s + x, 0) / n;
+    for (const p of passos) assert.ok(Math.abs(p - medio) / medio < 0.05, `${id}: passo ${p} longe da média ${medio}`);
+    assert.ok(Math.min(...passos) > RAIO_DA_CASA * 2.4, `${id}: casas encostadas`);
+    for (let i = 0; i < n; i++)
+      for (let j = i + 2; j < n; j++) {
+        if (i === 0 && j === n - 1) continue;
+        assert.ok(dist(g.casasDaVolta[i], g.casasDaVolta[j]) > RAIO_DA_CASA * 4, `${id}: casas ${i} e ${j} perto demais`);
+      }
+    for (let i = 0; i < g.todas.length; i++)
+      for (let j = i + 1; j < g.todas.length; j++) assert.ok(dist(g.todas[i], g.todas[j]) > RAIO_DA_CASA * 2.2, `${id}: casas ${i} e ${j} encostadas`);
+    // o miolo, a cidade e a rua
+    for (const c of g.todas) {
+      const dx = Math.max(HORTA.x0 - c.x, 0, c.x - HORTA.x1);
+      const dz = Math.max(HORTA.z0 - c.z, 0, c.z - HORTA.z1);
+      assert.ok(Math.hypot(dx, dz) > RAIO_DA_CASA + 0.3, `${id}: casa em cima da horta`);
+      assert.ok(dist(c, PRACA) > PRACA.raio + RAIO_DA_CASA + 0.3, `${id}: casa em cima da praça`);
+      assert.ok(dist(c, TOCA) > TOCA.raio + RAIO_DA_CASA + 0.3, `${id}: casa em cima da toca`);
+      for (const l of lotesDaCidade()) assert.ok(dist(l, c) > 1.6, `${id}: prédio em cima da volta`);
+      const qx = Math.abs(c.x) - (ANEL.rx - ANEL.canto);
+      const qz = Math.abs(c.z) - (ANEL.rz - ANEL.canto);
+      const doAnel = ANEL.canto - Math.hypot(Math.max(qx, 0), Math.max(qz, 0)) - Math.min(Math.max(qx, qz), 0);
+      assert.ok(doAnel > ANEL.largura / 2 + RAIO_DA_CASA, `${id}: casa em ${c.x},${c.z} em cima da rua`);
+    }
+    // a barraca da dourada
+    for (let i = 1; i < n; i++) {
+      const b = g.chaoDaBarraca(i, 0.66);
+      for (const c of g.todas) assert.ok(dist(b, c) > RAIO_DA_CASA + 0.12, `${id}: a barraca da casa ${i} em cima de outra`);
+      assert.ok(dist(b, TOCA) > TOCA.raio + 0.2 && dist(b, PRACA) > PRACA.raio + 0.1, `${id}: a barraca da casa ${i} no miolo`);
+    }
+  }
+});
+
+test('o desenho de reserva (24/11/2026): cada tabuleiro cabe no seu retângulo, sem duas casas no mesmo lugar', async () => {
+  const { TABULEIROS, tracadoDe } = await import('../../server/src/minijogo-tabuleiro-da-turma');
+  const { lugarDaCasa, MEDIDAS_2D } = await import('../src/tabuleiroLugares');
+  for (const id of Object.keys(TABULEIROS)) {
+    const T = tracadoDe(id);
+    const m = MEDIDAS_2D[id];
+    assert.equal(2 * (m.colunas + m.linhas) - 4, T.volta, id);
+    const ramais = T.ramais.map((r, k) => ({ de: r.de, ate: r.ate, inicio: T.inicio[k], tamanho: r.casas.length }));
+    const vistos = new Set<string>();
+    for (let i = 0; i < T.todas.length; i++) {
+      const { x, y } = lugarDaCasa(i, ramais, m);
+      const k = `${x},${y}`;
+      assert.ok(!vistos.has(k), `${id}: a casa ${i} em cima de outra`);
+      vistos.add(k);
+    }
+    // a volta anda de vizinha em vizinha
+    for (let i = 0; i < T.volta; i++) {
+      const a = lugarDaCasa(i, ramais, m);
+      const b = lugarDaCasa((i + 1) % T.volta, ramais, m);
+      assert.equal(Math.abs(a.x - b.x) + Math.abs(a.y - b.y), 28, `${id}: ${i} → ${i + 1}`);
+    }
+  }
+});

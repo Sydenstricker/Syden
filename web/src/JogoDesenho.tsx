@@ -6,6 +6,7 @@ import { Placar, Relogio } from './Minijogo';
 import { areasDosBaldes, BALDE, imagemDaArea } from './desenho/balde';
 import { CORES_DO_DESENHO, ESPESSURAS_DO_DESENHO, PALAVRAS_DO_DESENHO, primeiraForma, type EstadoDesenho, type Partida } from './minijogos';
 import { tocar } from './somDosJogos';
+import { JogoTelefone, type EstadoTelefone } from './JogoTelefone';
 import './jogosDePalavras.css';
 
 /** O que o servidor de 19/11/2026 manda a mais: os níveis, o voto de pular. */
@@ -55,7 +56,7 @@ type Tracos = Map<number, { c: number; e: number; partes: Map<number, number[]> 
  * em qualquer ordem, e cada pedaço tem número. Só quando o desenho é apagado ou desfeito (a `versao` muda) os
  * traços do servidor substituem os daqui.
  */
-export function JogoDesenho({
+function JogoDesenhoClassico({
   estado: estadoBase,
   eu,
   restante,
@@ -475,4 +476,11 @@ export function JogoDesenho({
       <Relogio restante={restante} total={total} />
     </div>
   );
+}
+
+/** O Desenha e adivinha: o de sempre, ou o TELEFONE SEM FIO (24/11/2026), pelo modo que o servidor diz. */
+export function JogoDesenho(props: Parameters<typeof JogoDesenhoClassico>[0]) {
+  if ((props.estado as unknown as { modo?: string }).modo === 'telefone')
+    return <JogoTelefone {...props} estado={props.estado as unknown as EstadoTelefone & Partida} />;
+  return <JogoDesenhoClassico {...props} />;
 }

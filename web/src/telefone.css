@@ -1,0 +1,96 @@
+/* O telefone sem fio do Desenha e adivinha (24/11/2026, JogoTelefone.tsx). */
+.telefone {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.telefone .desenho-quadro {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.telefone-escrever {
+  display: flex;
+  gap: 8px;
+}
+
+.telefone-escrever input {
+  flex: 1;
+  min-width: 0;
+}
+
+.telefone-prontos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: calc(12px * var(--escala-do-texto, 1));
+  color: var(--text-muted);
+}
+
+.telefone-prontos li {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--bg-darkest);
+}
+
+.telefone-prontos li.pronto {
+  color: #2fbf71;
+}
+
+.telefone-corrente ol {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.telefone-passo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--bg-darkest);
+  animation: telefone-chega 0.35s ease-out;
+}
+
+.telefone-passo .desenho-quadro {
+  max-width: 360px;
+}
+
+.telefone-autor {
+  font-size: calc(12px * var(--escala-do-texto, 1));
+  color: var(--text-muted);
+}
+
+.telefone-frase {
+  margin: 0;
+  font-size: calc(17px * var(--escala-do-texto, 1));
+  font-weight: 700;
+  color: var(--text-strong);
+  overflow-wrap: anywhere;
+}
+
+.telefone > .telefone-corrente + .telefone-corrente {
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+@keyframes telefone-chega {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .telefone-passo {
+    animation: none;
+  }
+}
