@@ -268,6 +268,8 @@ export interface QuartoNoMundo {
   deCima: DeCimaNoMundo[];
   cores: { tapete?: string; parede?: [number, number, number]; piso?: [number, number, number] };
   abajurApagado: boolean;
+  /** Os ventiladores ligados no pixel (o botão direito: 'ligado' ou 'oscilando', em cores[<id>]); no 3D a hélice gira. */
+  ventiladores: Record<string, 'ligado' | 'oscilando'>;
 }
 
 const lado = (x: unknown) => (Number.isInteger(x) && (x as number) >= 0 && (x as number) <= 3 ? (x as number) : 0);
@@ -409,5 +411,8 @@ export function noMundo(a: ArrumacaoDoPixel | null | undefined): QuartoNoMundo {
     deCima,
     cores,
     abajurApagado: !!arr.abajurApagado,
+    ventiladores: Object.fromEntries(
+      mundo.filter((m) => m.tipo === 'ventilador' && (co[m.id] === 'ligado' || co[m.id] === 'oscilando')).map((m) => [m.id, co[m.id] as 'ligado' | 'oscilando']),
+    ),
   };
 }

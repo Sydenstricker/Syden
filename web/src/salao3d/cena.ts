@@ -64,8 +64,16 @@ function urlDe(nome: string) {
   if (p === 'qk') return `${BASE}quarto3d/kenney/${arq}.glb`;
   if (p === 'r') return `${BASE}quarto3d/restaurante/${arq}.gltf`;
   if (p === 'k') return `${BASE}salao3d/kenney/${arq}.glb`;
+  if (p === 'f') return `${BASE}salao3d/feitos/${arq}.glb`;
+  if (p === 'qf') return `${BASE}quarto3d/feitos/${arq}.glb`;
   return `${BASE}salao3d/natal/${arq}.gltf`;
 }
+
+/**
+ * OS MODELOS NOSSOS (24/11/2026): o fliperama, a jukebox, o microfone, a janela e o troféu (o mesmo do quarto) feitos por script
+ * no Blender (web/scripts/modelos/salao-quarto/). Enquanto não carregam, ou se falharem, a peça por código de antes continua.
+ */
+const FEITOS = ['f:fliperama', 'f:jukebox', 'f:microfone', 'f:janela', 'qf:trofeu'] as const;
 const ehKenney = (nome: string) => nome.startsWith('k:') || nome.startsWith('qk:');
 
 const carregador = new GLTFLoader();
@@ -298,6 +306,8 @@ export class CenaDoSalao3D {
   private moveis: Pronto[] = [];
   private clicaveis: THREE.Object3D[] = [];
   private lampadinhas: THREE.MeshStandardMaterial[] = [];
+  /** Os modelos nossos que carregaram (FEITOS). */
+  private feitos = new Map<string, GLTF>();
   private brilhos: THREE.MeshStandardMaterial[] = [];
   private luzes: THREE.PointLight[] = [];
   private luzDaArvore: THREE.PointLight | null = null;
@@ -392,7 +402,17 @@ export class CenaDoSalao3D {
     if (this.natal)
       for (const n of ['tracks_straight', 'tracks_curve', 'train_locomotive', 'train_tender_coal', 'train_wagon', 'train_tender_presents_A'])
         nomes.add('n:' + n);
-    const [g] = await Promise.all([carregarCoelho(), ...[...nomes].map(modelo)]);
+    const [g] = await Promise.all([
+      carregarCoelho(),
+      ...[...nomes].map(modelo),
+      // os nossos: falhou, fica a reserva por código (não derruba o salão)
+      ...FEITOS.map((n) =>
+        modelo(n).then(
+          (f) => this.feitos.set(n, f),
+          () => undefined,
+        ),
+      ),
+    ]);
     if (this.morta) return;
     this.gltfDoCoelho = g;
     this.montarCasca();
@@ -811,9 +831,52 @@ export class CenaDoSalao3D {
     this.ultimoQuadro = 0;
   }
 
+  /** A tela do fliperama: os blocos coloridos de um jogo parado. */
+  private telaDoFliperama() {
+    const tela = this.textura((c, w, h) => {
+      c.fillStyle = '#10131f';
+      c.fillRect(0, 0, w, h);
+      const cores = ['#f2c94c', '#4fb0d9', '#d9463b', '#7ed37e'];
+      for (let i = 0; i < 26; i++) {
+        c.fillStyle = cores[i % cores.length];
+        c.fillRect(((i * 37) % 14) * 9 + 4, ((i * 53) % 10) * 9 + 6, 7, 7);
+      }
+      c.fillStyle = '#fff';
+      c.fillRect(56, 98, 18, 8);
+    }, 128);
+    tela.wrapS = tela.wrapT = THREE.ClampToEdgeWrapping;
+    return tela;
+  }
+
+  /** Uma cópia de um modelo nosso (FEITOS), ou null se ele não carregou; o material 'luz' acende de noite como as lampadinhas. */
+  private nosso(nome: (typeof FEITOS)[number]): THREE.Object3D | null {
+    const f = this.feitos.get(nome);
+    if (!f) return null;
+    const o = this.copia(f, nome);
+    o.traverse((x) => {
+      const m = x as THREE.Mesh;
+      const mat = m.material as THREE.MeshStandardMaterial | undefined;
+      if (m.isMesh && mat?.name === 'luz') this.lampadinhas.push(mat);
+    });
+    return o;
+  }
+
   /** As peças que nenhum pacote tem: o balcão do bar (Kenney, em fileira), o fliperama, a jukebox e o microfone. */
   private async feitoAqui(qual: string): Promise<THREE.Group> {
     const g = new THREE.Group();
+    const nome = ({ '@fliperama': 'f:fliperama', '@jukebox': 'f:jukebox', '@microfone': 'f:microfone' } as const)[qual as '@fliperama'];
+    const pronto = nome ? this.nosso(nome) : null;
+    if (pronto) {
+      g.add(pronto);
+      if (qual === '@fliperama') {
+        // a tela do jogo no nó 'tela' do modelo (o mesmo desenho por código)
+        const lugar = pronto.getObjectByName('tela');
+        const vidro = new THREE.Mesh(this.caixaGeo(0.6, 0.44, 0.005), new THREE.MeshBasicMaterial({ map: this.telaDoFliperama(), toneMapped: false }));
+        vidro.position.z = 0.004;
+        (lugar ?? pronto).add(vidro);
+      }
+      return g;
+    }
     const mat = (cor: string, extra: Partial<THREE.MeshStandardMaterialParameters> = {}) =>
       new THREE.MeshStandardMaterial({ color: cor, roughness: 0.75, ...extra });
     const bloco = (w: number, h: number, d: number, m: THREE.Material, x: number, y: number, z: number) => {
@@ -855,19 +918,7 @@ export class CenaDoSalao3D {
         b.position.set(x, 1.04, 0.43);
         g.add(b);
       }
-      const tela = this.textura((c, w, h) => {
-        c.fillStyle = '#10131f';
-        c.fillRect(0, 0, w, h);
-        const cores = ['#f2c94c', '#4fb0d9', '#d9463b', '#7ed37e'];
-        for (let i = 0; i < 26; i++) {
-          c.fillStyle = cores[i % cores.length];
-          c.fillRect(((i * 37) % 14) * 9 + 4, ((i * 53) % 10) * 9 + 6, 7, 7);
-        }
-        c.fillStyle = '#fff';
-        c.fillRect(56, 98, 18, 8);
-      }, 128);
-      tela.wrapS = tela.wrapT = THREE.ClampToEdgeWrapping;
-      const vidro = new THREE.Mesh(this.caixaGeo(0.62, 0.48, 0.02), new THREE.MeshBasicMaterial({ map: tela, toneMapped: false }));
+      const vidro = new THREE.Mesh(this.caixaGeo(0.62, 0.48, 0.02), new THREE.MeshBasicMaterial({ map: this.telaDoFliperama(), toneMapped: false }));
       vidro.position.set(0, 1.3, 0.355);
       g.add(vidro);
     } else if (qual === '@jukebox') {
@@ -943,12 +994,16 @@ export class CenaDoSalao3D {
       r.castShadow = true;
       j.add(r);
     };
-    ripa(JANELA.w + 0.16, 0.1, 0, JANELA.h / 2);
-    ripa(JANELA.w + 0.3, 0.12, 0, -JANELA.h / 2, 0.22);
-    ripa(0.1, JANELA.h, -JANELA.w / 2, 0);
-    ripa(0.1, JANELA.h, JANELA.w / 2, 0);
-    ripa(0.05, JANELA.h, 0, 0, 0.06);
-    ripa(JANELA.w, 0.05, 0, 0, 0.06);
+    const caixilho = this.nosso('f:janela');
+    if (caixilho) j.add(caixilho);
+    else {
+      ripa(JANELA.w + 0.16, 0.1, 0, JANELA.h / 2);
+      ripa(JANELA.w + 0.3, 0.12, 0, -JANELA.h / 2, 0.22);
+      ripa(0.1, JANELA.h, -JANELA.w / 2, 0);
+      ripa(0.1, JANELA.h, JANELA.w / 2, 0);
+      ripa(0.05, JANELA.h, 0, 0, 0.06);
+      ripa(JANELA.w, 0.05, 0, 0, 0.06);
+    }
     if (this.natal) {
       const neve = new THREE.Mesh(this.caixaGeo(JANELA.w + 0.3, 0.06, 0.22), new THREE.MeshStandardMaterial({ color: '#f4f7fb', roughness: 0.9 }));
       neve.position.set(0, -JANELA.h / 2 + 0.09, 0.11);
@@ -1049,6 +1104,30 @@ export class CenaDoSalao3D {
     const prat = this.copia(await modelo('q:shelf_A_big'), 'q:shelf_A_big');
     prat.scale.setScalar(S);
     g.add(prat);
+    // o troféu nosso (o mesmo do quarto), com a prata e o bronze pintados por cima do ouro
+    const nosso = this.nosso('qf:trofeu');
+    if (nosso) {
+      for (const [x, cor, k] of [
+        [-0.45, '#c9ccd4', 0.82],
+        [0.45, '#c98a4b', 0.72],
+        [0, null, 1.1], // o original por último (as cópias saem dele antes da escala)
+      ] as const) {
+        const t = x ? nosso.clone(true) : nosso;
+        if (cor)
+          t.traverse((o) => {
+            const m = o as THREE.Mesh;
+            const mat = m.material as THREE.MeshStandardMaterial | undefined;
+            if (m.isMesh && mat && (mat.name === 'ouro' || mat.name === 'estrela')) {
+              m.material = mat.clone();
+              (m.material as THREE.MeshStandardMaterial).color.set(cor);
+            }
+          });
+        t.scale.multiplyScalar(k);
+        t.position.set(x, 0.1 * S, 0.22);
+        g.add(t);
+      }
+      return g;
+    }
     const ouro = new THREE.MeshStandardMaterial({ color: '#e2b53e', roughness: 0.35, metalness: 0.3 });
     const base = new THREE.MeshStandardMaterial({ color: '#6b4430', roughness: 0.8 });
     const taca = new THREE.Group();

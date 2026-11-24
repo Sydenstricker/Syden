@@ -12,6 +12,9 @@
  * Toda peça de pixel tem a sua linha em todo tema (o teste confere): móveis (TAMANHOS de arrumacao.ts), objetos da parede
  * (ITENS_DA_PAREDE), objetos de cima e a janela. O que nenhum pacote tem é feito por código na cena ("codigo:…": o fone, a
  * cortiça, os troféus, o neon, o violão e o relógio do clássico, e o ventilador dos dois). Os caminhos são relativos a web/public/quarto3d/.
+ * Desde 24/11/2026 quase todos esses (e o guarda-roupa alto, a pipoca e as janelas que faltavam) têm um modelo NOSSO, feito por
+ * script no Blender (web/scripts/modelos/salao-quarto/, saída em quarto3d/feitos/): a cena o usa quando carrega, e o de antes
+ * (o código ou o do pacote) fica de reserva. Só o neon continua por código.
  */
 
 export interface Parte {
@@ -29,6 +32,11 @@ export interface Parte {
 
 export interface PecaDoTema {
   arquivo: string;
+  /**
+   * O modelo NOSSO (feito por script no Blender, web/scripts/modelos/salao-quarto/, em quarto3d/feitos/), no lugar do do pacote
+   * quando carrega; o 'arquivo' fica de reserva. Com ele, 'escala' e 'cores' (que são do modelo do pacote) não valem.
+   */
+  nosso?: string;
   /** Multiplica o tamanho do pacote. */
   escala?: number;
   /**
@@ -72,6 +80,11 @@ export interface Tema {
     /** A janela: uma peça só, ou a de três (a ponta da esquerda, a do meio repetida, a da direita). */
     janela: string;
     janelaTres?: [string, string, string];
+    /**
+     * Quanto da largura do vão é a janela de verdade (a do clássico é um pedaço de parede com a janela no meio): a cortina fechada
+     * nossa cobre 'cortina' do vão, e as folhas abertas giram nas dobradiças a ±'folhas'/2. Sem isso, o vão inteiro.
+     */
+    vao?: { cortina: number; folhas: number };
     cortina?: Parte;
     /** A cor média do reboco, contra a qual a cor do Cômodo é tirada. */
     base: [number, number, number];
@@ -80,7 +93,7 @@ export interface Tema {
   moveis: Record<string, PecaDoTema>;
   cadeira: PecaDoTema;
   naParede: Record<string, PecaDaParede>;
-  deCima: Record<string, { arquivo: string; alto: number }>;
+  deCima: Record<string, { arquivo: string; alto: number; nosso?: string }>;
   /** Junta as peças paradas de mesma textura numa malha só (o banheiro do salão fez assim). */
   juntar?: boolean;
   /** As luzinhas do alto das paredes. */
@@ -94,7 +107,7 @@ export const TEMAS: Record<string, Tema> = {
     id: 'classico',
     escala: 0.75,
     chao: {},
-    parede: { reta: 'restaurante/wall', largura: 4, janela: 'restaurante/wall_window_closed_curtains_green', base: [232, 220, 196], topo: '#5c4a3d' },
+    parede: { reta: 'restaurante/wall', largura: 4, janela: 'restaurante/wall_window_closed_curtains_green', vao: { cortina: 0.56, folhas: 0.4 }, base: [232, 220, 196], topo: '#5c4a3d' },
     moveis: {
       cama: { arquivo: 'bed_double_B', encostar: true },
       abajur: {
@@ -105,7 +118,7 @@ export const TEMAS: Record<string, Tema> = {
           { arquivo: 'pictureframe_standing_A', dx: 0.28, dz: -0.2, escala: 0.6 },
         ],
       },
-      'guarda-roupa': { arquivo: 'kenney/bookcaseClosedDoors', encostar: true, escala: 1.15 },
+      'guarda-roupa': { arquivo: 'kenney/bookcaseClosedDoors', nosso: 'feitos/guarda-roupa-classico', encostar: true, escala: 1.15 },
       mesa: {
         arquivo: 'desk_large',
         encostar: true,
@@ -179,7 +192,7 @@ export const TEMAS: Record<string, Tema> = {
       plantinha: { arquivo: 'cactus_small_B', alto: 0.38 },
       livros: { arquivo: 'book_set', alto: 0.3 },
       videogame: { arquivo: 'gameconsole_handheld', alto: 0.12 },
-      pipoca: { arquivo: 'comida/fries', alto: 0.32 },
+      pipoca: { arquivo: 'comida/fries', nosso: 'feitos/pipoca', alto: 0.32 },
       retrato: { arquivo: 'pictureframe_standing_A', alto: 0.36 },
       salgadinho: { arquivo: 'comida/bag', alto: 0.36 },
       bolo: { arquivo: 'comida/cake', alto: 0.22 },
@@ -197,6 +210,7 @@ export const TEMAS: Record<string, Tema> = {
       largura: 2,
       janela: T + 'wall_panelled_living_room_window_large',
       janelaTres: [T + 'wall_panelled_living_room_window_full_left', T + 'wall_panelled_living_room_window_full_center', T + 'wall_panelled_living_room_window_full_right'],
+      vao: { cortina: 1, folhas: 0.92 },
       base: [178, 176, 206],
       topo: '#5d5f80',
     },
@@ -219,6 +233,7 @@ export const TEMAS: Record<string, Tema> = {
       // o guarda-roupa é a cômoda de gavetas (o pacote não tem armário alto; a função é a das "gavetas" desde a home antiga)
       'guarda-roupa': {
         arquivo: T + 'closet_blue',
+        nosso: 'feitos/guarda-roupa-colorido',
         encostar: true,
         escala: 1.1,
         partes: [{ arquivo: T + 'record_player_brown', dx: -0.4, dz: -0.1, escala: 0.75 }],
@@ -295,7 +310,7 @@ export const TEMAS: Record<string, Tema> = {
       plantinha: { arquivo: T + 'succulent_plant_pot_small', alto: 0.26 },
       livros: { arquivo: T + 'book_stacked', alto: 0.34 },
       videogame: { arquivo: 'gameconsole_handheld', alto: 0.12 },
-      pipoca: { arquivo: 'comida/fries', alto: 0.32 },
+      pipoca: { arquivo: 'comida/fries', nosso: 'feitos/pipoca', alto: 0.32 },
       retrato: { arquivo: T + 'picture_frame_standing_customimage_A_brown', alto: 0.34 },
       salgadinho: { arquivo: 'comida/bag', alto: 0.36 },
       bolo: { arquivo: T + 'doces/cake_strawberry', alto: 0.3 },

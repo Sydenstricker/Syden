@@ -38,6 +38,8 @@ try {
 
   // 1. De fábrica, o pixel art (o padrão é decisão dele)
   const botao = p.locator('.quarto-estilo-botao');
+  // a conta de teste entra numa comunidade: o quarto é o início do Syden
+  await p.locator('.rail-logo').click();
   await botao.waitFor({ timeout: 30_000 });
   const rotulo = await botao.getAttribute('aria-label');
   if (/2D$/.test(rotulo ?? '') && (await p.locator('.quarto-novo iframe, .quarto').count())) ok(`abre em pixel art (${rotulo})`);
@@ -129,7 +131,8 @@ try {
 
   // o quadro leva aos Amigos (sai da home) e o guarda-roupa abre as Configurações (uma janela por cima)
   await clicar('quadro');
-  await p.locator('.quarto3d').waitFor({ state: 'detached', timeout: 12_000 }).then(
+  // a cena fica guardada, escondida (CenaGuardada, 13/11/2026): sumir da vista basta
+  await p.locator('.quarto3d').waitFor({ state: 'hidden', timeout: 12_000 }).then(
     () => ok('o quadro leva aos Amigos'),
     () => falhou('o quadro não levou aos Amigos'),
   );

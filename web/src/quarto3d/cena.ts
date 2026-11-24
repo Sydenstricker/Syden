@@ -47,7 +47,19 @@ const PALETA_KENNEY: Record<string, string> = {
   _defaultMat: '#ecdcc4',
 };
 const ehKenney = (nome: string) => nome.startsWith('kenney/');
-const ehGlb = (nome: string) => nome.startsWith('kenney/') || nome.startsWith('comida/');
+const ehNosso = (nome: string) => nome.startsWith('feitos/');
+const ehGlb = (nome: string) => nome.startsWith('kenney/') || nome.startsWith('comida/') || ehNosso(nome);
+/**
+ * OS MODELOS NOSSOS (24/11/2026), feitos por script no Blender (web/scripts/modelos/salao-quarto/), em quarto3d/feitos/: o que
+ * antes era feito por código aqui (o fone, a cortiça, o troféu, o violão, o relógio, o ventilador com a hélice que gira, a
+ * caminha), o guarda-roupa alto e a pipoca de cada tema, e as janelas que não tinham desenho (arco, redonda, com floreira; a
+ * cortina fechada e as folhas abertas da grande). Carregam junto, mas sem segurar o quarto: o que falhar fica na reserva.
+ */
+const NOSSOS = ['fone', 'cortica', 'trofeu', 'violao', 'relogio', 'ventilador', 'caminha-gato', 'pipoca'];
+const NOSSOS_DO_TEMA = ['guarda-roupa', 'janela-arco', 'janela-redonda', 'janela-floreira', 'cortina', 'folhas'];
+const JANELAS_NOSSAS = ['arco', 'redonda', 'floreira'];
+/** A altura do meio do vidro das janelas (a do céu atrás da janela do pacote). */
+const ALTURA_DA_JANELA = 1.55;
 const ALTURA_DO_COELHO = 1.1;
 const ALTURA_DA_PAREDE = 3;
 /** Depois de usar uma função, o coelho volta ao lugar do estado (a cama, o computador) em tanto tempo. */
@@ -175,6 +187,11 @@ export class CenaDoQuarto3D {
   private mundo: QuartoNoMundo = noMundo(null);
   /** O que vai virar uma malha só (o tema que junta): as peças paradas, as paredes e o chão. */
   private paraJuntar: THREE.Object3D[] = [];
+  /** Os modelos nossos que carregaram (NOSSOS), pelo caminho ('feitos/fone'). */
+  private feitos = new Map<string, GLTF>();
+  /** As hélices que giram (o ventilador ligado no pixel) e a cabeça, que balança quando oscila. */
+  private helices: { helice: THREE.Object3D; cabeca: THREE.Object3D | null; oscila: boolean }[] = [];
+  private tempoDaHelice = 0;
   private juntas = 0;
 
   constructor(
@@ -245,7 +262,17 @@ export class CenaDoQuarto3D {
     for (const q of mundo.naParede) daPeca(tema.naParede[q.tipo]);
     for (const o of mundo.deCima) if (tema.deCima[o.tipo]) nomes.add(tema.deCima[o.tipo].arquivo);
     for (const n of [...nomes]) if (n.startsWith('codigo:')) nomes.delete(n);
-    const [g] = await Promise.all([carregarCoelho(), ...[...nomes].map(modelo)]);
+    const nossos = [...NOSSOS.map((n) => 'feitos/' + n), ...NOSSOS_DO_TEMA.map((n) => `feitos/${n}-${tema.id}`)];
+    const [g] = await Promise.all([
+      carregarCoelho(),
+      ...[...nomes].map(modelo),
+      ...nossos.map((n) =>
+        modelo(n).then(
+          (f) => this.feitos.set(n, f),
+          () => undefined,
+        ),
+      ),
+    ]);
     if (this.morta) return;
     await this.montarChao();
     for (const m of mundo.moveis) this.moveis.push(await this.montarMovel(m));
@@ -501,7 +528,7 @@ export class CenaDoQuarto3D {
 
   /** O tamanho de base de um arquivo: o do Kenney é outro. */
   private escalaDe(nome: string) {
-    return ehGlb(nome) ? K : this.tema.escala;
+    return ehNosso(nome) ? 1 : ehGlb(nome) ? K : this.tema.escala;
   }
 
   /** A peça no tamanho do pacote, centrada na própria pegada e com a base em y = 0 (ou um objeto feito por código). */
@@ -540,7 +567,11 @@ export class CenaDoQuarto3D {
 
   private async montarMovel(m: QuartoNoMundo['moveis'][number]): Promise<Pronto> {
     const spec = this.tema.moveis[m.tipo];
-    const { g: base, tam } = await this.peca(spec.arquivo, m.tipo === 'tapete' ? undefined : spec.cores, spec.escala);
+    // o modelo nosso, se carregou (sem a escala e as cores do do pacote); senão, o do pacote
+    const nosso = spec.nosso && this.feitos.has(spec.nosso) ? spec.nosso : null;
+    const { g: base, tam } = nosso
+      ? await this.peca(nosso)
+      : await this.peca(spec.arquivo, m.tipo === 'tapete' ? undefined : spec.cores, spec.escala);
     if (spec.giro) base.rotation.y = spec.giro;
     // o tapete com a cor escolhida: lisa, no lugar da textura do pacote (a cor por cima dela misturava as duas: o rosa no tapete
     // azul do KayKit saía cinza)
@@ -592,7 +623,11 @@ export class CenaDoQuarto3D {
       luz,
     };
     // o que não tem função nem uso fica parado: vai para a malha só (no tema que junta), o tapete com cor fica à parte
-    if (!funcao && !uso && !luz && !(m.tipo === 'tapete' && this.mundo.cores.tapete)) this.paraJuntar.push(raiz);
+    // o ventilador ligado no pixel gira a hélice do modelo nosso (e balança a cabeça, se oscila); fica fora da malha só
+    const ligado = m.tipo === 'ventilador' ? this.mundo.ventiladores?.[m.id] : undefined;
+    const helice = ligado ? base.getObjectByName('helice') : undefined;
+    if (helice) this.helices.push({ helice, cabeca: base.getObjectByName('cabeca') ?? null, oscila: ligado === 'oscilando' });
+    if (!funcao && !uso && !luz && !helice && !(m.tipo === 'tapete' && this.mundo.cores.tapete)) this.paraJuntar.push(raiz);
     return p;
   }
 
@@ -631,7 +666,7 @@ export class CenaDoQuarto3D {
     const spec = this.tema.deCima[o.tipo];
     const p = this.moveis.find((m) => m.id === o.em);
     if (!spec || !p) return;
-    const { g, tam } = await this.peca(spec.arquivo);
+    const { g, tam } = await this.peca(spec.nosso && this.feitos.has(spec.nosso) ? spec.nosso : spec.arquivo);
     g.scale.setScalar(spec.alto / Math.max(0.01, tam.y));
     const r = 0.18;
     let fx = Math.min(1, Math.max(0, o.fx));
@@ -657,8 +692,20 @@ export class CenaDoQuarto3D {
   private async montarParedes() {
     const tema = this.tema;
     const j = this.mundo.janela;
+    // a janela em arco, redonda ou com floreira: o modelo nosso na frente da parede inteira (o vão do pacote é retangular)
+    const nossa = JANELAS_NOSSAS.includes(j.tipo) ? this.feitos.get(`feitos/janela-${j.tipo}-${tema.id}`) : undefined;
     for (const t of this.mundo.trechos) {
       const temJanela = j.parede === t.parede && Math.abs(j.recuo - t.recuo) < 0.01 && j.a > t.de && j.a < t.ate;
+      if (temJanela && nossa) {
+        const n = Math.max(1, Math.round((t.ate - t.de) / (tema.parede.largura * tema.escala)));
+        for (let i = 0; i < n; i++) {
+          const o = await this.pecaDeParede(tema.parede.reta, (t.ate - t.de) / n);
+          this.porNaParede(o, t.parede, t.de + (i + 0.5) * ((t.ate - t.de) / n), t.recuo);
+          this.paraJuntar.push(o);
+        }
+        this.daParede.push(this.janelaNossa(nossa, j));
+        continue;
+      }
       const pedacos: [number, number][] = temJanela
         ? [
             [t.de, j.a - j.largura / 2],
@@ -687,6 +734,21 @@ export class CenaDoQuarto3D {
         jan.add(o);
       }
       this.porNaParede(jan, t.parede, j.a, t.recuo);
+      // a grande do pixel com a cortina fechada, ou aberta: o pano e as folhas nossos por cima da janela do pacote
+      const extra = j.cortina ? this.feitos.get(`feitos/cortina-${tema.id}`) : j.aberta ? this.feitos.get(`feitos/folhas-${tema.id}`) : undefined;
+      if (extra) {
+        const o = this.copia(extra, 'feitos/extra');
+        const vao = tema.parede.vao ?? { cortina: 1, folhas: 1 };
+        if (j.cortina) {
+          o.scale.x = j.largura * vao.cortina;
+          o.position.set(0, ALTURA_DA_JANELA + 1.0, 0.24);
+        } else {
+          o.getObjectByName('folha-esq')?.position.setX((-j.largura * vao.folhas) / 2);
+          o.getObjectByName('folha-dir')?.position.setX((j.largura * vao.folhas) / 2);
+          o.position.set(0, ALTURA_DA_JANELA, 0.2);
+        }
+        jan.add(o);
+      }
       jan.userData.funcao = 'janela';
       this.daParede.push(jan);
       this.foraDaJanela(j);
@@ -710,6 +772,35 @@ export class CenaDoQuarto3D {
       o.position.set(recuo - 0.19, y, a);
     }
     this.cena.add(o);
+  }
+
+  /**
+   * Uma janela nossa (arco, redonda, floreira) na frente da parede: o meio do vidro na altura da janela do pacote, a largura do
+   * vão do pixel. O vidro e o morro do modelo viram o céu e o morro da hora (os mesmos materiais de foraDaJanela).
+   */
+  private janelaNossa(g: GLTF, j: NaParedeNoMundo) {
+    const o = this.copia(g, 'feitos/janela');
+    o.traverse((x) => {
+      const m = x as THREE.Mesh;
+      const nome = m.isMesh ? (m.material as THREE.Material).name : '';
+      if (nome === 'vidro' || nome === 'morro') {
+        m.material = new THREE.MeshBasicMaterial({ color: nome === 'vidro' ? '#a8dcf5' : '#86c06a' });
+        m.castShadow = false;
+        (nome === 'vidro' ? this.fora : this.morro).push(m);
+      }
+    });
+    const caixa = new THREE.Box3().setFromObject(o);
+    const largura = caixa.max.x - caixa.min.x;
+    o.scale.setScalar(Math.min(1.3, (j.largura * 0.9) / largura));
+    const jan = new THREE.Group().add(o);
+    this.porNaParede(jan, j.parede, j.a, j.recuo + 0.24, ALTURA_DA_JANELA);
+    jan.userData.funcao = 'janela';
+    // a caixa inteira pega o clique (como o fone: o vão entre os caixilhos deixaria passar)
+    const alvo = new THREE.Mesh(this.geo(new THREE.BoxGeometry(largura, caixa.max.y - caixa.min.y, 0.1)), new THREE.MeshBasicMaterial());
+    alvo.visible = false;
+    alvo.position.set(0, (caixa.max.y + caixa.min.y) / 2, 0.05);
+    o.add(alvo);
+    return jan;
   }
 
   /** Lá fora: um céu e um morro atrás da janela. */
@@ -771,6 +862,8 @@ export class CenaDoQuarto3D {
   // ---- o que nenhum pacote tem, feito por código ----
 
   private feitoPorCodigo(nome: string): THREE.Object3D {
+    const nosso = this.feitos.get('feitos/' + nome);
+    if (nosso) return this.prepararNosso(nome, this.copia(nosso, 'feitos/' + nome));
     if (nome === 'cortica') return this.cortica();
     if (nome === 'trofeu') return this.trofeu();
     if (nome === 'fone') return this.fone();
@@ -780,6 +873,27 @@ export class CenaDoQuarto3D {
     if (nome === 'ventilador') return this.ventilador();
     if (nome === 'caminha-gato') return this.caminhaDoGato();
     return new THREE.Group();
+  }
+
+  /** O acabamento de um modelo nosso: as cores do fone pelo tema, os ponteiros do relógio na hora, a hélice que gira. */
+  private prepararNosso(nome: string, o: THREE.Object3D): THREE.Object3D {
+    if (nome === 'fone') {
+      const tons = this.tema.id === 'colorido' ? ['#5aa0d8', '#f0d36a', '#3c4a63'] : ['#3c3a40', '#c98c3c', '#26252a'];
+      const cor: Record<string, string> = { corpo: tons[0], detalhe: tons[1], almofada: tons[2] };
+      o.traverse((x) => {
+        const mat = (x as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+        if ((x as THREE.Mesh).isMesh && mat && cor[mat.name]) mat.color.set(cor[mat.name]);
+      });
+    }
+    if (nome === 'relogio') {
+      // a hora de quando o quarto abriu (o relógio não anda: ninguém fica olhando, e redesenhar por ele não vale o quadro)
+      const d = new Date();
+      const min = d.getMinutes();
+      const h = (d.getHours() % 12) + min / 60;
+      o.getObjectByName('horas')?.rotation.set(0, 0, (-h / 12) * Math.PI * 2);
+      o.getObjectByName('minutos')?.rotation.set(0, 0, (-min / 60) * Math.PI * 2);
+    }
+    return o;
   }
 
   private material(cor: string, extra: THREE.MeshStandardMaterialParameters = {}) {
@@ -1141,12 +1255,14 @@ export class CenaDoQuarto3D {
         const m = x as THREE.Mesh;
         if (!m.isMesh || Array.isArray(m.material)) return;
         const mat = m.material as THREE.MeshStandardMaterial;
-        const chave = `${mat.name}|${mat.color.getHexString()}|${mat.map ? (mat.map.name || mat.map.uuid) + (mat.map.image as { width?: number } | null)?.width : ''}|${mat.transparent}`;
+        const chave = `${mat.name}|${mat.color.getHexString()}|${mat.map ? (mat.map.name || mat.map.uuid) + (mat.map.image as { width?: number } | null)?.width : ''}|${mat.transparent}|${mat.vertexColors}`;
         let gr = grupos.get(chave);
         if (!gr) grupos.set(chave, (gr = { mat, geos: [], donos: [] }));
         const geo = m.geometry.clone().applyMatrix4(m.matrixWorld);
-        // a malha só precisa das mesmas listas em todas: posição, normal e textura
-        for (const nome of Object.keys(geo.attributes)) if (!['position', 'normal', 'uv'].includes(nome)) geo.deleteAttribute(nome);
+        // a malha só precisa das mesmas listas em todas: posição, normal e textura (e a cor dos vértices, nos modelos nossos, que
+        // têm a sombra dos cantos assada nela: sem ela o material com vertexColors sai preto)
+        const fica = mat.vertexColors ? ['position', 'normal', 'uv', 'color'] : ['position', 'normal', 'uv'];
+        for (const nome of Object.keys(geo.attributes)) if (!fica.includes(nome)) geo.deleteAttribute(nome);
         gr.geos.push(geo);
         gr.donos.push(m);
       });
@@ -1653,6 +1769,14 @@ export class CenaDoQuarto3D {
       c.corpo.rotation.y += delta * 0.4;
       if (!this.calmo) c.copia.mixer.update(dt);
       else if (c.copia.mixer.time === 0) c.copia.mixer.update(0.01);
+    }
+    // a hélice do ventilador ligado (com "menos movimento", parada)
+    if (this.helices.length && !this.calmo) {
+      this.tempoDaHelice += dt;
+      for (const h of this.helices) {
+        h.helice.rotation.z -= dt * 14;
+        if (h.oscila && h.cabeca) h.cabeca.rotation.y = Math.sin(this.tempoDaHelice * 0.7) * 0.6;
+      }
     }
     this.renderer.render(this.cena, this.camera);
     this.desenhados++;

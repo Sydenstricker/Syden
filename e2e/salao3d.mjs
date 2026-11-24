@@ -286,7 +286,8 @@ try {
     else falhou('sem a etiqueta em ' + id);
   }
   et = await clicar('estante');
-  await p.locator('.salao3d').waitFor({ state: 'detached', timeout: 10_000 }).then(
+  // a cena fica guardada, escondida (CenaGuardada, 13/11/2026): sumir da vista basta
+  await p.locator('.salao3d').waitFor({ state: 'hidden', timeout: 10_000 }).then(
     () => ok('a estante leva à conversa'),
     () => falhou('a estante não levou à conversa'),
   );
