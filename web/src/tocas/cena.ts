@@ -104,6 +104,13 @@ const TODOS = [
 
 /** A altura do coelho por tipo (o cavaleiro é o veterano: maior). */
 const ALTURA: Record<string, number> = { trabalhador: 0.82, lanceiro: 0.92, arqueiro: 0.9, cavaleiro: 1.2, guarda: 1.05 };
+/**
+ * O CAVALEIRO MONTADO (24/11/2026): o coelho no cavalo do pacote (a manta na cor do time), com a pose "montado" do nosso
+ * esqueleto (web/scripts/modelos/tocas-cozinha-carrinhos/cavaleiro.py, que mede estes números: a altura do cavalo e a do
+ * coelho de pé, a sela e o quanto o coelho senta atrás do meio). Sem o cavalo ou a pose, o cavaleiro a pé, maior.
+ */
+const MONTADO = { cavalo: 0.78, coelho: 0.86, sela: 0.548, recuo: -0.08 };
+const CAVALO = 'm/horse_{cor}_accent';
 const PELO = '#f1ebe1';
 
 const carregados = new Map<string, Promise<GLTF>>();
@@ -309,6 +316,8 @@ export class CenaDasTocas implements Vista {
   private fantasmaObj = new THREE.Group();
   private fantasmaChave = '';
   private matCoelho: THREE.MeshStandardMaterial[] = [];
+  /** A pose do coelho a cavalo (só a animação); null: o cavaleiro anda a pé. */
+  private poseMontado: THREE.AnimationClip | null = null;
   private geoAnel = new THREE.RingGeometry(0.3, 0.38, 24);
   private matAnel = [new THREE.MeshBasicMaterial({ color: CORES[0], depthWrite: false }), new THREE.MeshBasicMaterial({ color: '#f0d24a', depthWrite: false })];
   private geoBarra = new THREE.PlaneGeometry(1, 0.09);
@@ -368,9 +377,21 @@ export class CenaDasTocas implements Vista {
   async montar(): Promise<void> {
     const lista = await Promise.all(TODOS.map((n) => carregar(n).then((g) => [n, g] as const)));
     const coelho = await carregar('coelho');
+    // o cavaleiro montado: se a pose ou um dos cavalos não vier, ele fica a pé (nada disso segura o jogo)
+    const [montado, ...cavalos] = await Promise.all([carregar('coelho-montado'), ...TIME.map((_, d) => carregar(doTime(CAVALO, d)))].map((p) => p.catch(() => null)));
     if (this.morta) return;
     for (const [n, g] of lista) this.modelos.set(n, g);
     this.modelos.set('coelho', coelho);
+    if (montado?.animations[0] && cavalos.every((g) => g)) {
+      this.poseMontado = montado.animations[0];
+      cavalos.forEach((g, d) => {
+        g!.scene.traverse((o) => {
+          const m = o as THREE.Mesh;
+          if (m.isMesh) for (const mat of Array.isArray(m.material) ? m.material : [m.material]) comNevoa(mat);
+        });
+        this.modelos.set(doTime(CAVALO, d), g!);
+      });
+    }
     // a paleta de cada pacote da KayKit (uma textura para o pacote inteiro): o primeiro material dela serve a todos os modelos
     const paletas = new Map<string, THREE.Material>();
     for (const [n, g] of lista)
@@ -744,9 +765,14 @@ export class CenaDasTocas implements Vista {
       const g = this.modelos.get('coelho')!;
       const c = SkeletonUtils.clone(g.scene);
       const caixa = new THREE.Box3().setFromObject(c);
-      const k = ALTURA[u.tipo] / (caixa.max.y - caixa.min.y);
+      const montado = u.tipo === 'cavaleiro' && this.poseMontado ? this.poseMontado : null;
+      const k = (montado ? MONTADO.coelho : ALTURA[u.tipo]) / (caixa.max.y - caixa.min.y);
       c.scale.setScalar(k);
       c.position.y = -caixa.min.y * k;
+      if (montado) {
+        // o coelho senta na sela (a raiz dele, o chão de quem está de pé, vai à altura dela)
+        c.position.set(0, MONTADO.sela, MONTADO.recuo);
+      }
       const mat = this.matCoelho[u.dono & 1];
       c.traverse((o) => {
         const m = o as THREE.Mesh;
@@ -759,8 +785,18 @@ export class CenaDasTocas implements Vista {
       mixer = new THREE.AnimationMixer(c);
       for (const a of g.animations) acoes.set(a.name, mixer.clipAction(a));
       corpo = c;
-      const h = ALTURA[u.tipo];
+      const h = montado ? MONTADO.coelho : ALTURA[u.tipo];
       mao.position.set(-0.17 * h / 0.7, 0.36 * h / 0.7, 0.12 * h / 0.7);
+      if (montado) {
+        acoes.set('montado', mixer.clipAction(montado));
+        const cavalo = this.copiaNormalizada(doTime(CAVALO, u.dono), 0, MONTADO.cavalo);
+        const montaria = new THREE.Group();
+        montaria.userData.cavalo = true;
+        montaria.add(cavalo, c);
+        corpo = montaria;
+        // as mãos na rédea, acima da sela
+        mao.position.set(-0.17 * h / 0.7, MONTADO.sela + 0.2, 0.12 * h / 0.7 + 0.06);
+      }
       const arma = this.armas.get(`${u.tipo}|${u.dono & 1}`);
       if (arma) {
         const a = arma.clone();
@@ -838,8 +874,20 @@ export class CenaDasTocas implements Vista {
       }
       const noCampo = b.campo > 0.5;
       const anim = u.acao === 'andando' || (noCampo && !colhendo) ? 'andando' : u.acao === 'parado' ? 'parado' : 'falando';
-      this.tocar(b, anim);
-      b.mixer!.update(dt * (u.tipo === 'cavaleiro' && anim === 'andando' ? 1.5 : noCampo && anim === 'andando' ? 0.5 : 1));
+      const trote = b.acoes.get('montado');
+      if (trote) {
+        // a cavalo: o trote só anda andando; parado, o primeiro desenho (sentado na sela). O cavalo balança junto.
+        this.tocar(b, 'montado');
+        if (anim !== 'andando') trote.time = 0;
+        b.mixer!.update(anim === 'andando' ? dt * 1.4 : 0);
+        const m = b.corpo.children[0];
+        const fase = this.tempo * 11 + u.id;
+        m.position.y = anim === 'andando' ? Math.abs(Math.sin(fase)) * 0.03 : 0;
+        m.rotation.x = anim === 'andando' ? Math.sin(fase) * 0.04 : 0;
+      } else {
+        this.tocar(b, anim);
+        b.mixer!.update(dt * (u.tipo === 'cavaleiro' && anim === 'andando' ? 1.5 : noCampo && anim === 'andando' ? 0.5 : 1));
+      }
       // o golpe: um avanço curto, no momento em que o golpe sai
       const bateu = u.acao === 'atacando' && u.recarga >= 12 && u.tipo !== 'arqueiro';
       const trabalha = u.acao === 'trabalhando';

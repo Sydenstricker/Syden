@@ -30,6 +30,8 @@ const MEDIEVAL = [
   'units/neutral/cannon',
   'units/neutral/projectile_cannonball',
   'units/neutral/hammer',
+  // o cavalo do cavaleiro montado (24/11/2026), com a manta na cor do time
+  'units/{cor}/horse_{cor}_accent',
   ...['tree_single_A', 'tree_single_B', 'trees_A_small', 'tree_single_A_cut', 'mountain_A', 'rock_single_D', 'rock_single_E'].map((n) => `decoration/nature/${n}`),
 ];
 const CORES = ['blue', 'red'];

@@ -32,6 +32,8 @@ export const MODELOS_DO_ENTORNO = [
   'bairro/tree-large',
   'bairro/tree-small',
   'bairro/planter',
+  // o nosso (24/11/2026, web/scripts/modelos/tocas-cozinha-carrinhos/poste.py); sem ele, o poste por código
+  'poste',
 ] as const;
 
 type Nome = (typeof MODELOS_DO_ENTORNO)[number];
@@ -273,29 +275,33 @@ export function montarEntorno(cena: THREE.Scene, modelos: Map<string, GLTF>, des
 
   // OS POSTES: o cano e a luminária (que brilha um pouco: é dia, mas ela ainda se lê como lâmpada)
   const lugares = lugaresDosPostes();
-  const canoGeo = new THREE.CylinderGeometry(0.04, 0.055, 2, 8);
-  canoGeo.translate(0, 1, 0);
-  const bracoGeo = new THREE.BoxGeometry(0.42, 0.05, 0.06);
-  bracoGeo.translate(0.18, 1.96, 0);
-  const lampGeo = new THREE.BoxGeometry(0.2, 0.08, 0.14);
-  lampGeo.translate(0.36, 1.91, 0);
-  const ferro = new THREE.MeshStandardMaterial({ color: '#6b7178', roughness: 0.55, metalness: 0.2 });
-  const luz = new THREE.MeshStandardMaterial({ color: '#fff3cf', emissive: '#ffe7a8', emissiveIntensity: 0.8 });
-  descartaveis.push(canoGeo, bracoGeo, lampGeo, ferro, luz);
-  for (const [geo, mat] of [
-    [canoGeo, ferro],
-    [bracoGeo, ferro],
-    [lampGeo, luz],
-  ] as const) {
-    const im = new THREE.InstancedMesh(geo, mat, lugares.length);
-    lugares.forEach(([x, z], i) => {
-      // o braço aponta para a pista
-      const giro = x < 0 ? 0 : x > LARGURA ? Math.PI : z < 0 ? -Math.PI / 2 : Math.PI / 2;
-      im.setMatrixAt(i, new THREE.Matrix4().compose(new THREE.Vector3(x, 0, z), new THREE.Quaternion().setFromAxisAngle(CIMA, giro), new THREE.Vector3(1, 1, 1)));
-    });
-    im.computeBoundingSphere();
-    descartaveis.push(im);
-    grupo.add(im);
+  // o braço aponta para a pista
+  const giroDoPoste = (x: number, z: number) => (x < 0 ? 0 : x > LARGURA ? Math.PI : z < 0 ? -Math.PI / 2 : Math.PI / 2);
+  const poste = modelos.get('poste');
+  if (poste) instanciar(poste, lugares.map(([x, z]) => ({ x, z, giro: giroDoPoste(x, z), escala: 1 })), grupo, descartaveis);
+  else {
+    const canoGeo = new THREE.CylinderGeometry(0.04, 0.055, 2, 8);
+    canoGeo.translate(0, 1, 0);
+    const bracoGeo = new THREE.BoxGeometry(0.42, 0.05, 0.06);
+    bracoGeo.translate(0.18, 1.96, 0);
+    const lampGeo = new THREE.BoxGeometry(0.2, 0.08, 0.14);
+    lampGeo.translate(0.36, 1.91, 0);
+    const ferro = new THREE.MeshStandardMaterial({ color: '#6b7178', roughness: 0.55, metalness: 0.2 });
+    const luz = new THREE.MeshStandardMaterial({ color: '#fff3cf', emissive: '#ffe7a8', emissiveIntensity: 0.8 });
+    descartaveis.push(canoGeo, bracoGeo, lampGeo, ferro, luz);
+    for (const [geo, mat] of [
+      [canoGeo, ferro],
+      [bracoGeo, ferro],
+      [lampGeo, luz],
+    ] as const) {
+      const im = new THREE.InstancedMesh(geo, mat, lugares.length);
+      lugares.forEach(([x, z], i) => {
+        im.setMatrixAt(i, new THREE.Matrix4().compose(new THREE.Vector3(x, 0, z), new THREE.Quaternion().setFromAxisAngle(CIMA, giroDoPoste(x, z)), new THREE.Vector3(1, 1, 1)));
+      });
+      im.computeBoundingSphere();
+      descartaveis.push(im);
+      grupo.add(im);
+    }
   }
 
   // OS MODELOS

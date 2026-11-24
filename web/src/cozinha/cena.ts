@@ -180,6 +180,9 @@ export class CenaDaCozinha {
   private materiais = new Map<string, THREE.Material>();
   private tingidos = new Map<string, THREE.Material>();
   private coelhoGltf: GLTF | null = null;
+  /** O extintor e a campainha feitos no Blender (web/scripts/modelos/tocas-cozinha-carrinhos/cozinha.py); sem eles, os por código. */
+  private extintorGltf: GLTF | null = null;
+  private campainhaGltf: GLTF | null = null;
   private copiaDoCoelho: CoelhoCopiado | null = null;
   private coelho: { raiz: THREE.Group; corpo: THREE.Object3D; mixer: THREE.AnimationMixer; acoes: Map<string, THREE.AnimationAction>; tocando: string; mao: THREE.Group; sinal: string } | null = null;
   private emCima = new Map<number, { grupo: THREE.Group; sinal: string }>();
@@ -243,13 +246,18 @@ export class CenaDaCozinha {
 
   /** Carrega os modelos, monta a cozinha e desenha os ícones dos pedidos. Rejeita se algo falhar. */
   async montar(): Promise<Icones> {
-    const [kaykit, kenney, quaternius, coelho] = await Promise.all([
+    const [kaykit, kenney, quaternius, coelho, extintor, campainha] = await Promise.all([
       Promise.all(MODELOS.map((m) => carregar(`${this.base}cozinha/${m}.gltf`).then((g) => [m as Modelo, g, 'kaykit'] as const))),
       Promise.all(MODELOS_KENNEY.map((m) => carregar(`${this.base}cozinha/kenney/${m}.glb`).then((g) => [m as Modelo, g, 'kenney'] as const))),
       Promise.all(MODELOS_QUATERNIUS.map((m) => carregar(`${this.base}cozinha/quaternius/${m}.glb`).then((g) => [m as Modelo, g] as const))),
       carregar(`${this.base}cidades3d/coelho-animado.glb`),
+      // os nossos: se falharem, ficam as peças por código
+      carregar(`${this.base}cozinha/extintor.glb`).catch(() => null),
+      carregar(`${this.base}cozinha/campainha.glb`).catch(() => null),
     ]);
     if (this.morta) return { receitas: {}, ingredientes: {} };
+    this.extintorGltf = extintor;
+    this.campainhaGltf = campainha;
     // os da Quaternius têm um material por cor, sem textura; as cores vêm mais escuras que as da KayKit (o branco do ovo saía
     // cinza), e por isso clareiam uma vez aqui, para os três pacotes casarem na mesma luz
     const clareados = new Set<THREE.Material>();
@@ -498,7 +506,13 @@ export class CenaDaCozinha {
         break;
       case 'entrega': {
         balcao('kitchencounter_straight_B');
-        // a campainha do balcão, feita aqui
+        // a campainha do balcão: a do Blender, e por código se ela não veio
+        if (this.campainhaGltf) {
+          const sino = this.doBlender(this.campainhaGltf);
+          sino.position.set(0.62, 0.995, 0.45);
+          giro.add(sino);
+          break;
+        }
         const ouro = new THREE.MeshStandardMaterial({ color: '#e8b64a', metalness: 0.6, roughness: 0.3 });
         const domo = new THREE.Mesh(new THREE.SphereGeometry(0.18, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), ouro);
         const pe = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.24, 0.05, 20), new THREE.MeshStandardMaterial({ color: '#5a4636' }));
@@ -700,6 +714,11 @@ export class CenaDaCozinha {
 
   /** O extintor, feito aqui: o cilindro vermelho, a válvula e a mangueira. */
   private modeloDoExtintor(): THREE.Group {
+    if (this.extintorGltf) {
+      const e = this.doBlender(this.extintorGltf);
+      e.userData.altura = 0.86;
+      return e;
+    }
     const g = new THREE.Group();
     const vermelho = new THREE.MeshStandardMaterial({ color: '#d8432f', roughness: 0.45 });
     const metal = new THREE.MeshStandardMaterial({ color: '#3a3533', metalness: 0.5, roughness: 0.4 });
@@ -717,6 +736,21 @@ export class CenaDaCozinha {
     this.descartaveis.push(vermelho, metal);
     g.userData.altura = 0.86;
     return g;
+  }
+
+  /** Uma cópia de um modelo nosso do Blender (a base no chão, no tamanho em que foi feito; geometria e material divididos). */
+  private doBlender(g: GLTF): THREE.Group {
+    const o = g.scene.clone(true);
+    o.traverse((x) => {
+      const mesh = x as THREE.Mesh;
+      if (mesh.isMesh) {
+        mesh.castShadow = this.sombras;
+        mesh.receiveShadow = this.sombras;
+      }
+    });
+    const raiz = new THREE.Group();
+    raiz.add(o);
+    return raiz;
   }
 
   /** Uma pilha de pratos (limpos ou sujos). */

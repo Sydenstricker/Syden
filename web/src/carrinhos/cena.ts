@@ -21,6 +21,8 @@ const RAIO_DA_PECA: Record<Peca['tipo'], number> = { reta: 0, pequena: 2, grande
 /** Um carro por faixa. */
 const CARROS = ['vehicle-racer', 'vehicle-speedster', 'vehicle-racer-low', 'vehicle-vintage-racer'];
 const ENFEITES = ['tree', 'tree-pine', 'item-cone', 'gate-finish'];
+/** As nossas (24/11/2026): o cruzamento sem a zebra do lado de dentro e com as faixas pintadas, e a agulha com os desvios. */
+const PECAS_NOSSAS = ['cruzamento', 'agulha'] as const;
 /** O nó das peças da Kenney fica 1 abaixo do chão; o tampo da pista, medido no modelo, fica a esta altura depois de subir. */
 const ALTURA_DA_PISTA = 0.1;
 const ALTURA_DO_COELHO = 0.5;
@@ -150,9 +152,19 @@ export class CenaDosCarrinhos {
   /** Carrega os modelos e monta a pista e os carros. Rejeita se algo falhar (quem chama mostra o aviso). */
   async montar(carros: CarroNaCena[]): Promise<void> {
     const nomes = [...Object.values(MODELO_DA_PECA), ...CARROS, ...ENFEITES];
-    const [coelho, ...lista] = await Promise.all([carregarCoelho(), ...nomes.map(carregar)]);
+    const [coelho, nossas, ...lista] = await Promise.all([
+      carregarCoelho(),
+      // as peças que o kit não tem, feitas no Blender (web/scripts/modelos/tocas-cozinha-carrinhos/carrinhos.py); sem elas, a reta
+      // com os riscos por código
+      Promise.all(PECAS_NOSSAS.map((n) => carregar(n).catch(() => null))),
+      ...nomes.map(carregar),
+    ]);
     if (this.morta) return;
     const modelos = new Map(nomes.map((n, i) => [n, lista[i]]));
+    PECAS_NOSSAS.forEach((n, i) => {
+      const g = nossas[i];
+      if (g) modelos.set(n, g);
+    });
     this.montarPista(modelos);
     for (const c of carros) this.montarCarro(c, modelos.get(CARROS[c.faixa % CARROS.length])!, coelho);
     this.medir();
@@ -218,11 +230,17 @@ export class CenaDosCarrinhos {
     barra.position.y = -0.01;
     c.add(barra);
 
+    const nossa = (p: Peca) => (p.tipo === 'cruzamento' || p.tipo === 'agulha') && modelos.has(p.tipo);
     for (const p of this.tracado.pecas) {
-      const o = this.clonar(modelos.get(MODELO_DA_PECA[p.tipo])!);
+      const o = this.clonar(modelos.get(nossa(p) ? p.tipo : MODELO_DA_PECA[p.tipo])!);
       const g = new THREE.Group();
       g.add(o);
       o.position.y += 1;
+      // o cruzamento nosso abre o lado +x da peça, que é o de dentro na fileira +1; na outra, ele dá meia volta no meio da peça
+      if (p.tipo === 'cruzamento' && nossa(p) && p.fileira < 0) {
+        o.rotation.y = Math.PI;
+        o.position.z += COMPRIMENTO_DA_RETA;
+      }
       // a peça entra em (0, 0) olhando +z; a curva "−" é a mesma peça percorrida ao contrário, entrando por (−R, R) olhando +x
       const R = RAIO_DA_PECA[p.tipo];
       const [lx, lz, rumoLocal] = p.sentido < 0 ? [-R, R, 0] : [0, 0, Math.PI / 2];
@@ -236,7 +254,8 @@ export class CenaDosCarrinhos {
     // O CRUZAMENTO (19/11/2026): a peça é a reta da Kenney, e as faixas trocando de lado são riscos claros por cima, por
     // código (o kit não tem peça de cruzamento). Um risco por faixa, do começo dela ao fim do outro lado.
     const risco = new THREE.MeshBasicMaterial({ color: '#f3ead2', transparent: true, opacity: 0.85 });
-    for (let f = 0; f < FAIXAS; f++) {
+    // com as peças nossas (24/11/2026) os riscos já vêm pintados nelas: os por código são a reserva
+    for (let f = 0; f < (modelos.has('cruzamento') ? 0 : FAIXAS); f++) {
       for (const t of this.tracado.trechos[f]) {
         if (!t.ladoX && !t.ladoZ) continue;
         const ax = t.x, az = t.z;
@@ -253,7 +272,7 @@ export class CenaDosCarrinhos {
     // A AGULHA (24/11/2026): a reta da Kenney, com o desvio de cada faixa para a outra da fileira riscado por cima, tracejado
     // (o trilho que muda; o kit não tem a peça)
     const desvio = new THREE.MeshBasicMaterial({ color: '#ffd36b', transparent: true, opacity: 0.8 });
-    for (let f = 0; f < FAIXAS; f++) {
+    for (let f = 0; f < (modelos.has('agulha') ? 0 : FAIXAS); f++) {
       const outra = this.tracado.trechos[parceiraDa(f)];
       this.tracado.trechos[f].forEach((t, i) => {
         if (!t.troca) return;
