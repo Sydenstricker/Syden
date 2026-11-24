@@ -4884,4 +4884,12 @@ export default {
   "Telefone sem fio": "말 전달 게임",
   "Troca de faixa": "차선 변경",
   "Você avançou para a era 3!": "3시대로 발전했어요!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} 님은 계속하고 싶어 해요.",
+  "{nome} propõe terminar pelos pontos.": "{nome} 님이 점수로 끝내자고 제안했어요.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "점수로 경기가 끝났어요: 점수가 더 많은 쪽이 이겼어요.",
+  "Esperando as outras pessoas aceitarem…": "다른 사람들이 수락하기를 기다리는 중…",
+  "Navios de guerra": "전함",
+  "Pontos: {nos} × {eles}": "점수: {nos} × {eles}",
+  "Terminar pelos pontos": "점수로 끝내기",
 } satisfies Record<string, string>;

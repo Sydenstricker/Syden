@@ -4912,4 +4912,12 @@ export default {
   "Telefone sem fio": "Telefon imkisser",
   "Troca de faixa": "Bdil ta' korsija",
   "Você avançou para a era 3!": "Int fl-era 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} jippreferi jkompli.",
+  "{nome} propõe terminar pelos pontos.": "{nome} jipproponi li nispiċċaw bil-punti.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Il-logħba spiċċat bil-punti: rebaħ min kellu l-aktar.",
+  "Esperando as outras pessoas aceitarem…": "Qed nistennew li l-oħrajn jaċċettaw…",
+  "Navios de guerra": "Vapuri tal-gwerra",
+  "Pontos: {nos} × {eles}": "Punti: {nos} × {eles}",
+  "Terminar pelos pontos": "Spiċċa bil-punti",
 } satisfies Record<string, string>;

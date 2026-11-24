@@ -4910,4 +4910,12 @@ export default {
   "Telefone sem fio": "กระซิบต่อกัน",
   "Troca de faixa": "สลับเลน",
   "Você avançou para a era 3!": "เลื่อนสู่ยุค 3 แล้ว!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} อยากเล่นต่อ",
+  "{nome} propõe terminar pelos pontos.": "{nome} เสนอให้จบด้วยคะแนน",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "เกมจบด้วยคะแนน: ฝ่ายที่มีคะแนนมากกว่าชนะ",
+  "Esperando as outras pessoas aceitarem…": "กำลังรอคนอื่นยอมรับ…",
+  "Navios de guerra": "เรือรบ",
+  "Pontos: {nos} × {eles}": "คะแนน: {nos} × {eles}",
+  "Terminar pelos pontos": "จบด้วยคะแนน",
 } satisfies Record<string, string>;

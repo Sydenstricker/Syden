@@ -4963,4 +4963,12 @@ export default {
   "Telefone sem fio": "Taleefan jaban",
   "Troca de faixa": "Beddelka waddada",
   "Você avançou para a era 3!": "Waxaad u gudubtay xilliga 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} ayaa doortay in la sii wado.",
+  "{nome} propõe terminar pelos pontos.": "{nome} ayaa soo jeediyay in lagu dhammeeyo dhibcaha.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Ciyaartu waxay ku dhammaatay dhibcaha: waxaa guuleystay dhinacii dhibcaha badan lahaa.",
+  "Esperando as outras pessoas aceitarem…": "Waxaa la sugayaa in kuwa kale aqbalaan…",
+  "Navios de guerra": "Maraakiibta dagaalka",
+  "Pontos: {nos} × {eles}": "Dhibco: {nos} × {eles}",
+  "Terminar pelos pontos": "Ku dhammee dhibcaha",
 } satisfies Record<string, string>;

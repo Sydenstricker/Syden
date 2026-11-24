@@ -4983,4 +4983,12 @@ export default {
   "Telefone sem fio": "Կոտրված հեռախոս",
   "Troca de faixa": "Գծի փոփոխություն",
   "Você avançou para a era 3!": "Դու անցար 3-րդ դարաշրջան։",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome}-ն ուզում է շարունակել։",
+  "{nome} propõe terminar pelos pontos.": "{nome}-ն առաջարկում է ավարտել ըստ միավորների։",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Խաղն ավարտվեց ըստ միավորների. հաղթեց ավելի շատ ունեցողը։",
+  "Esperando as outras pessoas aceitarem…": "Սպասում ենք, որ մյուսներն ընդունեն…",
+  "Navios de guerra": "Ռազմանավեր",
+  "Pontos: {nos} × {eles}": "Միավորներ՝ {nos} × {eles}",
+  "Terminar pelos pontos": "Ավարտել ըստ միավորների",
 } satisfies Record<string, string>;

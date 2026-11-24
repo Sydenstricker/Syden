@@ -4956,4 +4956,12 @@ export default {
   "Telefone sem fio": "Telefoni i prishur",
   "Troca de faixa": "Ndërrim korsie",
   "Você avançou para a era 3!": "Je në epokën 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} preferon të vazhdojë.",
+  "{nome} propõe terminar pelos pontos.": "{nome} propozon mbylljen me pikë.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Loja përfundoi me pikë: fitoi kush kishte më shumë.",
+  "Esperando as outras pessoas aceitarem…": "Në pritje që të tjerët të pranojnë…",
+  "Navios de guerra": "Anije luftarake",
+  "Pontos: {nos} × {eles}": "Pikë: {nos} × {eles}",
+  "Terminar pelos pontos": "Përfundo me pikë",
 } satisfies Record<string, string>;

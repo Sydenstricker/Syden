@@ -4966,4 +4966,12 @@ export default {
   "Telefone sem fio": "Sugedęs telefonas",
   "Troca de faixa": "Juostos keitimas",
   "Você avançou para a era 3!": "Perėjai į 3 erą!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} nori tęsti.",
+  "{nome} propõe terminar pelos pontos.": "{nome} siūlo baigti pagal taškus.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Partija baigėsi pagal taškus: laimėjo pusė, turinti daugiau.",
+  "Esperando as outras pessoas aceitarem…": "Laukiama, kol kiti priims…",
+  "Navios de guerra": "Karo laivai",
+  "Pontos: {nos} × {eles}": "Taškai: {nos} × {eles}",
+  "Terminar pelos pontos": "Baigti pagal taškus",
 } satisfies Record<string, string>;

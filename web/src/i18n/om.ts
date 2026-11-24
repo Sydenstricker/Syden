@@ -4934,4 +4934,12 @@ export default {
   "Telefone sem fio": "Bilbila cabaa",
   "Troca de faixa": "Karaa jijjiiruu",
   "Você avançou para a era 3!": "Gara bara 3 ce'ite!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} itti fufuu barbaada.",
+  "{nome} propõe terminar pelos pontos.": "{nome} qabxiidhaan xumuruu yaada dhiheessa.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Taphni qabxiidhaan xumurame: kan caalaa qabu mo'ate.",
+  "Esperando as outras pessoas aceitarem…": "Warri kaan akka fudhatan eegaa jira…",
+  "Navios de guerra": "Doonii waraanaa",
+  "Pontos: {nos} × {eles}": "Qabxii: {nos} × {eles}",
+  "Terminar pelos pontos": "Qabxiidhaan xumuri",
 } satisfies Record<string, string>;

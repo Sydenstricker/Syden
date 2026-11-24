@@ -4963,4 +4963,12 @@ export default {
   "Telefone sem fio": "ខ្សឹបតគ្នា",
   "Troca de faixa": "ប្តូរផ្លូវ",
   "Você avançou para a era 3!": "អ្នកបានឡើងដល់យុគ 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} ចង់លេងបន្ត។",
+  "{nome} propõe terminar pelos pontos.": "{nome} ស្នើឱ្យបញ្ចប់តាមពិន្ទុ។",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "ការប្រកួតបានបញ្ចប់តាមពិន្ទុ៖ ភាគីដែលមានពិន្ទុច្រើនជាងបានឈ្នះ។",
+  "Esperando as outras pessoas aceitarem…": "កំពុងរង់ចាំអ្នកផ្សេងទទួលយក…",
+  "Navios de guerra": "នាវាចម្បាំង",
+  "Pontos: {nos} × {eles}": "ពិន្ទុ៖ {nos} × {eles}",
+  "Terminar pelos pontos": "បញ្ចប់តាមពិន្ទុ",
 } satisfies Record<string, string>;

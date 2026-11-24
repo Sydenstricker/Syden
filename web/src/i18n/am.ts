@@ -4897,4 +4897,12 @@ export default {
   "Telefone sem fio": "የስልክ ጨዋታ",
   "Troca de faixa": "መስመር መቀየሪያ",
   "Você avançou para a era 3!": "ወደ ዘመን 3 ተሻግረዋል!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} መቀጠልን ይመርጣሉ።",
+  "{nome} propõe terminar pelos pontos.": "{nome} በነጥብ መጨረስን ሀሳብ ያቀርባሉ።",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "ጨዋታው በነጥብ ተጠናቀቀ፤ ብዙ ነጥብ የነበረው ወገን አሸነፈ።",
+  "Esperando as outras pessoas aceitarem…": "ሌሎቹ እስኪቀበሉ በመጠበቅ ላይ…",
+  "Navios de guerra": "የጦር መርከቦች",
+  "Pontos: {nos} × {eles}": "ነጥቦች፦ {nos} × {eles}",
+  "Terminar pelos pontos": "በነጥብ መጨረስ",
 } satisfies Record<string, string>;

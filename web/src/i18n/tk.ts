@@ -4975,4 +4975,12 @@ export default {
   "Telefone sem fio": "Bozuk telefon",
   "Troca de faixa": "Zolak çalyşmak",
   "Você avançou para a era 3!": "Sen 3-nji döwre geçdiň!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} dowam etmegi isleýär.",
+  "{nome} propõe terminar pelos pontos.": "{nome} utuk boýunça tamamlamagy teklip edýär.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Oýun utuk boýunça tamamlandy: köp utugy bolan tarap ýeňdi.",
+  "Esperando as outras pessoas aceitarem…": "Beýlekileriň kabul etmegine garaşylýar…",
+  "Navios de guerra": "Söweş gämileri",
+  "Pontos: {nos} × {eles}": "Utuk: {nos} × {eles}",
+  "Terminar pelos pontos": "Utuk boýunça tamamla",
 } satisfies Record<string, string>;

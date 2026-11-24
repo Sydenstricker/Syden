@@ -4914,4 +4914,12 @@ export default {
   "Telefone sem fio": "Испорченный телефон",
   "Troca de faixa": "Смена полосы",
   "Você avançou para a era 3!": "Ты в эпохе 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} хочет продолжить.",
+  "{nome} propõe terminar pelos pontos.": "{nome} предлагает закончить по очкам.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Партия закончилась по очкам: победа за той стороной, у которой их больше.",
+  "Esperando as outras pessoas aceitarem…": "Ждём, пока остальные согласятся…",
+  "Navios de guerra": "Военные корабли",
+  "Pontos: {nos} × {eles}": "Очки: {nos} × {eles}",
+  "Terminar pelos pontos": "Закончить по очкам",
 } satisfies Record<string, string>;

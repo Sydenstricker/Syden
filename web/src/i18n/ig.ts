@@ -4905,4 +4905,12 @@ export default {
   "Telefone sem fio": "Ozi na-agafe",
   "Troca de faixa": "Mgbanwe ụzọ",
   "Você avançou para a era 3!": "I ruola oge 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} chọrọ ịga n'ihu.",
+  "{nome} propõe terminar pelos pontos.": "{nome} na-atụ aro ka e jiri akara kwụsị.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Egwuregwu ahụ jiri akara kwụsị: onye nwere ọtụtụ meriri.",
+  "Esperando as outras pessoas aceitarem…": "Na-eche ka ndị ọzọ nabata…",
+  "Navios de guerra": "Ụgbọ mmiri agha",
+  "Pontos: {nos} × {eles}": "Akara: {nos} × {eles}",
+  "Terminar pelos pontos": "Jiri akara kwụsị",
 } satisfies Record<string, string>;

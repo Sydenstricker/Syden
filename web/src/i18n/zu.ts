@@ -4965,4 +4965,12 @@ export default {
   "Telefone sem fio": "Indaba edluliswayo",
   "Troca de faixa": "Ukushintsha umzila",
   "Você avançou para a era 3!": "Udlulele enkathini 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "U-{nome} ukhetha ukuqhubeka.",
+  "{nome} propõe terminar pelos pontos.": "U-{nome} uphakamisa ukuqeda ngamaphuzu.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Umdlalo uphele ngamaphuzu: kunqobe uhlangothi olunamaphuzu amaningi.",
+  "Esperando as outras pessoas aceitarem…": "Kulindwe abanye ukuthi bamukele…",
+  "Navios de guerra": "Imikhumbi yempi",
+  "Pontos: {nos} × {eles}": "Amaphuzu: {nos} × {eles}",
+  "Terminar pelos pontos": "Qeda ngamaphuzu",
 } satisfies Record<string, string>;

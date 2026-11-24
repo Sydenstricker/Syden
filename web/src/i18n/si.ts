@@ -4963,4 +4963,12 @@ export default {
   "Telefone sem fio": "කන් කෙඳිරිය",
   "Troca de faixa": "මංතීරු මාරුව",
   "Você avançou para a era 3!": "ඔබ යුගය 3ට ගියා!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} දිගටම යාමට කැමතියි.",
+  "{nome} propõe terminar pelos pontos.": "{nome} ලකුණු අනුව අවසන් කිරීමට යෝජනා කරයි.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "තරගය ලකුණු අනුව අවසන් විය: වැඩිපුර ලකුණු තිබූ පාර්ශ්වය ජයග්‍රහණය කළා.",
+  "Esperando as outras pessoas aceitarem…": "අනෙක් අය පිළිගන්නා තෙක් රැඳී සිටිමින්…",
+  "Navios de guerra": "යුද නැව්",
+  "Pontos: {nos} × {eles}": "ලකුණු: {nos} × {eles}",
+  "Terminar pelos pontos": "ලකුණු අනුව අවසන් කරන්න",
 } satisfies Record<string, string>;

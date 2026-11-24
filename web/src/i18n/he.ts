@@ -4949,4 +4949,12 @@ export default {
   "Telefone sem fio": "טלפון שבור",
   "Troca de faixa": "החלפת נתיב",
   "Você avançou para a era 3!": "עידן 3 הושג!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome}: עדיף להמשיך.",
+  "{nome} propõe terminar pelos pontos.": "הצעה של {nome}: לסיים לפי נקודות.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "המשחק הסתיים לפי נקודות: הניצחון לצד עם יותר נקודות.",
+  "Esperando as outras pessoas aceitarem…": "ממתינים לאישור של האחרים…",
+  "Navios de guerra": "ספינות מלחמה",
+  "Pontos: {nos} × {eles}": "נקודות: {nos} × {eles}",
+  "Terminar pelos pontos": "לסיים לפי נקודות",
 } satisfies Record<string, string>;

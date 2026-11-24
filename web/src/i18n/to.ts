@@ -4903,4 +4903,12 @@ export default {
   "Telefone sem fio": "Telefoni fanafana",
   "Troca de faixa": "Fetongi hala",
   "Você avançou para a era 3!": "Kuo ke aʻu ki he kuonga 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "ʻOku loto ʻa {nome} ke hoko atu.",
+  "{nome} propõe terminar pelos pontos.": "ʻOku fokotuʻu ʻe {nome} ke ngata ʻi he poini.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Naʻe ngata ʻa e vaʻinga ʻi he poini: naʻe ikuna ʻa e faʻahi naʻe lahi taha ʻenau poini.",
+  "Esperando as outras pessoas aceitarem…": "ʻOku tatali ki he kau kehe ke nau tali…",
+  "Navios de guerra": "Vaka tau",
+  "Pontos: {nos} × {eles}": "Poini: {nos} × {eles}",
+  "Terminar pelos pontos": "Ngata ʻi he poini",
 } satisfies Record<string, string>;

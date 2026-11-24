@@ -4977,4 +4977,12 @@ export default {
   "Telefone sem fio": "Эвдэрсэн утас",
   "Troca de faixa": "Зам солих",
   "Você avançou para a era 3!": "Чи 3-р эринд шилжлээ!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} үргэлжлүүлэхийг хүсэж байна.",
+  "{nome} propõe terminar pelos pontos.": "{nome} оноогоор дуусгахыг санал болгож байна.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Тоглолт оноогоор дууслаа: олон оноотой тал ялав.",
+  "Esperando as outras pessoas aceitarem…": "Бусад зөвшөөрөхийг хүлээж байна…",
+  "Navios de guerra": "Байлдааны хөлөг",
+  "Pontos: {nos} × {eles}": "Оноо: {nos} × {eles}",
+  "Terminar pelos pontos": "Оноогоор дуусгах",
 } satisfies Record<string, string>;

@@ -4985,4 +4985,12 @@ export default {
   "Telefone sem fio": "Buzuq telefon",
   "Troca de faixa": "Yoʻlak almashtirish",
   "Você avançou para a era 3!": "3-davrga oʻtding!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} davom etishni xohlaydi.",
+  "{nome} propõe terminar pelos pontos.": "{nome} ochko boʻyicha tugatishni taklif qilmoqda.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Oʻyin ochko boʻyicha tugadi: koʻproq ochko toʻplagan tomon gʻolib boʻldi.",
+  "Esperando as outras pessoas aceitarem…": "Boshqalar qabul qilishi kutilmoqda…",
+  "Navios de guerra": "Harbiy kemalar",
+  "Pontos: {nos} × {eles}": "Ochko: {nos} × {eles}",
+  "Terminar pelos pontos": "Ochko boʻyicha tugatish",
 } satisfies Record<string, string>;

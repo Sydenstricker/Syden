@@ -4900,4 +4900,12 @@ export default {
   "Telefone sem fio": "Telefoni leai se uaea",
   "Troca de faixa": "Sui auala",
   "Você avançou para a era 3!": "Ua e oo i le vaitau 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "E manaʻo {nome} e faʻaauau.",
+  "{nome} propõe terminar pelos pontos.": "Ua fautua {nome} e faʻamuta i ʻai.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Ua uma le taaloga i ʻai: na manumalo le ʻau e sili ona tele ʻai.",
+  "Esperando as outras pessoas aceitarem…": "O loʻo faʻatali i isi e talia…",
+  "Navios de guerra": "Vaʻa tau",
+  "Pontos: {nos} × {eles}": "ʻAi: {nos} × {eles}",
+  "Terminar pelos pontos": "Faʻamuta i ʻai",
 } satisfies Record<string, string>;

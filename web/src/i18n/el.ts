@@ -4903,4 +4903,12 @@ export default {
   "Telefone sem fio": "Χαλασμένο τηλέφωνο",
   "Troca de faixa": "Αλλαγή λωρίδας",
   "Você avançou para a era 3!": "Πέρασες στην εποχή 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} προτιμά να συνεχίσει.",
+  "{nome} propõe terminar pelos pontos.": "{nome} προτείνει να τελειώσει η παρτίδα στους πόντους.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Η παρτίδα τελείωσε στους πόντους: κέρδισε η πλευρά με τους περισσότερους.",
+  "Esperando as outras pessoas aceitarem…": "Περιμένουμε την αποδοχή των υπολοίπων…",
+  "Navios de guerra": "Πολεμικά πλοία",
+  "Pontos: {nos} × {eles}": "Πόντοι: {nos} × {eles}",
+  "Terminar pelos pontos": "Τέλος στους πόντους",
 } satisfies Record<string, string>;

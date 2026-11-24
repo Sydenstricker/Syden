@@ -4965,4 +4965,12 @@ export default {
   "Telefone sem fio": "Hvísluleikur",
   "Troca de faixa": "Akreinaskipti",
   "Você avançou para a era 3!": "Þú ert á öld 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} vill halda áfram.",
+  "{nome} propõe terminar pelos pontos.": "{nome} leggur til að stigin ráði úrslitum.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Leiknum lauk eftir stigum: sá sem hafði fleiri vann.",
+  "Esperando as outras pessoas aceitarem…": "Bíð eftir að hinir samþykki…",
+  "Navios de guerra": "Herskip",
+  "Pontos: {nos} × {eles}": "Stig: {nos} × {eles}",
+  "Terminar pelos pontos": "Ljúka eftir stigum",
 } satisfies Record<string, string>;

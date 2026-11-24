@@ -4982,4 +4982,12 @@ export default {
   "Telefone sem fio": "ყრუ ტელეფონი",
   "Troca de faixa": "ზოლის შეცვლა",
   "Você avançou para a era 3!": "გადახვედი მე-3 ეპოქაში!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome}-ს გაგრძელება ურჩევნია.",
+  "{nome} propõe terminar pelos pontos.": "{nome} გვთავაზობს, ქულებით დავასრულოთ.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "პარტია ქულებით დასრულდა: მოიგო მან, ვისაც მეტი ჰქონდა.",
+  "Esperando as outras pessoas aceitarem…": "ველოდებით, რომ სხვებმა მიიღონ…",
+  "Navios de guerra": "სამხედრო გემები",
+  "Pontos: {nos} × {eles}": "ქულები: {nos} × {eles}",
+  "Terminar pelos pontos": "ქულებით დასრულება",
 } satisfies Record<string, string>;

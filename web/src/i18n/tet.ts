@@ -4899,4 +4899,12 @@ export default {
   "Telefone sem fio": "Telefone la iha fiu",
   "Troca de faixa": "Troka dalan",
   "Você avançou para a era 3!": "Ó to'o ona era 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} prefere kontinua.",
+  "{nome} propõe terminar pelos pontos.": "{nome} propoin atu remata tuir pontu.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Partida remata tuir pontu: manán ida ne'ebé iha pontu barak liu.",
+  "Esperando as outras pessoas aceitarem…": "Hein ema seluk simu…",
+  "Navios de guerra": "Ró funu",
+  "Pontos: {nos} × {eles}": "Pontu: {nos} × {eles}",
+  "Terminar pelos pontos": "Remata tuir pontu",
 } satisfies Record<string, string>;

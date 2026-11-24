@@ -4945,4 +4945,12 @@ export default {
   "Telefone sem fio": "Зіпсований телефон",
   "Troca de faixa": "Зміна смуги",
   "Você avançou para a era 3!": "Ти в епосі 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} хоче продовжити.",
+  "{nome} propõe terminar pelos pontos.": "{nome} пропонує завершити за очками.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Партію завершено за очками: перемогла сторона, що мала більше.",
+  "Esperando as outras pessoas aceitarem…": "Чекаємо, поки інші приймуть…",
+  "Navios de guerra": "Військові кораблі",
+  "Pontos: {nos} × {eles}": "Очки: {nos} × {eles}",
+  "Terminar pelos pontos": "Завершити за очками",
 } satisfies Record<string, string>;

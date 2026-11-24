@@ -4903,4 +4903,12 @@ export default {
   "Telefone sem fio": "Teileafón briste",
   "Troca de faixa": "Athrú lána",
   "Você avançou para a era 3!": "Tá tú i ré 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "Is fearr le {nome} leanúint ar aghaidh.",
+  "{nome} propõe terminar pelos pontos.": "Tá {nome} ag moladh críochnú ar phointí.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Chríochnaigh an cluiche ar phointí: bhuaigh an taobh a raibh níos mó pointí aige.",
+  "Esperando as outras pessoas aceitarem…": "Ag fanacht go nglacfaidh an chuid eile leis…",
+  "Navios de guerra": "Longa cogaidh",
+  "Pontos: {nos} × {eles}": "Pointí: {nos} × {eles}",
+  "Terminar pelos pontos": "Críochnaigh ar phointí",
 } satisfies Record<string, string>;

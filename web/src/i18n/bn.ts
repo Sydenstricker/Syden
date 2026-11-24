@@ -4893,4 +4893,12 @@ export default {
   "Telefone sem fio": "কানাকানি",
   "Troca de faixa": "লেন বদল",
   "Você avançou para a era 3!": "তুমি যুগ 3-এ পৌঁছেছ!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} চালিয়ে যেতে চায়।",
+  "{nome} propõe terminar pelos pontos.": "{nome} পয়েন্টে শেষ করার প্রস্তাব দিয়েছে।",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "খেলা পয়েন্টে শেষ হলো: যার বেশি ছিল, সে জিতেছে।",
+  "Esperando as outras pessoas aceitarem…": "বাকিরা মেনে নেবে, তার অপেক্ষা…",
+  "Navios de guerra": "যুদ্ধজাহাজ",
+  "Pontos: {nos} × {eles}": "পয়েন্ট: {nos} × {eles}",
+  "Terminar pelos pontos": "পয়েন্টে শেষ করো",
 } satisfies Record<string, string>;

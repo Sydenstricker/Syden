@@ -4965,4 +4965,12 @@ export default {
   "Telefone sem fio": "Bojātais telefons",
   "Troca de faixa": "Joslu maiņa",
   "Você avançou para a era 3!": "Tu esi 3. laikmetā!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} grib turpināt.",
+  "{nome} propõe terminar pelos pontos.": "{nome} ierosina beigt pēc punktiem.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Spēle beidzās pēc punktiem: uzvarēja puse, kurai bija vairāk.",
+  "Esperando as outras pessoas aceitarem…": "Gaidām, kamēr pārējie piekritīs…",
+  "Navios de guerra": "Karakuģi",
+  "Pontos: {nos} × {eles}": "Punkti: {nos} × {eles}",
+  "Terminar pelos pontos": "Beigt pēc punktiem",
 } satisfies Record<string, string>;

@@ -4878,4 +4878,12 @@ export default {
   "Telefone sem fio": "伝言ゲーム",
   "Troca de faixa": "車線変更",
   "Você avançou para a era 3!": "第3時代に進みました！",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome}は続けたいようです。",
+  "{nome} propõe terminar pelos pontos.": "{nome}がポイントでの決着を提案しています。",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "ポイントで決着しました:多い方の勝ちです。",
+  "Esperando as outras pessoas aceitarem…": "ほかの人の承認を待っています…",
+  "Navios de guerra": "軍艦",
+  "Pontos: {nos} × {eles}": "ポイント: {nos} × {eles}",
+  "Terminar pelos pontos": "ポイントで決着",
 } satisfies Record<string, string>;

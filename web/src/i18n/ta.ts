@@ -4882,4 +4882,12 @@ export default {
   "Telefone sem fio": "காதில் கிசுகிசு",
   "Troca de faixa": "தடம் மாற்றம்",
   "Você avançou para a era 3!": "நீ யுகம் 3-க்கு முன்னேறினாய்!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} தொடர விரும்புகிறார்.",
+  "{nome} propõe terminar pelos pontos.": "{nome} புள்ளிகளின்படி முடிக்க முன்மொழிகிறார்.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "ஆட்டம் புள்ளிகளின்படி முடிந்தது: அதிகப் புள்ளிகள் பெற்ற தரப்பு வென்றது.",
+  "Esperando as outras pessoas aceitarem…": "மற்றவர்கள் ஏற்கும் வரை காத்திருக்கிறது…",
+  "Navios de guerra": "போர்க் கப்பல்கள்",
+  "Pontos: {nos} × {eles}": "புள்ளிகள்: {nos} × {eles}",
+  "Terminar pelos pontos": "புள்ளிகளின்படி முடி",
 } satisfies Record<string, string>;

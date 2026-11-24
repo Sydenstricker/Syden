@@ -4964,4 +4964,12 @@ export default {
   "Telefone sem fio": "Rikkinäinen puhelin",
   "Troca de faixa": "Kaistanvaihto",
   "Você avançou para a era 3!": "Olet aikakaudessa 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} haluaa mieluummin jatkaa.",
+  "{nome} propõe terminar pelos pontos.": "{nome} ehdottaa lopettamista pisteisiin.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Peli päättyi pisteisiin: voitto sille, jolla oli enemmän.",
+  "Esperando as outras pessoas aceitarem…": "Odotetaan, että muut hyväksyvät…",
+  "Navios de guerra": "Sotalaivat",
+  "Pontos: {nos} × {eles}": "Pisteet: {nos} × {eles}",
+  "Terminar pelos pontos": "Lopeta pisteisiin",
 } satisfies Record<string, string>;

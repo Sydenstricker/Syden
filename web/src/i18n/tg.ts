@@ -4974,4 +4974,12 @@ export default {
   "Telefone sem fio": "Телефони вайрон",
   "Troca de faixa": "Иваз кардани хат",
   "Você avançou para a era 3!": "Ту ба давраи 3 гузаштӣ!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} давом доданро афзал медонад.",
+  "{nome} propõe terminar pelos pontos.": "{nome} пешниҳод мекунад, ки бозӣ аз рӯи хол анҷом ёбад.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Бозӣ аз рӯи хол анҷом ёфт: тарафе, ки холи бештар дошт, ғолиб шуд.",
+  "Esperando as outras pessoas aceitarem…": "Интизори қабули дигарон…",
+  "Navios de guerra": "Киштиҳои ҷангӣ",
+  "Pontos: {nos} × {eles}": "Хол: {nos} × {eles}",
+  "Terminar pelos pontos": "Аз рӯи хол анҷом додан",
 } satisfies Record<string, string>;

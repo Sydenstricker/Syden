@@ -4933,4 +4933,12 @@ export default {
   "Telefone sem fio": "စကားဆင့်ကမ်း",
   "Troca de faixa": "လမ်းကြောင်းပြောင်း",
   "Você avançou para a era 3!": "သင် ခေတ် 3 သို့ တက်ပြီ!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} ဆက်ကစားချင်ပါတယ်။",
+  "{nome} propõe terminar pelos pontos.": "{nome} က အမှတ်နဲ့ အဆုံးသတ်ဖို့ အဆိုပြုပါတယ်။",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "ပွဲက အမှတ်နဲ့ ပြီးသွားပြီ- အမှတ်များတဲ့ဘက်က နိုင်ပါတယ်။",
+  "Esperando as outras pessoas aceitarem…": "တခြားသူတွေ လက်ခံတာကို စောင့်နေတယ်…",
+  "Navios de guerra": "စစ်သင်္ဘောများ",
+  "Pontos: {nos} × {eles}": "အမှတ်- {nos} × {eles}",
+  "Terminar pelos pontos": "အမှတ်နဲ့ အဆုံးသတ်ရန်",
 } satisfies Record<string, string>;

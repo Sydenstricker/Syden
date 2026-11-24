@@ -4974,4 +4974,12 @@ export default {
   "Telefone sem fio": "ފޯނު ކުޅިވަރު",
   "Troca de faixa": "ލޭން ބަދަލު",
   "Você avançou para a era 3!": "ތިބާ ޒަމާނު 3 އަށް ދިޔައީ!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} ބޭނުންވަނީ ކުރިއަށް ގެންދަން.",
+  "{nome} propõe terminar pelos pontos.": "{nome} ހުށަހަޅަނީ ޕޮއިންޓަށް ނިންމަން.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "މެޗު ނިމުނީ ޕޮއިންޓަށް: ގިނަ ޕޮއިންޓް ލިބުނު ފަރާތް ކާމިޔާބުވި.",
+  "Esperando as outras pessoas aceitarem…": "އެހެން މީހުން ގަބޫލުކުރަންދެން މަޑުކުރަނީ…",
+  "Navios de guerra": "ހަނގުރާމަ ބޯޓު",
+  "Pontos: {nos} × {eles}": "ޕޮއިންޓް: {nos} × {eles}",
+  "Terminar pelos pontos": "ޕޮއިންޓަށް ނިންމާ",
 } satisfies Record<string, string>;

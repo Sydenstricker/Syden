@@ -4963,4 +4963,12 @@ export default {
   "Telefone sem fio": "Hviskeleken",
   "Troca de faixa": "Filbytte",
   "Você avançou para a era 3!": "Du er i tidsalder 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} vil heller fortsette.",
+  "{nome} propõe terminar pelos pontos.": "{nome} foreslår å avslutte på poeng.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Kampen endte på poeng: den med flest vant.",
+  "Esperando as outras pessoas aceitarem…": "Venter på at de andre godtar…",
+  "Navios de guerra": "Krigsskip",
+  "Pontos: {nos} × {eles}": "Poeng: {nos} × {eles}",
+  "Terminar pelos pontos": "Avslutt på poeng",
 } satisfies Record<string, string>;

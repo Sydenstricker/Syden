@@ -4921,4 +4921,12 @@ export default {
   "Telefone sem fio": "Stille Post",
   "Troca de faixa": "Spurwechsel",
   "Você avançou para a era 3!": "Du bist im Zeitalter 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} möchte lieber weiterspielen.",
+  "{nome} propõe terminar pelos pontos.": "{nome} schlägt vor, nach Punkten zu beenden.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Die Partie endete nach Punkten: Gewonnen hat, wer mehr hatte.",
+  "Esperando as outras pessoas aceitarem…": "Warte darauf, dass die anderen annehmen…",
+  "Navios de guerra": "Kriegsschiffe",
+  "Pontos: {nos} × {eles}": "Punkte: {nos} × {eles}",
+  "Terminar pelos pontos": "Nach Punkten beenden",
 } satisfies Record<string, string>;

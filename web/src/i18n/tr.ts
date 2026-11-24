@@ -4898,4 +4898,12 @@ export default {
   "Telefone sem fio": "Kulaktan kulağa",
   "Troca de faixa": "Şerit değiştirme",
   "Você avançou para a era 3!": "3. çağa geçtin!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} devam etmek istiyor.",
+  "{nome} propõe terminar pelos pontos.": "{nome} puanla bitirmeyi öneriyor.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Oyun puanla bitti: puanı fazla olan kazandı.",
+  "Esperando as outras pessoas aceitarem…": "Diğerlerinin kabul etmesi bekleniyor…",
+  "Navios de guerra": "Savaş gemileri",
+  "Pontos: {nos} × {eles}": "Puan: {nos} × {eles}",
+  "Terminar pelos pontos": "Puanla bitir",
 } satisfies Record<string, string>;

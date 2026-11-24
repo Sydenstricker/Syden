@@ -4969,4 +4969,12 @@ export default {
   "Telefone sem fio": "Бұзылған телефон",
   "Troca de faixa": "Жолақ ауыстыру",
   "Você avançou para a era 3!": "Сен 3-дәуірге өттің!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} жалғастырғысы келеді.",
+  "{nome} propõe terminar pelos pontos.": "{nome} ұпай бойынша аяқтауды ұсынады.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Ойын ұпай бойынша аяқталды: көбірек ұпай жинаған жақ жеңді.",
+  "Esperando as outras pessoas aceitarem…": "Басқалардың келісуін күтудеміз…",
+  "Navios de guerra": "Әскери кемелер",
+  "Pontos: {nos} × {eles}": "Ұпай: {nos} × {eles}",
+  "Terminar pelos pontos": "Ұпай бойынша аяқтау",
 } satisfies Record<string, string>;

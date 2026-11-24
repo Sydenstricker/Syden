@@ -4883,4 +4883,12 @@ export default {
   "Telefone sem fio": "传话游戏",
   "Troca de faixa": "变道",
   "Você avançou para a era 3!": "你进入了第 3 时代！",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} 选择继续。",
+  "{nome} propõe terminar pelos pontos.": "{nome} 提议按分数结束。",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "对局按分数结束：分数多的一方获胜。",
+  "Esperando as outras pessoas aceitarem…": "正在等待其他人接受…",
+  "Navios de guerra": "战舰",
+  "Pontos: {nos} × {eles}": "分数：{nos} × {eles}",
+  "Terminar pelos pontos": "按分数结束",
 } satisfies Record<string, string>;

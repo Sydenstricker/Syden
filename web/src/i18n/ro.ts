@@ -4896,4 +4896,12 @@ export default {
   "Telefone sem fio": "Telefonul fără fir",
   "Troca de faixa": "Schimb de bandă",
   "Você avançou para a era 3!": "Ești în epoca 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} preferă să continue.",
+  "{nome} propõe terminar pelos pontos.": "{nome} propune să terminăm la puncte.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Partida s-a terminat la puncte: a câștigat partea cu mai multe.",
+  "Esperando as outras pessoas aceitarem…": "Se așteaptă ca ceilalți să accepte…",
+  "Navios de guerra": "Nave de război",
+  "Pontos: {nos} × {eles}": "Puncte: {nos} × {eles}",
+  "Terminar pelos pontos": "Termină la puncte",
 } satisfies Record<string, string>;

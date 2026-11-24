@@ -4890,4 +4890,12 @@ export default {
   "Telefone sem fio": "Telefon rosak",
   "Troca de faixa": "Tukar lorong",
   "Você avançou para a era 3!": "Kamu naik ke zaman 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} mahu teruskan.",
+  "{nome} propõe terminar pelos pontos.": "{nome} mencadangkan tamat ikut mata.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Perlawanan tamat ikut mata: yang ada lebih banyak menang.",
+  "Esperando as outras pessoas aceitarem…": "Menunggu yang lain menerima…",
+  "Navios de guerra": "Kapal perang",
+  "Pontos: {nos} × {eles}": "Mata: {nos} × {eles}",
+  "Terminar pelos pontos": "Tamat ikut mata",
 } satisfies Record<string, string>;

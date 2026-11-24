@@ -4965,4 +4965,12 @@ export default {
   "Telefone sem fio": "कानेखुसी खेल",
   "Troca de faixa": "लेन परिवर्तन",
   "Você avançou para a era 3!": "तिमी युग 3 मा पुग्यौ!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} जारी राख्न चाहन्छ।",
+  "{nome} propõe terminar pelos pontos.": "{nome} अङ्कका आधारमा अन्त्य गर्ने प्रस्ताव गर्छ।",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "खेल अङ्कका आधारमा सकियो: बढी अङ्क भएको पक्षले जित्यो।",
+  "Esperando as outras pessoas aceitarem…": "अरूले स्वीकार गर्ने प्रतीक्षा गर्दै…",
+  "Navios de guerra": "युद्धपोत",
+  "Pontos: {nos} × {eles}": "अङ्क: {nos} × {eles}",
+  "Terminar pelos pontos": "अङ्कका आधारमा अन्त्य",
 } satisfies Record<string, string>;

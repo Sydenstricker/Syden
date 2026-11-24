@@ -4965,4 +4965,12 @@ export default {
   "Telefone sem fio": "Pokvarjeni telefon",
   "Troca de faixa": "Menjava pasu",
   "Você avançou para a era 3!": "Si v obdobju 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} želi nadaljevati.",
+  "{nome} propõe terminar pelos pontos.": "{nome} predlaga konec po točkah.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Partija se je končala po točkah: zmagala je stran z več točkami.",
+  "Esperando as outras pessoas aceitarem…": "Čakamo, da drugi sprejmejo…",
+  "Navios de guerra": "Vojne ladje",
+  "Pontos: {nos} × {eles}": "Točke: {nos} × {eles}",
+  "Terminar pelos pontos": "Končaj po točkah",
 } satisfies Record<string, string>;

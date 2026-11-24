@@ -4965,4 +4965,12 @@ export default {
   "Telefone sem fio": "ກະຊິບສົ່ງຕໍ່",
   "Troca de faixa": "ປ່ຽນເລນ",
   "Você avançou para a era 3!": "ເຈົ້າເລື່ອນສູ່ຍຸກ 3 ແລ້ວ!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} ຢາກຫຼິ້ນຕໍ່.",
+  "{nome} propõe terminar pelos pontos.": "{nome} ສະເໜີໃຫ້ຈົບດ້ວຍຄະແນນ.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "ເກມຈົບດ້ວຍຄະແນນ: ຝ່າຍທີ່ມີຫຼາຍກວ່າຊະນະ.",
+  "Esperando as outras pessoas aceitarem…": "ກຳລັງລໍຖ້າຄົນອື່ນຍອມຮັບ…",
+  "Navios de guerra": "ເຮືອຮົບ",
+  "Pontos: {nos} × {eles}": "ຄະແນນ: {nos} × {eles}",
+  "Terminar pelos pontos": "ຈົບດ້ວຍຄະແນນ",
 } satisfies Record<string, string>;

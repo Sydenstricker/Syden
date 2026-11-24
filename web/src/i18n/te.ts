@@ -4879,4 +4879,12 @@ export default {
   "Telefone sem fio": "చెవిలో గుసగుస",
   "Troca de faixa": "లేన్ మార్పు",
   "Você avançou para a era 3!": "నువ్వు యుగం 3కి చేరావు!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} కొనసాగించాలని అనుకుంటున్నారు.",
+  "{nome} propõe terminar pelos pontos.": "{nome} పాయింట్ల ప్రకారం ముగించాలని ప్రతిపాదిస్తున్నారు.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "ఆట పాయింట్ల ప్రకారం ముగిసింది: ఎక్కువ పాయింట్లు ఉన్న వైపు గెలిచింది.",
+  "Esperando as outras pessoas aceitarem…": "మిగతావారు అంగీకరించే వరకు ఎదురుచూస్తోంది…",
+  "Navios de guerra": "యుద్ధ ఓడలు",
+  "Pontos: {nos} × {eles}": "పాయింట్లు: {nos} × {eles}",
+  "Terminar pelos pontos": "పాయింట్లతో ముగించు",
 } satisfies Record<string, string>;

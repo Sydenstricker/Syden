@@ -4899,4 +4899,12 @@ export default {
   "Telefone sem fio": "Isar da saƙo",
   "Troca de faixa": "Sauya layi",
   "Você avançou para a era 3!": "Kun haura zuwa zamani 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} sun fi son a ci gaba.",
+  "{nome} propõe terminar pelos pontos.": "{nome} sun ba da shawarar a gama da maki.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Wasan ya ƙare da maki: ɓangaren da ke da maki mafi yawa ya ci.",
+  "Esperando as outras pessoas aceitarem…": "Ana jiran sauran su karɓa…",
+  "Navios de guerra": "Jiragen yaƙi",
+  "Pontos: {nos} × {eles}": "Maki: {nos} × {eles}",
+  "Terminar pelos pontos": "Gama da maki",
 } satisfies Record<string, string>;

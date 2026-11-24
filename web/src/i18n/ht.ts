@@ -4974,4 +4974,12 @@ export default {
   "Telefone sem fio": "Telefòn san fil",
   "Troca de faixa": "Chanjman liy",
   "Você avançou para a era 3!": "Ou rive nan epòk 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} pito kontinye.",
+  "{nome} propõe terminar pelos pontos.": "{nome} pwopoze fini ak pwen yo.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Match la fini ak pwen yo: moun ki te gen plis la genyen.",
+  "Esperando as outras pessoas aceitarem…": "N ap tann lòt yo aksepte…",
+  "Navios de guerra": "Bato lagè",
+  "Pontos: {nos} × {eles}": "Pwen: {nos} × {eles}",
+  "Terminar pelos pontos": "Fini ak pwen yo",
 } satisfies Record<string, string>;

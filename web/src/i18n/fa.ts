@@ -4890,4 +4890,12 @@ export default {
   "Telefone sem fio": "تلفن شکسته",
   "Troca de faixa": "تعویض خط",
   "Você avançou para a era 3!": "به عصر 3 رسیدی!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} ترجیح می‌دهد ادامه دهد.",
+  "{nome} propõe terminar pelos pontos.": "{nome} پیشنهاد می‌دهد بازی با امتیاز تمام شود.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "بازی با امتیاز تمام شد: هر که بیشتر داشت برد.",
+  "Esperando as outras pessoas aceitarem…": "منتظر پذیرش بقیه…",
+  "Navios de guerra": "کشتی‌های جنگی",
+  "Pontos: {nos} × {eles}": "امتیاز: {nos} × {eles}",
+  "Terminar pelos pontos": "پایان با امتیاز",
 } satisfies Record<string, string>;

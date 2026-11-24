@@ -4966,4 +4966,12 @@ export default {
   "Telefone sem fio": "Süketelefon",
   "Troca de faixa": "Sávváltó",
   "Você avançou para a era 3!": "A 3. korban vagy!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} inkább folytatná.",
+  "{nome} propõe terminar pelos pontos.": "{nome} azt javasolja, hogy a pontok döntsenek.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "A meccs a pontok alapján ért véget: az nyert, akinek több volt.",
+  "Esperando as outras pessoas aceitarem…": "Várakozás, hogy a többiek elfogadják…",
+  "Navios de guerra": "Hadihajók",
+  "Pontos: {nos} × {eles}": "Pontok: {nos} × {eles}",
+  "Terminar pelos pontos": "Befejezés pontok alapján",
 } satisfies Record<string, string>;

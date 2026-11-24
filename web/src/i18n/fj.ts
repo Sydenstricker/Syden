@@ -4896,4 +4896,12 @@ export default {
   "Telefone sem fio": "Qito ni talevoni",
   "Troca de faixa": "Veisau ni sala",
   "Você avançou para a era 3!": "O sa yaco ki na gauna 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "E vinakata o {nome} me toso tiko.",
+  "{nome} propõe terminar pelos pontos.": "E vakatura o {nome} me tini ena maka.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "A qito e tini ena maka: e qaqa o koya e levu na nona maka.",
+  "Esperando as outras pessoas aceitarem…": "Waraka tiko me ra ciqoma na kena vo…",
+  "Navios de guerra": "Waqa ni ivalu",
+  "Pontos: {nos} × {eles}": "Maka: {nos} × {eles}",
+  "Terminar pelos pontos": "Tini ena maka",
 } satisfies Record<string, string>;

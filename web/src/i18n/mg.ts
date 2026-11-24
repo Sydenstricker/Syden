@@ -4963,4 +4963,12 @@ export default {
   "Telefone sem fio": "Telefaonina tsy misy tariby",
   "Troca de faixa": "Fiovan-dalana",
   "Você avançou para a era 3!": "Tonga amin'ny vanim-potoana 3 ianao!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "Te hanohy i {nome}.",
+  "{nome} propõe terminar pelos pontos.": "Manolotra ny hamarana araka ny isa i {nome}.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Nifarana araka ny isa ny lalao: ny nanana bebe kokoa no nandresy.",
+  "Esperando as outras pessoas aceitarem…": "Miandry ny hanekena ataon'ny hafa…",
+  "Navios de guerra": "Sambo mpiady",
+  "Pontos: {nos} × {eles}": "Isa: {nos} × {eles}",
+  "Terminar pelos pontos": "Farano araka ny isa",
 } satisfies Record<string, string>;

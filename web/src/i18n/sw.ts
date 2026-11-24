@@ -4896,4 +4896,12 @@ export default {
   "Telefone sem fio": "Simu mbovu",
   "Troca de faixa": "Kubadilisha njia",
   "Você avançou para a era 3!": "Umefika enzi 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} anapendelea kuendelea.",
+  "{nome} propõe terminar pelos pontos.": "{nome} anapendekeza kumaliza kwa pointi.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Mchezo umeisha kwa pointi: aliyekuwa na nyingi zaidi ameshinda.",
+  "Esperando as outras pessoas aceitarem…": "Tunasubiri wengine wakubali…",
+  "Navios de guerra": "Meli za kivita",
+  "Pontos: {nos} × {eles}": "Pointi: {nos} × {eles}",
+  "Terminar pelos pontos": "Maliza kwa pointi",
 } satisfies Record<string, string>;

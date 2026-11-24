@@ -4894,4 +4894,12 @@ export default {
   "Telefone sem fio": "Doorfluisteren",
   "Troca de faixa": "Baanwissel",
   "Você avançou para a era 3!": "Je bent in tijdperk 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} wil liever doorgaan.",
+  "{nome} propõe terminar pelos pontos.": "{nome} stelt voor om op punten te eindigen.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Het potje is op punten geëindigd: wie de meeste had, heeft gewonnen.",
+  "Esperando as outras pessoas aceitarem…": "Wachten tot de anderen accepteren…",
+  "Navios de guerra": "Oorlogsschepen",
+  "Pontos: {nos} × {eles}": "Punten: {nos} × {eles}",
+  "Terminar pelos pontos": "Eindigen op punten",
 } satisfies Record<string, string>;

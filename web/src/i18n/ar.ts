@@ -4921,4 +4921,12 @@ export default {
   "Telefone sem fio": "لعبة الهاتف",
   "Troca de faixa": "تبديل المسار",
   "Você avançou para a era 3!": "تم الانتقال إلى العصر 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "اختيار {nome}: المتابعة.",
+  "{nome} propõe terminar pelos pontos.": "اقتراح من {nome}: إنهاء المباراة بالنقاط.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "انتهت المباراة بالنقاط: الفوز لمن كان لديه أكثر.",
+  "Esperando as outras pessoas aceitarem…": "بانتظار موافقة الآخرين…",
+  "Navios de guerra": "سفن حربية",
+  "Pontos: {nos} × {eles}": "النقاط: {nos} × {eles}",
+  "Terminar pelos pontos": "إنهاء بالنقاط",
 } satisfies Record<string, string>;

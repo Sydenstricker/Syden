@@ -1069,7 +1069,7 @@ troca nele o que sobra pelo que falta e avança; lá, oficina, canhões, bastiõ
 os desafios ficam sem a era 3 (os recordes deles continuam comparáveis). **Quem não chega à era 3 joga a partida de antes, número
 por número:** com o computador sem ela, 44 partidas iguais à versão anterior passo a passo (o 2×2 e os desafios incluídos), e
 `web/test/tocas-era3.test.ts` crava quatro delas. Com ela, mais partidas acabam pelo tempo (a defesa fica forte); o difícil seguiu
-ganhando do fácil em 8 de 8. Números chutados contra os robôs: ninguém jogou. Ficou de fora o cavaleiro montado (pede a pose).
+ganhando do fácil em 8 de 8. Números chutados contra os robôs: ninguém jogou. O cavaleiro montado entrou depois, com os modelos por script (ver abaixo).
 
 
 
@@ -1135,6 +1135,66 @@ continua como era (decisão dele). O recorde e a sequência do Solo são à part
 A palavra que tem duas grafias para a mesma chave ("vovó"/"vovô") sai uma vez só, e a revelação mostra "vovó / vovô". O jogo perdeu
 o "· português" na estante. Ninguém jogou com gente, e as listas não passaram por quem fala as línguas. Teste:
 `server/test/minijogos-palavra-idiomas.test.ts`.
+
+**OS 20 MINUTOS SÃO UMA SUGESTÃO (24/11/2026, decisão dele: "não um limite rígido").** Nas Tocas e Torres, aos 20 minutos a partida
+NÃO acaba: aparece o placar e "Terminar pelos pontos" (ganha quem tem mais, `pontos`). No Solo, um clique acaba; na sala (1×1 e 2×2),
+qualquer pessoa propõe e a partida acaba quando TODAS as que ainda jogam aceitam; uma recusa desfaz a proposta; robôs e quem largou
+não votam. Tudo pelo lockstep: o comando 'pontos' (e o 'largar', que o servidor põe no turno de quem saiu do 2×2), com `votam` e
+`votos` na simulação (as duas cópias). O teto de SEGURANÇA é de 90 minutos de jogo (`PASSOS_MAX`; `PASSOS_SUGERIDOS` são os 20), e o
+prazo de relógio da partida passou a 2 h 30 (`PRAZO_MS`). Sem ninguém que vote (o computador contra o computador), ela acaba aos 20
+minutos como sempre, número por número; e antes dos 20 minutos nada muda para ninguém. Os recordes dos desafios do Solo não mudaram.
+Testes: `web/test/tocas-era3.test.ts`, `server/test/minijogos-tocas.test.ts`.
+
+**OS MODELOS 3D POR SCRIPT (24/11/2026, decisão dele: "pode fazer os 44 itens por script"):** o que os jogos 3D desenhavam por código virou GLB NOSSO, feito por script do Blender e guardado no projeto (`web/scripts/modelos/<grupo>/`, cada um com o `rodar.ps1`), sem textura e sem crédito a dar. A regra de todos: **a peça por código continua de RESERVA** (o arquivo que falta ou falha deixa a de antes), e só a tela muda (nenhuma regra, ficha ou servidor). O carregador comum é `web/src/modelosNossos.ts`. A lista, as regras e os relatórios de cada grupo estão em `retomar-20-11/` (modelos-3d.md, modelos-regras.md, relatorios-modelos/), na pasta do projeto na memória. Ninguém jogou com eles; os e2e `modelos-*.mjs` só fotografam.
+
+**A ROTA ESTELAR SEM PRIMITIVAS (24/11/2026, pedido dele: "pode fazer os 44 itens por script"):** a nave de quem joga, o
+caçador, a torre, a mina, a sentinela, o polvo de lata, a nave-mãe, o canhão do jipe, o cristal, a laje de gelo e os portões
+da bifurcação são GLB NOSSOS, feitos por script do Blender (`web/scripts/modelos/estelar/`, rodar com `rodar.ps1`) com a
+paleta do Space Base Bits embutida, em `web/public/estelar/`. A cena os carrega por `carregarNosso` (`NOSSOS` em
+`estelar/cena.ts`), e a geometria por código de antes ficou de RESERVA: sem o arquivo, a peça de antes (conferido com os
+11 respondendo 404). O que mexe é nó com nome: a cabeça da torre, a bola da mina, o anel da sentinela e os 8 braços do polvo
+em 5 gomos cada, que a cena dobra com a onda descendo. A cabine e o coelho da nave continuam por código, por cima do casco;
+a cor da nave e a dos portões vão no material `pintura`. Só a tela: a regra, a ficha e o servidor não mudaram.
+
+**OS MODELOS NOSSOS DO SALÃO E DO QUARTO 3D (24/11/2026, "pode fazer os 44 itens por script"):** o que era feito por código virou
+modelo feito por script no Blender (`web/scripts/modelos/salao-quarto/`, nada a creditar): no salão o fliperama (a tela por código
+no nó `tela`), a jukebox, o microfone, a janela do fundo e o troféu, que é o MESMO do quarto (prata e bronze pintados por cima);
+no quarto o fone, a cortiça, os troféus, o violão, o relógio (os ponteiros na hora em que o quarto abriu), a caminha, a pipoca, o
+guarda-roupa ALTO de cada tema e o VENTILADOR, que agora GIRA quando está ligado no pixel e balança a cabeça oscilando (com "menos
+movimento", parado). As janelas que não tinham desenho no 3D existem: arco, redonda e com floreira, uma versão por tema, e na
+grande a cortina fechada e as folhas abertas (`vao` em `Tema.parede`: a janela do clássico tem parede em volta). Tudo carrega sem
+segurar a cena, e o de antes (o código ou o do pacote) fica de reserva. Na malha juntada do colorido, a cor dos vértices fica (sem
+ela o modelo nosso saía preto). Ficaram de fora o neon (a forma já era a certa) e o balcão do bar (já é do Kenney).
+
+**OS MODELOS NOSSOS DO TABULEIRO DA TURMA E DO AVIÃO DAS CAPITAIS (24/11/2026, "pode fazer os 44 itens por script"):** feitos no
+Blender por script (`web/scripts/modelos/tabuleiro-capitais/`), no estilo da mini cidade da Kenney, sem textura: a CENOURA (dourada e
+comum num modelo só, `web/public/comum/cenoura.glb`, nós "corpo" e "folhas", para qualquer jogo 3D), a barraca da dourada, a toca com a
+porta redonda, o chafariz e os bancos, a cerquinha e as pedras da Serra (`web/public/tabuleiro3d/`), e o avião do aeroporto
+(`web/public/cidades3d/nossos/aviao.glb`). Carregam por `web/src/modelosNossos.ts` (`carregarNosso` nunca falha; `geometriaComCor`
+vira a geometria de cor por vértice das peças de código), e a peça por código continua de reserva. As voltas do Rio e da Serra não
+mudaram. Os modelos são nossos: nada a creditar.
+
+**OS MODELOS POR SCRIPT DA PONTE, DAS MESAS E DA NAVAL (24/11/2026, pedido dele: "pode fazer os 44 itens por script").** Feitos no
+Blender por `web/scripts/modelos/ponte-mesas-naval/` (`rodar.ps1 <script>`), nossos, sem crédito. A **Ponte** ganhou `ponte/cenario.glb`,
+um nó por peça com as medidas das de código (pinheiro, árvore, a pedra do rio de altura 1, as fiadas do pilar empilhadas, o capitel, o
+bloco de apoio, o casco do barco com o mastro e a vela esticados, a bandeira de chegada); a copa troca para os materiais da cena (a fase
+seca continua seca) e os sorteios da floresta são os mesmos. As **mesas** ganharam os tabuleiros da Mancala (covas ESCAVADAS: o tampo a
+0,62 e o fundo no TOPO de antes), do Cinco em linha e das Damas de 10, em glTF separado que aponta para a textura de paleta do Board Game
+Bits (cada face num ponto do degradê da célula, como o board_A). A **Batalha naval** ganhou a TERCEIRA frota, a de GUERRA (porta-aviões,
+destróier, fragata, corveta e patrulha, `naval3d/guerra/`), ao lado da pirata e da civil; os três mares só têm navios de 2 a 5 casas.
+Em todos, a peça por código continua de reserva enquanto o modelo carrega ou se ele falhar. Teste: `e2e/modelos-ponte-mesas-naval.mjs`.
+
+**O EXTINTOR, A CAMPAINHA, AS PEÇAS DOS CARRINHOS, O POSTE E O CAVALEIRO MONTADO (24/11/2026, "pode fazer os itens por
+script"):** os modelos nascem de scripts do Blender em `web/scripts/modelos/tocas-cozinha-carrinhos/` (`rodar.ps1
+<script>`; `comum.py` tem as formas chanfradas, a oclusão assada na cor dos vértices e a prévia), e a peça por código de
+antes fica de RESERVA (o GLB vem com `.catch`). Na Cozinha, o extintor e a campainha (`cozinha.py`). Nos Carrinhos, o
+CRUZAMENTO e a AGULHA partem da própria reta do Toy Car Kit (`carrinhos.py`): o cruzamento sem a zebra do lado de dentro e
+com as faixas pintadas (a peça da fileira −1 dá meia volta), a agulha com os desvios tracejados; a física não mudou. No Rolê,
+o poste oitavado (`poste.py`, 'poste' no fim de `MODELOS_DO_ENTORNO`). Nas Tocas e Torres, o CAVALEIRO MONTADO: o cavalo do
+Medieval Hexagon (`horse_{cor}_accent`, pelo `tocas-modelos.mjs`) e a pose "montado" do NOSSO esqueleto (`cavaleiro.py`), que
+sai num GLB SEM malha (`tocas/coelho-montado.glb`, só a ação): o jogo a toca no coelho de sempre, com as cores do time; o trote
+só andando. As medidas da sela moram em `MONTADO` (cena.ts) e saem do script. Fotos em `e2e/fotos/modelos/tocas-cozinha-carrinhos/`
+(os e2e `modelos-*.mjs` só fotografam). Ninguém jogou com eles.
 
 **OS JOGOS NOVOS DE 16/11/2026 (pedido dele: "implemente esses jogos"; feitos por agentes, um por jogo, com arte só do que já
 existia no projeto). Todos fora das conquistas da turma até ele decidir; em nenhum alguém jogou com gente (o equilíbrio é chute

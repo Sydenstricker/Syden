@@ -4867,4 +4867,12 @@ export default {
   "Telefone sem fio": "Tam sao thất bản",
   "Troca de faixa": "Đổi làn",
   "Você avançou para a era 3!": "Bạn đã lên thời đại 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} muốn chơi tiếp.",
+  "{nome} propõe terminar pelos pontos.": "{nome} đề nghị kết thúc theo điểm.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Ván đấu kết thúc theo điểm: bên nhiều điểm hơn thắng.",
+  "Esperando as outras pessoas aceitarem…": "Đang chờ những người khác chấp nhận…",
+  "Navios de guerra": "Tàu chiến",
+  "Pontos: {nos} × {eles}": "Điểm: {nos} × {eles}",
+  "Terminar pelos pontos": "Kết thúc theo điểm",
 } satisfies Record<string, string>;

@@ -4936,4 +4936,12 @@ export default {
   "Telefone sem fio": "Xarab telefon",
   "Troca de faixa": "Zolaq dəyişmə",
   "Você avançou para a era 3!": "3-cü dövrə keçdin!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} davam etməyi üstün tutur.",
+  "{nome} propõe terminar pelos pontos.": "{nome} xalla bitirməyi təklif edir.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Oyun xalla bitdi: çox xalı olan qalib gəldi.",
+  "Esperando as outras pessoas aceitarem…": "Digərlərinin qəbul etməsi gözlənilir…",
+  "Navios de guerra": "Döyüş gəmiləri",
+  "Pontos: {nos} × {eles}": "Xal: {nos} × {eles}",
+  "Terminar pelos pontos": "Xalla bitir",
 } satisfies Record<string, string>;

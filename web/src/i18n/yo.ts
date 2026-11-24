@@ -4912,4 +4912,12 @@ export default {
   "Telefone sem fio": "Sọ fún ẹni tó tẹ̀lé",
   "Troca de faixa": "Ìyípadà ọ̀nà",
   "Você avançou para a era 3!": "O ti dé sáà 3!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} fẹ́ máa bá a lọ.",
+  "{nome} propõe terminar pelos pontos.": "{nome} dábàá pé kí a parí rẹ̀ pẹ̀lú àmì.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Ìdíje parí pẹ̀lú àmì: ẹgbẹ́ tí ó ní àmì jù ló borí.",
+  "Esperando as outras pessoas aceitarem…": "À ń dúró kí àwọn yòókù gbà…",
+  "Navios de guerra": "Ọkọ̀ ogun",
+  "Pontos: {nos} × {eles}": "Àmì: {nos} × {eles}",
+  "Terminar pelos pontos": "Parí pẹ̀lú àmì",
 } satisfies Record<string, string>;

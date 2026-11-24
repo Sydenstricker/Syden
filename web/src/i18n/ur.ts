@@ -4889,4 +4889,12 @@ export default {
   "Telefone sem fio": "کانوں کان",
   "Troca de faixa": "لین بدلنا",
   "Você avançou para a era 3!": "اب تم دور 3 میں ہو!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} جاری رکھنا چاہتے ہیں۔",
+  "{nome} propõe terminar pelos pontos.": "{nome} پوائنٹس پر ختم کرنے کی تجویز دیتے ہیں۔",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "میچ پوائنٹس پر ختم ہوا: زیادہ پوائنٹس والی ٹیم کی جیت ہوئی۔",
+  "Esperando as outras pessoas aceitarem…": "دوسروں کے قبول کرنے کا انتظار…",
+  "Navios de guerra": "جنگی جہاز",
+  "Pontos: {nos} × {eles}": "پوائنٹس: {nos} × {eles}",
+  "Terminar pelos pontos": "پوائنٹس پر ختم کریں",
 } satisfies Record<string, string>;

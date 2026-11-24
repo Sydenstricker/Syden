@@ -4963,4 +4963,12 @@ export default {
   "Telefone sem fio": "Tichá pošta",
   "Troca de faixa": "Výměna pruhu",
   "Você avançou para a era 3!": "Jsi ve 3. věku!",
+  // Os mini-games, o lote D, onda 2 (21/11/2026)
+  "{nome} prefere continuar.": "{nome} chce pokračovat.",
+  "{nome} propõe terminar pelos pontos.": "{nome} navrhuje ukončit hru na body.",
+  "A partida terminou pelos pontos: ganhou quem tinha mais.": "Partie skončila na body: vyhrává strana s víc body.",
+  "Esperando as outras pessoas aceitarem…": "Čeká se, až ostatní přijmou…",
+  "Navios de guerra": "Válečné lodě",
+  "Pontos: {nos} × {eles}": "Body: {nos} × {eles}",
+  "Terminar pelos pontos": "Ukončit na body",
 } satisfies Record<string, string>;
