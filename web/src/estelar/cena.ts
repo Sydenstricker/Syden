@@ -11,6 +11,8 @@ import { posicaoTiro, type Mundo } from './mundo';
  * rochas do campo de asteroides, o cargueiro e a sonda inimigos e o jipe gigante. A NAVE é feita aqui, por código (nenhuma
  * nave de jogo nenhum: um corpo branco de bico laranja, asas curtas e a cabine de vidro), com o NOSSO coelho 3D (coelho3d.ts)
  * sentado nela, com as cores do avatar. O caçador, a torre, as vigas da estação e o polvo de lata também são por código.
+ * Desde 24/11/2026 a nave, os inimigos nossos, os chefes, o gelo e os portões vêm dos GLB feitos por script (NOSSOS, abaixo);
+ * a geometria por código ficou como RESERVA (sem o arquivo, a peça de antes).
  *
  * Só a TELA: a regra decide onde está cada coisa pelo número do passo; quem chama passa o quadro. O three.js vem num pedaço
  * à parte, só quando o jogo abre; sem foco na janela, quem chama não desenha; ao sair, o contexto é devolvido; se a placa
@@ -38,6 +40,22 @@ function carregar(nome: string): Promise<GLTF> {
     p.catch(() => carregados.delete(nome));
   }
   return p;
+}
+
+/**
+ * OS MODELOS NOSSOS (24/11/2026): feitos por script no Blender (web/scripts/modelos/estelar/), no estilo e com a paleta do
+ * Space Base Bits, em GLB. Cada um tem a RESERVA por código abaixo: sem o arquivo (ou se ele falhar), a peça de antes.
+ */
+const NOSSOS = ['nave', 'cacador', 'torre', 'mina', 'sentinela', 'polvo', 'mae', 'canhao_do_jipe', 'cristal', 'laje', 'portao'] as const;
+type Nosso = (typeof NOSSOS)[number];
+function carregarNosso(nome: Nosso): Promise<GLTF | null> {
+  let p = carregados.get(`${nome}.glb`);
+  if (!p) {
+    p = new GLTFLoader().loadAsync(`${BASE}${nome}.glb`);
+    carregados.set(`${nome}.glb`, p);
+    p.catch(() => carregados.delete(`${nome}.glb`));
+  }
+  return p.catch(() => null);
 }
 
 /** Um sorteio sempre igual, só para o desenho. */
@@ -163,6 +181,7 @@ export class CenaEstelar {
   private relogio = 0;
   private descartaveis: { dispose(): void }[] = [];
   private modelos = new Map<Modelo, GLTF>();
+  private nossos = new Map<Nosso, GLTF>();
   private naves: NaveMontada[] = [];
   /** As duas alas do computador (no Solo). */
   private alas: { nave: NaveMontada; x: number; y: number }[] = [];
@@ -229,6 +248,41 @@ export class CenaEstelar {
     return o;
   }
 
+  /** Uma cópia de um modelo nosso (null: sem o GLB, a peça vai pela reserva por código). A geometria e os materiais são do cache. */
+  private nosso(nome: Nosso): THREE.Object3D | null {
+    const m = this.nossos.get(nome);
+    if (!m) return null;
+    const o = m.scene.clone(true);
+    o.traverse((x) => {
+      if ((x as THREE.Mesh).isMesh) x.userData.doGlb = true;
+    });
+    return o;
+  }
+
+  /** Os ajustes dos materiais dos modelos nossos (no cache: valem para todas as cópias, e repetir não muda nada). */
+  private ajustarNossos() {
+    for (const [nome, m] of this.nossos) {
+      m.scene.traverse((x) => {
+        const malha = x as THREE.Mesh;
+        if (!malha.isMesh) return;
+        for (const mat of (Array.isArray(malha.material) ? malha.material : [malha.material]) as THREE.MeshStandardMaterial[]) {
+          if (mat.name === 'gelo') {
+            // o gelo dos obstáculos: meio transparente e com um brilho azul, como o de antes
+            mat.transparent = true;
+            mat.opacity = 0.88;
+            mat.roughness = 0.15;
+            mat.emissive.set('#2a6a8a');
+            mat.emissiveIntensity = 0.35;
+          } else if ((nome === 'polvo' || nome === 'mae' || nome === 'sentinela') && (mat.name === 'roxo' || mat.name === 'paleta')) {
+            // os chefes e a sentinela vivem no espaço, onde a luz é pouca: um brilho próprio, como os de antes
+            mat.emissive.set(mat.name === 'roxo' ? '#2a1a4a' : '#26263a');
+            mat.emissiveIntensity = 1;
+          }
+        }
+      });
+    }
+  }
+
   private material<T extends THREE.Material>(m: T): T {
     this.descartaveis.push(m);
     return m;
@@ -240,9 +294,14 @@ export class CenaEstelar {
 
   /** Carrega os modelos e monta o mundo e as naves (a primeira é a minha, se eu jogo). */
   async montar(naves: NaveNaCena[], alas: CoresDoCoelho[]): Promise<void> {
-    const [g, ...lista] = await Promise.all([carregarCoelho(), ...MODELOS.map(carregar)]);
+    const [g, nossos, ...lista] = await Promise.all([carregarCoelho(), Promise.all(NOSSOS.map(carregarNosso)), ...MODELOS.map(carregar)]);
     if (this.morta) return;
     MODELOS.forEach((n, i) => this.modelos.set(n, lista[i]));
+    NOSSOS.forEach((n, i) => {
+      const m = nossos[i];
+      if (m) this.nossos.set(n, m);
+    });
+    this.ajustarNossos();
     this.montarMundo();
     void this.ceuDaKenney();
     for (const n of naves) this.naves.push(this.montarNave(g, n));
@@ -330,24 +389,39 @@ export class CenaEstelar {
         o.scale.setScalar(alto / 2.2);
         o.position.set(ob.x, ob.y0 + (0.49 * alto) / 2.2, ob.z);
       } else if (ob.modelo === 'cristal') {
-        // o cristal de gelo (por código): um prisma de seis faces de ponta, inclinado um pouco
-        const cr = new THREE.Mesh(this.geometria(new THREE.ConeGeometry(1, 1, 6)), gelo1);
-        cr.scale.set(ob.raio * 1.1, alto, ob.raio * 1.1);
-        cr.position.y = alto / 2;
+        // o cristal de gelo (cristal.glb, de raio 1 e altura 1 com a base no zero; a reserva: um prisma de seis faces de ponta),
+        // inclinado um pouco
         const gr = new THREE.Group();
-        gr.add(cr);
+        const glb = this.nosso('cristal');
+        if (glb) {
+          glb.scale.set(ob.raio * 1.1, alto, ob.raio * 1.1);
+          glb.rotation.y = (ob.z % 6.28);
+          gr.add(glb);
+        } else {
+          const cr = new THREE.Mesh(this.geometria(new THREE.ConeGeometry(1, 1, 6)), gelo1);
+          cr.scale.set(ob.raio * 1.1, alto, ob.raio * 1.1);
+          cr.position.y = alto / 2;
+          gr.add(cr);
+        }
         gr.position.set(ob.x, ob.y0, ob.z);
         gr.rotation.z = (ob.x % 1) * 0.3;
         o = gr;
       } else if (ob.modelo === 'arco') {
         // a laje de gelo (o arco e as portas do anel de gelo), com a borda mais clara
         const gr = new THREE.Group();
-        const corpo = new THREE.Mesh(caixaG, gelo1);
-        corpo.scale.set(ob.raio * 2, alto, ob.fundo * 2);
-        const borda = new THREE.Mesh(caixaG, gelo2);
-        borda.scale.set(ob.raio * 2 + 0.1, 0.25, ob.fundo * 2 + 0.1);
-        borda.position.y = (ob.y1 > 0 ? -1 : 1) * (alto / 2);
-        gr.add(corpo, borda);
+        const glb = this.nosso('laje');
+        if (glb) {
+          // laje.glb: o bloco de 1 × 1 × 1, com a neve em cima e embaixo
+          glb.scale.set(ob.raio * 2, alto, ob.fundo * 2);
+          gr.add(glb);
+        } else {
+          const corpo = new THREE.Mesh(caixaG, gelo1);
+          corpo.scale.set(ob.raio * 2, alto, ob.fundo * 2);
+          const borda = new THREE.Mesh(caixaG, gelo2);
+          borda.scale.set(ob.raio * 2 + 0.1, 0.25, ob.fundo * 2 + 0.1);
+          borda.position.y = (ob.y1 > 0 ? -1 : 1) * (alto / 2);
+          gr.add(corpo, borda);
+        }
         gr.position.set(ob.x, (ob.y0 + ob.y1) / 2, ob.z);
         o = gr;
       } else if (ob.modelo === 'bloco') {
@@ -401,6 +475,26 @@ export class CenaEstelar {
     // os portões da bifurcação: à esquerda o das rochas, à direita o da estação (só desenho; quem decide é o lado da nave)
     const zb = zNave(BIFURCA);
     const portao = (x: number, cor: string) => {
+      const glb = this.nosso('portao');
+      if (glb) {
+        // portao.glb: o anel e as luzes em 'pintura', pintados com a cor do portão e acesos; as presilhas escuras ficam
+        glb.traverse((o) => {
+          const malha = o as THREE.Mesh;
+          if (!malha.isMesh) return;
+          const lista = (Array.isArray(malha.material) ? malha.material : [malha.material]).map((orig) => {
+            if (orig.name !== 'pintura') return orig;
+            const c = this.material(orig.clone() as THREE.MeshStandardMaterial);
+            c.color.set(cor);
+            c.emissive.set(cor);
+            c.emissiveIntensity = 0.6;
+            return c;
+          });
+          malha.material = Array.isArray(malha.material) ? lista : lista[0];
+        });
+        glb.position.set(x, 0, zb);
+        c.add(glb);
+        return;
+      }
       const m = new THREE.Mesh(this.geometria(new THREE.TorusGeometry(6, 0.7, 10, 32)), this.material(new THREE.MeshStandardMaterial({ color: cor, emissive: cor, emissiveIntensity: 0.6, metalness: 0.3, roughness: 0.4 })));
       m.position.set(x, 0, zb);
       c.add(m);
@@ -496,10 +590,41 @@ export class CenaEstelar {
       materiais.push(m);
       return m;
     };
+    const modelo = this.nossos.get('nave');
+    if (modelo) {
+      // o casco do GLB (nave.py): cada nave com os seus materiais, porque a pintura e a transparência são dela
+      const o = modelo.scene.clone(true);
+      const trocados = new Map<THREE.Material, THREE.Material>();
+      o.traverse((x) => {
+        const malha = x as THREE.Mesh;
+        if (!malha.isMesh) return;
+        x.userData.doGlb = true;
+        const lista =(Array.isArray(malha.material) ? malha.material : [malha.material]).map((orig) => {
+          let m = trocados.get(orig);
+          if (!m) {
+            const c = orig.clone() as THREE.MeshStandardMaterial;
+            if (orig.name === 'pintura' && n.pintura) c.color.set(n.pintura);
+            if (n.fantasma) {
+              c.transparent = true;
+              c.opacity = 0.45;
+              c.depthWrite = false;
+            }
+            materiais.push(c);
+            trocados.set(orig, c);
+            m = c;
+          }
+          return m;
+        });
+        malha.material = Array.isArray(malha.material) ? lista : lista[0];
+      });
+      corpo.add(o);
+    }
     const branco = mat(n.pintura ?? '#f3f1ea');
     const laranja = mat('#f28a2e');
     const escuro = mat('#2f3646');
-    // o corpo: o bico para a frente (+z), a traseira larga
+    // (a reserva por código: sem o GLB, a nave de antes) o corpo: o bico para a frente (+z), a traseira larga
+    const reserva = new THREE.Group();
+    if (!modelo) corpo.add(reserva);
     const bico = new THREE.Mesh(new THREE.ConeGeometry(0.55, 2.4, 6), branco);
     bico.rotation.x = Math.PI / 2;
     bico.position.z = 1.1;
@@ -512,7 +637,7 @@ export class CenaEstelar {
     const bocal = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.5, 0.3, 8), escuro);
     bocal.rotation.x = Math.PI / 2;
     bocal.position.z = -1.6;
-    corpo.add(bico, ponta, traseira, bocal);
+    reserva.add(bico, ponta, traseira, bocal);
     // as asas curtas, com a ponta laranja levantada
     for (const lado of [-1, 1]) {
       const asa = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.12, 1.2), branco);
@@ -521,11 +646,11 @@ export class CenaEstelar {
       const pontaDaAsa = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.9, 1.0), laranja);
       pontaDaAsa.position.set(lado * 2.35, 0.2, -0.85);
       pontaDaAsa.rotation.z = lado * -0.35;
-      corpo.add(asa, pontaDaAsa);
+      reserva.add(asa, pontaDaAsa);
     }
     const leme = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.8, 0.9), laranja);
     leme.position.set(0, 0.55, -1.15);
-    corpo.add(leme);
+    reserva.add(leme);
     // a cabine de vidro e o coelho dentro dela
     const vidro = new THREE.MeshStandardMaterial({ color: '#8fe3ff', transparent: true, opacity: n.fantasma ? 0.2 : 0.35, roughness: 0.05, metalness: 0.1, depthWrite: false });
     materiais.push(vidro);
@@ -554,7 +679,7 @@ export class CenaEstelar {
     corpo.add(fogo);
     corpo.traverse((o) => {
       const m = o as THREE.Mesh;
-      if (m.isMesh && !o.userData.contornoDoCoelho && m.geometry && !(m as THREE.SkinnedMesh).isSkinnedMesh) this.descartaveis.push(m.geometry);
+      if (m.isMesh && !o.userData.contornoDoCoelho && !o.userData.doGlb && m.geometry && !(m as THREE.SkinnedMesh).isSkinnedMesh) this.descartaveis.push(m.geometry);
     });
     if (n.nome) {
       const e = etiqueta(n.nome);
@@ -594,6 +719,9 @@ export class CenaEstelar {
       const e = new THREE.Mesh(this.geometria(new THREE.SphereGeometry(0.28, 10, 8)), olho);
       e.position.set(0, 0.1, -0.95);
       g.add(e);
+    } else if (tipo === 'cacador' && this.nossos.has('cacador')) {
+      // cacador.glb: a cápsula roxa, as asas em garra e o olho
+      g.add(this.nosso('cacador')!);
     } else if (tipo === 'cacador') {
       const corpo = new THREE.Mesh(this.geometria(new THREE.OctahedronGeometry(1.1)), roxo);
       corpo.scale.set(1, 0.6, 1.3);
@@ -612,6 +740,11 @@ export class CenaEstelar {
       o.rotation.y = Math.PI;
       o.position.y = -0.6;
       g.add(o);
+    } else if (tipo === 'torre' && this.nossos.has('torre')) {
+      // torre.glb: a base sextavada e a cabeça (nó próprio) com o cano duplo
+      const o = this.nosso('torre')!;
+      g.add(o);
+      g.userData.cabeca = o.getObjectByName('torre_cabeca');
     } else if (tipo === 'torre') {
       const base = new THREE.Mesh(this.geometria(new THREE.CylinderGeometry(1.1, 1.3, 0.8, 8)), metal);
       const cabeca = new THREE.Mesh(this.geometria(new THREE.SphereGeometry(0.85, 12, 8)), roxo);
@@ -635,12 +768,46 @@ export class CenaEstelar {
       o.rotation.y = Math.PI;
       o.position.y = -1.6;
       g.add(o);
-      const canhao = new THREE.Mesh(this.geometria(new THREE.CylinderGeometry(0.5, 0.6, 3.4, 8)), roxo);
-      canhao.rotation.x = Math.PI / 2.4;
-      canhao.position.set(0, 4.2, -1.5);
-      const e = new THREE.Mesh(this.geometria(new THREE.SphereGeometry(0.7, 12, 8)), olho);
-      e.position.set(0, 3.8, -3.1);
-      g.add(canhao, e);
+      const glb = this.nosso('canhao_do_jipe');
+      if (glb) {
+        // canhao_do_jipe.glb: a base no teto do jipe, a carcaça com o olho e o cano para a nave
+        glb.scale.setScalar(1.3);
+        glb.position.set(0, 5.1, -1.2);
+        g.add(glb);
+      } else {
+        const canhao = new THREE.Mesh(this.geometria(new THREE.CylinderGeometry(0.5, 0.6, 3.4, 8)), roxo);
+        canhao.rotation.x = Math.PI / 2.4;
+        canhao.position.set(0, 4.2, -1.5);
+        const e = new THREE.Mesh(this.geometria(new THREE.SphereGeometry(0.7, 12, 8)), olho);
+        e.position.set(0, 3.8, -3.1);
+        g.add(canhao, e);
+      }
+    } else if (tipo === 'mina' && this.nossos.has('mina')) {
+      // mina.glb: a bola com os espetos e a lâmpada, num nó que gira inteiro
+      const o = this.nosso('mina')!;
+      g.add(o);
+      g.userData.gira = o.getObjectByName('mina_bola') ?? o;
+    } else if (tipo === 'sentinela' && this.nossos.has('sentinela')) {
+      // sentinela.glb: o miolo com o olho e o anel (nó próprio) que gira de frente para a nave
+      const o = this.nosso('sentinela')!;
+      g.add(o);
+      g.userData.anel = o.getObjectByName('sentinela_anel');
+    } else if (tipo === 'mae' && this.nossos.has('mae')) {
+      // mae.glb: o modelo próprio da nave-mãe (o casco, o hangar aceso, a ponte de comando e os canhões)
+      g.add(this.nosso('mae')!);
+    } else if (tipo === 'chefe' && this.nossos.has('polvo')) {
+      // polvo.glb: a cabeça e os oito braços em cinco gomos (nós em corrente, que a cena dobra um a um)
+      const o = this.nosso('polvo')!;
+      g.add(o);
+      const gomos: { o: THREE.Object3D; z0: number; k: number; j: number }[] = [];
+      for (let k = 0; k < 8; k++) {
+        for (let j = 0; j < 5; j++) {
+          const s = o.getObjectByName(`polvo_braco_${k}_${j}`);
+          if (s) gomos.push({ o: s, z0: s.rotation.z, k, j });
+        }
+      }
+      g.userData.gomos = gomos;
+      g.userData.escala = 1.5;
     } else if (tipo === 'mina') {
       // a mina da rota do gelo (por código): a bola de metal com os espetos e a luz vermelha em cima
       const bola = new THREE.Mesh(this.geometria(new THREE.IcosahedronGeometry(0.85, 1)), metal);
@@ -841,6 +1008,13 @@ export class CenaEstelar {
         (o.userData.bracos as THREE.Group[]).forEach((b, k) => {
           b.rotation.z = this.calmo ? -0.3 : -0.3 + Math.sin(this.relogio * 2 + k) * 0.35;
         });
+        if (!this.calmo) o.rotation.y = Math.sin(this.relogio * 0.5) * 0.25;
+      }
+      if (o.userData.gomos) {
+        // os braços do polvo.glb: cada gomo dobra um pouco, com a onda descendo pelo braço
+        for (const gm of o.userData.gomos as { o: THREE.Object3D; z0: number; k: number; j: number }[]) {
+          gm.o.rotation.z = gm.z0 + (this.calmo ? 0 : Math.sin(this.relogio * 2 + gm.k - gm.j * 0.6) * (0.1 + gm.j * 0.03));
+        }
         if (!this.calmo) o.rotation.y = Math.sin(this.relogio * 0.5) * 0.25;
       }
       if (o.userData.anel && !this.calmo) (o.userData.anel as THREE.Object3D).rotation.z = this.relogio * 1.2;
