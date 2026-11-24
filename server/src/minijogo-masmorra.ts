@@ -44,6 +44,11 @@
  * (voa e mergulha na linha marcada) e o FANTASMA (some e aparece); a sala secreta da mina; os ACHADOS (baús e segredos, contados
  * aqui e mostrados no fim); e o HEROICO (mais vida e dano dos bichos, menos corações; o recorde do Solo à parte).
  *
+ * A TERCEIRA MASMORRA (24/11/2026): a FORNALHA DO DRAGÃO, com o REGADOR no lugar do gancho. O regador é do servidor como o
+ * gancho: quem rega diz só a direção, e o servidor acha na linha (alvoDoRegador/jatoPega, a mesma conta do site) o dragão ou o
+ * primeiro fogo aceso. O fogo do chão apaga para sempre; os BRASEIROS acendem de novo em BRASEIRO.volta ms, e todos apagados
+ * juntos abrem a porta (o enigma da turma, como os botões). O dragão é protegido como o golem-rei: só molhado ele apanha.
+ *
  * OS TROFÉUS: com o rei-cogumelo vencido e 2 pessoas ou mais que ficaram até o fim, o pódio (até o 3º, empatados dividem, só quem
  * fez ponto) vai para a estante do quarto (corrida_trofeus, "pista" 'masmorra', com os pontos). Fora das conquistas da turma até
  * ele decidir. No Solo, nada.
@@ -63,6 +68,13 @@ import {
   HEROICO,
   MASMORRAS,
   ALCANCE_DA_MAO,
+  alvoDoRegador,
+  BRASEIRO,
+  DRAGAO,
+  ehProtegido,
+  fimDoJato,
+  jatoPega,
+  REGADOR,
   ARREMESSO,
   BICHOS,
   BOMBA,
@@ -217,6 +229,8 @@ interface Jogador {
   /** Carregando um vaso por cima da cabeça (19/11/2026). */
   carrega: boolean;
   hpMax: number;
+  /** O último jato do regador (a fornalha, 24/11/2026). */
+  ultimoJato: number;
 }
 
 interface Pancada {
@@ -321,6 +335,16 @@ export function criarMasmorra({
       const destrancadas = new Set<string>();
       const visitadas = new Set<number>([daMasmorra.inicio]);
       let temGancho = false;
+      // A FORNALHA (24/11/2026): o regador, o fogo do chão apagado em cada sala (para sempre) e os braseiros apagados agora
+      // (a casa → quando; só da sala de agora: saiu, eles acendem de novo)
+      let temRegador = false;
+      const apagadosDaSala = new Map<number, Set<string>>();
+      const apagadosAqui = () => {
+        let f = apagadosDaSala.get(sala.id);
+        if (!f) apagadosDaSala.set(sala.id, (f = new Set()));
+        return f;
+      };
+      const braseiros = new Map<string, number>();
       let ponte = false;
       let temCenoura = false;
       let chaves = 0;
@@ -376,6 +400,7 @@ export function criarMasmorra({
               ataques: [],
               ultimoAtaque: 0,
               ultimaCenoura: -1e9,
+              ultimoJato: -1e9,
               ultimoEmpurrao: -1e9,
               tp: 1,
               baldes: {
@@ -399,6 +424,7 @@ export function criarMasmorra({
         if (p.trava === 'placas') return resolvidas.has(sala.id);
         if (p.trava === 'chave') return destrancadas.has(`${sala.id}:${lado}`);
         if (p.trava === 'rachada') return rachadas.has(`${sala.id}:${lado}`);
+        if (p.trava === 'braseiros') return resolvidas.has(sala.id);
         return true;
       };
       const mundo = (): Mundo => ({
@@ -407,7 +433,15 @@ export function criarMasmorra({
         ponte,
         abertas: LADOS.filter(portaAberta),
         fora: [...foraAqui()].map((k) => k.split(',').map(Number) as [number, number]),
+        apagados: apagadosNaSala().map(([c, l]) => [c, l] as [number, number]),
       });
+      /** O fogo apagado na sala de agora: [c, l, ms até acender (0: para sempre)]; os braseiros do enigma resolvido, para sempre. */
+      const apagadosNaSala = (): number[][] => {
+        const r = [...apagadosAqui()].map((k) => [...k.split(',').map(Number), 0]);
+        if (resolvidas.has(sala.id)) for (const [c, l] of casasDe(sala, 'A')) r.push([c, l, 0]);
+        else for (const [k, em] of braseiros) r.push([...k.split(',').map(Number), Math.max(1, BRASEIRO.volta - (agora() - em))]);
+        return r;
+      };
       const emPe = () => [...jogadores.values()].filter((j) => j.estado === 'em-pe');
 
       const novoBicho = (tipo: TipoDoBicho, x: number, y: number): Bicho => {
@@ -460,6 +494,7 @@ export function criarMasmorra({
         arremessos.length = 0;
         bombas.length = 0;
         sementesNoChao.length = 0;
+        braseiros.clear();
         for (const j of jogadores.values()) j.carrega = false;
         if (!limpas.has(destino)) for (const b of sala.bichos) novoBicho(b.tipo, ...centro(b.c, b.l));
         // o bloco volta ao lugar se o enigma não foi resolvido (o empurrado para o canto não prende ninguém)
@@ -489,7 +524,8 @@ export function criarMasmorra({
         b.ate = agora() + ms;
       };
       /** A couraça do golem-rei está fechada (só o gancho a abre: atordoado, ele apanha). */
-      const couracaFechada = (b: Bicho) => b.tipo === 'golem-rei' && b.estado !== 'atordoado';
+      // e o fogo do dragão (24/11/2026): só o regador o apaga
+      const couracaFechada = (b: Bicho) => ehProtegido(b.tipo) && b.estado !== 'atordoado';
       const maisPerto = (b: Bicho): Jogador | null => {
         let melhor: Jogador | null = null;
         let d = Infinity;
@@ -726,6 +762,37 @@ export function criarMasmorra({
             }
             return;
           }
+          case 'diabinho': {
+            // o diabinho da fornalha (24/11/2026): fica de longe (foge de quem chega perto), mira e cospe uma bola de fogo
+            if (b.estado === 'mirando') {
+              if (t >= b.ate) {
+                atirar(b.x + b.dx * 16, b.y + b.dy * 16, b.dx, b.dy, 190);
+                mudar(b, 'atacando', 250);
+              }
+              return;
+            }
+            if (b.estado === 'atacando') {
+              if (t >= b.ate) mudar(b, 'recuperando', 450);
+              return;
+            }
+            if (!alvo) return void (b.estado !== 'parado' && mudar(b, 'parado', 0));
+            const d = Math.hypot(alvo.x - b.x, alvo.y - b.y);
+            mira(b, alvo);
+            if (t >= b.proximo && d < 360) {
+              mudar(b, 'mirando', 650);
+              b.proximo = t + 2000 + aleatorio() * 900;
+              return;
+            }
+            const sentido = d < 110 ? -1 : d > 220 ? 1 : 0;
+            if (sentido === 0) {
+              if (b.estado !== 'parado') mudar(b, 'parado', 0);
+              return;
+            }
+            if (b.estado !== 'andando') mudar(b, 'andando', 0);
+            andar(b, sentido * b.dx * vel * dt, sentido * b.dy * vel * dt);
+            return;
+          }
+          case 'dragao':
           case 'golem-rei':
           case 'rei-cogumelo': {
             if (b.estado === 'prep-investida') {
@@ -736,7 +803,8 @@ export function criarMasmorra({
               return;
             }
             if (b.estado === 'investida') {
-              const bateu = andar(b, b.dx * (b.tipo === 'golem-rei' ? 220 : 250) * dt, b.dy * (b.tipo === 'golem-rei' ? 220 : 250) * dt);
+              const rapidez = b.tipo === 'golem-rei' ? 220 : b.tipo === 'dragao' ? 230 : 250;
+              const bateu = andar(b, b.dx * rapidez * dt, b.dy * rapidez * dt);
               pancada(b, b.x, b.y, 30, 2);
               if (bateu) mudar(b, 'cansado', 1700);
               else if (t >= b.ate) mudar(b, 'recuperando', 600);
@@ -744,7 +812,11 @@ export function criarMasmorra({
             }
             if (b.estado === 'prep-sopro') {
               if (t >= b.ate) {
-                for (let k = 0; k < 8; k++) atirar(b.x, b.y, Math.cos((k * Math.PI) / 4), Math.sin((k * Math.PI) / 4), 140);
+                if (b.tipo === 'dragao') {
+                  // o sopro do dragão: um leque de cinco bolas de fogo para onde ele mirou
+                  const base = Math.atan2(b.dy, b.dx);
+                  for (let k = -2; k <= 2; k++) atirar(b.x + b.dx * 24, b.y + b.dy * 24, Math.cos(base + k * 0.32), Math.sin(base + k * 0.32), 150);
+                } else for (let k = 0; k < 8; k++) atirar(b.x, b.y, Math.cos((k * Math.PI) / 4), Math.sin((k * Math.PI) / 4), 140);
                 mudar(b, 'sopro', 300);
               }
               return;
@@ -768,7 +840,7 @@ export function criarMasmorra({
                 [-70, 30],
                 [70, 30],
               ])
-                if (livre(sala, m, b.x + ox, b.y + oy, 14, 'bicho')) novoBicho(b.tipo === 'golem-rei' ? 'abelha' : 'cogumelo', b.x + ox, b.y + oy);
+                if (livre(sala, m, b.x + ox, b.y + oy, 14, 'bicho')) novoBicho(b.tipo === 'golem-rei' ? 'abelha' : b.tipo === 'dragao' ? 'diabinho' : 'cogumelo', b.x + ox, b.y + oy);
               mudar(b, 'prep-sopro', 700);
             } else if (b.ataque % 2 === 0) mudar(b, 'prep-investida', 800);
             else {
@@ -907,6 +979,7 @@ export function criarMasmorra({
               bausAbertos.add(sala.id);
               if (sala.bau!.guarda === 'cenoura') temCenoura = true;
               else if (sala.bau!.guarda === 'gancho') temGancho = true;
+              else if (sala.bau!.guarda === 'regador') temRegador = true;
               else chaves++;
               j.pontos += PONTOS.bau;
               evento_('b', sala.bau!.guarda, j.userId);
@@ -927,6 +1000,8 @@ export function criarMasmorra({
               evento_('a', 'placas');
             }
           } else if (placas.length) placasApertadas = placas.map(() => 1);
+          // os braseiros (a fornalha): o apagado há BRASEIRO.volta ms acende de novo, se o enigma não foi resolvido
+          if (!resolvidas.has(sala.id)) for (const [k, em] of braseiros) if (t - em >= BRASEIRO.volta) braseiros.delete(k);
           // a sala limpa
           if (sala.bichos.length && !limpas.has(sala.id) && bichos.size === 0) {
             limpas.add(sala.id);
@@ -957,7 +1032,8 @@ export function criarMasmorra({
           ponte: ponte ? 1 : 0,
           pl: placasApertadas,
           pr: resolvidas.has(sala.id) ? 1 : 0,
-          it: [temCenoura ? 1 : 0, chaves, sementes, temGancho ? 1 : 0],
+          it: [temCenoura ? 1 : 0, chaves, sementes, temGancho ? 1 : 0, temRegador ? 1 : 0],
+          ap: apagadosNaSala(),
           o: [...foraAqui()].map((k) => k.split(',').map(Number)),
           r: arremessos.map((a) => [a.id, Math.round(a.x), Math.round(a.y)]),
           bs: bombas.map((b) => [b.id, Math.round(b.x), Math.round(b.y), Math.max(0, BOMBA.pavio - (agora() - b.em))]),
@@ -1449,6 +1525,53 @@ export function criarMasmorra({
         return null;
       };
 
+      /**
+       * O REGADOR (a fornalha, 24/11/2026): quem rega diz só a direção, e o servidor faz a conta da linha (a mesma do site): o
+       * dragão na linha (pelo passado dele, como o gancho no golem) fica molhado, sem o fogo; senão, o primeiro fogo aceso da linha
+       * se apaga (o do chão para sempre; o braseiro por BRASEIRO.volta ms, e todos apagados juntos resolvem o enigma).
+       */
+      const regar = (j: Jogador, d: Record<string, unknown>): string | null => {
+        if (!temRegador) return 'sem regador';
+        if (!numero(d.dir) || d.dir < 0 || d.dir > 3) return 'direção';
+        const t = agora();
+        if (t - j.ultimoJato < REGADOR.recarga - 150) return 'cedo';
+        const dir = Math.floor(d.dir);
+        j.ultimoJato = t;
+        j.dir = dir;
+        const m = mundo();
+        const [fx, fy] = fimDoJato(sala, m, j.x, j.y, dir);
+        evento_('ag', j.userId, Math.round(fx), Math.round(fy));
+        for (const b of bichos.values()) {
+          if (b.tipo !== 'dragao' || b.estado === 'morto' || b.estado === 'atordoado' || b.estado === 'entrando' || b.hp <= 0 || t < b.ganchoAte) continue;
+          const r = BICHOS[b.tipo].raio;
+          if (!b.historia.some((h) => h.t >= t - HISTORIA_MS && jatoPega(sala, m, j.x, j.y, dir, h.x, h.y, r, FOLGA_ACERTO))) continue;
+          mudar(b, 'atordoado', DRAGAO.molhado);
+          b.ganchoAte = t + DRAGAO.molhado + DRAGAO.imune;
+          j.pontos += PONTOS.acerto;
+          evento_('gd', j.userId, Math.round(b.x), Math.round(b.y));
+          return null;
+        }
+        const alvo = alvoDoRegador(sala, m, j.x, j.y, dir);
+        if (!alvo) return 'sem fogo';
+        const [c, l] = alvo;
+        const [cx, cy] = centro(c, l);
+        evento_('ap', Math.round(cx), Math.round(cy));
+        if (sala.grade[l][c] === 'F') {
+          apagadosAqui().add(`${c},${l}`);
+          j.pontos += 2;
+          return null;
+        }
+        // o braseiro: todos apagados ao mesmo tempo resolvem o enigma (e os que regaram ganham os pontos)
+        braseiros.set(`${c},${l}`, t);
+        const todos = casasDe(sala, 'A');
+        if (todos.every(([bc, bl]) => braseiros.has(`${bc},${bl}`))) {
+          resolvidas.add(sala.id);
+          for (const o of emPe()) o.pontos += PONTOS.placas;
+          evento_('a', 'braseiros');
+        }
+        return null;
+      };
+
       entrarNa(daMasmorra.inicio, null);
       // o começo: na entrada, ninguém vem de porta nenhuma (a chegada é a do sul)
       relogio = intervalo(tick, PASSO_MS);
@@ -1508,6 +1631,7 @@ export function criarMasmorra({
           else if (d.tipo === 'cortar') ultimoMotivo = cortar(j, d);
           else if (d.tipo === 'bomba') ultimoMotivo = soltarBomba(j);
           else if (d.tipo === 'gancho') ultimoMotivo = gancho(j, d);
+          else if (d.tipo === 'regar') ultimoMotivo = regar(j, d);
           return null;
         },
         conferir() {
@@ -1525,6 +1649,9 @@ export function criarMasmorra({
           _sementes: () => sementes,
           _coracoes: coracoes,
           _sementesNoChao: sementesNoChao,
+          _darRegador: () => {
+            temRegador = true;
+          },
           _darGancho: () => {
             temGancho = true;
           },

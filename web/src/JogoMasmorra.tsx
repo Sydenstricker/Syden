@@ -29,6 +29,8 @@ import {
   desenharVaso,
   desenharGancho,
   desenharCorda,
+  desenharRegador,
+  desenharJato,
 } from './masmorra/desenho';
 import {
   ACOES,
@@ -57,6 +59,9 @@ import {
   ehChefe,
   MASMORRAS,
   type Masmorra,
+  REGADOR,
+  BRASEIRO,
+  ehProtegido,
 } from './masmorra/regras';
 import type { Partida } from './minijogos';
 import { criarImpacto } from './impacto';
@@ -96,7 +101,7 @@ export interface EstadoMasmorra {
       }[]
     | null;
   /** No Solo (19/11/2026): o tempo da masmorra vencida e o recorde de antes (a tabela comum). */
-  /** Qual masmorra (19/11/2026): a toca de sempre, ou a mina dos postes. */
+  /** Qual masmorra (19/11/2026): a toca de sempre, a mina dos postes ou, desde 24/11/2026, a fornalha do dragão. */
   masmorra?: Masmorra;
   /** O heroico (21/11/2026): bichos mais fortes, menos corações. */
   heroico?: boolean;
@@ -253,6 +258,7 @@ export function EscolhaDaMasmorra({ aoEscolher, aoVoltar }: { aoEscolher: (m: st
   const opcoes: { id: Masmorra; nome: string; cor: string }[] = [
     { id: 'toca', nome: t('Toca do rei-cogumelo'), cor: '#5e4e46' },
     { id: 'mina', nome: t('Mina dos postes'), cor: '#7b4f2e' },
+    { id: 'fornalha', nome: t('Fornalha do dragão'), cor: '#a8452c' },
   ];
   return (
     <div className="corrida-escolha">
@@ -400,7 +406,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
     if (!c || !g || !socket) return;
     g.imageSmoothingEnabled = false;
     // o golem-rei é a folha do golem, em dobro (21/11/2026)
-    carregarFolhas(['cogumelo', 'cacto', 'sapo', 'rei-cogumelo', 'abelha', 'fantasma', 'golem'] as TipoDeInimigo[]);
+    carregarFolhas(['cogumelo', 'cacto', 'sapo', 'rei-cogumelo', 'abelha', 'fantasma', 'golem', 'diabinho', 'dragao'] as TipoDeInimigo[]);
     const folha = new Image();
     folha.src = `${import.meta.env.BASE_URL}briga/coelho.png`;
     const linha = new Linha();
@@ -425,6 +431,9 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
     const impacto = criarImpacto({ pixelsPorForca: 5 });
     const cortadas = new Set<string>();
     let corda: { quem: number; x: number; y: number; ate: number } | null = null;
+    // o jato do regador (a fornalha): de quem regou até onde a água parou, um instante
+    let jato: { quem: number; x: number; y: number; ate: number } | null = null;
+    let ultimoJato = -1e9;
 
     const enviar = (dados: unknown) => (solo ? socket.emit('minijogo-solo:tempo-real', { dados }) : socket.emit('minijogo:tempo-real', { channelId, dados }));
     const mandarPosicao = (ataque?: { id: number; g: string }) => {
@@ -498,7 +507,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
               x: quem[1] as number,
               y: quem[2] as number,
               em: agoraMs,
-              item: r[0] as 'cenoura' | 'chave' | 'gancho',
+              item: r[0] as 'cenoura' | 'chave' | 'gancho' | 'regador',
             });
           tocar('bandeira');
         } else if (tipo === 'a') tocar('encaixe');
@@ -543,6 +552,19 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
           // o gancho puxou alguém: a corda aparece um instante, do poste até a pessoa
           corda = { quem: r[0] as number, x: r[1] as number, y: r[2] as number, ate: agoraMs + 260 };
           tocar('desliza');
+        } else if (tipo === 'ag') {
+          // o jato do regador (a fornalha)
+          jato = { quem: r[0] as number, x: r[1] as number, y: r[2] as number, ate: agoraMs + 240 };
+          if (r[0] !== eu) tocar('agua');
+        } else if (tipo === 'ap') {
+          // o fogo (ou o braseiro) que o regador apagou
+          efeitos.push({ tipo: 'puf', x: r[0] as number, y: r[1] as number, em: agoraMs });
+          tocar('chiado');
+        } else if (tipo === 'gd') {
+          // o regador molhou o dragão: sem o fogo, ele apanha
+          efeitos.push({ tipo: 'puf', x: r[1] as number, y: (r[2] as number) - 20, em: agoraMs });
+          tocar('chiado');
+          impacto.tremer(0.5, 220);
         }
       }
     };
@@ -589,6 +611,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
               eu: eu_,
               temCenoura,
               temGancho: ultimo.it[3] === 1,
+              temRegador: ultimo.it[4] === 1,
               chaves: ultimo.it[1],
               placasResolvidas: ultimo.pr === 1,
               bauAberto: ultimo.bau === 2,
@@ -616,6 +639,15 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
           cmd.item = false;
           enviar({ tipo: 'gancho', dir: eu_.dir });
           tocar('tiro');
+        }
+        // o regador (a fornalha, 24/11/2026): o jato para onde o coelho olha; o servidor acha o fogo (ou o dragão) na linha
+        if (cmd.item && ultimo.it[4] === 1) {
+          cmd.item = false;
+          if (agoraMs - ultimoJato >= REGADOR.recarga) {
+            ultimoJato = agoraMs;
+            enviar({ tipo: 'regar', dir: eu_.dir });
+            tocar('agua');
+          }
         }
         if (cmd.bomba) {
           cmd.bomba = false;
@@ -731,6 +763,17 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
       g.save();
       g.translate(tremor.dx, tremor.dy);
       desenharSala(g, sala, { ...mundo, blocos: [] }, ultimo.p, ultimo.pl, ultimo.bau, agoraMs, ultimo.cg === 1);
+      // os braseiros apagados (a fornalha): o anel que mostra quanto falta para acender de novo
+      for (const a of ultimo.ap ?? []) {
+        if (!(a[2] > 0)) continue;
+        const [bx, by] = centro(a[0], a[1]);
+        g.strokeStyle = a[2] < 1500 ? 'rgba(255, 140, 60, 0.9)' : 'rgba(156, 198, 220, 0.9)';
+        g.lineWidth = 3;
+        g.beginPath();
+        g.arc(bx, by - 4, 22, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * a[2]) / BRASEIRO.volta);
+        g.stroke();
+        g.lineWidth = 1;
+      }
       // as sementes no chão e as bombas
       for (const sm of ultimo.sm ?? []) desenharSemente(g, sm[1], sm[2]);
       for (const b of ultimo.bs ?? []) desenharBomba(g, b[1], b[2], b[3]);
@@ -751,7 +794,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
           y: pe,
           desenhar: () => {
             // o aviso antes do golpe: a mira do cacto, o lugar onde o sapo cai, a direção da investida do rei
-            if (est === 'mirando' && tipo === 'cacto') {
+            if (est === 'mirando' && (tipo === 'cacto' || tipo === 'diabinho')) {
               g.strokeStyle = Math.floor(agoraMs / 90) % 2 ? AVISOS.mira[0] : AVISOS.mira[1];
               g.lineWidth = 2;
               g.setLineDash([6, 6]);
@@ -808,6 +851,26 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
               g.translate(l[2], pe - l[4]);
               g.scale(2, 2);
               desenharBichoDaFolha(g, doBicho, 0, 0, agoraMs);
+            } else if (tipo === 'dragao') {
+              // o dragão (a fornalha): com o fogo aceso, as chamas em volta (só o regador as apaga); o leque marcado antes do sopro
+              if (est === 'prep-sopro') {
+                g.fillStyle = Math.floor(agoraMs / 90) % 2 ? AVISOS.investida[0] : AVISOS.investida[1];
+                g.beginPath();
+                g.moveTo(l[2], l[3]);
+                const base = Math.atan2(l[10] - l[3], l[9] - l[2]);
+                g.arc(l[2], l[3], 170, base - 0.75, base + 0.75);
+                g.closePath();
+                g.fill();
+              }
+              if (est !== 'atordoado' && est !== 'morto') {
+                const f = Math.floor(agoraMs / 120) % 2;
+                g.strokeStyle = f ? 'rgba(255, 140, 60, 0.65)' : 'rgba(255, 200, 90, 0.5)';
+                g.lineWidth = 4;
+                g.beginPath();
+                g.ellipse(l[2], pe - 30, 36 + f * 2, 40 + f * 2, 0, 0, Math.PI * 2);
+                g.stroke();
+              }
+              desenharBichoDaFolha(g, doBicho, l[2], pe - l[4], agoraMs);
             } else desenharBichoDaFolha(g, doBicho, l[2], pe - l[4], agoraMs);
             g.restore();
             if (est === 'atordoado')
@@ -821,7 +884,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
                 },
                 agoraMs,
               );
-            if (est === 'cansado' || (est === 'atordoado' && tipo === 'golem-rei')) desenharEfeito(g, { tipo: 'estrelas', x: l[2], y: pe - 50, em: agoraMs - 1 }, agoraMs);
+            if (est === 'cansado' || (est === 'atordoado' && ehProtegido(tipo))) desenharEfeito(g, { tipo: 'estrelas', x: l[2], y: pe - 50, em: agoraMs - 1 }, agoraMs);
             if (!ehChefe(tipo) && l[7] < 100 && est !== 'morto' && est !== 'sumido') {
               g.fillStyle = '#2a1e1a';
               g.fillRect(l[2] - 12, pe - 50, 24, 4);
@@ -893,6 +956,14 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
       coisas.sort((a, b) => a.y - b.y).forEach((x) => x.desenhar());
       if (cenoura) desenharCenoura(g, cenoura.x, cenoura.y - 8, agoraMs / 50);
       for (let k = efeitos.length - 1; k >= 0; k--) if (!desenharEfeito(g, efeitos[k], agoraMs)) efeitos.splice(k, 1);
+      if (jato && agoraMs < jato.ate) {
+        const quem = jato.quem === eu && jogador ? { x: eu_.x, y: eu_.y } : outros.find((l) => l[0] === jato!.quem);
+        if (quem) {
+          const qx = Array.isArray(quem) ? (quem[1] as number) : quem.x;
+          const qy = Array.isArray(quem) ? (quem[2] as number) : quem.y;
+          desenharJato(g, qx, qy - 8, jato.x, jato.y - 8, agoraMs);
+        }
+      }
       if (corda && agoraMs < corda.ate) {
         const quem = corda.quem === eu && jogador ? { x: eu_.x, y: eu_.y } : outros.find((l) => l[0] === corda!.quem);
         if (quem) {
@@ -930,6 +1001,13 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
         g.fillStyle = AVISOS.fundo;
         g.fillRect(ix - 4, 34, 34, 30);
         desenharGancho(g, ix + 12, 52);
+        ix += 38;
+      }
+      // o regador da turma (a fornalha)
+      if (ultimo.it[4] === 1) {
+        g.fillStyle = AVISOS.fundo;
+        g.fillRect(ix - 4, 34, 34, 30);
+        desenharRegador(g, ix + 13, 52);
         ix += 38;
       }
       // as sementes da turma (as bombas)

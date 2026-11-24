@@ -62,3 +62,20 @@ test('a cenoura vai, bate no cristal do outro lado da água, e volta', () => {
   assert.deepEqual(bateu, k);
   assert.ok(fim, 'voltou');
 });
+
+test('a fornalha (24/11/2026): o fogo do chão segura o coelho até o regador o apagar, e o jato para no primeiro fogo', () => {
+  const s = R.SALAS[18];
+  const c = R.novoCoelho(...R.centro(10, 5));
+  andar(s, vazio(), c, { direita: true }, 1500);
+  assert.ok(c.x < 11 * R.TILE, `passou pelo fogo: ${c.x}`);
+  assert.deepEqual(R.alvoDoRegador(s, vazio(), c.x, c.y, 3), [11, 5]);
+  const apagado = vazio({ apagados: [[11, 5]] });
+  andar(s, apagado, c, { direita: true }, 1500);
+  assert.ok(c.x > 12 * R.TILE, `não passou pelo fogo apagado: ${c.x}`);
+  // o jato pega o dragão na linha, e não do outro lado da parede
+  const d = R.SALAS[19];
+  const [x, y] = R.centro(4, 5);
+  assert.equal(R.jatoPega(d, vazio(), x, y, 3, x + 3 * R.TILE, y, R.BICHOS.dragao.raio, 0), true);
+  assert.equal(R.jatoPega(d, vazio(), x, y, 2, x + 3 * R.TILE, y, R.BICHOS.dragao.raio, 0), false);
+  assert.equal(R.jatoPega(d, vazio(), x, y, 3, x + 8 * R.TILE, y, R.BICHOS.dragao.raio, 0), false, 'longe demais');
+});

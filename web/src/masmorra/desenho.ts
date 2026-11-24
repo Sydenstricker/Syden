@@ -3,7 +3,7 @@
  * são as folhas da Briga na horta, em tamanho natural). A paleta é a de pedra morna do quarto, sem preto puro. Nada aqui é de
  * jogo nenhum: as salas, as portas, o baú, o cristal e a cenoura que vai e volta são desenhos daqui.
  */
-import { casasDe, COLS, LARGURA, LINHAS, PORTA, SALAS, TILE, type Lado, type Mundo, type Sala } from './regras';
+import { casasDe, COLS, fogoAceso, LARGURA, LINHAS, PORTA, SALAS, TILE, type Lado, type Mundo, type Sala } from './regras';
 
 export const W = LARGURA;
 export const H = LINHAS * TILE;
@@ -169,6 +169,11 @@ function fundoDaSala(s: Sala, ponteLevantada: boolean): HTMLCanvasElement | null
       }
       g.restore();
     }
+  }
+  // a fornalha (24/11/2026): o chão esquentado, um tom de brasa por cima da areia
+  if (s.id >= 14) {
+    g.fillStyle = 'rgba(190, 70, 40, 0.13)';
+    g.fillRect(0, 0, W, H);
   }
   // as paredes
   for (let l = 0; l < LINHAS; l++) for (let col = 0; col < COLS; col++) if (parede(s, col, l)) paredeDoKit(g, k, s, col, l);
@@ -567,6 +572,9 @@ export function desenharSala(g: CanvasRenderingContext2D, s: Sala, m: Mundo, por
   casasDe(s, 'M').forEach(([c, l]) => !fora.has(`${c},${l}`) && desenharMoita(g, c * TILE + 20, l * TILE + 20, tempo));
   casasDe(s, 'V').forEach(([c, l]) => !fora.has(`${c},${l}`) && desenharVaso(g, c * TILE + 20, l * TILE + 22));
   casasDe(s, 'E').forEach(([c, l]) => desenharPoste(g, c, l));
+  // a fornalha (24/11/2026): o fogo do chão (ou a cinza molhada) e os braseiros
+  casasDe(s, 'F').forEach(([c, l]) => (fogoAceso(s, m, c, l) ? desenharFogo(g, c, l, tempo) : desenharCinza(g, c, l)));
+  casasDe(s, 'A').forEach(([c, l]) => desenharBraseiro(g, c, l, fogoAceso(s, m, c, l), tempo));
   const h = casasDe(s, 'H')[0];
   if (h && !coracaoGrandePego) desenharCoracaoGrande(g, h[0] * TILE + 20, h[1] * TILE + 18 + Math.sin(tempo / 260) * 2);
 }
@@ -597,6 +605,92 @@ export function desenharPoste(g: CanvasRenderingContext2D, c: number, l: number)
   px(g, x - 8, y - 8, 16, 2, '#8d96a3');
   px(g, x - 10, y - 10, 4, 6, '#8d96a3');
   px(g, x + 6, y - 10, 4, 6, '#8d96a3');
+}
+
+// ---------------- A FORNALHA (24/11/2026) ----------------
+/** O fogo do chão: as labaredas que mexem (parede até o regador o apagar). */
+export function desenharFogo(g: CanvasRenderingContext2D, c: number, l: number, tempo: number) {
+  const x = c * TILE;
+  const y = l * TILE;
+  px(g, x + 2, y + 26, TILE - 4, 12, '#5a2a1e');
+  for (let k = 0; k < 3; k++) {
+    const f = Math.floor(tempo / 110 + c * 3 + l * 5 + k * 2) % 4;
+    const bx = x + 4 + k * 12;
+    px(g, bx, y + 14 - f, 10, 24 + f, '#d8542e');
+    px(g, bx + 2, y + 20 - f, 6, 16 + f, '#f0923a');
+    px(g, bx + 4, y + 28 - f, 2, 8, '#fde7a0');
+  }
+  g.fillStyle = 'rgba(255, 140, 70, 0.12)';
+  g.beginPath();
+  g.arc(x + 20, y + 26, 36, 0, Math.PI * 2);
+  g.fill();
+}
+
+/** O fogo apagado: a cinza molhada no chão, por onde se passa. */
+export function desenharCinza(g: CanvasRenderingContext2D, c: number, l: number) {
+  const x = c * TILE;
+  const y = l * TILE;
+  px(g, x + 4, y + 10, TILE - 8, TILE - 18, 'rgba(60, 48, 46, 0.55)');
+  px(g, x + 8, y + 14, 8, 4, '#6d6560');
+  px(g, x + 22, y + 22, 10, 4, '#6d6560');
+  px(g, x + 14, y + 26, 4, 2, '#5b8fae');
+}
+
+/** O braseiro: a bacia de pedra com o fogo (aceso) ou a fumaça (apagado, até acender de novo). */
+export function desenharBraseiro(g: CanvasRenderingContext2D, c: number, l: number, aceso: boolean, tempo: number) {
+  const x = c * TILE + 20;
+  const y = l * TILE + 24;
+  px(g, x - 16, y + 6, 32, 8, 'rgba(63, 38, 49, 0.35)');
+  px(g, x - 6, y, 12, 10, KIT.contorno);
+  px(g, x - 4, y, 8, 8, KIT.pedraEscura);
+  px(g, x - 16, y - 10, 32, 12, KIT.contorno);
+  px(g, x - 14, y - 8, 28, 8, KIT.pedraMeio);
+  px(g, x - 14, y - 8, 28, 2, KIT.pedra);
+  if (aceso) {
+    const f = Math.floor(tempo / 110 + c) % 3;
+    px(g, x - 10, y - 22 + f, 20, 14, '#d8542e');
+    px(g, x - 6, y - 26 + f, 12, 14, '#f0923a');
+    px(g, x - 2, y - 28 + f, 4, 8, '#fde7a0');
+    g.fillStyle = 'rgba(255, 170, 90, 0.12)';
+    g.beginPath();
+    g.arc(x, y - 6, 44, 0, Math.PI * 2);
+    g.fill();
+  } else {
+    const s = Math.floor(tempo / 200 + c) % 3;
+    px(g, x - 4, y - 18 - s * 2, 6, 6, 'rgba(200, 200, 210, 0.45)');
+    px(g, x + 2, y - 26 - s * 2, 6, 6, 'rgba(200, 200, 210, 0.3)');
+  }
+}
+
+/** O regador (o item da fornalha): o bico comprido, a alça e a água. */
+export function desenharRegador(g: CanvasRenderingContext2D, x: number, y: number) {
+  px(g, x - 10, y - 8, 16, 16, COR.contorno);
+  px(g, x - 8, y - 6, 12, 12, '#5b8fae');
+  px(g, x - 8, y - 6, 12, 2, '#9cc6dc');
+  px(g, x + 4, y - 4, 4, 4, COR.contorno);
+  px(g, x + 6, y - 8, 4, 4, COR.contorno);
+  px(g, x + 8, y - 12, 4, 4, '#5b8fae');
+  px(g, x - 12, y - 12, 4, 10, COR.contorno);
+  px(g, x - 10, y - 14, 8, 4, COR.contorno);
+}
+
+/** O jato do regador: a água de quem rega até onde o jato para, um instante. */
+export function desenharJato(g: CanvasRenderingContext2D, x0: number, y0: number, x1: number, y1: number, tempo: number) {
+  g.strokeStyle = 'rgba(120, 190, 230, 0.85)';
+  g.lineWidth = 6;
+  g.beginPath();
+  g.moveTo(x0, y0);
+  g.lineTo(x1, y1);
+  g.stroke();
+  g.strokeStyle = 'rgba(220, 240, 255, 0.8)';
+  g.lineWidth = 2;
+  g.stroke();
+  g.lineWidth = 1;
+  // os pingos na ponta
+  for (let k = 0; k < 4; k++) {
+    const a = k * 1.7 + tempo / 90;
+    px(g, x1 + Math.cos(a) * 10, y1 + Math.sin(a) * 8, 4, 4, '#9cc6dc');
+  }
 }
 
 /** O gancho (o item da mina): a corda enrolada com a garra de ferro. */
@@ -754,7 +848,7 @@ export interface Efeito {
   y: number;
   em: number;
   /** No 'item': qual. */
-  item?: 'cenoura' | 'chave' | 'gancho';
+  item?: 'cenoura' | 'chave' | 'gancho' | 'regador';
 }
 
 /** Desenha um efeito; devolve false quando ele acabou. */
@@ -801,6 +895,7 @@ export function desenharEfeito(g: CanvasRenderingContext2D, e: Efeito, tempo: nu
   g.fill();
   if (e.item === 'chave') desenharChave(g, e.x, y);
   else if (e.item === 'gancho') desenharGancho(g, e.x, y);
+  else if (e.item === 'regador') desenharRegador(g, e.x, y);
   else desenharCenoura(g, e.x, y, -0.6, 1.3);
   return true;
 }

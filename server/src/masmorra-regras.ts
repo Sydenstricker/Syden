@@ -44,8 +44,9 @@ export const DIRS: [number, number][] = [
 export const LADO_DA_DIR: Lado[] = ['s', 'n', 'o', 'l'];
 
 // ---------------- OS BICHOS (as folhas da Briga: os monstros da Quaternius, CC0) ----------------
-// bicho novo entra no FIM (o índice vai no quadro): a abelha, o fantasma e o golem-rei são de 21/11/2026
-export const TIPOS = ['cogumelo', 'cacto', 'sapo', 'rei-cogumelo', 'abelha', 'fantasma', 'golem-rei'] as const;
+// bicho novo entra no FIM (o índice vai no quadro): a abelha, o fantasma e o golem-rei são de 21/11/2026; o diabinho e o dragão,
+// da fornalha (24/11/2026)
+export const TIPOS = ['cogumelo', 'cacto', 'sapo', 'rei-cogumelo', 'abelha', 'fantasma', 'golem-rei', 'diabinho', 'dragao'] as const;
 export type TipoDoBicho = (typeof TIPOS)[number];
 /**
  * Cada bicho é um COMPORTAMENTO: o cogumelo anda até quem está perto e morde (a preparação treme), o cacto mira e atira
@@ -64,9 +65,21 @@ export const BICHOS: Record<TipoDoBicho, { hp: number; raio: number; vel: number
   abelha: { hp: 2, raio: 11, vel: 85, pontos: 25 },
   fantasma: { hp: 3, raio: 13, vel: 40, pontos: 30 },
   'golem-rei': { hp: 14, raio: 28, vel: 40, pontos: 250 },
+  diabinho: { hp: 2, raio: 13, vel: 60, pontos: 30 },
+  dragao: { hp: 16, raio: 30, vel: 42, pontos: 300 },
 };
 /** Os chefes (a sala deles, limpa, vence a masmorra). */
-export const ehChefe = (tipo: TipoDoBicho) => tipo === 'rei-cogumelo' || tipo === 'golem-rei';
+export const ehChefe = (tipo: TipoDoBicho) => tipo === 'rei-cogumelo' || tipo === 'golem-rei' || tipo === 'dragao';
+/**
+ * Os chefes PROTEGIDOS: o golem-rei (a couraça, que só o gancho abre) e o dragão (o fogo em volta, que só o regador apaga). Fora
+ * do 'atordoado', nada os fere.
+ */
+export const ehProtegido = (tipo: TipoDoBicho) => tipo === 'golem-rei' || tipo === 'dragao';
+/**
+ * O dragão (24/11/2026): quanto fica molhado (o fogo apagado, 'atordoado') depois do regador, e quanto depois disso o regador não
+ * o apaga de novo.
+ */
+export const DRAGAO = { molhado: 2800, imune: 1600 };
 /** O golem-rei: quanto fica atordoado depois do gancho, e quanto depois disso o gancho não o pega de novo. */
 export const GOLEM = { atordoado: 2600, imune: 1800 };
 /** O fantasma: quanto fica visível e quanto some. */
@@ -110,14 +123,15 @@ export interface Sala {
   /**
    * '#' parede, 'T' tocha, '.' chão, '~' água, '=' ponte (água até o cristal), 'P' botão no chão, 'B' bloco, 'C' baú, 'K' cristal;
    * desde 19/11/2026, 'V' vaso (levanta-se e joga-se), 'M' moita (a pá corta) e 'H' o coração grande (um coração a mais para a
-   * turma).
+   * turma); desde 24/11/2026 (a fornalha), 'F' fogo no chão (parede até o regador o apagar, para sempre) e 'A' braseiro (o
+   * enigma: todos apagados ao mesmo tempo abrem a porta 'braseiros'; apagado, ele volta a acender em BRASEIRO.volta ms).
    */
   grade: string[];
-  /** A trava 'rachada' (19/11/2026): a parede rachada no lugar da porta, que só a bomba de semente abre. */
-  portas: Partial<Record<Lado, { para: number; trava?: 'placas' | 'chave' | 'rachada' }>>;
+  /** A trava 'rachada' (19/11/2026): a parede rachada no lugar da porta, que só a bomba de semente abre. 'braseiros' (24/11/2026). */
+  portas: Partial<Record<Lado, { para: number; trava?: 'placas' | 'chave' | 'rachada' | 'braseiros' }>>;
   bichos: { tipo: TipoDoBicho; c: number; l: number }[];
   /** O baú: o que ele guarda, e se só aparece com a sala limpa. */
-  bau?: { guarda: 'cenoura' | 'chave' | 'gancho'; aparece?: 'limpa' };
+  bau?: { guarda: 'cenoura' | 'chave' | 'gancho' | 'regador'; aparece?: 'limpa' };
   /** A sala do chefe: limpa, a masmorra está vencida. */
   chefe?: boolean;
 }
@@ -323,12 +337,13 @@ SALAS.push({
  * POSTE do outro lado (lá está a chave, e outro poste para voltar); e ao norte, a porta trancada do rei-cogumelo. Quem vai ao
  * lago antes do baú volta: é o "voltar com o item novo para abrir caminho".
  */
-export type Masmorra = 'toca' | 'mina';
+export type Masmorra = 'toca' | 'mina' | 'fornalha';
 export const MASMORRAS: Record<Masmorra, { inicio: number; chefe: number }> = {
   toca: { inicio: 0, chefe: SALA_DO_CHEFE },
   mina: { inicio: 8, chefe: 12 },
+  fornalha: { inicio: 14, chefe: 19 },
 };
-export const ehMasmorra = (v: unknown): v is Masmorra => v === 'toca' || v === 'mina';
+export const ehMasmorra = (v: unknown): v is Masmorra => v === 'toca' || v === 'mina' || v === 'fornalha';
 
 SALAS.push(
   {
@@ -476,6 +491,178 @@ SALAS.push(
   },
 );
 
+// ---------------- A TERCEIRA MASMORRA: A FORNALHA DO DRAGÃO (24/11/2026) ----------------
+/**
+ * A FORNALHA DO DRAGÃO: o fogo fecha o caminho, e o item é o REGADOR. O salão das chamas tem o norte atrás de uma faixa de fogo;
+ * a oeste, a sala do baú com o regador (aparece com a sala limpa). Com ele, o jato apaga o fogo do chão (para sempre) e os
+ * BRASEIROS da sala de cima: os três apagados AO MESMO TEMPO abrem o norte (cada um volta a acender em BRASEIRO.volta ms; com a
+ * turma, cada um rega o seu; sozinho, é correr). Depois, a chave atrás da parede de fogo e o DRAGÃO, cujo fogo em volta só o
+ * regador apaga (molhado, ele apanha). A parede rachada da entrada dá na sala secreta, com o coração grande.
+ */
+SALAS.push(
+  {
+    // a entrada da fornalha
+    id: 14,
+    mapa: [2, 6],
+    grade: [
+      '#################',
+      '#T.............T#',
+      '#.M...........M.#',
+      '#...............#',
+      '#...##.....##...#',
+      '#...............#',
+      '#...............#',
+      '#.V...........V.#',
+      '#...............#',
+      '#T.............T#',
+      '#################',
+    ],
+    portas: { n: { para: 15 }, o: { para: 20, trava: 'rachada' } },
+    bichos: [],
+  },
+  {
+    // o salão das chamas: o norte atrás da faixa de fogo (o regador está a oeste)
+    id: 15,
+    mapa: [2, 5],
+    grade: [
+      '#################',
+      '#######...#######',
+      '#######FFF#######',
+      '#M.............M#',
+      '#...##.....##...#',
+      '#...............#',
+      '#...............#',
+      '#...##.....##...#',
+      '#...............#',
+      '#T.............T#',
+      '#################',
+    ],
+    portas: { s: { para: 14 }, o: { para: 16 }, n: { para: 17 } },
+    bichos: [
+      { tipo: 'diabinho', c: 4, l: 3 },
+      { tipo: 'diabinho', c: 12, l: 3 },
+      { tipo: 'cogumelo', c: 8, l: 5 },
+      { tipo: 'sapo', c: 8, l: 8 },
+    ],
+  },
+  {
+    // a oeste: limpa a sala, e o baú traz o regador
+    id: 16,
+    mapa: [1, 5],
+    grade: [
+      '#################',
+      '#...............#',
+      '#...............#',
+      '#.....#...#.....#',
+      '#...............#',
+      '#..C............#',
+      '#...............#',
+      '#.....#...#.....#',
+      '#...............#',
+      '#...............#',
+      '#################',
+    ],
+    portas: { l: { para: 15 } },
+    bichos: [
+      { tipo: 'cacto', c: 3, l: 2 },
+      { tipo: 'diabinho', c: 12, l: 3 },
+      { tipo: 'diabinho', c: 12, l: 7 },
+      { tipo: 'fantasma', c: 8, l: 5 },
+    ],
+    bau: { guarda: 'regador', aparece: 'limpa' },
+  },
+  {
+    // os braseiros: os três apagados ao mesmo tempo abrem o norte
+    id: 17,
+    mapa: [2, 4],
+    grade: [
+      '#################',
+      '#T.............T#',
+      '#...A.......A...#',
+      '#...............#',
+      '#......#.#......#',
+      '#...............#',
+      '#...............#',
+      '#.......A.......#',
+      '#...............#',
+      '#T.............T#',
+      '#################',
+    ],
+    portas: { s: { para: 15 }, n: { para: 18, trava: 'braseiros' } },
+    bichos: [
+      { tipo: 'cogumelo', c: 3, l: 5 },
+      { tipo: 'cogumelo', c: 13, l: 5 },
+    ],
+  },
+  {
+    // a chave atrás da parede de fogo
+    id: 18,
+    mapa: [2, 3],
+    grade: [
+      '#################',
+      '#..........F....#',
+      '#..........F....#',
+      '#..##......F....#',
+      '#..........F..C.#',
+      '#..........F....#',
+      '#..........F....#',
+      '#..##......F....#',
+      '#..........F....#',
+      '#..........F....#',
+      '#################',
+    ],
+    portas: { s: { para: 17 }, n: { para: 19, trava: 'chave' } },
+    bichos: [
+      { tipo: 'diabinho', c: 2, l: 5 },
+      { tipo: 'sapo', c: 8, l: 3 },
+      { tipo: 'cogumelo', c: 6, l: 7 },
+      { tipo: 'abelha', c: 8, l: 6 },
+    ],
+    bau: { guarda: 'chave' },
+  },
+  {
+    // o DRAGÃO: o fogo em volta dele só o regador apaga
+    id: 19,
+    mapa: [2, 2],
+    grade: [
+      '#################',
+      '#...............#',
+      '#.##.........##.#',
+      '#.##.........##.#',
+      '#...............#',
+      '#...............#',
+      '#...............#',
+      '#.##.........##.#',
+      '#.##.........##.#',
+      '#...............#',
+      '#################',
+    ],
+    portas: { s: { para: 18 } },
+    bichos: [{ tipo: 'dragao', c: 8, l: 4 }],
+    chefe: true,
+  },
+  {
+    // a sala secreta da fornalha: atrás da parede rachada da entrada, o coração grande
+    id: 20,
+    mapa: [1, 6],
+    grade: [
+      '#################',
+      '#M.............M#',
+      '#...............#',
+      '#..V.........V..#',
+      '#...............#',
+      '#.......H.......#',
+      '#...............#',
+      '#..V.........V..#',
+      '#...............#',
+      '#M.............M#',
+      '#################',
+    ],
+    portas: { l: { para: 14 } },
+    bichos: [],
+  },
+);
+
 /** As salas de cada masmorra: as que se alcançam da entrada pelas portas. */
 export function salasDa(qual: Masmorra): number[] {
   const vistas = new Set<number>([MASMORRAS[qual].inicio]);
@@ -561,6 +748,62 @@ export function alvoDoGancho(s: Sala, m: Mundo, x: number, y: number, dir: numbe
   return null;
 }
 
+// ---------------- O REGADOR (a fornalha, 24/11/2026) ----------------
+/** O regador: até quantas casas o jato vai, e a recarga entre um jato e outro. */
+export const REGADOR = { alcance: 5, recarga: 450 };
+/** Os braseiros: quanto tempo um braseiro apagado fica apagado antes de acender de novo. */
+export const BRASEIRO = { volta: 7000 };
+
+/** O fogo aceso numa casa: o fogo do chão ('F') ou o braseiro ('A'), se não está na lista dos apagados. */
+export function fogoAceso(s: Sala, m: Mundo, c: number, l: number): boolean {
+  const ch = s.grade[l]?.[c];
+  if (ch !== 'F' && ch !== 'A') return false;
+  return !(m.apagados ?? []).some(([fc, fl]) => fc === c && fl === l);
+}
+
+/**
+ * O fogo que o jato do regador apaga, de quem olha para `dir` de (x, y): a primeira casa com fogo aceso na linha, até
+ * REGADOR.alcance casas (o jato passa por cima da água, como o tiro, e para na parede). Null se não há fogo na linha.
+ */
+export function alvoDoRegador(s: Sala, m: Mundo, x: number, y: number, dir: number): [number, number] | null {
+  const [dx, dy] = DIRS[dir];
+  let c = Math.floor(x / TILE);
+  let l = Math.floor(y / TILE);
+  for (let k = 1; k <= REGADOR.alcance; k++) {
+    c += dx;
+    l += dy;
+    if (fogoAceso(s, m, c, l)) return [c, l];
+    if (solida(s, m, c, l, 'tiro')) return null;
+  }
+  return null;
+}
+
+/** Até onde o jato do regador vai (o ponto da borda da casa que o para: o fogo, a parede, ou o fim do alcance). */
+export function fimDoJato(s: Sala, m: Mundo, x: number, y: number, dir: number): [number, number] {
+  const [dx, dy] = DIRS[dir];
+  let c = Math.floor(x / TILE);
+  let l = Math.floor(y / TILE);
+  for (let k = 1; k <= REGADOR.alcance; k++) {
+    const nc = c + dx;
+    const nl = l + dy;
+    if (fogoAceso(s, m, nc, nl) || solida(s, m, nc, nl, 'tiro')) break;
+    c = nc;
+    l = nl;
+  }
+  const [cx, cy] = centro(c, l);
+  return [cx + (dx * TILE) / 2, cy + (dy * TILE) / 2];
+}
+
+/** O jato lançado de (x, y) para `dir` pega um bicho em (bx, by) de raio `r`? Ele está na frente, perto da linha do jato. */
+export function jatoPega(s: Sala, m: Mundo, x: number, y: number, dir: number, bx: number, by: number, r: number, folga: number): boolean {
+  const [dx, dy] = DIRS[dir];
+  const [fx, fy] = fimDoJato(s, m, x, y, dir);
+  const ao = (bx - x) * dx + (by - y) * dy;
+  const ate = (fx - x) * dx + (fy - y) * dy;
+  const lado = Math.abs((bx - x) * dy - (by - y) * dx);
+  return ao > 0 && ao <= ate + r + folga && lado <= r + folga;
+}
+
 // ---------------- OS VASOS, AS MOITAS E A BOMBA DE SEMENTE (19/11/2026) ----------------
 /** O vaso jogado: a velocidade, até onde vai, o raio e o dano no bicho. */
 export const ARREMESSO = { vel: 300, alcance: 180, raio: 14, dano: 2 };
@@ -610,6 +853,8 @@ export interface Mundo {
   abertas: Lado[];
   /** Os vasos e as moitas que já saíram desta sala (levantados, cortados, quebrados). */
   fora?: [number, number][];
+  /** O fogo apagado pelo regador nesta sala (24/11/2026): o do chão, para sempre; o dos braseiros, até acender de novo. */
+  apagados?: [number, number][];
 }
 export type Quem = 'coelho' | 'bicho' | 'tiro';
 
@@ -626,6 +871,9 @@ export function solida(s: Sala, m: Mundo, c: number, l: number, quem: Quem): boo
   if (ch === '=') return !m.ponte && quem !== 'tiro';
   if (ch === 'C' && m.bau) return true;
   if (ch === 'V' || ch === 'M') return !(m.fora ?? []).some(([fc, fl]) => fc === c && fl === l);
+  // o braseiro é sempre sólido; o fogo do chão, até o regador o apagar (o tiro passa por cima)
+  if (ch === 'A') return true;
+  if (ch === 'F') return quem !== 'tiro' && fogoAceso(s, m, c, l);
   return m.blocos.some(([bc, bl]) => bc === c && bl === l);
 }
 
@@ -926,8 +1174,10 @@ export interface Quadro {
   /** Os botões do chão (1 apertado), na ordem da grade, e se o enigma já foi resolvido. */
   pl: number[];
   pr: number;
-  /** [tem a cenoura, chaves, sementes, tem o gancho]. */
+  /** [tem a cenoura, chaves, sementes, tem o gancho, tem o regador]. */
   it: number[];
+  /** O fogo apagado nesta sala (a fornalha): [c, l, ms até acender de novo (0: para sempre)]. */
+  ap?: number[][];
   /** Os vasos e as moitas que saíram desta sala: [c, l]. */
   o?: number[][];
   /** Os vasos voando: [id, x, y]. As bombas no chão: [id, x, y, ms até estourar]. As sementes no chão: [id, x, y]. */
@@ -965,6 +1215,7 @@ export function mundoDoQuadro(q: Quadro): Mundo {
     ponte: q.ponte === 1,
     abertas: LADOS.filter((_, k) => q.p[k] === 1),
     fora: (q.o ?? []).map((o) => [o[0], o[1]] as [number, number]),
+    apagados: (q.ap ?? []).map((a) => [a[0], a[1]] as [number, number]),
   };
 }
 
@@ -1000,6 +1251,8 @@ export interface VistaDoPiloto {
   temCenoura: boolean;
   /** A turma tem o gancho (a mina): o piloto o usa no golem-rei. */
   temGancho?: boolean;
+  /** A turma tem o regador (a fornalha): o piloto apaga o fogo, os braseiros e o dragão. */
+  temRegador?: boolean;
   chaves: number;
   /** O enigma dos botões resolvido; os botões apertados agora (ordem da grade). */
   placasResolvidas: boolean;
@@ -1042,6 +1295,41 @@ function olharEBater(cmd: Comandos, dir: number) {
 }
 
 /**
+ * Rega o primeiro fogo da lista que dá para alinhar: vai à casa livre e alcançável mais perto de onde o jato (a 1 a
+ * REGADOR.alcance casas) pega nele, olha para ele e rega. Devolve false se nenhum dá.
+ */
+function regarUm(v: VistaDoPiloto, cmd: Comandos, fogos: [number, number][], alcancavel: (c: [number, number]) => boolean): boolean {
+  const { eu, sala, m } = v;
+  for (const [fc, fl] of fogos) {
+    // já na linha dele, de onde estou: olhar para ele e regar (andar um pouco para ele não estraga: o fogo é parede)
+    for (let dir = 0; dir < 4; dir++) {
+      const alvo = alvoDoRegador(sala, m, eu.x, eu.y, dir);
+      if (!alvo || alvo[0] !== fc || alvo[1] !== fl) continue;
+      olharEBater(cmd, dir);
+      cmd.item = eu.dir === dir;
+      return true;
+    }
+    let melhor: [number, number, number] | null = null;
+    for (let dir = 0; dir < 4; dir++) {
+      const [dx, dy] = DIRS[dir];
+      for (let k = 1; k <= REGADOR.alcance; k++) {
+        const c = fc - dx * k;
+        const l = fl - dy * k;
+        if (!alcancavel([c, l])) continue;
+        const [x, y] = centro(c, l);
+        const alvo = alvoDoRegador(sala, m, x, y, dir);
+        if (!alvo || alvo[0] !== fc || alvo[1] !== fl) continue;
+        if (!melhor || Math.hypot(x - eu.x, y - eu.y) < Math.hypot(melhor[0] - eu.x, melhor[1] - eu.y)) melhor = [x, y, dir];
+      }
+    }
+    if (!melhor) continue;
+    irPara(v, cmd, melhor[0], melhor[1]);
+    return true;
+  }
+  return false;
+}
+
+/**
  * O PILOTO AUTOMÁTICO: luta com o bicho mais perto, abre o baú, acerta o cristal com a cenoura, empurra o bloco até um botão
  * e pisa no outro, e vai para a próxima porta. Só para o teste do servidor e o e2e (window.masmorraPilotoAutomatico).
  */
@@ -1055,8 +1343,10 @@ export function piloto(v: VistaDoPiloto, cmd: Comandos) {
     // o fantasma sumido não se acerta: os outros primeiro
     const visiveis = vivos.filter((b) => b.estado !== 'sumido');
     const alvo = (visiveis.length ? visiveis : vivos).sort((a, b) => Math.hypot(a.x - eu.x, a.y - eu.y) - Math.hypot(b.x - eu.x, b.y - eu.y))[0];
-    // o golem-rei de couraça: alinhar com ele (a linha livre, a 2 a 4 casas) e lançar o gancho; atordoado, a pá
-    if (alvo.tipo === 'golem-rei' && v.temGancho && alvo.estado !== 'atordoado') {
+    // o golem-rei de couraça (e o dragão de fogo): alinhar com ele (a linha livre, a 2 a 4 casas) e lançar o gancho (o
+    // regador); atordoado, a pá
+    const linhaPega = alvo.tipo === 'golem-rei' && v.temGancho ? ganchoPega : alvo.tipo === 'dragao' && v.temRegador ? jatoPega : null;
+    if (linhaPega && alvo.estado !== 'atordoado') {
       let melhor: [number, number, number] | null = null;
       for (const k of [3, 2, 4]) {
         for (let dir = 0; dir < 4; dir++) {
@@ -1064,7 +1354,7 @@ export function piloto(v: VistaDoPiloto, cmd: Comandos) {
           const x = alvo.x - ddx * k * TILE;
           const y = alvo.y - ddy * k * TILE;
           if (!livre(sala, m, x, y, RAIO, 'coelho')) continue;
-          if (!ganchoPega(sala, m, x, y, dir, alvo.x, alvo.y, BICHOS[alvo.tipo].raio, 0)) continue;
+          if (!linhaPega(sala, m, x, y, dir, alvo.x, alvo.y, BICHOS[alvo.tipo].raio, 0)) continue;
           const d = Math.hypot(x - eu.x, y - eu.y);
           if (!melhor || d < Math.hypot(melhor[0] - eu.x, melhor[1] - eu.y)) melhor = [x, y, dir];
         }
@@ -1073,7 +1363,7 @@ export function piloto(v: VistaDoPiloto, cmd: Comandos) {
       if (melhor) {
         const [lx, ly, dir] = melhor;
         // já alinhado de onde estou: lança daqui
-        if (ganchoPega(sala, m, eu.x, eu.y, dir, alvo.x, alvo.y, BICHOS[alvo.tipo].raio, -4) || Math.hypot(lx - eu.x, ly - eu.y) < 9) {
+        if (linhaPega(sala, m, eu.x, eu.y, dir, alvo.x, alvo.y, BICHOS[alvo.tipo].raio, -4) || Math.hypot(lx - eu.x, ly - eu.y) < 9) {
           olharEBater(cmd, dir);
           cmd.item = eu.dir === dir;
           return;
@@ -1104,9 +1394,37 @@ export function piloto(v: VistaDoPiloto, cmd: Comandos) {
     irPara(v, cmd, lx, ly);
     return;
   }
+  // a porta que o piloto quer (na toca, o oeste até ter a cenoura; na fornalha, até ter o regador)
+  const lado: Lado | undefined =
+    sala.id === 2 ? (v.temCenoura ? 'n' : 'o') : sala.id === 15 ? (v.temRegador ? 'n' : 'o') : sala.id === 3 || sala.id === 16 ? 'l' : sala.portas.n ? 'n' : undefined;
   // 2. o baú fechado
   const bau = casasDe(sala, 'C')[0];
   const minha: [number, number] = [Math.floor(eu.x / TILE), Math.floor(eu.y / TILE)];
+  const alcancavel = (c: [number, number]) => !solida(sala, m, c[0], c[1], 'coelho') && ((c[0] === minha[0] && c[1] === minha[1]) || !!proximaCasa(sala, m, minha, c));
+  // 2a. o fogo no caminho (a fornalha): o baú ou a porta não se alcança, e há fogo do chão aceso: apagar o mais perto da meta
+  if (v.temRegador) {
+    let meta: [number, number] | null = null;
+    if (bau && m.bau && !v.bauAberto) meta = [bau[0], bau[1] + 1];
+    else if (lado) {
+      const [ddx, ddy] = DIRS[LADO_DA_DIR.indexOf(lado)];
+      meta = [PORTA[lado][0] - ddx, PORTA[lado][1] - ddy];
+    }
+    if (meta && !alcancavel(meta)) {
+      const [mc, ml] = meta;
+      const fogos = casasDe(sala, 'F')
+        .filter(([c, l]) => fogoAceso(sala, m, c, l))
+        .sort((a, b) => Math.hypot(a[0] - mc, a[1] - ml) - Math.hypot(b[0] - mc, b[1] - ml));
+      if (regarUm(v, cmd, fogos, alcancavel)) return;
+    }
+  }
+  // 2b. os braseiros (a fornalha): todos apagados ao mesmo tempo; o aceso mais perto primeiro
+  if (v.temRegador && !v.placasResolvidas && sala.portas.n?.trava === 'braseiros') {
+    const perto = (c: number, l: number) => Math.hypot(centro(c, l)[0] - eu.x, centro(c, l)[1] - eu.y);
+    const acesos = casasDe(sala, 'A')
+      .filter(([c, l]) => fogoAceso(sala, m, c, l))
+      .sort((a, b) => perto(a[0], a[1]) - perto(b[0], b[1]));
+    if (acesos.length && regarUm(v, cmd, acesos, alcancavel)) return;
+  }
   if (bau && m.bau && !v.bauAberto && proximaCasa(sala, m, minha, [bau[0], bau[1] + 1])) {
     const [bx, by] = centro(bau[0], bau[1]);
     irPara(v, cmd, bx, by + TILE);
@@ -1160,7 +1478,6 @@ export function piloto(v: VistaDoPiloto, cmd: Comandos) {
     return;
   }
   // 5. a próxima porta
-  const lado: Lado | undefined = sala.id === 2 ? (v.temCenoura ? 'n' : 'o') : sala.id === 3 ? 'l' : sala.portas.n ? 'n' : undefined;
   if (!lado) return;
   const [pc, pl] = PORTA[lado];
   if (m.abertas.includes(lado)) {

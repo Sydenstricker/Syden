@@ -110,6 +110,7 @@ function site(m: ReturnType<typeof comecar>, eu: number) {
   let cenoura: import('../src/masmorra-regras.js').Cenoura | null = null;
   const vistos = new Set<number>();
   let portaEm = -1e9;
+  let ultimoJato = -1e9;
   return {
     c,
     passo() {
@@ -146,6 +147,7 @@ function site(m: ReturnType<typeof comecar>, eu: number) {
           eu: c,
           temCenoura: q.it[0] === 1,
           temGancho: q.it[3] === 1,
+          temRegador: q.it[4] === 1,
           chaves: q.it[1],
           placasResolvidas: q.pr === 1,
           bauAberto: q.bau === 2,
@@ -157,6 +159,14 @@ function site(m: ReturnType<typeof comecar>, eu: number) {
       if (cmd.item && q.it[3] === 1) {
         cmd.item = false;
         m.mandar(eu, { tipo: 'gancho', dir: c.dir });
+      }
+      // o regador (a fornalha): o item manda a direção, e o servidor acha o fogo (ou o dragão)
+      if (cmd.item && q.it[4] === 1) {
+        cmd.item = false;
+        if (agora - ultimoJato >= R.REGADOR.recarga) {
+          ultimoJato = agora;
+          m.mandar(eu, { tipo: 'regar', dir: c.dir });
+        }
       }
       for (let k = 0; k < 3; k++) {
         const nov = R.passoDoCoelho(sala, mundo, c, cmd, 1 / 60, q.it[0] === 1);
@@ -888,4 +898,159 @@ test('o heroico: menos corações, bichos com mais vida e mais dano; o recorde d
     m2.passo();
   }
   assert.equal(j2.hp, R.HEROICO.coracoes - 2, 'a mordida tirou 1 + 1');
+});
+
+// ---------------- A terceira masmorra: a fornalha do dragão (24/11/2026) ----------------
+type ComRegador = ComEntrar & { _darRegador: () => void };
+
+test('a fornalha: as salas dela, os achados, e o fogo e os braseiros nas duas cópias da conta', () => {
+  assert.deepEqual(R.salasDa('fornalha'), [14, 15, 16, 17, 18, 19, 20]);
+  assert.deepEqual(R.achadosDa('fornalha'), { baus: 2, segredos: 2 });
+  // as outras duas não mudaram
+  assert.deepEqual(R.salasDa('toca'), [0, 1, 2, 3, 4, 5, 6, 7]);
+  assert.deepEqual(R.salasDa('mina'), [8, 9, 10, 11, 12, 13]);
+  const s = R.SALAS[15];
+  const m: import('../src/masmorra-regras.js').Mundo = { blocos: [], bau: false, ponte: false, abertas: [] };
+  // o fogo do chão é parede para o coelho e o bicho; o tiro passa por cima
+  assert.equal(R.solida(s, m, 8, 2, 'coelho'), true);
+  assert.equal(R.solida(s, m, 8, 2, 'bicho'), true);
+  assert.equal(R.solida(s, m, 8, 2, 'tiro'), false);
+  // o jato de baixo, a até 5 casas, acha o fogo; de 6, não
+  assert.deepEqual(R.alvoDoRegador(s, m, ...R.centro(8, 3), 1), [8, 2]);
+  assert.deepEqual(R.alvoDoRegador(s, m, ...R.centro(8, 7), 1), [8, 2]);
+  assert.equal(R.alvoDoRegador(s, m, ...R.centro(8, 8), 1), null);
+  // apagado, ele deixa passar, e o jato segue até a parede
+  const m2 = { ...m, apagados: [[8, 2]] as [number, number][] };
+  assert.equal(R.solida(s, m2, 8, 2, 'coelho'), false);
+  assert.equal(R.alvoDoRegador(s, m2, ...R.centro(8, 3), 1), null);
+  // o braseiro é sempre parede, aceso ou apagado
+  const b = R.SALAS[17];
+  assert.equal(R.solida(b, { ...m, apagados: [[4, 2]] }, 4, 2, 'coelho'), true);
+  assert.deepEqual(R.alvoDoRegador(b, m, ...R.centro(4, 5), 1), [4, 2]);
+});
+
+test('o regador: só com ele; o fogo do chão apaga para sempre; os braseiros todos juntos abrem a porta, e sozinhos acendem de novo', () => {
+  const m = comecar([anaId, biaId], comunidade.id, () => 0.5, { masmorra: 'fornalha' });
+  const i = m.interno as unknown as ComRegador;
+  assert.equal(i._sala(), R.MASMORRAS.fornalha.inicio);
+  assert.equal((m.jogo.publico(anaId) as { masmorra: string }).masmorra, 'fornalha');
+  i._entrar(15, 's');
+  i._bichos.clear();
+  m.passo();
+  const ja = i._jogadores.get(anaId)! as unknown as JogadorDoTeste;
+  const jb = i._jogadores.get(biaId)! as unknown as JogadorDoTeste;
+  const por = (j: JogadorDoTeste, id: number, c: number, l: number, dir: number) => {
+    j.livreAte = agora + 1000;
+    const [x, y] = R.centro(c, l);
+    m.mandar(id, { tipo: 'pos', x, y, dir, acao: 0, ta: 0, tp: j.tp });
+  };
+  por(ja, anaId, 8, 4, 1);
+  assert.equal(m.mandar(anaId, { tipo: 'regar', dir: 1 }), 'sem regador');
+  i._darRegador();
+  assert.equal(m.mandar(anaId, { tipo: 'regar', dir: 1 }), null);
+  m.passo();
+  assert.ok(m.quadros.at(-1)!.ap!.some((a) => a[0] === 8 && a[1] === 2 && a[2] === 0), 'o fogo do meio apagou, para sempre');
+  assert.equal(m.quadros.at(-1)!.it[4], 1);
+  // de novo, logo em seguida: cedo demais
+  assert.equal(m.mandar(anaId, { tipo: 'regar', dir: 1 }), 'cedo');
+  // a porta do norte está aberta (a sala limpa)
+  assert.equal(m.quadros.at(-1)!.p[0], 1);
+  // os braseiros: dois apagados não bastam, e acendem de novo
+  i._entrar(17, 's');
+  i._bichos.clear();
+  m.passo();
+  por(ja, anaId, 4, 4, 1);
+  por(jb, biaId, 12, 4, 1);
+  agora += 500;
+  assert.equal(m.mandar(anaId, { tipo: 'regar', dir: 1 }), null);
+  assert.equal(m.mandar(biaId, { tipo: 'regar', dir: 1 }), null);
+  m.passo();
+  assert.equal(m.quadros.at(-1)!.pr, 0);
+  assert.equal(m.quadros.at(-1)!.ap!.length, 2);
+  assert.equal(m.quadros.at(-1)!.p[0], 2, 'a porta continua fechada');
+  agora += R.BRASEIRO.volta + 10;
+  m.passo();
+  assert.equal(m.quadros.at(-1)!.ap!.length, 0, 'acenderam de novo');
+  // os três juntos: a turma rega cada um o seu
+  assert.equal(m.mandar(anaId, { tipo: 'regar', dir: 1 }), null);
+  assert.equal(m.mandar(biaId, { tipo: 'regar', dir: 1 }), null);
+  agora += 500;
+  por(ja, anaId, 8, 9, 1);
+  assert.equal(m.mandar(anaId, { tipo: 'regar', dir: 1 }), null);
+  m.passo();
+  assert.equal(m.quadros.at(-1)!.pr, 1, 'o enigma dos braseiros resolvido');
+  assert.equal(m.quadros.at(-1)!.p[0], 1, 'a porta do norte abriu');
+  agora += R.BRASEIRO.volta + 10;
+  m.passo();
+  assert.equal(m.quadros.at(-1)!.ap!.length, 3, 'resolvido, ficam apagados');
+});
+
+test('o dragão: o fogo em volta dele só o regador apaga; molhado, ele apanha', () => {
+  const m = comecar([anaId, biaId], comunidade.id, () => 0.5, { masmorra: 'fornalha' });
+  const i = m.interno as unknown as ComRegador;
+  i._darRegador();
+  i._entrar(R.MASMORRAS.fornalha.chefe, 's');
+  const d = [...i._bichos.values()].find((b) => b.tipo === 'dragao')! as unknown as BichoDoTeste;
+  assert.ok(d, 'o dragão está na sala');
+  for (let k = 0; k < 30; k++) m.passo();
+  const j = i._jogadores.get(anaId)! as unknown as JogadorDoTeste;
+  // a pá no fogo: só tine
+  j.livreAte = agora + 1000;
+  m.mandar(anaId, { tipo: 'pos', x: d.x - 40, y: d.y, dir: 3, acao: 0, ta: 0, tp: j.tp, ataque: { id: 1, g: 'pa' } });
+  assert.equal(m.mandar(anaId, { tipo: 'golpe', a: 1, inimigo: d.id, x: d.x - 40, y: d.y }), 'couraça');
+  // o regador de frente para ele: molhado
+  agora += 200;
+  j.livreAte = agora + 1000;
+  m.mandar(anaId, { tipo: 'pos', x: d.x - 100, y: d.y, dir: 3, acao: 0, ta: 0, tp: j.tp });
+  m.passo();
+  assert.equal(m.mandar(anaId, { tipo: 'regar', dir: 3 }), null);
+  assert.equal(d.estado, 'atordoado');
+  const hp = d.hp;
+  j.livreAte = agora + 1000;
+  m.mandar(anaId, { tipo: 'pos', x: d.x - 40, y: d.y, dir: 3, acao: 0, ta: 0, tp: j.tp, ataque: { id: 2, g: 'pa' } });
+  m.passo();
+  assert.equal(m.mandar(anaId, { tipo: 'golpe', a: 2, inimigo: d.id, x: d.x - 40, y: d.y }), null);
+  assert.equal(d.hp, hp - 2, 'molhado, a pá tira 2');
+  // logo depois, o regador não o molha de novo (ninguém o prende para sempre)
+  agora += R.DRAGAO.molhado + 100;
+  m.passo();
+  agora += 500;
+  j.livreAte = agora + 1000;
+  m.mandar(anaId, { tipo: 'pos', x: d.x - 100, y: d.y, dir: 3, acao: 0, ta: 0, tp: j.tp });
+  m.passo();
+  m.mandar(anaId, { tipo: 'regar', dir: 3 });
+  assert.notEqual(d.estado, 'atordoado');
+});
+
+test('SOZINHO, o piloto atravessa a fornalha inteira contra o servidor de verdade: o regador, o fogo, os braseiros, a chave e o dragão', async () => {
+  const db = await import('../src/db.js');
+  const m = comecar([anaId], 0, () => 0.5, { masmorra: 'fornalha' });
+  const ana_ = site(m, anaId);
+  const salas = new Set<number>();
+  for (let k = 0; k < 20 * 60 * 20 && m.quadros.at(-1)?.f !== 'vitoria'; k++) {
+    ana_.passo();
+    m.passo();
+    salas.add(m.interno._sala());
+  }
+  const q = m.quadros.at(-1)!;
+  assert.equal(q.f, 'vitoria', `parou na sala ${q.s} (visitou ${[...salas].join(',')}); itens ${q.it}; bichos ${q.i.length}; ap ${JSON.stringify(q.ap)}; eu ${Math.round(ana_.c.x)},${Math.round(ana_.c.y)} dir ${ana_.c.dir} acao ${ana_.c.acao}; motivo ${m.interno._motivo()}`);
+  assert.deepEqual([...salas].sort((a, b) => a - b), [14, 15, 16, 17, 18, 19]);
+  agora += FIM_MS;
+  m.relogio[0].depois();
+  const r = db.recordeDoSolo(anaId, 'masmorra', 'fornalha');
+  assert.ok(r && r.valor > 0, 'o recorde vai à variante da fornalha');
+  assert.equal((m.jogo.publico(anaId) as { categoria: string }).categoria, 'fornalha');
+});
+
+test('COM A TURMA, os dois pilotos atravessam a fornalha juntos', () => {
+  const m = comecar([anaId, biaId], comunidade.id, () => 0.5, { masmorra: 'fornalha' });
+  const a = site(m, anaId);
+  const b = site(m, biaId);
+  for (let k = 0; k < 20 * 60 * 20 && m.quadros.at(-1)?.f !== 'vitoria'; k++) {
+    a.passo();
+    b.passo();
+    m.passo();
+  }
+  const q = m.quadros.at(-1)!;
+  assert.equal(q.f, 'vitoria', `parou na sala ${q.s}; itens ${q.it}`);
 });
