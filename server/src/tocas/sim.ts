@@ -20,8 +20,16 @@
 export const PASSOS_POR_SEGUNDO = 10;
 export const PASSO = 1 / PASSOS_POR_SEGUNDO;
 export const TAMANHO = 44;
-/** A partida tem um teto: 20 minutos. Chegando nele, ganha quem tem mais (pontos), para ninguém ficar preso. */
-export const PASSOS_MAX = 20 * 60 * PASSOS_POR_SEGUNDO;
+/**
+ * OS 20 MINUTOS SÃO UMA SUGESTÃO, NÃO UM LIMITE (24/11/2026, decisão dele). Chegando neles, a partida NÃO acaba sozinha: aparece a
+ * opção "Terminar pelos pontos" (ganha quem tem mais, `pontos`). Ela acaba assim quando TODAS as pessoas que ainda jogam aceitam
+ * (o comando 'pontos', pelo lockstep): no Solo, quem joga decide sozinha; na sala, qualquer uma propõe e a recusa de uma desfaz a
+ * proposta. Os robôs e quem largou não votam; SEM NINGUÉM QUE VOTE (o computador contra o computador), ela acaba aos 20 minutos,
+ * como sempre acabou, número por número.
+ */
+export const PASSOS_SUGERIDOS = 20 * 60 * PASSOS_POR_SEGUNDO;
+/** O TETO DE SEGURANÇA: 90 minutos de jogo, e a partida acaba pelos pontos de qualquer jeito (nenhuma sala fica presa para sempre). */
+export const PASSOS_MAX = 90 * 60 * PASSOS_POR_SEGUNDO;
 /** A Maravilha pronta e de pé por 2 minutos ganha a partida. */
 export const PASSOS_DA_MARAVILHA = 2 * 60 * PASSOS_POR_SEGUNDO;
 export const POP_MAX = 60;
@@ -334,9 +342,12 @@ export type Evento =
   | { t: 'sino'; dono: Dono; tocado: boolean }
   | { t: 'melhoria'; dono: Dono; m: Melhoria }
   | { t: 'troca'; dono: Dono; de: Recurso; para: Recurso; ganho: number }
+  /** Alguém aceitou (ou propôs) terminar pelos pontos, ou recusou (e a proposta se desfez). */
+  | { t: 'pontos'; dono: Dono; aceita: boolean }
   | { t: 'fim'; vencedor: Dono; motivo: Motivo };
 
-export type Motivo = 'centro' | 'maravilha' | 'tempo' | 'desafio';
+/** 'tempo': os 20 minutos sem ninguém que vote, ou o teto de segurança; 'pontos': todas as pessoas aceitaram terminar pelos pontos. */
+export type Motivo = 'centro' | 'maravilha' | 'tempo' | 'desafio' | 'pontos';
 
 /**
  * OS DESAFIOS DO SOLO (21/11/2026, a segunda auditoria, lote D): cenários curtos, cada um com um objetivo e um recorde próprio
@@ -375,7 +386,11 @@ export type Comando =
   | { t: 'melhorar'; predio: number; m: Melhoria }
   /** Trocar no mercado: um lote de `de` por `para`. */
   | { t: 'trocar'; predio: number; de: Recurso; para: Recurso }
-  | { t: 'parar'; ids: number[] };
+  | { t: 'parar'; ids: number[] }
+  /** Depois dos 20 minutos: aceitar (ou propor) terminar pelos pontos, ou recusar a proposta. */
+  | { t: 'pontos'; aceita: boolean }
+  /** Quem largou o 2×2 deixa de votar (o servidor põe este comando no turno, pela pessoa). */
+  | { t: 'largar' };
 
 /** Uma amostra do gráfico do fim: o passo, o que cada um já colheu e quantos soldados cada um tinha. */
 export interface Amostra {
@@ -420,6 +435,10 @@ export interface Sim {
   centros: { gx: number; gy: number }[];
   /** O desafio do Solo (null: a partida de sempre). */
   desafio: Desafio | null;
+  /** Quem vota para terminar pelos pontos (as pessoas que jogam; não os robôs, nem quem largou). */
+  votam: boolean[];
+  /** Quem já aceitou terminar pelos pontos (um bit por dono); a recusa zera. */
+  votos: number;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -461,7 +480,7 @@ export const CENTROS_DO_2X2: { gx: number; gy: number }[] = [
   { gx: TAMANHO - 6 - 3, gy: 34 },
 ];
 
-export function novaPartida(semente: number, opcoes: { mapa?: TipoDoMapa; quatro?: boolean; desafio?: Desafio | null } = {}): Sim {
+export function novaPartida(semente: number, opcoes: { mapa?: TipoDoMapa; quatro?: boolean; desafio?: Desafio | null; votam?: boolean[] } = {}): Sim {
   const vazio = () => new Uint8Array(TAMANHO * TAMANHO);
   const jog = (): Jogador => ({
     recursos: { comida: 200, madeira: 200, ouro: 100 },
@@ -501,6 +520,8 @@ export function novaPartida(semente: number, opcoes: { mapa?: TipoDoMapa; quatro
     quatro,
     centros: quatro ? CENTROS_DO_2X2 : CENTRO_DE,
     desafio: !quatro && ehDesafio(opcoes.desafio) ? opcoes.desafio : null,
+    votam: Array.from({ length: n }, (_, d) => opcoes.votam?.[d] === true),
+    votos: 0,
   };
   if (quatro) gerarMapaDe4(sim);
   else gerarMapa(sim);
@@ -1466,6 +1487,18 @@ function aplicar(sim: Sim, dono: Dono, c: Comando) {
       p.estudoPassos = 0;
       return;
     }
+    case 'pontos': {
+      // só depois dos 20 minutos, e só de quem vota
+      if (sim.passo + 1 < PASSOS_SUGERIDOS || !sim.votam[dono]) return;
+      if (c.aceita) sim.votos |= 1 << dono;
+      else sim.votos = 0;
+      sim.eventos.push({ t: 'pontos', dono, aceita: !!c.aceita });
+      return;
+    }
+    case 'largar':
+      sim.votam[dono] = false;
+      sim.votos &= ~(1 << dono);
+      return;
     case 'trocar': {
       const p = sim.porId.get(c.predio);
       if (!ePredio(p) || p.dono !== dono || p.tipo !== 'mercado' || !p.pronto || c.de === c.para) return;
@@ -1541,6 +1574,10 @@ export function limparComando(c: unknown): Comando | null {
       const l = ids(o.ids);
       return l ? { t: 'parar', ids: l } : null;
     }
+    case 'pontos':
+      return { t: 'pontos', aceita: o.aceita === true };
+    case 'largar':
+      return { t: 'largar' };
     case 'construir': {
       const l = ids(o.ids);
       const tipo = de(o.tipo, PREDIOS);
@@ -2299,11 +2336,23 @@ function conferirFim(sim: Sim) {
     // (a Maravilha vence pelo contador dela, logo acima)
     if (des !== 'maravilha' && sim.passo + 1 >= DESAFIOS[des].limite) return terminar(des === 'cerco' ? 0 : 1, 'desafio');
   }
-  if (sim.passo + 1 >= PASSOS_MAX) {
+  // os 20 minutos: sem ninguém que vote, acaba como sempre; com gente, só com todas aceitando. E o teto de segurança, sempre.
+  const votantes = sim.votam.some((v) => v);
+  if ((sim.passo + 1 >= PASSOS_SUGERIDOS && todosAceitaram(sim)) || sim.passo + 1 >= PASSOS_MAX) {
     const a = pontosDaEquipe(sim, 0);
     const b = pontosDaEquipe(sim, 1);
-    return terminar(a >= b ? 0 : 1, 'tempo');
+    return terminar(a >= b ? 0 : 1, votantes && sim.passo + 1 < PASSOS_MAX ? 'pontos' : 'tempo');
   }
+}
+
+/** Todas as pessoas que votam aceitaram terminar pelos pontos (sem ninguém que vote: sim). */
+export function todosAceitaram(sim: Sim): boolean {
+  return sim.votam.every((v, d) => !v || (sim.votos & (1 << d)) !== 0);
+}
+
+/** Já passou dos 20 minutos, e a partida pode terminar pelos pontos (a tela mostra a opção). */
+export function podeTerminarPelosPontos(sim: Sim): boolean {
+  return sim.vencedor === null && sim.passo >= PASSOS_SUGERIDOS;
 }
 
 /** Um resumo que muda com qualquer diferença na partida (o teste de determinismo compara dois). */
@@ -2334,6 +2383,8 @@ export function assinatura(sim: Sim): string {
     mais(j.melhorias);
     mais(j.era);
   }
+  // a votação (só depois dos 20 minutos: antes ela é sempre zero, e a assinatura de antes não muda)
+  if (sim.votos) mais(sim.votos);
   return (h >>> 0).toString(16);
 }
 

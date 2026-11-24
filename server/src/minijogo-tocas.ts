@@ -34,19 +34,29 @@ import * as db from './db.js';
 import type { Contexto, Definicao } from './minijogo-motor.js';
 import { criarIA, NIVEIS, PERFIL_DO_DESAFIO, PERFIS, type IA, type Nivel } from './tocas/ia.js';
 import { ehRobo, idsDosRobos, nomeDoRobo } from './minijogo-robos.js';
-import { aliados, assinatura, comandar, DESAFIOS, ehDesafio, equipeDe, limparComando, MAPAS, novaPartida, passo, pontos, valorDoDesafio, type Amostra, type Comando, type Desafio, type Dono, type Motivo, type Sim, type TipoDoMapa } from './tocas/sim.js';
+import { aliados, assinatura, comandar, DESAFIOS, ehDesafio, equipeDe, limparComando, MAPAS, novaPartida, passo, pontos, valorDoDesafio, PASSOS_MAX as TETO_DA_PARTIDA, PASSOS_SUGERIDOS as SUGERIDOS, type Amostra, type Comando, type Desafio, type Dono, type Motivo, type Sim, type TipoDoMapa } from './tocas/sim.js';
 
 /** Os números da simulação (tocas/sim.ts). */
 export const PASSOS_POR_SEGUNDO = 10;
-export const PASSOS_MAX = 20 * 60 * PASSOS_POR_SEGUNDO;
+/**
+ * Os 20 minutos são uma SUGESTÃO (24/11/2026): passando deles, a partida segue até todas as pessoas aceitarem terminar pelos
+ * pontos (tocas/sim.ts). O teto de SEGURANÇA é de 90 minutos de jogo: aí ela acaba pelos pontos de qualquer jeito.
+ */
+export const PASSOS_SUGERIDOS = SUGERIDOS;
+export const PASSOS_MAX = TETO_DA_PARTIDA;
 /** Menos que isto (4 minutos) não dá para derrubar o centro de ninguém (o fim declarado pela tela, quando não bate com o servidor). */
+/** Quem vota no Solo: a pessoa (dono 0), e não o computador. A tela cria a partida com o mesmo. */
+export const VOTAM_NO_SOLO = [true, false];
 export const VITORIA_MIN_PASSOS = 4 * 60 * PASSOS_POR_SEGUNDO;
 /** A rede e a largada: os passos podem chegar um tico à frente do relógio do servidor. */
 export const FOLGA_DO_RELOGIO_MS = 3000;
 /** A VELOCIDADE do Solo (21/11/2026): a tela anda a 1×, 1,5× ou 2×; o relógio do servidor deixa até isto (a partida é a mesma). */
 export const VELOCIDADE_MAX = 2;
-/** Ninguém volta: a partida fecha sozinha depois disto (a pausa da janela sem foco tem esse tanto). */
-export const PRAZO_MS = 90 * 60_000;
+/**
+ * Ninguém volta: a partida fecha sozinha depois disto (a pausa da janela sem foco tem esse tanto). Desde que os 20 minutos viraram
+ * sugestão (24/11/2026), cabem os 90 minutos de jogo do teto de segurança e as esperas: 2 h 30 de relógio.
+ */
+export const PRAZO_MS = 150 * 60_000;
 /** O maior trecho do Solo (2 minutos de jogo): o servidor anda isso de uma vez, no máximo. */
 export const MAIOR_TRECHO = 1200;
 
@@ -163,7 +173,8 @@ function solo(ctx: Contexto, quem: number, agora: () => number, sorteio: () => n
         desafio = !tutorial && ehDesafio(corpo.desafio) ? corpo.desafio : null;
         nivel = tutorial || desafio === 'relampago' ? 'facil' : desafio === 'cerco' ? 'dificil' : ehNivel(corpo.nivel) ? corpo.nivel : 'normal';
         mapa = tutorial ? 'campo' : ehMapa(corpo.mapa) ? corpo.mapa : MAPAS[Math.floor(sorteio() * MAPAS.length)];
-        sim = novaPartida(semente, { mapa, desafio });
+        // no Solo, só quem joga vota para terminar pelos pontos (o computador não)
+        sim = novaPartida(semente, { mapa, desafio, votam: VOTAM_NO_SOLO });
         ia = criarIA(1, tutorial ? PERFIS.tutorial : desafio ? PERFIL_DO_DESAFIO[desafio] : PERFIS[nivel]);
         inicio = agora();
         fase = 'jogando';
@@ -212,10 +223,10 @@ function solo(ctx: Contexto, quem: number, agora: () => number, sorteio: () => n
       const fim = corpo.fim as Record<string, unknown> | undefined;
       if (fim && typeof fim === 'object' && sim.passo === ate) {
         const motivo = fim.motivo;
-        if (motivo !== 'centro' && motivo !== 'maravilha' && motivo !== 'tempo' && motivo !== 'desafio') return 'Sessão inválida.';
+        if (motivo !== 'centro' && motivo !== 'maravilha' && motivo !== 'tempo' && motivo !== 'desafio' && motivo !== 'pontos') return 'Sessão inválida.';
         if (typeof fim.venceu !== 'boolean') return 'Sessão inválida.';
         if (fim.venceu && !desafio && sim.passo < VITORIA_MIN_PASSOS) return 'Sessão inválida.';
-        if (motivo === 'tempo' && sim.passo < PASSOS_MAX - 1) return 'Sessão inválida.';
+        if ((motivo === 'tempo' || motivo === 'pontos') && sim.passo < PASSOS_SUGERIDOS - 1) return 'Sessão inválida.';
         desencontro = true;
         fechar({ venceu: fim.venceu, motivo, passos: sim.passo, conferido: false });
       }
@@ -248,7 +259,8 @@ function sala(ctx: Contexto, pessoas: number[], formato: Formato, mapaPedido: Ti
   const mapa: TipoDoMapa = mapaPedido ?? MAPAS[Math.floor(sorteio() * MAPAS.length)];
   const inicio = agora();
   const partidaId = `tocas-sala-${ctx.comunidade ?? 0}-${inicio}`;
-  const sim = novaPartida(semente, { mapa, quatro });
+  // quem vota para terminar pelos pontos: as pessoas (os robôs não); quem larga deixa de votar pelo comando 'largar' no turno
+  const sim = novaPartida(semente, { mapa, quatro, votam: jogadores.map((id) => !ehRobo(id)) });
   const ias: (IA | null)[] = jogadores.map((id, d) => (ehRobo(id) ? criarIA(d as Dono, PERFIS[NIVEL_DOS_ROBOS]) : null));
   let fase: 'jogando' | 'fim' = 'jogando';
   /** `vencedor` é a EQUIPE (no 1×1, o próprio dono). */
@@ -344,12 +356,16 @@ function sala(ctx: Contexto, pessoas: number[], formato: Formato, mapaPedido: Ti
     if (!quatro || !resta) return terminar((1 - equipeDe(d)) as Dono, motivo);
     largou[d] = true;
     for (const e of entradas.values()) if (e[d] === null) e[d] = [];
+    // ela deixa de votar para terminar pelos pontos, no próximo turno e em todos os computadores (pelo lockstep)
+    const prox = entradas.get(resolvido) ?? novaEntrada();
+    prox[d] = [...(prox[d] ?? []), { t: 'largar' }];
+    entradas.set(resolvido, prox);
     ctx.difundir?.({ tocas: 'largou', dono: d });
     ctx.avisar();
     resolver();
   };
 
-  // o teto de tudo: nenhuma sala fica presa na memória (a partida tem 20 minutos de jogo; a espera, 5 de cada vez)
+  // o teto de tudo: nenhuma sala fica presa na memória (a partida tem no máximo 90 minutos de jogo; a espera, 5 de cada vez)
   ctx.agendar(PRAZO_MS, () => terminar(null, 'parou'));
 
   const donoDe = (quem: number): Dono | null => {

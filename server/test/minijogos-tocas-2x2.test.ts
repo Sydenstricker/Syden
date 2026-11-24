@@ -52,8 +52,10 @@ function comecar(naSala: number[], corpo: Record<string, unknown>, sorteio = () 
  * Um computador da sala, como o do site (JogoTocas.tsx): a sua cópia da partida, os robôs andando dentro dela antes de cada
  * passo, e o piloto automático pela pessoa (`dono`); sem dono, é QUEM ASSISTE: anda os turnos que chegam e não manda nada.
  */
-function cliente(dono: S.Dono | null, estado: Record<string, any>) {
-  const sim = S.novaPartida(estado.semente, { mapa: estado.mapa, quatro: estado.formato === '2x2' });
+function cliente(dono: S.Dono | null, estado: Record<string, any>, votaAos20 = false) {
+  let votou = false;
+  // quem vota para terminar pelos pontos: as pessoas (como o servidor e o site criam a partida)
+  const sim = S.novaPartida(estado.semente, { mapa: estado.mapa, quatro: estado.formato === '2x2', votam: (estado.jogadores as { robo: boolean }[]).map((j) => !j.robo) });
   const robos = (estado.jogadores as { robo: boolean }[]).map((j, d) => (j.robo ? criarIA(d as S.Dono, PERFIS[NIVEL_DOS_ROBOS]) : null));
   const piloto = dono === null ? null : criarIA(dono, PERFIS.piloto);
   const recebidos = new Map<number, S.Comando[][]>();
@@ -68,6 +70,11 @@ function cliente(dono: S.Dono | null, estado: Record<string, any>) {
       const manda: Record<string, unknown> = { k: k + ATRASO_TURNOS, c: pendentes };
       if (k % HASH_CADA_TURNOS === 0) Object.assign(manda, { h: S.assinatura(sim), hk: k });
       pendentes = [];
+      // passados os 20 minutos, a pessoa aceita terminar pelos pontos (uma vez): a partida só acaba assim (24/11/2026)
+      if (votaAos20 && !votou && sim.passo >= S.PASSOS_SUGERIDOS) {
+        votou = true;
+        (manda.c as S.Comando[]).push({ t: 'pontos', aceita: true });
+      }
       const t = recebidos.get(k);
       recebidos.delete(k);
       for (let i = 0; i < PASSOS_POR_TURNO && sim.vencedor === null; i++) {
@@ -152,8 +159,8 @@ test('o mapa do 2×2: quatro bases iguais nos cantos, e de cada uma se chega às
 test('o 2×2 inteiro em lockstep, com dois robôs: os dois computadores, quem assiste e o servidor terminam iguais; o pódio vai a quem jogou', () => {
   const p = comecar([ana, bia], { formato: '2x2', mapa: 'campo' });
   const e0 = p.estado();
-  const a = cliente(0, e0);
-  const b = cliente(1, e0);
+  const a = cliente(0, e0, true);
+  const b = cliente(1, e0, true);
   // a dai está na sala e não joga: assiste
   const v = cliente(null, p.estado(dai));
   assert.equal(p.estado(dai).eu, null);

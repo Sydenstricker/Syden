@@ -98,6 +98,24 @@
 .tocas-maravilha {
   color: #9ef0a8;
 }
+/* depois dos 20 minutos: o placar e a votação para terminar pelos pontos (24/11/2026) */
+.tocas-pontos {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.tocas-pontos-placar {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--bg-active);
+}
+.tocas-pontos-espera {
+  color: var(--text-muted);
+}
+.tocas-pontos .tocas-botao {
+  padding: 2px 10px;
+}
 .tocas-maravilha.inimiga {
   color: #ff9b8a;
 }

@@ -20,6 +20,9 @@ import {
   ORDEM_DAS_MELHORIAS,
   passo,
   PASSOS_MAX,
+  PASSOS_SUGERIDOS,
+  podeTerminarPelosPontos,
+  pontosDaEquipe,
   podeAvancarEra,
   podeConstruir,
   PREDIOS,
@@ -202,4 +205,51 @@ test('o computador chega à era 3 nos três níveis, e usa o que ela abre', () =
       assert.ok((PERFIS.dificil.melhorias3 ?? []).some((m) => temMelhoria(sim, 0, m)), 'difícil: alguma melhoria da era 3');
     }
   }
+});
+
+/**
+ * OS 20 MINUTOS SÃO UMA SUGESTÃO (24/11/2026, decisão dele): com gente que vota, a partida segue depois deles até todas as pessoas
+ * aceitarem terminar pelos pontos; a recusa desfaz a proposta; quem larga deixa de votar; e há o teto de segurança de 90 minutos.
+ * Sem ninguém que vote (o computador contra o computador), acaba aos 20 minutos como sempre (o teste de cima, "a partida de antes").
+ */
+test('terminar pelos pontos: o voto de todas as pessoas, a recusa, quem larga, e os robôs que não votam', () => {
+  const sim = novaPartida(9, { quatro: true, votam: [true, true, true, false] });
+  const andar = (n: number) => {
+    for (let i = 0; i < n && sim.vencedor === null; i++) passo(sim);
+  };
+  // antes dos 20 minutos, o voto não vale
+  comandar(sim, 0, { t: 'pontos', aceita: true });
+  andar(1);
+  assert.equal(sim.votos, 0);
+  andar(PASSOS_SUGERIDOS + 10 - sim.passo);
+  assert.equal(sim.vencedor, null, 'aos 20 minutos a partida segue');
+  assert.ok(podeTerminarPelosPontos(sim));
+  comandar(sim, 0, { t: 'pontos', aceita: true });
+  comandar(sim, 3, { t: 'pontos', aceita: true });
+  andar(1);
+  assert.equal(sim.votos, 1, 'a proposta da 0; o robô (3) não vota');
+  comandar(sim, 1, { t: 'pontos', aceita: false });
+  andar(1);
+  assert.equal(sim.votos, 0, 'a recusa desfaz a proposta');
+  comandar(sim, 0, { t: 'pontos', aceita: true });
+  comandar(sim, 1, { t: 'pontos', aceita: true });
+  andar(5);
+  assert.equal(sim.vencedor, null, 'falta a 2');
+  // a 2 larga o jogo: deixa de votar, e a proposta das outras basta
+  comandar(sim, 2, { t: 'largar' });
+  andar(1);
+  assert.equal(sim.motivo, 'pontos');
+  const a = pontosDaEquipe(sim, 0);
+  const b = pontosDaEquipe(sim, 1);
+  assert.equal(sim.vencedor, a >= b ? 0 : 1, 'ganha quem tem mais pontos');
+  assert.deepEqual(limparComando({ t: 'pontos', aceita: 'sim' }), { t: 'pontos', aceita: false });
+});
+
+test('o teto de segurança: sem ninguém aceitar, a partida acaba pelos pontos aos 90 minutos', () => {
+  assert.equal(PASSOS_MAX, 90 * 60 * 10);
+  assert.equal(PASSOS_SUGERIDOS, 20 * 60 * 10);
+  const sim = novaPartida(4, { votam: [true, false] });
+  while (sim.vencedor === null) passo(sim);
+  assert.equal(sim.passo, PASSOS_MAX);
+  assert.equal(sim.motivo, 'tempo');
 });

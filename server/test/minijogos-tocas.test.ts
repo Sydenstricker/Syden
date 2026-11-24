@@ -170,15 +170,21 @@ test('o Solo: desistir, e ninguém volta (o prazo fecha a partida como interromp
 // ---------------------------------------------------------------------------------------------------------------------
 
 /** Um computador da sala: a sua cópia da partida, o piloto automático pela pessoa, e o lockstep do site. */
-function cliente(dono: S.Dono, semente: number, mapa: S.TipoDoMapa) {
-  const sim = S.novaPartida(semente, { mapa });
-  const piloto = criarIA(dono, PERFIS.piloto);
+function cliente(dono: S.Dono, semente: number, mapa: S.TipoDoMapa, perfil = PERFIS.piloto, votaAos20 = false) {
+  let votou = false;
+  // as duas pessoas votam para terminar pelos pontos (como o servidor cria a partida da sala)
+  const sim = S.novaPartida(semente, { mapa, votam: [true, true] });
+  const piloto = criarIA(dono, perfil);
   const recebidos = new Map<number, [S.Comando[], S.Comando[]]>();
   let k = 0;
   let pendentes: S.Comando[] = [];
   return {
     sim,
     recebidos,
+    /** Um comando da pessoa (a votação), que vai no próximo turno mandado. */
+    ordenar(c: S.Comando) {
+      pendentes.push(c);
+    },
     get turno() {
       return k;
     },
@@ -188,6 +194,11 @@ function cliente(dono: S.Dono, semente: number, mapa: S.TipoDoMapa) {
       const manda: Record<string, unknown> = { k: k + ATRASO_TURNOS, c: pendentes };
       if (k % HASH_CADA_TURNOS === 0) Object.assign(manda, { h: S.assinatura(sim), hk: k });
       pendentes = [];
+      // passados os 20 minutos, a pessoa aceita terminar pelos pontos (uma vez): a partida só acaba assim (24/11/2026)
+      if (votaAos20 && !votou && sim.passo >= S.PASSOS_SUGERIDOS) {
+        votou = true;
+        (manda.c as S.Comando[]).push({ t: 'pontos', aceita: true });
+      }
       const t = recebidos.get(k) ?? [[], []];
       recebidos.delete(k);
       for (let i = 0; i < PASSOS_POR_TURNO && sim.vencedor === null; i++) {
@@ -237,8 +248,8 @@ test('a sala é de duas pessoas, e o turno só anda com a parte das duas', () =>
 test('a sala inteira em lockstep: os dois computadores e o servidor terminam iguais, e o pódio vai à estante', () => {
   const p = comecar({ solo: false, naSala: [ana, bia] });
   const { semente, mapa } = p.estado();
-  const a = cliente(0, semente, mapa);
-  const b = cliente(1, semente, mapa);
+  const a = cliente(0, semente, mapa, PERFIS.piloto, true);
+  const b = cliente(1, semente, mapa, PERFIS.piloto, true);
   for (let volta = 0; volta < 20000 && p.estado().fase === 'jogando'; volta++) {
     p.passar(200);
     for (const [c, id] of [[a, ana], [b, bia]] as const) {
@@ -314,4 +325,91 @@ test('a sala: quem sai por 1 minuto perde (sem troféu); quem desiste perde', ()
   r.passar(3000);
   r.j().conferir!();
   assert.deepEqual(r.difundido.at(-1), { tocas: 'espera', donos: [1] });
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// OS 20 MINUTOS SÃO UMA SUGESTÃO (24/11/2026)
+// ---------------------------------------------------------------------------------------------------------------------
+
+test('o Solo passa dos 20 minutos: a partida segue até a pessoa terminar pelos pontos (o servidor refaz e concorda)', async () => {
+  const { PASSOS_SUGERIDOS, MAIOR_TRECHO, VOTAM_NO_SOLO } = await import('../src/minijogo-tocas.js');
+  const p = comecar();
+  const semente = p.estado().semente as number;
+  // o tutorial: o computador não ataca, e a partida chega aos 20 minutos
+  assert.equal(p.j().acao(ana, { tipo: 'comecar', tutorial: true }), null);
+  const tela = S.novaPartida(semente, { mapa: 'campo', votam: VOTAM_NO_SOLO });
+  const computador = criarIA(1, PERFIS.tutorial);
+  const lote: [number, S.Comando][] = [];
+  const votarEm = PASSOS_SUGERIDOS + 300;
+  while (tela.vencedor === null && tela.passo < PASSOS_SUGERIDOS + 1000) {
+    if (tela.passo === votarEm) {
+      S.comandar(tela, 0, { t: 'pontos', aceita: true });
+      lote.push([tela.passo, { t: 'pontos', aceita: true }]);
+    }
+    if (tela.passo === PASSOS_SUGERIDOS + 5) assert.equal(tela.vencedor, null, 'aos 20 minutos a partida segue');
+    computador(tela);
+    S.passo(tela);
+  }
+  assert.equal(tela.motivo, 'pontos');
+  assert.equal(tela.passo, votarEm + 1);
+  const fim = tela.passo;
+  for (let de = 0; de < fim; ) {
+    const ate = Math.min(fim, de + MAIOR_TRECHO);
+    p.passar(((ate - de) / 10) * 1000);
+    assert.equal(p.j().acao(ana, { tipo: 'trecho', de, ate, lote: lote.filter(([q]) => q >= de && q < ate) }), null);
+    if (de < PASSOS_SUGERIDOS && ate > PASSOS_SUGERIDOS) assert.equal(p.estado().fase, 'jogando', 'o servidor também segue');
+    de = ate;
+  }
+  const r = p.estado().resultado;
+  assert.ok(r, 'acabou');
+  assert.equal(r.motivo, 'pontos');
+  assert.equal(r.passos, fim);
+  assert.equal(r.conferido, true);
+  // o fim declarado pela tela, pelos pontos, antes dos 20 minutos: não
+  assert.ok(VITORIA_MIN_PASSOS < PASSOS_SUGERIDOS);
+});
+
+test('a sala passa dos 20 minutos: a proposta, a recusa que a desfaz, e o fim pelos pontos só com as duas aceitando', async () => {
+  const { PASSOS_SUGERIDOS } = await import('../src/minijogo-tocas.js');
+  const p = comecar({ solo: false, naSala: [ana, bia] });
+  const { semente, mapa } = p.estado();
+  const a = cliente(0, semente, mapa, PERFIS.tutorial);
+  const b = cliente(1, semente, mapa, PERFIS.tutorial);
+  const rodar = (ate: () => boolean) => {
+    for (let volta = 0; volta < 40000 && p.estado().fase === 'jogando' && !ate(); volta++) {
+      p.passar(200);
+      for (const [c, id] of [[a, ana], [b, bia]] as const) {
+        const m = c.andar();
+        if (m) p.j().tempoReal!(id, m);
+      }
+      turnosDifundidos(p.difundido, a, b);
+      if (volta % 50 === 0) p.j().conferir!();
+    }
+  };
+  rodar(() => a.sim.passo >= PASSOS_SUGERIDOS + 20);
+  assert.equal(p.estado().fase, 'jogando', 'aos 20 minutos a sala segue');
+  assert.equal(a.sim.vencedor, null);
+  // a ana propõe; a bia recusa: a proposta se desfaz
+  a.ordenar({ t: 'pontos', aceita: true });
+  rodar(() => b.sim.votos !== 0);
+  assert.equal(b.sim.votos, 1, 'a proposta chegou ao computador da bia');
+  b.ordenar({ t: 'pontos', aceita: false });
+  rodar(() => a.sim.votos === 0);
+  assert.equal(a.sim.votos, 0, 'a recusa desfez a proposta');
+  assert.equal(p.estado().fase, 'jogando');
+  // de novo, e agora a bia aceita
+  a.ordenar({ t: 'pontos', aceita: true });
+  rodar(() => b.sim.votos !== 0);
+  b.ordenar({ t: 'pontos', aceita: true });
+  rodar(() => false);
+  for (let i = 0; i < 10; i++) {
+    a.andar();
+    b.andar();
+  }
+  const e = p.estado();
+  assert.equal(e.fase, 'fim');
+  assert.equal(e.resultado.motivo, 'pontos');
+  assert.equal(a.sim.motivo, 'pontos');
+  assert.equal(S.assinatura(a.sim), S.assinatura(b.sim));
+  assert.equal(e.resultado.passos, a.sim.passo);
 });

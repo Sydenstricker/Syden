@@ -17,6 +17,8 @@ import {
   ePredio,
   aliados,
   equipeDe,
+  podeTerminarPelosPontos,
+  pontosDaEquipe,
   eUnidade,
   podeAvancarEra,
   proximaEra,
@@ -80,7 +82,7 @@ import './tocas/tocas.css';
  * botão do meio, o direito arrastado ou as setas movem o mapa. No toque: tocar escolhe, tocar no destino manda, arrastar move.
  */
 
-type MotivoDoFim = 'centro' | 'maravilha' | 'tempo' | 'desafio' | 'desistiu' | 'saiu' | 'desencontro' | 'parou';
+type MotivoDoFim = 'centro' | 'maravilha' | 'tempo' | 'pontos' | 'desafio' | 'desistiu' | 'saiu' | 'desencontro' | 'parou';
 export interface ResultadoTocas {
   venceu: boolean;
   vencedor?: Dono | null;
@@ -452,6 +454,8 @@ function FimDaPartida({ estado, r, eu, assistindo, nomes }: { estado: EstadoToca
       ? t('A partida se desencontrou entre os computadores e foi encerrada.')
       : r.motivo === 'tempo'
         ? t('O tempo acabou: ganhou quem tinha mais.')
+        : r.motivo === 'pontos'
+          ? t('A partida terminou pelos pontos: ganhou quem tinha mais.')
         : assistindo
           ? null
           : quatro
@@ -679,7 +683,12 @@ function Partida({
   const mapa = useRef<HTMLCanvasElement>(null);
   const caixaSel = useRef<HTMLDivElement>(null);
   const simRef = useRef<Sim | null>(null);
-  if (!simRef.current) simRef.current = novaPartida(semente, { mapa: tipoDoMapa, quatro, desafio: sala ? null : desafio });
+  /**
+   * QUEM VOTA PARA TERMINAR PELOS PONTOS (24/11/2026): no Solo, a pessoa (o computador não); na sala, as pessoas (os robôs não).
+   * É o mesmo que o servidor usa, para a partida sair igual nos dois lados.
+   */
+  const votam = sala ? robos.map((r) => !r) : [true, false];
+  if (!simRef.current) simRef.current = novaPartida(semente, { mapa: tipoDoMapa, quatro, desafio: sala ? null : desafio, votam });
   const sim = simRef.current;
   /** O nome de um dono, na sala (os robôs já vêm com o 🤖); no Solo, o computador. */
   const nomeDe = (d: number) => (nomes ? nomes[d] ?? '' : t('Computador'));
@@ -955,6 +964,13 @@ function Partida({
           case 'sino':
             if (meu(e.dono)) som('vez');
             break;
+          case 'pontos':
+            // a votação para terminar pelos pontos: a proposta (ou o aceite) de outra pessoa, e a recusa que a desfaz
+            if (!meu(e.dono) || assistindo) {
+              som('vez');
+              avisar(e.aceita ? t('{nome} propõe terminar pelos pontos.', { nome: nomeDe(e.dono) }) : t('{nome} prefere continuar.', { nome: nomeDe(e.dono) }));
+            }
+            break;
           case 'melhoria':
             if (meu(e.dono)) {
               som('medalha');
@@ -1035,7 +1051,7 @@ function Partida({
       }
     }
     const refazerPartida = () => {
-      const nova = novaPartida(semente, { mapa: tipoDoMapa, quatro });
+      const nova = novaPartida(semente, { mapa: tipoDoMapa, quatro, votam });
       const rs = novosRobos();
       for (let k = 0; k < turno && nova.vencedor === null; k++) {
         andarTurno(nova, historia.get(k));
@@ -1693,6 +1709,48 @@ function Partida({
   };
 
   /**
+   * OS 20 MINUTOS SÃO UMA SUGESTÃO (24/11/2026, decisão dele): passando deles, a partida segue, e aqui fica a opção de terminar
+   * pelos pontos. No Solo, um clique. Na sala, quem clica propõe; a partida acaba quando todas as pessoas aceitam (os robôs não
+   * votam), e uma recusa desfaz a proposta. Tudo vai pelo comando 'pontos', no lockstep.
+   */
+  const barraDosPontos = () => {
+    const minha = equipeDe(assistindo ? 0 : eu);
+    const placar = (
+      <span className="tocas-pontos-placar">
+        {t('Pontos: {nos} × {eles}', { nos: pontosDaEquipe(sim, minha), eles: pontosDaEquipe(sim, (1 - minha) as 0 | 1) })}
+      </span>
+    );
+    if (assistindo) return <span className="tocas-pontos">{placar}</span>;
+    const aceitei = (sim.votos & (1 << eu)) !== 0;
+    const proposta = sim.votos !== 0;
+    const votar = (aceita: boolean) => {
+      ordenar({ t: 'pontos', aceita });
+      tocar('clique');
+    };
+    return (
+      <span className="tocas-pontos" role="group">
+        {placar}
+        {aceitei ? (
+          <span className="tocas-pontos-espera">{t('Esperando as outras pessoas aceitarem…')}</span>
+        ) : proposta ? (
+          <>
+            <button type="button" className="tocas-botao" onClick={() => votar(true)}>
+              {t('Aceitar')}
+            </button>
+            <button type="button" className="tocas-botao" onClick={() => votar(false)}>
+              {t('Recusar')}
+            </button>
+          </>
+        ) : (
+          <button type="button" className="tocas-botao" onClick={() => votar(true)}>
+            {t('Terminar pelos pontos')}
+          </button>
+        )}
+      </span>
+    );
+  };
+
+  /**
    * AVANÇAR DE ERA, no centro: da 1 para a 2, e da 2 para a 3 (24/11/2026), que pede um mercado pronto (o botão diz, e fica
    * apagado até ele existir). Na era 3, não há mais botão.
    */
@@ -1809,6 +1867,7 @@ function Partida({
           </>
         )}
         <span className="tocas-relogio">{relogio(painel.passo)}</span>
+        {podeTerminarPelosPontos(sim) && barraDosPontos()}
         {/* no 2×2 e para quem assiste: quem é quem, na cor de cada um (os aliados em tons da mesma equipe) */}
         {nomes && (quatro || assistindo) && (
           <span className="tocas-jogadores">
