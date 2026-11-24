@@ -25,7 +25,7 @@ import { EscolhaDoFutebolNaSala, JogoFutebol, type EstadoFutebol } from './JogoF
 import { EscolhaDaSalaDasTocas, JogoTocas, type EstadoTocas } from './JogoTocas';
 import { EscolhaDaCaca, JogoCaca } from './JogoCaca';
 import { EscolhaDaFaseDaNave, JogoNave, type EstadoNave } from './JogoNave';
-import { JogoEstelar, type EstadoEstelar } from './JogoEstelar';
+import { EscolhaDaRotaEstelar, JogoEstelar, type EstadoEstelar } from './JogoEstelar';
 import { EscolhaDaArena, JogoBalao, type EstadoBalao } from './JogoBalao';
 import { EscolhaDaPistaDoJato, JogoJato, type EstadoJato } from './JogoJato';
 import { EscolhaDaPistaDoBarco, JogoBarco, type EstadoBarco } from './JogoBarco';
@@ -238,7 +238,7 @@ export function PainelDoMinijogo({
     comecou.current = true;
     if (comecarCom === 'corrida') setCorrendo(true);
     else if (comecarCom === 'plataforma') setPulando(true);
-    else if (pedeCategoria(comecarCom) || comecarCom === 'ringue' || comecarCom === 'caca' || comecarCom === 'briga' || comecarCom === 'comando' || comecarCom === 'chefe' || comecarCom === 'nave' || comecarCom === 'masmorra' || comecarCom === 'bichos' || comecarCom === 'ponte' || comecarCom === 'cidades' || comecarCom === 'tabuleiro' || comecarCom === 'festa' || ROBOS_NO_SOLO[comecarCom] || MESAS_COM_ESCOLHAS.has(comecarCom)) setEscolhendo(comecarCom);
+    else if (pedeCategoria(comecarCom) || comecarCom === 'ringue' || comecarCom === 'caca' || comecarCom === 'briga' || comecarCom === 'comando' || comecarCom === 'chefe' || comecarCom === 'nave' || comecarCom === 'estelar' || comecarCom === 'masmorra' || comecarCom === 'bichos' || comecarCom === 'ponte' || comecarCom === 'cidades' || comecarCom === 'tabuleiro' || comecarCom === 'festa' || ROBOS_NO_SOLO[comecarCom] || MESAS_COM_ESCOLHAS.has(comecarCom)) setEscolhendo(comecarCom);
     else void tentar(() => aoComecar(comecarCom, {}, true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comecarCom]);
@@ -366,7 +366,7 @@ export function PainelDoMinijogo({
       )}
       {!partida && escolhendo === 'corrida' && (
         <EscolhaDaPista
-          aoEscolher={(pista) => tentar(() => aoComecar('corrida', { pista }, false).then(() => setEscolhendo(null)))}
+          aoEscolher={(pista, extra) => tentar(() => aoComecar('corrida', { pista, ...extra }, false).then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -386,6 +386,12 @@ export function PainelDoMinijogo({
       {!partida && escolhendo === 'caca' && (
         <EscolhaDaCaca
           aoEscolher={(modo) => tentar(() => aoComecar('caca', modo ? { categoria: modo } : {}, aba === 'solo').then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
+      {!partida && escolhendo === 'estelar' && (
+        <EscolhaDaRotaEstelar
+          aoEscolher={(rota) => tentar(() => aoComecar('estelar', { rota }, aba === 'solo').then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -443,8 +449,8 @@ export function PainelDoMinijogo({
       {!partida && escolhendo === 'tabuleiro' && (
         <EscolhaDasRodadas
           solo={aba === 'solo'}
-          aoEscolher={(rodadas, robos) =>
-            tentar(() => aoComecar('tabuleiro', aba === 'solo' ? { rodadas, robos } : { rodadas }, aba === 'solo').then(() => setEscolhendo(null)))
+          aoEscolher={(rodadas, robos, tabuleiro) =>
+            tentar(() => aoComecar('tabuleiro', aba === 'solo' ? { rodadas, robos, tabuleiro } : { rodadas, tabuleiro }, aba === 'solo').then(() => setEscolhendo(null)))
           }
           aoVoltar={() => setEscolhendo(null)}
         />
@@ -577,7 +583,7 @@ export function PainelDoMinijogo({
                         : setEscolhendo('plataforma')
                     : (jogo.id === 'balao' || jogo.id === 'jato' || jogo.id === 'barco' || jogo.id === 'torre' || jogo.id === 'gincana' || jogo.id === 'carrinhos' || jogo.id === 'skate' || jogo.id === 'tocas' || jogo.id === 'futebol') && aba === 'coletivo'
                       ? setEscolhendo(jogo.id)
-                    : jogo.id === 'ringue' || (jogo.id === 'caca' && aba === 'solo') || jogo.id === 'briga' || jogo.id === 'comando' || jogo.id === 'chefe' || jogo.id === 'nave' || jogo.id === 'masmorra' || jogo.id === 'bichos' || jogo.id === 'ponte' || jogo.id === 'tabuleiro' || jogo.id === 'festa' || jogo.id === 'cidades' || ROBOS_NO_SOLO[jogo.id] || MESAS_COM_ESCOLHAS.has(jogo.id) || pedeCategoria(jogo.id, aba === 'solo')
+                    : jogo.id === 'ringue' || (jogo.id === 'caca' && aba === 'solo') || jogo.id === 'briga' || jogo.id === 'comando' || jogo.id === 'chefe' || jogo.id === 'nave' || jogo.id === 'estelar' || jogo.id === 'masmorra' || jogo.id === 'bichos' || jogo.id === 'ponte' || jogo.id === 'tabuleiro' || jogo.id === 'festa' || jogo.id === 'cidades' || ROBOS_NO_SOLO[jogo.id] || MESAS_COM_ESCOLHAS.has(jogo.id) || pedeCategoria(jogo.id, aba === 'solo')
                       ? setEscolhendo(jogo.id)
                       : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
                 }
@@ -995,7 +1001,7 @@ export function PainelDoMinijogo({
                     ? // a dificuldade do Solo da Briga (20/11/2026) volta junto
                       { categoria: partida.categoria, ...(partida.jogo === 'briga' && partida.dificuldade ? { dificuldade: partida.dificuldade } : {}) }
                     : partida.jogo === 'tabuleiro'
-                      ? { rodadas: partida.rodadas, robos: partida.robos }
+                      ? { rodadas: partida.rodadas, robos: partida.robos, tabuleiro: partida.tabuleiro }
                       : partida.jogo === 'festa'
                       ? // as rodadas e, no Solo, os robôs (20/11/2026) voltam junto
                         { modo: partida.modo, rodadas: partida.rodadas, robos: partida.robos }

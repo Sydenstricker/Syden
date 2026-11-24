@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { idiomaAtual, useT } from './i18n';
-import { CATEGORIAS_DO_STOP, letrasDoStop, type IdDoJogo } from './minijogos';
+import { CATEGORIAS_DO_STOP, letrasDoStop, nomeDoIdioma, type IdDoJogo } from './minijogos';
 import './jogosDePalavras.css';
 
 /**
@@ -12,10 +12,20 @@ import './jogosDePalavras.css';
  * - Stop: rodadas, tempo, as categorias (da lista nossa, traduzida, e as LIVRES, escritas pela turma e nunca traduzidas) e
  *   as letras que ficam fora do sorteio.
  * - Palavra secreta: normal, dueto ou quarteto, o modo difícil e, desde 21/11/2026, palavras de 4, 5 ou 6 letras (a de 5 é a de
- *   fábrica; o recorde do Solo de cada tamanho é à parte).
+ *   fábrica; o recorde do Solo de cada tamanho é à parte); desde 24/11/2026, o IDIOMA das palavras (português, inglês, espanhol,
+ *   francês ou alemão: os que têm dicionário no servidor), que de fábrica é o de quem começa, ou o português.
  * - Desenha e adivinha: as rodadas (1 a 3) e o tempo de cada desenho (20/11/2026), e a lista própria da sala (escrita por quem
  *   começa, nunca traduzida), sozinha ou junto com a nossa.
  */
+/** Os idiomas da Palavra secreta: os que têm dicionário no servidor (IDIOMAS em server/src/minijogo-palavra.ts). */
+export const IDIOMAS_DA_PALAVRA = ['pt', 'en', 'es', 'fr', 'de'] as const;
+type IdiomaDaPalavra = (typeof IDIOMAS_DA_PALAVRA)[number];
+/** O de fábrica: o de quem começa, se o jogo tem; senão, o português. */
+export const idiomaDaPalavraDe = (idioma: string): IdiomaDaPalavra => {
+  const base = idioma.toLowerCase().split(/[-_]/)[0];
+  return (IDIOMAS_DA_PALAVRA as readonly string[]).includes(base) ? (base as IdiomaDaPalavra) : 'pt';
+};
+
 export const JOGOS_COM_ESCOLHA_DE_PALAVRAS: ReadonlySet<IdDoJogo> = new Set<IdDoJogo>(['sudoku', 'stop', 'palavra', 'desenho']);
 
 /** As linhas de uma caixa de texto: sem as vazias e sem as repetidas. */
@@ -70,11 +80,13 @@ export function EscolhaDosJogosDePalavras({
   const [modo, setModo] = useState<'normal' | 'dueto' | 'quarteto'>('normal');
   const [dificil, setDificil] = useState(false);
   const [letras, setLetras] = useState<4 | 5 | 6>(5);
+  const [idiomaDaPalavra, setIdiomaDaPalavra] = useState<IdiomaDaPalavra>(() => idiomaDaPalavraDe(idiomaAtual()));
   // Desenho
   const [lista, setLista] = useState('');
   const [soLista, setSoLista] = useState(false);
   const [rodadasDoDesenho, setRodadasDoDesenho] = useState(3);
   const [tempoDoDesenho, setTempoDoDesenho] = useState(80_000);
+  const [telefone, setTelefone] = useState(false);
 
   const alternar = (conjunto: Set<string>, item: string, mudar: (s: Set<string>) => void) => {
     const novo = new Set(conjunto);
@@ -189,9 +201,17 @@ export function EscolhaDosJogosDePalavras({
       </>
     );
   } else if (jogo === 'palavra') {
-    corpo = { modo, dificil, letras };
+    corpo = { modo, dificil, letras, idioma: idiomaDaPalavra };
     conteudo = (
       <>
+        <fieldset>
+          <legend>{t('Idioma')}</legend>
+          <Opcoes
+            valor={idiomaDaPalavra}
+            aoMudar={setIdiomaDaPalavra}
+            opcoes={IDIOMAS_DA_PALAVRA.map((codigo) => ({ valor: codigo, nome: nomeDoIdioma(codigo, idiomaAtual()) }))}
+          />
+        </fieldset>
         <fieldset>
           <legend>{t('Letras')}</legend>
           <Opcoes valor={letras} aoMudar={setLetras} opcoes={([4, 5, 6] as const).map((n) => ({ valor: n, nome: String(n) }))} />
@@ -216,19 +236,39 @@ export function EscolhaDosJogosDePalavras({
     );
   } else if (jogo === 'desenho') {
     const palavras = linhas(lista, 200, 30);
-    pode = !soLista || palavras.length >= 3;
-    corpo = { rodadas: rodadasDoDesenho, tempoMs: tempoDoDesenho, ...(palavras.length ? { lista: palavras, soLista } : {}) };
+    pode = telefone || !soLista || palavras.length >= 3;
+    // O TELEFONE SEM FIO (24/11/2026): só o tempo de cada desenho; as frases são da turma, escritas na hora
+    corpo = telefone
+      ? { modo: 'telefone', tempoMs: tempoDoDesenho }
+      : { rodadas: rodadasDoDesenho, tempoMs: tempoDoDesenho, ...(palavras.length ? { lista: palavras, soLista } : {}) };
     conteudo = (
       <>
+      {!solo && (
+        <fieldset>
+          <legend>{t('Modo')}</legend>
+          <Opcoes
+            valor={telefone ? 'telefone' : 'classico'}
+            aoMudar={(v) => setTelefone(v === 'telefone')}
+            opcoes={[
+              { valor: 'classico', nome: `✏️ ${t('Clássico')}` },
+              { valor: 'telefone', nome: `📞 ${t('Telefone sem fio')}` },
+            ]}
+          />
+          {telefone && <span className="contagem">{t('Cada um escreve, o próximo desenha, o próximo adivinha. De 3 pessoas em diante.')}</span>}
+        </fieldset>
+      )}
       {/* as rodadas e o tempo de cada desenho (20/11/2026), como no Stop */}
+      {!telefone && (
       <fieldset>
         <legend>{t('Rodadas')}</legend>
         <Opcoes valor={rodadasDoDesenho} aoMudar={setRodadasDoDesenho} opcoes={[1, 2, 3].map((n) => ({ valor: n, nome: String(n) }))} />
       </fieldset>
+      )}
       <fieldset>
         <legend>{t('Tempo')}</legend>
         <Opcoes valor={tempoDoDesenho} aoMudar={setTempoDoDesenho} opcoes={[45_000, 60_000, 80_000, 120_000].map((ms) => ({ valor: ms, nome: `${ms / 1000} s` }))} />
       </fieldset>
+      {!telefone && (
       <fieldset>
         <legend>
           {t('Palavras da turma')} <span className="contagem">({palavras.length})</span>
@@ -239,6 +279,7 @@ export function EscolhaDosJogosDePalavras({
           {t('Só as palavras da turma')}
         </label>
       </fieldset>
+      )}
       </>
     );
   }

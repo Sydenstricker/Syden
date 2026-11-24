@@ -437,17 +437,21 @@ export interface EstadoFesta {
 /** O Tabuleiro da turma (server/src/minijogo-tabuleiro-da-turma.ts). As casas: 'i' a largada, '+' ganha, '-' perde, '?' evento. */
 export type ItemDoTabuleiro = 'duplo' | 'escolhido' | 'troca' | 'ima' | 'escudo';
 export type EfeitoDaCasa =
-  | { tipo: 'mais' | 'menos' | 'chuva' | 'achado' | 'praga' | 'mutirao'; valor: number }
+  | { tipo: 'mais' | 'menos' | 'chuva' | 'achado' | 'praga' | 'mutirao' | 'correnteza' | 'escorrega' | 'cheia'; valor: number }
   | { tipo: 'troca'; com: number }
   | { tipo: 'brinde'; item: ItemDoTabuleiro }
-  | { tipo: 'vento' | 'escudo' | 'nada' };
+  | { tipo: 'vento' | 'escudo' | 'nada' | 'teleferico' };
+/** Os tabuleiros da largada (24/11/2026): a horta é o de fábrica. */
+export type IdDoTabuleiro = 'horta' | 'rio' | 'serra';
 
 /** As casas desde 19/11/2026: também '$' a loja de itens e 'd' o duelo; as dos ramais vêm depois das da volta. */
 export interface EstadoTabuleiro {
   fase: 'vez' | 'caminho' | 'loja' | 'andando' | 'itens' | 'duelo' | 'duelo-jogo' | 'minijogo' | 'reta' | 'premios' | 'fim';
   rodada: number;
   rodadas: number;
-  casas: ('i' | '+' | '-' | '?' | '$' | 'd')[];
+  /** O tabuleiro (24/11/2026; sem ele, a horta). 'c' a correnteza do rio, 'e' o escorrega da serra. */
+  tabuleiro?: IdDoTabuleiro;
+  casas: ('i' | '+' | '-' | '?' | '$' | 'd' | 'c' | 'e')[];
   /** Quantas casas tem a volta (as seguintes são dos ramais). */
   volta: number;
   /** As bifurcações: o ramal sai depois de `de` e volta em `ate`; as casas dele são `inicio` … `inicio + tamanho − 1`. */
@@ -867,8 +871,8 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     dica: chave('Todo mundo tenta adivinhar a mesma palavra de 5 letras, em 6 chutes. A sala vê as cores dos outros, mas não as letras. Quem acertar com menos chutes ganha mais pontos.'),
     // no Solo desde 19/11/2026: uma palavra de cada vez (o dueto e o quarteto também)
     abas: ['solo', 'coletivo'],
-    // As palavras são do dicionário do servidor, que por enquanto só existe em português.
-    idioma: 'pt',
+    // As palavras são dos dicionários do servidor: português, inglês e espanhol desde 24/11/2026, escolhidos na largada
+    // (EscolhasDasPalavras.tsx). Por isso o jogo não leva mais o "· português" ao lado do nome.
   },
   {
     // Trocar e combinar com a pilha subindo (JogoBlocos.tsx, server/src/minijogo-blocos.ts): cada um na própria tela.

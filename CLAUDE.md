@@ -1023,6 +1023,116 @@ confere e a penalidade é da turma. Acaba quando o tabuleiro fecha, com o tempo 
 
 **A HORTA EM CASCATA, O LOTE D (21/11/2026):** o TREINO DA CADEIA (`blocos/treino.ts`, `TreinoDaCadeia.tsx`, a lâmpada na escolha do Solo): lições prontas em que uma troca solta uma cadeia; a lâmpada mostra a troca, a pessoa tenta, e a regra de sempre diz a cadeia que saiu. Só no site, sem servidor nem recorde; o teste confere cada lição. Mais 20 QUEBRA-CABEÇAS (8 de duas trocas e 12 de três), achados por sorteio e conferidos pela busca do teste, no fim da lista (os recordes das 20 de antes valem).
 
+**O LOTE E DA SEGUNDA AUDITORIA (24/11/2026, "rode em paralelo o lote E"):** sete agentes, um por grupo; ninguém jogou nada disso com gente (os números são chute medido contra os pilotos e robôs). A lista dos modelos 3D que faltam nos mini-games (51, quase todos por script do Blender; Meshy só para bicho e corpo de coelho) está em `retomar-20-11/modelos-3d.md`, na pasta do projeto na memória.
+
+
+**A TORRE SEM FIM (24/11/2026, o lote E da segunda auditoria), só no Solo:** o botão ∞ depois das cinco torres. A torre é
+montada pela SEMENTE que o servidor sorteia a cada subida (`torreSemFim` em `torre/fases.ts`: 40 trechos das mesmas peças, com
+os padrões das torres de sempre; mais coisa caindo e corvos mais ligeiros subindo, até 80% do ritmo do começo; o posto de cada
+andar longe do primeiro fardo do trecho seguinte, e o corvo dos fardos voa entre os topos), e a ÁGUA SOBE do chão
+(`torre/semfim.ts`: espera 6 s, aperta a cada passo, e corre 4× se ficar mais de 240 px abaixo do último andar); a pancada leva
+ao último andar, e quando a água passa dos pés, acabou. O recorde é o ANDAR mais alto, e quem conta é o servidor: as torres, a
+física e a regra moram em DUAS CÓPIAS IGUAIS (`web/src/torre/{fases,fisica,semfim}.ts` ↔ `server/src/torre/`), o site manda os
+comandos de cada passo e o servidor refaz a subida (`refazerSemFim`), sem mais passos do que passou desde o começo. Tabela comum
+(`torre`, variante `sem-fim`); sem fantasmas nem medalhas (cada subida é outra torre). Na sala não há (a torre de sempre). Medido
+com o piloto (8 sementes): todas se sobem, e ele chega a 11–19 andares antes da água; os números são chute. Testes:
+`web/test/torre.test.ts`, `server/test/minijogos-torre.test.ts`.
+
+**O Rolê, a terceira pista (24/11/2026, o lote E): a QUADRA** (`quadra-1`, no fim de `PISTAS`), só com as peças já medidas: um
+corrimão comprido à esquerda e uma caixa comprida à direita, cada um com o kicker dele, e uma caixa de través no fundo com dois
+kickers para saltar por cima. Os objetivos nos dois conjuntos (TOCA e PULO, as fitas nos cantos) e três saltos com nome no
+primeiro ("por cima da caixa", "até o corrimão" e "até a caixa", o mesmo nome do parque); o teste confere por simulação que cada
+salto, letra e fita se alcança. O recorde e os objetivos na tabela comum, como a Praça. Testes: `web/test/skate.test.ts`,
+`server/test/minijogos-skate.test.ts`.
+
+
+
+**O TABULEIRO DA TURMA, OS TABULEIROS NOVOS (24/11/2026, lote E da segunda auditoria):** na largada, antes das rodadas, quem começa escolhe o tabuleiro: a HORTA (a de sempre e de fábrica), o RIO ou a SERRA (`TABULEIROS` e `tracadoDe` em `minijogo-tabuleiro-da-turma.ts`; os nomes de sempre, `CASAS`, `RAMAIS`, `proximaCasa`…, continuam sendo os da horta). O **Rio** tem 32 casas e uma ponte (um ramal), a casa nova da CORRENTEZA ('c': leva a peça 3 casas adiante, e a casa onde ela fica não age) e a CHEIA nos eventos (todo mundo da sala anda 2 casas). A **Serra** tem 28 casas, um atalho, a casa do ESCORREGA ('e': devolve 3 casas, `casaAnterior`) e o TELEFÉRICO nos eventos (a peça vai à casa antes da cenoura dourada). Nenhum dos dois tem o mutirão. No 3D, cada um tem a sua volta (`GEOMETRIAS` em `tabuleiro3d/volta.ts`), o mesmo miolo e a mesma cidade, e o seu chão: o anel de água do rio (a ponte passa por cima) e as pedras da serra; no 2D de reserva, cada um tem o seu retângulo (`MEDIDAS_2D` em `tabuleiroLugares.ts`) e o seu miolo. Tabuleiro novo pede a linha em `TABULEIROS`, a geometria e as medidas 2D (os testes cobram que batem e que nada fica em cima de nada). Os robôs jogam os dois; os números são chute: ninguém jogou com gente. Testes: `server/test/minijogos-tabuleiro-novos.test.ts`, `web/test/tabuleiro3d.test.ts`.
+
+**O TELEFONE SEM FIO DO DESENHA E ADIVINHA (24/11/2026, lote E):** o outro modo da largada ("Modo": Clássico ou 📞 Telefone sem fio; só a mecânica da brincadeira, nada de nome nem arte de app). De 3 a 8 pessoas: cada uma escreve uma frase, e a cada passo todo mundo trabalha AO MESMO TEMPO na corrente de outra pessoa (quem recebe frase desenha, quem recebe desenho escreve o que acha que é), tantos passos quanto pessoas; no fim, a turma vê cada corrente inteira, um passo a cada 4 s (qualquer um passa adiante). Sem pontos. O traço vai pelo MESMO canal do desenho, com as mesmas conferências, mas o servidor NÃO o repassa: o desenho é segredo até a revelação (`server/src/minijogo-telefone.ts`). **A frase passa pela moderação da comunidade** (o silêncio, as palavras proibidas e os links; quem administra não passa), por `server/src/texto-do-jogo.ts`, com o banco por import dinâmico; fica como foi escrita, sem tradução, até 80 caracteres. Quem sai da sala não segura o passo; a frase escrita e não enviada vai sozinha no último segundo e meio. O desenho clássico não mudou (`JogoDesenho` escolhe pela `modo`; a tela é `JogoTelefone.tsx`). Testes: `server/test/minijogos-telefone.test.ts`. Ninguém jogou com gente.
+
+
+
+**O PINBALL, A TERCEIRA MESA, O LAGO (24/11/2026, o lote E):** na largada do Solo, ao lado da horta e do pomar, o LAGO (`MESAS[2]`), com três coisas só dele, nas duas cópias da regra: as DUAS RAMPAS (a da horta à direita, caindo na primeira pista, e a do pomar à esquerda, na terceira; cada bola sabe em que trilho está, `Bola.rampa`) e a DUPLA, a outra rampa em até 4 s, que vale 2000; o SAPO da raia de saída da esquerda (`SAPO`, `PULO_DO_SAPO`): aceso, a bola que desce por ela é devolvida num pulo (um trilho curto) para a raia de dentro, sobre a palheta, e ele apaga; acende em cada bola nova e na colheita das cenouras (chutá-la de volta pela raia não servia: o desvio da órbita fecha o alto da raia); e as MISSÕES DELE (`MISSOES_DO_LAGO`, a mesa ganhou `missoes`): no lugar dos estilingues, acender as três pistas do alto, e três rampas; o modo final é o mesmo. Os rebatedores são vitórias-régias num arco largo, na água, e o sapo é desenhado na raia (aceso ou apagado). Só no Solo, com o recorde na tabela comum (`'pinball'`, variante `'lago'`). A horta e o pomar rodam a mesma conta de antes: `web/test/pinball.test.ts` guarda 12 partidas do piloto medidas antes da mudança. O lago é mais difícil para o piloto (~30 mil de média contra ~65 mil na horta). Números chutados: ninguém jogou com gente.
+
+**A ROTA ESTELAR, A SEGUNDA ROTA, A DO GELO (24/11/2026, o lote E):** escolhida na largada por quem começa (`EscolhaDaRotaEstelar`, `corpo.rota`, vale para a turma toda), com o mesmo relógio da primeira (o subchefe, a subida, a bifurcação e o chefe nos mesmos passos; por isso a Ficha é a mesma) e o conteúdo dela, nas duas cópias de `estelar-sim.ts` (`roteiro(semente, ROTA_DO_GELO)`): o planeta gelado com os CRISTAIS no chão, os ARCOS de gelo atravessados e as MINAS (paradas, estouram num anel de tiros quando a nave chega a 55); a SENTINELA de subchefe (o anel que dá voltas na frente da nave); na bifurcação, à esquerda a NEBULOSA (minas e caçadores) e à direita o ANEL DE GELO (rochas, cargueiros e as PORTAS, duas lajes com um vão); e a NAVE-MÃE no fim (o cargueiro do Space Base Bits em tamanho de chefe, com a ponte e os canhões por código), que solta pares de sondas de escolta. O chefe que acaba a rota é `ehChefeFinal` (o polvo ou a mãe), e `ehChefe` cobre os quatro. Na tela, o chão de neve, o céu azul do dia da Kenney, e o resto por código; nenhum modelo novo. A rota do planeta não mudou: a mesma semente dá o mesmo roteiro (o teste guarda o resumo de quatro). O recorde do Solo do gelo fica na tabela comum (`'estelar'`, variante `'gelo'`); o do planeta continua em `estelar_recordes`; o troféu da sala é o mesmo. O piloto derruba a nave-mãe nas duas rotas do gelo, e o servidor aceita cada evento. `e2e/estelar.mjs` clica na rota (`ROTA=gelo`): escrito, não rodado. Números chutados: ninguém jogou com gente.
+
+
+**TOCAS E TORRES, A ERA 3 (24/11/2026, lote E da segunda auditoria):** da era 2, com um MERCADO pronto (o degrau: `podeAvancarEra`),
+por 500 de comida e 300 de ouro em 50 s; vida das unidades ×1,4, golpe ×1,5, prédios ×1,8 (`ERA3`, `FATOR_DA_ERA`, nas duas
+cópias). Abre a GUARDA (quartel; lança com escudo, da linha do lanceiro: as melhorias dele valem para ela, `linha` na unidade), a
+OFICINA com o CANHÃO (cerco de longe; `ehCerco` junta catapulta e canhão), o BASTIÃO (a torre do canhão) e três melhorias gerais no
+ferreiro, no fim de `ORDEM_DAS_MELHORIAS`: forja (toda tropa bate ×1,15), cota de malha (leva ×0,85) e carrinho de mão (carga 15). Os
+modelos são do mesmo Medieval Hexagon (workshop, tower_cannon, cannon, a bala), por `tocas-modelos.mjs`; o centro da era 3 ganha as
+torrinhas do canhão. O computador busca a era 3 a partir de `era3Desde` (fácil 12 min, normal 11, difícil 10): levanta o mercado,
+troca nele o que sobra pelo que falta e avança; lá, oficina, canhões, bastiões, guarda e as melhorias gerais. O piloto, o tutorial e
+os desafios ficam sem a era 3 (os recordes deles continuam comparáveis). **Quem não chega à era 3 joga a partida de antes, número
+por número:** com o computador sem ela, 44 partidas iguais à versão anterior passo a passo (o 2×2 e os desafios incluídos), e
+`web/test/tocas-era3.test.ts` crava quatro delas. Com ela, mais partidas acabam pelo tempo (a defesa fica forte); o difícil seguiu
+ganhando do fácil em 8 de 8. Números chutados contra os robôs: ninguém jogou. Ficou de fora o cavaleiro montado (pede a pose).
+
+
+
+**A FORNALHA DO DRAGÃO, A TERCEIRA MASMORRA (24/11/2026, lote E da segunda auditoria):** escolhida na largada ao lado da toca e da
+mina (`corpo.masmorra = 'fornalha'`, com o heroico), salas 14 a 20; as duas de antes não mudaram. O item é o **REGADOR**: quem rega
+diz só a direção, e o servidor acha na linha (`alvoDoRegador`/`jatoPega`, nas duas cópias das regras) o dragão ou o primeiro fogo
+aceso, até 5 casas, passando por cima da água. O **fogo do chão** ('F') é parede até apagar, e apagado fica apagado; os **BRASEIROS**
+('A', a trava `'braseiros'`) são o enigma da turma: os três apagados AO MESMO TEMPO abrem o norte, e cada um acende de novo em 7 s
+(`BRASEIRO.volta`; com a turma cada um rega o seu, sozinho é correr; um anel mostra quanto falta). O caminho: o salão das chamas
+com o norte atrás do fogo, o baú do regador a oeste, os braseiros, a chave atrás da parede de fogo e o **DRAGÃO** (a folha do castelo
+da Briga), protegido como o golem-rei (`ehProtegido`): o fogo em volta só o regador apaga, e molhado ('atordoado', 2,8 s, depois imune
+1,6 s) ele apanha; o sopro é um leque de cinco bolas de fogo, e na metade da vida chama dois **DIABINHOS**, o bicho novo da fornalha
+(fica de longe e cospe fogo). Sala secreta pela parede rachada da entrada, 2 baús e 2 segredos nos achados, recorde do Solo em
+`fornalha` e `fornalha-heroico`. O piloto atravessa a fornalha inteira sozinho e com a turma (o teste cobra). Números chutados;
+ninguém jogou com gente. As chamas que o sopro deixaria no chão ficaram para depois.
+
+
+
+**OS CARRINHOS, A TROCA DE FAIXA (24/11/2026, o lote E):** a peça `T`, a AGULHA (as duas cópias de `carrinhos-sim.ts`): uma reta em
+que o carro pode passar à outra faixa da MESMA fileira (0 ↔ 1, 2 ↔ 3). Quem joga ARMA a troca com um toque (X, Shift, ↓ ou S; o X
+do controle; o botão redondo no toque) e ela acontece ao entrar na próxima agulha; outro toque desarma. No que vai ao servidor o
+toque é o acelerador + `TROCA` (16 a 24) naquele passo: sem agulha nada muda, e os fantasmas e recordes de antes valem. O traçado
+novo é a **Agulha** (`agulha-1`), a volta da Toca com duas agulhas: sem trocar é a Toca; o piloto que troca bem (`pilotoComTroca`,
+que ensaia as duas faixas até a agulha seguinte) ganha ~1,4% e as faixas ficam a menos de 1% (o teste cobra, em 5 e 20 voltas). O
+ganho é pequeno de propósito: as faixas foram equilibradas por volta. O editor tem a peça, a cena desliza o carro de uma faixa à
+outra (só desenho), os robôs trocam, as medalhas da Agulha são sobre o piloto que troca, e na sala a posição leva a faixa de agora
+(o servidor só aceita a outra da fileira, numa pista com agulha). O campeonato continua com os cinco de 20/11. Chute medido: ninguém jogou.
+
+**O ESTOURA-BALÃO, A CENOURA DOURADA (24/11/2026, o lote E):** um modo da largada (`corpo.modo: 'dourada'`), na sala e no Solo, com
+duplas. Ninguém perde balão: uma cenoura dourada nasce num ponto da semente (`lugarDaDourada`, as duas cópias de `balao-sim.ts`),
+quem passa por ela a pega, e quem a segura e leva item ou batida (a regra de sempre, com os 2 s e o escudo) a derruba onde estava;
+quem derrubou só a pega 1,5 s depois. Ganha quem a segurou mais tempo (nas duplas, a soma do time). **Quem está com ela é do
+servidor**: dá a quem passou perto pelas posições aceitas, tira no estouro que só ele decide e de quem sai da sala, conta o tempo
+pelo relógio da partida e avisa a todos (`difundir`, tipo 'dourada'). Bater em quem a tem costuma tomá-la na mesma passada, de
+propósito. No Solo os robôs a buscam, perseguem quem a tem e fogem com ela. O troféu é o de sempre ('balao'), com o placar em
+segundos. Chute medido contra os robôs.
+
+**A CORRIDA DOS COELHOS, OS ROBÔS NA SALA (24/11/2026, o lote E):** quem convida escolhe "Só a turma" ou "Completar com o
+computador" (`corpo.robos`); o servidor só diz quantos (até 8 karts, `KARTS_NA_SALA`), como os barcos da Regata, e cada computador
+anda os mesmos robôs (médio) pela mesma conta desde o verde dele (`robosNaSala` em corrida/laco.ts). Para não se separarem: o item
+do robô sai da posição entre os robôs, o roxo mira o robô da frente, os eventos deles não vão ao servidor, e **um robô só cai com
+item de robô** (o das pessoas chega a cada computador numa hora). Os itens dos robôs pegam as pessoas pela regra de sempre (quem leva
+decide). A turma larga na última fila (o servidor aceita a primeira posição 30 mais longe só com robôs). **Os robôs não entram na
+classificação** (decisão minha, a confirmar com ele): aparecem na ordem ao vivo; posição, pontos da copa, pódio e troféus são só da
+turma. Quem só assiste não vê os robôs. Ninguém jogou com gente.
+
+
+**A PALAVRA SECRETA EM CINCO IDIOMAS (24/11/2026, o lote E da segunda auditoria):** quem começa escolhe o IDIOMA na largada
+(português, inglês, espanhol, francês ou alemão, pelo nome da língua no navegador; de fábrica, o de quem começa, senão o
+português), nos três tamanhos e em todos os modos. As que SAEM são NOSSAS (en/, es/, fr/ e de/ em `server/assets/palavra-secreta/`,
+cada uma com o leia-me e a licença da fonte, conferidas contra ela); as que se CHUTAM saem de um corretor do LibreOffice pelo
+mesmo script, agora com `--lingua`/`--dic` (o português regenerado sai byte a byte igual): o en_US (SCOWL, licença permissiva), o
+RLA-ES em LGPL/MPL (a licença é tripla, à escolha) e o Grammalecte (MPL 2.0). **O alemão não tem corretor que sirva** (o igerman98
+é GPL, ou a OASIS, que proíbe modificar e só vale para programas ODF): os chutes vêm da wortliste do projeto Trennmuster (MIT, com
+as flexões), filtrada pelo que o OpenThesaurus (LGPL) marca como vulgar (`server/scripts/palavras-do-alemao.mjs`), e a chave é só
+a-z (BÄR é BAER, ß é SS). **O italiano ficou de fora**: corretor e thesaurus são GPL 3, e o Morph-it! tem a licença ambígua. No
+espanhol o Ñ é letra ("niño" não é "nino"); os teclados da tela seguem cada língua (Ñ, AZERTY, QWERTZ). Nas línguas novas ficam
+fora dos chutes os palavrões que o dicionário marca e uma lista curta de ofensas (na revelação a sala vê as letras); o português
+continua como era (decisão dele). O recorde e a sequência do Solo são à parte por idioma (variante com `~en`, `~es`, `~fr`, `~de`).
+A palavra que tem duas grafias para a mesma chave ("vovó"/"vovô") sai uma vez só, e a revelação mostra "vovó / vovô". O jogo perdeu
+o "· português" na estante. Ninguém jogou com gente, e as listas não passaram por quem fala as línguas. Teste:
+`server/test/minijogos-palavra-idiomas.test.ts`.
+
 **OS JOGOS NOVOS DE 16/11/2026 (pedido dele: "implemente esses jogos"; feitos por agentes, um por jogo, com arte só do que já
 existia no projeto). Todos fora das conquistas da turma até ele decidir; em nenhum alguém jogou com gente (o equilíbrio é chute
 medido contra o piloto automático); os Coletivos sem e2e com o LiveKit, só o teste do servidor.**
