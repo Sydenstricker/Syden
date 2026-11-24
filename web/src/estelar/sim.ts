@@ -14,6 +14,14 @@
  *
  * DETERMINISMO: passos fixos de 1/60 s, e as contas que os dois lados fazem usam só + − × ÷, Math.floor, Math.abs e
  * Math.sqrt. O vaivém é uma parábola, não o seno. O sorteio é o mulberry32 (inteiros de 32 bits).
+ *
+ * A SEGUNDA ROTA, A DO GELO (24/11/2026, o lote E): escolhida na largada (`roteiro(semente, ROTA_DO_GELO)`), com o mesmo
+ * relógio da primeira (o subchefe, a subida, a bifurcação e o chefe nos mesmos passos) e o conteúdo dela: o planeta gelado
+ * com os CRISTAIS no chão, os ARCOS de gelo atravessados e as MINAS que estouram num anel de tiros quando a nave chega perto;
+ * a SENTINELA de subchefe (o anel voador que dá voltas na frente da nave); na bifurcação, à esquerda a NEBULOSA (campo de
+ * minas e caçadores) e à direita o ANEL DE GELO (as rochas e as PORTAS, duas lajes com um vão para passar); e a NAVE-MÃE no
+ * fim, que solta sondas de escolta. A primeira rota (ROTA_DO_PLANETA, a de sempre) não mudou: a mesma semente dá o mesmo
+ * roteiro de antes (web/test/estelar.test.ts guarda o resumo de alguns).
  */
 
 export const PASSOS_POR_S = 60;
@@ -77,19 +85,28 @@ export const BOMBA_CHEFE = 25;
 export const RAIO_ANEL = 2.6;
 export const RAIO_ITEM = 2.2;
 
-export type Tipo = 'drone' | 'cacador' | 'cargueiro' | 'torre' | 'rocha' | 'subchefe' | 'chefe';
+/** As rotas: a do planeta (a de sempre) e a do gelo (24/11/2026). */
+export const ROTA_DO_PLANETA = 0;
+export const ROTA_DO_GELO = 1;
+export const ROTAS = 2;
+export const rotaValida = (n: unknown): number => (n === ROTA_DO_GELO ? ROTA_DO_GELO : ROTA_DO_PLANETA);
+
+export type Tipo = 'drone' | 'cacador' | 'cargueiro' | 'torre' | 'rocha' | 'subchefe' | 'chefe' | 'mina' | 'sentinela' | 'mae';
 export type Item = 'duplo' | 'bomba';
 export type Padrao = 'mira' | 'leque' | 'anel' | 'chuva';
 /** 0: as duas rotas; 1: a das rochas (esquerda); 2: a da estação (direita). */
 export type Ramo = 0 | 1 | 2;
 
-export const RAIO: Record<Tipo, number> = { drone: 1.3, cacador: 1.3, cargueiro: 2.2, torre: 1.6, rocha: 1.8, subchefe: 3.2, chefe: 6 };
-export const VIDA: Record<Tipo, number> = { drone: 1, cacador: 2, cargueiro: 6, torre: 3, rocha: 2, subchefe: 80, chefe: 300 };
-export const PONTOS: Record<Tipo, number> = { drone: 100, cacador: 150, cargueiro: 400, torre: 250, rocha: 50, subchefe: 3000, chefe: 8000 };
+export const RAIO: Record<Tipo, number> = { drone: 1.3, cacador: 1.3, cargueiro: 2.2, torre: 1.6, rocha: 1.8, subchefe: 3.2, chefe: 6, mina: 1.2, sentinela: 3.4, mae: 7 };
+export const VIDA: Record<Tipo, number> = { drone: 1, cacador: 2, cargueiro: 6, torre: 3, rocha: 2, subchefe: 80, chefe: 300, mina: 1, sentinela: 90, mae: 340 };
+export const PONTOS: Record<Tipo, number> = { drone: 100, cacador: 150, cargueiro: 400, torre: 250, rocha: 50, subchefe: 3000, chefe: 8000, mina: 120, sentinela: 3000, mae: 8000 };
 /** Cada acerto num chefe vale isto, além do abate. */
 export const PONTOS_NO_CHEFE = 10;
 export const POR_VIDA = 1000;
-export const ehChefe = (t: Tipo) => t === 'subchefe' || t === 'chefe';
+/** Os chefes (o subchefe e o chefe de cada rota): levam a bomba de chefe e valem pontos a cada acerto. */
+export const ehChefe = (t: Tipo) => t === 'subchefe' || t === 'chefe' || t === 'sentinela' || t === 'mae';
+/** O chefe do fim (derrubado, a rota acabou). */
+export const ehChefeFinal = (t: Tipo) => t === 'chefe' || t === 'mae';
 
 /**
  * Um inimigo do roteiro. `rota` é [x0, y0, z0, x1, y1, z1, amplitude, período]: o caminho em linha reta de um ponto ao outro
@@ -127,11 +144,13 @@ export interface Obstaculo {
   z: number;
   raio: number;
   fundo: number;
-  modelo: 'torre' | 'turbina' | 'viga' | 'bloco';
+  modelo: 'torre' | 'turbina' | 'viga' | 'bloco' | 'cristal' | 'arco';
   ramo: Ramo;
 }
 
 export interface Roteiro {
+  /** A rota (ROTA_DO_PLANETA ou ROTA_DO_GELO). */
+  rota: number;
   inimigos: Inimigo[];
   aneis: Anel[];
   obstaculos: Obstaculo[];
@@ -188,6 +207,29 @@ export function posicaoInimigo(e: Inimigo, n: number): Ponto | null {
     }
     const k = s - 240;
     return { x: 10 * vaivem(k / 600), y: 2 + 3 * vaivem(k / 340), z: zn + 55 + 6 * vaivem(k / 900) };
+  }
+  if (e.tipo === 'sentinela') {
+    // a sentinela da rota do gelo: chega de longe, dá voltas na frente da nave (o x e o y defasados de um quarto) e vai embora
+    let d: number;
+    if (s < 180) {
+      const u = s / 180;
+      d = 120 - 78 * (1 - (1 - u) * (1 - u));
+    } else if (s < e.dur - 150) d = 42;
+    else {
+      const k = s - (e.dur - 150);
+      d = 42 + 0.01 * k * k;
+    }
+    const k = (s - 180) / 360;
+    return { x: 8 * vaivem(k), y: 1 + 4 * vaivem(k + 0.25), z: zn + d + 5 * vaivem((s - 180) / 700) };
+  }
+  if (e.tipo === 'mae') {
+    // a nave-mãe: grande e mais longe, de um lado para o outro devagar, subindo e descendo um pouco
+    if (s < 240) {
+      const u = s / 240;
+      return { x: 0, y: 4, z: zn + 190 - 120 * (1 - (1 - u) * (1 - u)) };
+    }
+    const k = s - 240;
+    return { x: 7 * vaivem(k / 800), y: 4 + 1.5 * vaivem(k / 300), z: zn + 70 + 5 * vaivem(k / 1000) };
   }
   const r = e.rota;
   const u = s / e.dur;
@@ -255,7 +297,8 @@ const durParado = (t: number, z: number) => Math.ceil((z - zNave(t)) / VEL_Z) + 
  * direita a estação com as torres nas plataformas e as vigas), e o polvo de lata no fim. Anéis prateados pelo caminho e um
  * dourado em cada trecho. Alguns inimigos soltam item: o primeiro é sempre o laser duplo.
  */
-export function roteiro(semente: number): Roteiro {
+export function roteiro(semente: number, rota = ROTA_DO_PLANETA): Roteiro {
+  rota = rotaValida(rota);
   const r = sorteio(semente);
   const inimigos: Inimigo[] = [];
   const aneis: Anel[] = [];
@@ -316,72 +359,155 @@ export function roteiro(semente: number): Roteiro {
     inimigos.push({ tipo: 'cargueiro', t, dur: 520, rel: true, rota: [x, 5, 130, -x, 1, 30, 5, 300], vida: VIDA.cargueiro, item: null, tiros, vt: 1.2, ramo });
     candidatos.push(inimigos.length - 1);
   };
-  const rochas = (t: number, nivel: number) => {
+  const rochas = (t: number, nivel: number, ramo: Ramo = 1) => {
     const quantas = 5 + Math.floor(r() * 3) + nivel;
     for (let k = 0; k < quantas; k++) {
       const z = zNave(t) + 100 + k * 9 + entre(0, 6);
       const x = entre(-12, 12);
       const y = entre(-6.5, 6.5);
       const deriva = entre(-3, 3);
-      inimigos.push({ tipo: 'rocha', t, dur: durParado(t, z), rel: false, rota: [x, y, z, x + deriva, y - deriva * 0.5, z, 0, 1], vida: VIDA.rocha, item: null, tiros: [], vt: 1, ramo: 1 });
+      inimigos.push({ tipo: 'rocha', t, dur: durParado(t, z), rel: false, rota: [x, y, z, x + deriva, y - deriva * 0.5, z, 0, 1], vida: VIDA.rocha, item: null, tiros: [], vt: 1, ramo });
     }
   };
   const anel = (t: number, ramo: Ramo, ouro = false) => {
     aneis.push({ x: entre(-8, 8), y: entre(-4, 4), z: zNave(t) + 60, ouro, ramo });
   };
-
-  // A SUPERFÍCIE DO PLANETA
-  let t = INICIO + 60;
-  let grupo = 0;
-  while (t < SUBCHEFE_T - 260) {
-    const nivel = t < 1200 ? 0 : 1;
-    const g = r();
-    if (g < 0.35) fila(t, 0, 'drone', nivel);
-    else if (g < 0.6) frente(t, 0, 'drone', nivel);
-    else if (g < 0.82) torres(t, 0, false);
-    else cargueiro(t, 0, nivel);
-    // as torres e turbinas no caminho
-    for (let k = 0; k < 2; k++) {
-      const alto = entre(5, 11);
-      obstaculos.push({ x: entre(-11, 11), y0: CHAO, y1: CHAO + alto, z: zNave(t) + 90 + k * 30 + entre(0, 10), raio: 1.2, fundo: 1.2, modelo: r() < 0.5 ? 'torre' : 'turbina', ramo: 0 });
+  // A ROTA DO GELO (24/11/2026): as minas, os cristais, os arcos e as portas
+  const minas = (t: number, ramo: Ramo, nivel: number) => {
+    const quantas = 4 + Math.floor(r() * 3) + nivel;
+    for (let k = 0; k < quantas; k++) {
+      const z = zNave(t) + 100 + k * 12 + entre(0, 6);
+      const x = entre(-11, 11);
+      const y = entre(-6, 6);
+      const dur = durParado(t, z);
+      // a mina estoura num anel de tiros quando a nave chega a 55 dela
+      const estoura = Math.floor((z - zNave(t) - 55) / VEL_Z);
+      const atira = r() < 0.45 + 0.2 * nivel;
+      inimigos.push({ tipo: 'mina', t, dur, rel: false, rota: [x, y, z, x, y, z, 1.2, 160 + Math.floor(r() * 80)], vida: VIDA.mina, item: null, tiros: atira && estoura > 0 ? [[estoura, 'anel']] : [], vt: 1.1, ramo });
     }
-    if (grupo % 3 === 1) anel(t + 80, 0, grupo === 4);
-    grupo++;
-    t += 200 + Math.floor(r() * 50);
-  }
-  // o jipe gigante
-  {
-    const tiros: [number, Padrao][] = [];
-    const ciclo: Padrao[] = ['leque', 'mira', 'chuva', 'mira'];
-    let k = 0;
-    for (let s = 220; s < SUBCHEFE_DUR - 160; s += 55, k++) tiros.push([s, ciclo[k % ciclo.length]]);
-    inimigos.push({ tipo: 'subchefe', t: SUBCHEFE_T, dur: SUBCHEFE_DUR, rel: true, rota: [], vida: VIDA.subchefe, item: 'bomba', tiros, vt: 1.4, ramo: 0 });
-  }
-  // a subida: anéis que levam à bifurcação
-  anel(SUBCHEFE_T + SUBCHEFE_DUR + 20, 0);
-  anel(BIFURCA - 200, 0, true);
+  };
+  const cristais = (t: number) => {
+    for (let k = 0; k < 3; k++) {
+      const alto = entre(4, 10);
+      obstaculos.push({ x: entre(-11, 11), y0: CHAO, y1: CHAO + alto, z: zNave(t) + 80 + k * 26 + entre(0, 8), raio: 1.4, fundo: 1.4, modelo: 'cristal', ramo: 0 });
+    }
+  };
+  /** O arco de gelo: uma laje atravessada no meio da tela (passa-se por cima, por baixo ou pelos lados). */
+  const arco = (t: number) => {
+    const y = entre(-2, 3);
+    obstaculos.push({ x: 0, y0: y - 0.8, y1: y + 0.8, z: zNave(t) + 150, raio: 8.5, fundo: 1.2, modelo: 'arco', ramo: 0 });
+  };
+  /** A porta do anel de gelo: duas lajes de lado a lado, com um vão na altura `y` para passar. */
+  const porta = (t: number, ramo: Ramo) => {
+    const y = entre(-3.5, 3.5);
+    const z = zNave(t) + 190;
+    obstaculos.push({ x: 0, y0: y + 2.8, y1: LIM_Y + 2, z, raio: LIM_X + 2, fundo: 1, modelo: 'arco', ramo });
+    obstaculos.push({ x: 0, y0: -LIM_Y - 2, y1: y - 2.8, z, raio: LIM_X + 2, fundo: 1, modelo: 'arco', ramo });
+  };
 
-  // AS DUAS ROTAS
-  for (const ramo of [1, 2] as const) {
-    t = BIFURCA + 90;
-    grupo = 0;
-    while (t < CHEFE_T - 300) {
+  if (rota === ROTA_DO_GELO) {
+    // O PLANETA GELADO
+    let t = INICIO + 60;
+    let grupo = 0;
+    while (t < SUBCHEFE_T - 260) {
+      const nivel = t < 1200 ? 0 : 1;
       const g = r();
-      if (ramo === 1) {
-        if (g < 0.45) rochas(t, grupo % 2);
-        else if (g < 0.75) fila(t, 1, 'cacador', 1);
-        else frente(t, 1, 'cacador', 1);
-      } else {
-        if (g < 0.4) torres(t, 2, true);
-        else if (g < 0.7) cargueiro(t, 2, 1);
-        else fila(t, 2, 'drone', 1);
-        // as vigas da estação, atravessadas no caminho
-        const y = entre(-6, 6);
-        obstaculos.push({ x: r() < 0.5 ? -7 : 7, y0: y - 0.6, y1: y + 0.6, z: zNave(t) + 100, raio: 6, fundo: 0.8, modelo: 'viga', ramo: 2 });
-      }
-      if (grupo % 3 === 2) anel(t + 60, ramo, grupo === 5);
+      if (g < 0.28) fila(t, 0, 'drone', nivel);
+      else if (g < 0.5) minas(t, 0, nivel);
+      else if (g < 0.68) torres(t, 0, false);
+      else if (g < 0.84) cargueiro(t, 0, nivel);
+      else frente(t, 0, 'cacador', nivel);
+      cristais(t);
+      if (grupo % 3 === 2) arco(t);
+      if (grupo % 3 === 1) anel(t + 80, 0, grupo === 4);
       grupo++;
-      t += 210 + Math.floor(r() * 50);
+      t += 200 + Math.floor(r() * 50);
+    }
+    // a sentinela: o anel, a mira e o leque, cada vez mais juntos
+    {
+      const tiros: [number, Padrao][] = [];
+      const ciclo: Padrao[] = ['anel', 'mira', 'leque', 'mira'];
+      let k = 0;
+      for (let s = 200; s < SUBCHEFE_DUR - 160; s += Math.max(42, 58 - k), k++) tiros.push([s, ciclo[k % ciclo.length]]);
+      inimigos.push({ tipo: 'sentinela', t: SUBCHEFE_T, dur: SUBCHEFE_DUR, rel: true, rota: [], vida: VIDA.sentinela, item: 'bomba', tiros, vt: 1.4, ramo: 0 });
+    }
+    anel(SUBCHEFE_T + SUBCHEFE_DUR + 20, 0);
+    anel(BIFURCA - 200, 0, true);
+    // AS DUAS ROTAS: à esquerda a nebulosa (minas e caçadores), à direita o anel de gelo (rochas e portas)
+    for (const ramo of [1, 2] as const) {
+      t = BIFURCA + 90;
+      grupo = 0;
+      while (t < CHEFE_T - 300) {
+        const g = r();
+        if (ramo === 1) {
+          if (g < 0.5) minas(t, 1, 1 + (grupo % 2));
+          else if (g < 0.8) frente(t, 1, 'cacador', 1);
+          else fila(t, 1, 'cacador', 1);
+        } else {
+          if (g < 0.4) rochas(t, grupo % 2, 2);
+          else if (g < 0.7) cargueiro(t, 2, 1);
+          else torres(t, 2, true);
+          if (grupo % 2 === 0) porta(t, 2);
+        }
+        if (grupo % 3 === 2) anel(t + 60, ramo, grupo === 5);
+        grupo++;
+        t += 210 + Math.floor(r() * 50);
+      }
+    }
+  } else {
+    // A SUPERFÍCIE DO PLANETA
+    let t = INICIO + 60;
+    let grupo = 0;
+    while (t < SUBCHEFE_T - 260) {
+      const nivel = t < 1200 ? 0 : 1;
+      const g = r();
+      if (g < 0.35) fila(t, 0, 'drone', nivel);
+      else if (g < 0.6) frente(t, 0, 'drone', nivel);
+      else if (g < 0.82) torres(t, 0, false);
+      else cargueiro(t, 0, nivel);
+      // as torres e turbinas no caminho
+      for (let k = 0; k < 2; k++) {
+        const alto = entre(5, 11);
+        obstaculos.push({ x: entre(-11, 11), y0: CHAO, y1: CHAO + alto, z: zNave(t) + 90 + k * 30 + entre(0, 10), raio: 1.2, fundo: 1.2, modelo: r() < 0.5 ? 'torre' : 'turbina', ramo: 0 });
+      }
+      if (grupo % 3 === 1) anel(t + 80, 0, grupo === 4);
+      grupo++;
+      t += 200 + Math.floor(r() * 50);
+    }
+    // o jipe gigante
+    {
+      const tiros: [number, Padrao][] = [];
+      const ciclo: Padrao[] = ['leque', 'mira', 'chuva', 'mira'];
+      let k = 0;
+      for (let s = 220; s < SUBCHEFE_DUR - 160; s += 55, k++) tiros.push([s, ciclo[k % ciclo.length]]);
+      inimigos.push({ tipo: 'subchefe', t: SUBCHEFE_T, dur: SUBCHEFE_DUR, rel: true, rota: [], vida: VIDA.subchefe, item: 'bomba', tiros, vt: 1.4, ramo: 0 });
+    }
+    // a subida: anéis que levam à bifurcação
+    anel(SUBCHEFE_T + SUBCHEFE_DUR + 20, 0);
+    anel(BIFURCA - 200, 0, true);
+
+    // AS DUAS ROTAS
+    for (const ramo of [1, 2] as const) {
+      t = BIFURCA + 90;
+      grupo = 0;
+      while (t < CHEFE_T - 300) {
+        const g = r();
+        if (ramo === 1) {
+          if (g < 0.45) rochas(t, grupo % 2);
+          else if (g < 0.75) fila(t, 1, 'cacador', 1);
+          else frente(t, 1, 'cacador', 1);
+        } else {
+          if (g < 0.4) torres(t, 2, true);
+          else if (g < 0.7) cargueiro(t, 2, 1);
+          else fila(t, 2, 'drone', 1);
+          // as vigas da estação, atravessadas no caminho
+          const y = entre(-6, 6);
+          obstaculos.push({ x: r() < 0.5 ? -7 : 7, y0: y - 0.6, y1: y + 0.6, z: zNave(t) + 100, raio: 6, fundo: 0.8, modelo: 'viga', ramo: 2 });
+        }
+        if (grupo % 3 === 2) anel(t + 60, ramo, grupo === 5);
+        grupo++;
+        t += 210 + Math.floor(r() * 50);
+      }
     }
   }
   anel(CHEFE_T - 120, 0);
@@ -399,13 +525,31 @@ export function roteiro(semente: number): Roteiro {
     inimigos[i].item = r() < 0.6 ? 'bomba' : 'duplo';
   }
 
+  if (rota === ROTA_DO_GELO) {
+    // A NAVE-MÃE: a chuva, o anel, o leque e a mira, cada vez mais depressa; e as sondas de escolta, que saem dela de tempos
+    // em tempos e vêm para cima da nave (a última da lista é sempre a mãe)
+    const tiros: [number, Padrao][] = [];
+    const ciclo: Padrao[] = ['chuva', 'mira', 'anel', 'leque', 'mira'];
+    let k = 0;
+    for (let s = 280; s < FIM - CHEFE_T - 30; s += Math.max(44, 76 - Math.floor(s / 600) * 6), k++) tiros.push([s, ciclo[k % ciclo.length]]);
+    const mae: Inimigo = { tipo: 'mae', t: CHEFE_T, dur: FIM - CHEFE_T, rel: true, rota: [], vida: VIDA.mae, item: null, tiros, vt: 1.45, ramo: 0 };
+    for (let s = 420; s < FIM - CHEFE_T - 300; s += 330) {
+      const p = posicaoInimigo(mae, CHEFE_T + s)!;
+      const dz = p.z - zNave(CHEFE_T + s);
+      for (const lado of [-1, 1]) {
+        inimigos.push({ tipo: 'drone', t: CHEFE_T + s, dur: 200, rel: true, rota: [p.x + lado * 4, p.y - 1, dz - 4, lado * entre(3, 9), entre(-4, 3), 8, 1.5, 90], vida: VIDA.drone, item: null, tiros: [[70, 'mira']], vt: 1.3, ramo: 0 });
+      }
+    }
+    inimigos.push(mae);
+    return { rota, inimigos, aneis, obstaculos };
+  }
   // o polvo de lata: alterna o anel, o leque e a chuva, cada vez mais depressa
   const tiros: [number, Padrao][] = [];
   const ciclo: Padrao[] = ['leque', 'mira', 'anel', 'chuva', 'mira'];
   let k = 0;
   for (let s = 260; s < FIM - CHEFE_T - 30; s += Math.max(40, 70 - Math.floor(s / 600) * 6), k++) tiros.push([s, ciclo[k % ciclo.length]]);
   inimigos.push({ tipo: 'chefe', t: CHEFE_T, dur: FIM - CHEFE_T, rel: true, rota: [], vida: VIDA.chefe, item: null, tiros, vt: 1.5, ramo: 0 });
-  return { inimigos, aneis, obstaculos };
+  return { rota, inimigos, aneis, obstaculos };
 }
 
 const inteiro = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v);
@@ -504,7 +648,7 @@ export class Ficha {
     this.dano.delete(i);
     this.pontos += PONTOS[e.tipo];
     this.novos.push(i);
-    if (e.tipo === 'chefe') this.chefeEm = q;
+    if (ehChefeFinal(e.tipo)) this.chefeEm = q;
   }
 
   private ferir(i: number, q: number, quanto: number) {

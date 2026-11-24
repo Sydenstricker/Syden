@@ -21,12 +21,19 @@
  * A SEGUNDA MESA (19/11/2026): no Solo, a pessoa escolhe a mesa ao jogar (o POMAR, MESAS[1] em pinball-sim.ts). O recorde do
  * pomar é só dela, na tabela comum dos recordes do Solo (jogo 'pinball', variante 'pomar'); o da horta continua em
  * pinball_recordes, com a lista dos amigos. Na sala, a horta.
+ *
+ * A TERCEIRA MESA (24/11/2026): o LAGO (MESAS[2]: as duas rampas, o sapo da raia de saída e as missões dele), também só no Solo,
+ * com o recorde na tabela comum (variante 'lago').
  */
 import * as db from './db.js';
 import type { Contexto, Definicao } from './minijogo-motor.js';
 import { aplicar, entradasValidas, mesaValida, novaMesa, PASSOS_MAXIMOS, type Mesa } from './pinball-sim.js';
 
 const recordeDoPomar = (userId: number) => db.recordeDoSolo(userId, 'pinball', 'pomar')?.valor ?? null;
+/** A terceira mesa (24/11/2026), o LAGO: o recorde também na tabela comum, variante 'lago'. */
+const recordeDoLago = (userId: number) => db.recordeDoSolo(userId, 'pinball', 'lago')?.valor ?? null;
+/** A variante da tabela comum de cada mesa (a horta fica em pinball_recordes). */
+const VARIANTE_DA_MESA = ['', 'pomar', 'lago'];
 
 export const LARGADA_MS = 4000;
 /** Na sala: 3 minutos de mesa, e a turma espera quem pausou mais 1 minuto. */
@@ -106,6 +113,7 @@ function partidaSolo(ctx: Contexto, eu: number, agora: () => number) {
       meu: j ? resumo(j.mesa) : null,
       recordes: recordes(),
       recordeDoPomar: recordeDoPomar(eu),
+      recordeDoLago: recordeDoLago(eu),
       resultado,
       partidaId: evento,
     }),
@@ -127,10 +135,10 @@ function partidaSolo(ctx: Contexto, eu: number, agora: () => number) {
         const erro = lerTrecho(j, corpo, agora());
         if (erro) return erro;
         if (j.mesa.terminou) {
-          const pomar = j.mesa.mesa === 1;
-          const anterior = pomar ? recordeDoPomar(eu) : db.recordeDoPinball(eu);
+          const variante = VARIANTE_DA_MESA[j.mesa.mesa] ?? '';
+          const anterior = variante ? (db.recordeDoSolo(eu, 'pinball', variante)?.valor ?? null) : db.recordeDoPinball(eu);
           const recorde =
-            j.mesa.pontos > 0 && (pomar ? db.guardarRecordeDoSolo(eu, 'pinball', 'pomar', j.mesa.pontos, false).novo : db.guardarRecordeDoPinball(eu, j.mesa.pontos));
+            j.mesa.pontos > 0 && (variante ? db.guardarRecordeDoSolo(eu, 'pinball', variante, j.mesa.pontos, false).novo : db.guardarRecordeDoPinball(eu, j.mesa.pontos));
           resultado = { pontos: j.mesa.pontos, recorde, anterior };
           fase = 'resultado';
           ctx.avisar();

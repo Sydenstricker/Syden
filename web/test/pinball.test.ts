@@ -262,3 +262,134 @@ test('o modo final: o piloto chega a ele em alguma partida, e a mesma partida re
   }
   console.log(`o piloto chegou ao modo final em ${chegou} de 12 partidas`);
 });
+
+// ---------------- O lote E (24/11/2026): a terceira mesa, o lago ----------------
+
+/** Uma partida do piloto numa mesa, com a mola variando pela semente; devolve os pontos, os passos e um resumo do caminho. */
+function partidaNaMesa(mesa: number, s: number) {
+  const k = sim.novaMesa(sim.PASSOS_MAXIMOS, mesa);
+  let h = 0;
+  const eventos: Record<string, number> = {};
+  const comandos: number[] = [];
+  while (!k.terminou) {
+    let c = sim.pilotoAutomatico(k);
+    if (k.bolas.some((b) => b.naMola && !b.auto)) c = k.carga < 28 + ((s * 13 + k.bola * 7) % 23) ? sim.MOLA : 0;
+    comandos.push(c);
+    sim.passo(k, c);
+    for (const e of k.eventos) eventos[e.tipo] = (eventos[e.tipo] ?? 0) + 1;
+    if (k.passo % 97 === 0 && k.bolas[0]) h = (h * 31 + Math.round(k.bolas[0].x * 1000) + Math.round(k.bolas[0].y * 7)) % 1000000007;
+  }
+  return { k, h, eventos, comandos };
+}
+
+test('a horta e o pomar rodam a MESMA conta de antes do lago (as partidas guardadas em 24/11/2026)', () => {
+  // [mesa, semente, pontos, passos, o resumo do caminho], medidos com a regra de antes da terceira mesa
+  const guardadas = [
+    [0, 0, 38180, 9841, 350056212],
+    [0, 1, 113890, 22250, 976049886],
+    [0, 2, 36410, 12509, 346254631],
+    [0, 3, 109510, 22145, 216723943],
+    [0, 4, 71425, 13999, 426004730],
+    [0, 5, 24820, 9316, 466468201],
+    [1, 0, 497950, 87930, 489499761],
+    [1, 1, 324505, 64841, 412273957],
+    [1, 2, 293395, 57426, 597099032],
+    [1, 3, 7935, 3175, 483999416],
+    [1, 4, 272215, 54242, 764037401],
+    [1, 5, 185335, 41417, 502266099],
+  ];
+  for (const [mesa, s, pontos, passos, h] of guardadas) {
+    const r = partidaNaMesa(mesa, s);
+    assert.deepEqual([r.k.pontos, r.k.passo, r.h], [pontos, passos, h], `a mesa ${mesa}, semente ${s}`);
+  }
+});
+
+test('o lago: o piloto termina as partidas pelas bolas, o sapo devolve bolas, e a mesma partida refeita dá os mesmos pontos', () => {
+  assert.equal(sim.MESAS.length, 3);
+  assert.equal(sim.missoesDa(2).length, sim.MISSOES.length, 'seis missões: o modo final pede todas');
+  assert.ok(sim.missoesDa(2).some((m) => m.id === 'pistas'));
+  let sapos = 0;
+  let missoes = 0;
+  for (let s = 0; s < 8; s++) {
+    const { k, eventos, comandos } = partidaNaMesa(2, s);
+    assert.ok(k.passo < sim.PASSOS_MAXIMOS, `a partida ${s} acabou pelas bolas, não pelo teto`);
+    assert.ok(k.pontos > 0);
+    sapos += eventos.sapo ?? 0;
+    missoes += k.cumpridas;
+    const b = sim.novaMesa(sim.PASSOS_MAXIMOS, 2);
+    sim.aplicar(b, sim.compactar(comandos));
+    assert.equal(b.pontos, k.pontos);
+  }
+  assert.ok(sapos >= 8, `o sapo pulou ${sapos} vezes em 8 partidas`);
+  assert.ok(missoes > 0, 'o piloto cumpre missões no lago');
+});
+
+test('o lago: o sapo aceso devolve a bola da raia de saída para a raia de dentro, e só uma vez por bola', () => {
+  const k = sim.novaMesa(sim.PASSOS_MAXIMOS, 2);
+  assert.ok(k.sapo, 'aceso na bola nova');
+  k.bolas = [{ x: 16, y: 340, vx: 0, vy: 200, naMola: false, auto: false, presa: 0, orbita: 0, parada: 0, trilho: 0 }];
+  k.salvaPronta = false;
+  let pulou = false;
+  for (let i = 0; i < 20 && !pulou; i++) {
+    sim.passo(k, 0);
+    pulou = k.eventos.some((e) => e.tipo === 'sapo');
+  }
+  assert.ok(pulou, 'o sapo pulou');
+  assert.equal(k.sapo, false, 'usado, apaga');
+  // termina o pulo na raia de dentro, sobre a palheta da esquerda
+  for (let i = 0; i < 40 && k.bolas[0].trilho > 0; i++) sim.passo(k, 0);
+  const b = k.bolas[0];
+  assert.equal(b.trilho, 0);
+  assert.ok(b.x > 24 && b.x < 45 && b.y < 270, `saiu na raia de dentro (${b.x.toFixed(0)}, ${b.y.toFixed(0)})`);
+  let naPalheta = false;
+  for (let i = 0; i < 60; i++) {
+    sim.passo(k, 0);
+    if (k.bolas[0] && k.bolas[0].x > sim.PIVO_ESQ.x - 4 && k.bolas[0].y > 320 && k.bolas[0].y < 360) naPalheta = true;
+  }
+  assert.ok(naPalheta, 'desceu pela raia de dentro até a palheta');
+  // apagado, a bola da raia de saída cai
+  const m = sim.novaMesa(sim.PASSOS_MAXIMOS, 2);
+  m.sapo = false;
+  m.salvaPronta = false;
+  m.bolas = [{ x: 16, y: 340, vx: 0, vy: 200, naMola: false, auto: false, presa: 0, orbita: 0, parada: 0, trilho: 0 }];
+  let perdeu = false;
+  for (let i = 0; i < 60 && !perdeu; i++) {
+    sim.passo(m, 0);
+    perdeu = m.eventos.some((e) => e.tipo === 'perdeu');
+    assert.ok(!m.eventos.some((e) => e.tipo === 'sapo'));
+  }
+  assert.ok(perdeu, 'sem o sapo, a bola se perde');
+  assert.ok(m.sapo, 'e a bola nova acende o sapo de novo');
+  // a horta não tem sapo
+  assert.equal(sim.novaMesa(sim.PASSOS_MAXIMOS, 0).sapo, false);
+});
+
+test('o lago: as duas rampas (a da direita cai na primeira pista, a da esquerda na terceira), e as duas seguidas valem a dupla', () => {
+  const g = sim.MESAS[2];
+  assert.ok(g.rampa2 && g.boca.x0 > sim.MEIO && g.rampa2.boca.x1 < sim.MEIO);
+  const subir = (k: sim.Mesa, boca: { x0: number; x1: number; y: number }) => {
+    k.bolas = [{ x: (boca.x0 + boca.x1) / 2, y: boca.y + 3, vx: 0, vy: -600, naMola: false, auto: false, presa: 0, orbita: 0, parada: 0, trilho: 0 }];
+    const ev: sim.Evento[] = [];
+    for (let i = 0; i < 200; i++) {
+      sim.passo(k, 0);
+      ev.push(...k.eventos);
+      if (ev.some((e) => e.tipo === 'pista')) break;
+    }
+    return ev;
+  };
+  const k = sim.novaMesa(sim.PASSOS_MAXIMOS, 2);
+  const a = subir(k, g.boca);
+  assert.ok(a.some((e) => e.tipo === 'rampa'));
+  assert.equal(a.find((e) => e.tipo === 'pista')?.n, 0);
+  const b = subir(k, g.rampa2!.boca);
+  assert.equal(b.find((e) => e.tipo === 'pista')?.n, 2);
+  const dupla = b.find((e) => e.tipo === 'dupla');
+  assert.ok(dupla && dupla.tipo === 'dupla' && dupla.pontos === sim.PONTOS_DA_DUPLA, 'a dupla');
+  // a mesma rampa duas vezes não é dupla
+  const m = sim.novaMesa(sim.PASSOS_MAXIMOS, 2);
+  subir(m, g.boca);
+  assert.ok(!subir(m, g.boca).some((e) => e.tipo === 'dupla'));
+  // no pomar, a boca da direita não é rampa
+  const p = sim.novaMesa(sim.PASSOS_MAXIMOS, 1);
+  assert.ok(!subir(p, g.boca).some((e) => e.tipo === 'rampa'));
+});

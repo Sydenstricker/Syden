@@ -15,8 +15,12 @@
  *
  * O PÓDIO: com a turma (2 ou mais que ficaram até o fim), os três primeiros vão para a estante de troféus do quarto (pista
  * 'estelar', os pontos). NO SOLO, sem troféu, e a partida pode virar o RECORDE da pessoa (estelar_recordes).
+ *
+ * A SEGUNDA ROTA (24/11/2026): quem começa escolhe na largada a rota do planeta (a de sempre) ou a do GELO (`corpo.rota`, ver
+ * estelar-sim.ts), que vale para a turma toda. O recorde do Solo na do gelo fica na tabela comum (jogo 'estelar', variante
+ * 'gelo'); o da do planeta continua em estelar_recordes. O troféu da sala é o mesmo (pista 'estelar').
  */
-import { FIM, Ficha, PASSOS_POR_S, roteiro } from './estelar-sim.js';
+import { FIM, Ficha, PASSOS_POR_S, ROTA_DO_GELO, roteiro, rotaValida } from './estelar-sim.js';
 import * as db from './db.js';
 import type { Definicao } from './minijogo-motor.js';
 
@@ -41,19 +45,21 @@ export function criarEstelar({ agora = Date.now, aleatorio = Math.random }: { ag
   return {
     minimo: 2,
     maximo: 8,
-    comecar(ctx, { naSala }) {
+    comecar(ctx, { naSala, corpo }) {
       const inscritos = [...naSala];
       const solo = inscritos.length === 1;
       const evento = `estelar-${ctx.comunidade ?? 0}-${agora()}`;
       const semente = Math.floor(aleatorio() * 2147483647);
-      const r = roteiro(semente);
+      const rota = rotaValida((corpo as Record<string, unknown> | undefined)?.rota);
+      const gelo = rota === ROTA_DO_GELO;
+      const r = roteiro(semente, rota);
       let fase: 'preparando' | 'jogando' | 'fim' = 'preparando';
       let inicio = 0;
       const pilotos = new Map<number, Piloto>(inscritos.map((id) => [id, { ficha: new Ficha(r), recusas: 0, disparos: 0 }]));
       const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
       let ficaram: Set<number> | null = null;
       let recordeNovo = false;
-      const recordeAntes = solo ? db.recordeEstelar(inscritos[0]) : null;
+      const recordeAntes = solo ? (gelo ? (db.recordeDoSolo(inscritos[0], 'estelar', 'gelo')?.valor ?? null) : db.recordeEstelar(inscritos[0])) : null;
       let fechando = false;
 
       const presentes = () => {
@@ -94,7 +100,7 @@ export function criarEstelar({ agora = Date.now, aleatorio = Math.random }: { ag
         const linhas = placar(true);
         if (solo) {
           const l = linhas[0];
-          if (ficaram.has(inscritos[0]) && l.pontos > 0) recordeNovo = db.guardarRecordeEstelar(inscritos[0], l.pontos);
+          if (ficaram.has(inscritos[0]) && l.pontos > 0) recordeNovo = gelo ? db.guardarRecordeDoSolo(inscritos[0], 'estelar', 'gelo', l.pontos, false).novo : db.guardarRecordeEstelar(inscritos[0], l.pontos);
         } else if (ficaram.size >= 2) {
           for (const l of linhas) {
             if (l.posicao === null || l.posicao > 3 || l.pontos <= 0) continue;
@@ -139,6 +145,7 @@ export function criarEstelar({ agora = Date.now, aleatorio = Math.random }: { ag
           return {
             fase,
             semente,
+            rota,
             duracaoMs: Math.round((FIM * 1000) / PASSOS_POR_S),
             decorridoMs: fase === 'jogando' ? agora() - inicio : null,
             jogadores: linhas,

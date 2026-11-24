@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { coresDoAvatar, minhasCoresDoCoelho, type CoresDoCoelho } from './coelho3d';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
 import { tocar } from './somDosJogos';
 import { temWebGL } from './temWebGL';
 import { Mundo, type Comandos } from './estelar/mundo';
 import { pilotar } from './estelar/piloto';
-import { CARGA, ESCUDO_MAX, FIM, PASSOS_POR_S, PIRUETA_PASSOS, type Ramo } from './estelar/sim';
+import { CARGA, ESCUDO_MAX, FIM, PASSOS_POR_S, PIRUETA_PASSOS, ROTA_DO_GELO, ROTA_DO_PLANETA, type Ramo } from './estelar/sim';
 import type { CenaEstelar, QuadroDaNave } from './estelar/cena';
 import './estelar/estelar.css';
 
@@ -30,6 +30,8 @@ import './estelar/estelar.css';
 export interface EstadoEstelar {
   fase: 'preparando' | 'jogando' | 'fim';
   semente: number;
+  /** A rota (24/11/2026): 0 a do planeta, 1 a do gelo. */
+  rota?: number;
   duracaoMs: number;
   decorridoMs: number | null;
   jogadores: { userId: number; username: string; avatar: number | string | null; pontos: number; vidas: number; chefe: boolean; acabou: boolean; precisao: number; posicao: number | null }[];
@@ -52,6 +54,62 @@ const LOTE_MS = 100;
 const ATRASO_DOS_OUTROS = 8;
 /** As alas do computador, no Solo: as cores de dois coelhos prontos. */
 const ALAS = [4, 11];
+
+/** As rotas da largada (24/11/2026): o nome, e as cores do céu, do chão e do chefe na figura. */
+const ROTAS_DA_LARGADA = [
+  { rota: ROTA_DO_PLANETA, nome: chave('Rota do planeta'), ceu: '#5b3f8a', chao: '#d9824c', chefe: '#8d96a8' },
+  { rota: ROTA_DO_GELO, nome: chave('Rota do gelo'), ceu: '#2a4f7a', chao: '#dfeef7', chefe: '#9fd8f0' },
+] as const;
+
+/** A figura de uma rota: o céu passando a espaço, o chão do planeta e o chefe lá na frente (sem texto). */
+function MiniaturaDaRota({ ceu, chao, chefe, gelo }: { ceu: string; chao: string; chefe: string; gelo: boolean }) {
+  return (
+    <svg viewBox="0 0 72 54" width="72" height="54" aria-hidden="true" style={{ borderRadius: 6 }}>
+      <rect width="72" height="54" fill="#0b1030" />
+      <rect y="18" width="72" height="22" fill={ceu} />
+      <path d="M0 40 L72 40 L72 54 L0 54 Z" fill={chao} />
+      <path d="M0 40 L36 33 L72 40" fill={chao} opacity="0.7" />
+      {gelo ? (
+        <>
+          <path d="M10 40 L13 28 L16 40 Z M54 40 L58 30 L61 40 Z" fill="#9fd8f0" />
+          <circle cx="36" cy="20" r="7" fill="none" stroke={chefe} strokeWidth="2.4" />
+          <circle cx="36" cy="20" r="2.4" fill="#ff3b3b" />
+        </>
+      ) : (
+        <>
+          <circle cx="36" cy="20" r="6" fill={chefe} />
+          <path d="M30 20 A6 6 0 0 1 42 20 Z" fill="#5b3f8a" />
+          <circle cx="36" cy="21" r="2" fill="#ff3b3b" />
+        </>
+      )}
+      <path d="M26 48 L36 45 L46 48 L36 50 Z" fill="#f3f1ea" />
+    </svg>
+  );
+}
+
+/** A escolha da rota (24/11/2026): no Solo e na sala, quem começa escolhe. */
+export function EscolhaDaRotaEstelar({ aoEscolher, aoVoltar }: { aoEscolher: (rota: number) => void; aoVoltar: () => void }) {
+  const t = useT();
+  return (
+    <div className="corrida-escolha">
+      <ul className="corrida-pistas">
+        {ROTAS_DA_LARGADA.map((r) => (
+          <li key={r.rota}>
+            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(r.rota)}>
+              <MiniaturaDaRota ceu={r.ceu} chao={r.chao} chefe={r.chefe} gelo={r.rota === ROTA_DO_GELO} />
+              <strong>{t(r.nome)}</strong>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export function JogoEstelar({ estado, eu, jogador, socket, channelId }: { estado: EstadoEstelar & Partida; eu: number; jogador: boolean; socket: Socket | null; channelId: number }) {
   const t = useT();
@@ -124,7 +182,7 @@ function Rota({ estado, eu, jogador, socket, channelId }: { estado: EstadoEstela
   }
   const mundo = useRef<Mundo | null>(null);
   if (!mundo.current) {
-    const m = new Mundo(estado.semente, souJogador);
+    const m = new Mundo(estado.semente, souJogador, estado.rota ?? 0);
     // quem volta no meio (recarregou a página): o que o servidor já sabe
     if (estado.meu && estado.decorridoMs !== null) {
       for (const i of estado.meu.mortos) m.ficha.mortos.set(i, 0);

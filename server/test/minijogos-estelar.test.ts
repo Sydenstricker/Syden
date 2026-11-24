@@ -30,7 +30,7 @@ interface Estado {
   recorde: { antes: number | null; novo: boolean } | null;
 }
 
-function comecar(naSala: number[], comunidade = 0) {
+function comecar(naSala: number[], comunidade = 0, corpo: Record<string, unknown> = {}) {
   let relogio: { depois: () => void; em: number } | null = null;
   let terminou = false;
   const ctx = {
@@ -43,7 +43,7 @@ function comecar(naSala: number[], comunidade = 0) {
   };
   let semente = 17;
   const aleatorio = () => ((semente = (semente * 16807) % 2147483647) - 1) / 2147483646;
-  const jogo = criarEstelar({ agora: () => agora, aleatorio }).comecar(ctx, { naSala, criadaPor: naSala[0], corpo: {} });
+  const jogo = criarEstelar({ agora: () => agora, aleatorio }).comecar(ctx, { naSala, criadaPor: naSala[0], corpo });
   assert.ok(typeof jogo !== 'string');
   let inicio = 0;
   return {
@@ -77,7 +77,8 @@ test('as duas cópias da regra são iguais (o site joga com a mesma conta que o 
 
 /** Joga com o piloto automático; a cada 6 passos, o lote vai ao servidor. */
 function jogar(p: ReturnType<typeof comecar>, quem: number) {
-  const m = new Mundo(p.estado(quem).semente, true);
+  const e = p.estado(quem) as Estado & { rota?: number };
+  const m = new Mundo(e.semente, true, e.rota ?? 0);
   for (let n = 0; n <= sim.FIM && !p.terminou(); n++) {
     m.avancar(pilotar(m));
     if (n % 6 === 0 || m.ficha.acabou) {
@@ -195,4 +196,24 @@ test('o escudo acaba duas vezes: a partida acaba para quem caiu', () => {
   p.andar();
   assert.ok(p.terminou(), 'sem ninguém no ar, a partida fecha');
   assert.equal(p.estado(biaId).jogadores[0].pontos, 0);
+});
+
+test('a rota do gelo (24/11/2026): escolhida na largada, a mesma conta nas duas pontas, e o recorde à parte na tabela comum', () => {
+  const doPlaneta = db.recordeEstelar(biaId);
+  const p = comecar([biaId], 0, { rota: sim.ROTA_DO_GELO });
+  assert.equal((p.estado(biaId) as unknown as { rota: number }).rota, sim.ROTA_DO_GELO);
+  p.andar();
+  const m = jogar(p, biaId);
+  assert.equal(m.r.rota, sim.ROTA_DO_GELO);
+  assert.ok(m.ficha.chefeEm !== null, 'o piloto derruba a nave-mãe');
+  p.andar();
+  assert.ok(p.terminou());
+  const fim = p.estado(biaId);
+  assert.equal(fim.jogadores[0].pontos, m.ficha.total(sim.FIM, true), 'os pontos do servidor são os da tela');
+  assert.equal(fim.recorde?.novo, true);
+  assert.equal(db.recordeDoSolo(biaId, 'estelar', 'gelo')?.valor, fim.jogadores[0].pontos);
+  assert.equal(db.recordeEstelar(biaId), doPlaneta, 'o recorde da rota do planeta não mudou');
+  // rota que não existe vira a do planeta
+  const q = comecar([biaId], 0, { rota: 9 });
+  assert.equal((q.estado(biaId) as unknown as { rota: number }).rota, sim.ROTA_DO_PLANETA);
 });

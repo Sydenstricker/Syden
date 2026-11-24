@@ -22,6 +22,14 @@
  *    da partida, e a patente sobe (até 9). Perdida no prazo, vem a seguinte, sem castigo.
  *  - A RAMPA com trilho: a bola rápida que sobe pela boca dela (à direita, acima do estilingue) vai pelo trilho até o alto e cai
  *    na primeira pista. Ela não tem parede: a bola lenta passa por baixo dela.
+ *
+ * A TERCEIRA MESA, O LAGO (24/11/2026, o lote E): as mesmas paredes, palhetas e cenouras, com três coisas só dela (MESAS[2]):
+ *  - AS DUAS RAMPAS (a da horta à direita e a do pomar à esquerda, cada uma com o seu trilho), e a DUPLA: subir uma e depois a
+ *    outra em até RAMPA_DUPLA_PASSOS vale PONTOS_DA_DUPLA.
+ *  - O SAPO da raia de saída da esquerda: aceso, a bola que desce por ela é devolvida num pulo (um trilho curto) para a raia de
+ *    dentro, sobre a palheta. Acende a cada bola nova e na colheita das cenouras; usado, apaga.
+ *  - AS MISSÕES DELA (MISSOES_DO_LAGO): no lugar dos estilingues, acender as três pistas do alto; as rampas pedem três.
+ * As duas mesas de antes rodam a mesma conta de sempre (web/test/pinball.test.ts guarda o resultado de partidas delas).
  */
 
 export const LARGURA = 240;
@@ -68,14 +76,29 @@ export const PONTOS_DA_TACADA = 2500;
 const TACADA_PASSOS = 240;
 
 /** AS MISSÕES, em ciclo: o evento que conta, quantos, e o prazo (em passos com bola em jogo). */
-export type IdDaMissao = 'cenouras' | 'repolhos' | 'orbitas' | 'rampas' | 'toca' | 'estilingues';
-export const MISSOES: readonly { id: IdDaMissao; evento: string; meta: number; passos: number }[] = [
+export type IdDaMissao = 'cenouras' | 'repolhos' | 'orbitas' | 'rampas' | 'toca' | 'estilingues' | 'pistas';
+export interface Missao {
+  id: IdDaMissao;
+  evento: string;
+  meta: number;
+  passos: number;
+}
+export const MISSOES: readonly Missao[] = [
   { id: 'cenouras', evento: 'cenoura', meta: 3, passos: 1200 },
   { id: 'repolhos', evento: 'repolho', meta: 10, passos: 1200 },
   { id: 'orbitas', evento: 'orbita', meta: 2, passos: 2400 },
   { id: 'rampas', evento: 'rampa', meta: 2, passos: 2400 },
   { id: 'toca', evento: 'toca', meta: 1, passos: 2400 },
   { id: 'estilingues', evento: 'estilingue', meta: 6, passos: 1200 },
+];
+/** As missões do lago (24/11/2026): acender as três pistas no lugar dos estilingues, e três rampas (ele tem duas). */
+export const MISSOES_DO_LAGO: readonly Missao[] = [
+  { id: 'cenouras', evento: 'cenoura', meta: 3, passos: 1200 },
+  { id: 'repolhos', evento: 'repolho', meta: 10, passos: 1200 },
+  { id: 'rampas', evento: 'rampa', meta: 3, passos: 2400 },
+  { id: 'pistas', evento: 'multiplicador', meta: 1, passos: 2400 },
+  { id: 'toca', evento: 'toca', meta: 1, passos: 2400 },
+  { id: 'orbitas', evento: 'orbita', meta: 2, passos: 2400 },
 ];
 export const PONTOS_DA_MISSAO = 1000;
 /**
@@ -321,6 +344,17 @@ export interface Geometria {
   boca: { x0: number; x1: number; y: number };
   trilho: [number, number][];
   trilhoAcc: number[];
+  /** As missões do ciclo desta mesa (sempre seis: o modo final pede todas). */
+  missoes: readonly Missao[];
+  /** A segunda rampa (só o lago). */
+  rampa2?: Rampa;
+  /** O sapo da raia de saída da esquerda (só o lago). */
+  sapo?: boolean;
+}
+export interface Rampa {
+  boca: { x0: number; x1: number; y: number };
+  trilho: [number, number][];
+  trilhoAcc: number[];
 }
 const postes = CIRCULOS.filter((c) => c.tipo === 'poste');
 const REPOLHOS_DO_POMAR: Circulo[] = [
@@ -329,8 +363,33 @@ const REPOLHOS_DO_POMAR: Circulo[] = [
   { x: 113, y: 112, r: 12, tipo: 'repolho', n: 2 },
 ];
 const TRILHO_DO_POMAR: [number, number][] = TRILHO.map(([x, y]) => [m(x), y]);
+/** O lago: as três vitórias-régias (os rebatedores) num arco largo, com a do meio no alto. */
+const VITORIAS_DO_LAGO: Circulo[] = [
+  { x: 72, y: 128, r: 12, tipo: 'repolho', n: 0 },
+  { x: 154, y: 128, r: 12, tipo: 'repolho', n: 1 },
+  { x: 113, y: 104, r: 12, tipo: 'repolho', n: 2 },
+];
+/**
+ * O SAPO: o sensor na raia de saída da esquerda (a bola que desce por ela, à esquerda da ponta da guia), e o pulo, um trilho curto
+ * que sobe a raia de saída e passa por cima da guia, soltando a bola na raia de dentro, sobre a palheta.
+ */
+export const SAPO = { x: 40, y: 360 };
+export const PULO_DO_SAPO: Rampa = (() => {
+  const trilho: [number, number][] = [
+    [16, 362],
+    [14, 320],
+    [16, 284],
+    [24, 262],
+    [33, 254],
+  ];
+  return { boca: { x0: 0, x1: 0, y: 0 }, trilho, trilhoAcc: acumulado(trilho) };
+})();
+export const PONTOS_DO_SAPO = 500;
+/** A dupla do lago: as duas rampas, uma depois da outra, em até 4 s. */
+export const RAMPA_DUPLA_PASSOS = 240;
+export const PONTOS_DA_DUPLA = 2000;
 export const MESAS: readonly Geometria[] = [
-  { repolhos: REPOLHOS, circulos: CIRCULOS, toca: TOCA, tocaLado: 1, boca: BOCA_DA_RAMPA, trilho: TRILHO, trilhoAcc: TRILHO_ACC },
+  { repolhos: REPOLHOS, circulos: CIRCULOS, toca: TOCA, tocaLado: 1, boca: BOCA_DA_RAMPA, trilho: TRILHO, trilhoAcc: TRILHO_ACC, missoes: MISSOES },
   {
     repolhos: REPOLHOS_DO_POMAR,
     circulos: [...REPOLHOS_DO_POMAR, ...postes],
@@ -339,8 +398,23 @@ export const MESAS: readonly Geometria[] = [
     boca: { x0: m(BOCA_DA_RAMPA.x1), x1: m(BOCA_DA_RAMPA.x0), y: BOCA_DA_RAMPA.y },
     trilho: TRILHO_DO_POMAR,
     trilhoAcc: acumulado(TRILHO_DO_POMAR),
+    missoes: MISSOES,
+  },
+  {
+    repolhos: VITORIAS_DO_LAGO,
+    circulos: [...VITORIAS_DO_LAGO, ...postes],
+    toca: TOCA,
+    tocaLado: 1,
+    boca: BOCA_DA_RAMPA,
+    trilho: TRILHO,
+    trilhoAcc: TRILHO_ACC,
+    missoes: MISSOES_DO_LAGO,
+    rampa2: { boca: { x0: m(BOCA_DA_RAMPA.x1), x1: m(BOCA_DA_RAMPA.x0), y: BOCA_DA_RAMPA.y }, trilho: TRILHO_DO_POMAR, trilhoAcc: acumulado(TRILHO_DO_POMAR) },
+    sapo: true,
   },
 ];
+/** As missões do ciclo da mesa. */
+export const missoesDa = (mesa: number): readonly Missao[] => (MESAS[mesa] ?? MESAS[0]).missoes;
 export const mesaValida = (n: unknown): number => (Number.isInteger(n) && (n as number) >= 0 && (n as number) < MESAS.length ? (n as number) : 0);
 
 // =====================================================================================================================
@@ -364,6 +438,8 @@ export interface Bola {
   parada: number;
   /** No trilho da rampa: quanto já andou nele + 1 (0: fora dele). */
   trilho: number;
+  /** Qual trilho: 0 a rampa de sempre, 1 a segunda rampa, 2 o pulo do sapo (só o lago usa os dois últimos). */
+  rampa?: number;
 }
 
 export type Evento =
@@ -387,6 +463,8 @@ export type Evento =
   | { tipo: 'rampa'; x: number; y: number; pontos: number }
   | { tipo: 'missao'; missao: IdDaMissao; cumpriu: boolean; pontos: number; x: number; y: number }
   | { tipo: 'final'; comecou: boolean; pontos: number; x: number; y: number }
+  | { tipo: 'sapo'; x: number; y: number; pontos: number }
+  | { tipo: 'dupla'; x: number; y: number; pontos: number }
   | { tipo: 'fim' };
 
 export interface Mesa {
@@ -445,13 +523,18 @@ export interface Mesa {
   final: number;
   finais: number;
   finalPontos: number;
+  /** O lago: o sapo aceso, e a última rampa (o passo e qual) para a dupla. */
+  sapo: boolean;
+  rampaEm: number;
+  rampaLado: number;
 }
 
-const bolaNaMola = (auto: boolean): Bola => ({ x: RAIA_X, y: MOLA_Y, vx: 0, vy: 0, naMola: true, auto, presa: 0, orbita: 0, parada: 0, trilho: 0 });
+const bolaNaMola = (auto: boolean): Bola => ({ x: RAIA_X, y: MOLA_Y, vx: 0, vy: 0, naMola: true, auto, presa: 0, orbita: 0, parada: 0, trilho: 0, rampa: 0 });
 
 export function novaMesa(limite = PASSOS_MAXIMOS, mesa = 0): Mesa {
+  const n = mesaValida(mesa);
   return {
-    mesa: mesaValida(mesa),
+    mesa: n,
     passo: 0,
     limite: Math.max(1, Math.min(PASSOS_MAXIMOS, limite)),
     pontos: 0,
@@ -482,13 +565,16 @@ export function novaMesa(limite = PASSOS_MAXIMOS, mesa = 0): Mesa {
     extras: 0,
     missao: 0,
     missaoConta: 0,
-    missaoResta: MISSOES[0].passos,
+    missaoResta: MESAS[n].missoes[0].passos,
     patente: 1,
     cumpridas: 0,
     feitas: 0,
     final: 0,
     finais: 0,
     finalPontos: 0,
+    sapo: MESAS[n].sapo === true,
+    rampaEm: -9999,
+    rampaLado: -1,
   };
 }
 
@@ -496,7 +582,7 @@ export function novaMesa(limite = PASSOS_MAXIMOS, mesa = 0): Mesa {
 function contarMissao(k: Mesa) {
   // no modo final as missões param
   if (k.final > 0) return;
-  const m = MISSOES[k.missao];
+  const m = MESAS[k.mesa].missoes[k.missao];
   let n = 0;
   for (const e of k.eventos) {
     if (e.tipo === m.evento || (m.id === 'toca' && e.tipo === 'multibola')) {
@@ -535,13 +621,14 @@ function acabarFinal(k: Mesa) {
   k.eventos.push({ tipo: 'final', comecou: false, pontos: k.finalPontos, x: MEIO, y: 200 });
   k.missao = 0;
   k.missaoConta = 0;
-  k.missaoResta = MISSOES[0].passos;
+  k.missaoResta = MESAS[k.mesa].missoes[0].passos;
 }
 
 function proximaMissao(k: Mesa) {
-  k.missao = (k.missao + 1) % MISSOES.length;
+  const l = MESAS[k.mesa].missoes;
+  k.missao = (k.missao + 1) % l.length;
   k.missaoConta = 0;
-  k.missaoResta = MISSOES[k.missao].passos;
+  k.missaoResta = l[k.missao].passos;
 }
 
 /** A ponta da palheta (para o desenho e para a conta): `lado` −1 esquerda, 1 direita. */
@@ -624,6 +711,7 @@ function colidirComParedes(k: Mesa, b: Bola) {
       if (!k.alvos.some(Boolean) && !k.tilt) {
         k.tocaAcesa = true;
         k.alvosVoltam = 90;
+        if (MESAS[k.mesa].sapo) k.sapo = true;
         k.eventos.push({ tipo: 'colheita', x: cx, y: cy, pontos: marcar(k, 1000, 300) });
       } else if (!k.alvos.some(Boolean)) k.alvosVoltam = 90;
     }
@@ -682,6 +770,18 @@ function lancar(k: Mesa, b: Bola, carga: number) {
     k.salvaPronta = false;
     k.salva = Math.max(k.salva, SALVA_PASSOS);
   }
+}
+
+/** A dupla do lago: a outra rampa, logo depois desta. */
+function duplaDoLago(k: Mesa, lado: number, x: number, y: number) {
+  if (k.tilt) return;
+  if (k.rampaLado >= 0 && k.rampaLado !== lado && k.passo - k.rampaEm <= RAMPA_DUPLA_PASSOS) {
+    k.eventos.push({ tipo: 'dupla', x, y: y + 12, pontos: marcar(k, PONTOS_DA_DUPLA, 300) });
+    k.rampaLado = -1;
+    return;
+  }
+  k.rampaLado = lado;
+  k.rampaEm = k.passo;
 }
 
 function acenderPista(k: Mesa, n: number, b: Bola) {
@@ -753,7 +853,7 @@ export function passo(k: Mesa, comando: number) {
     if (k.bolas.some((b) => !b.naMola) && k.final === 1) acabarFinal(k);
     else if (k.bolas.some((b) => !b.naMola)) k.final--;
   } else if (k.bolas.some((b) => !b.naMola) && --k.missaoResta <= 0) {
-    k.eventos.push({ tipo: 'missao', missao: MISSOES[k.missao].id, cumpriu: false, pontos: 0, x: MEIO, y: 230 });
+    k.eventos.push({ tipo: 'missao', missao: MESAS[k.mesa].missoes[k.missao].id, cumpriu: false, pontos: 0, x: MEIO, y: 230 });
     proximaMissao(k);
   }
   if (k.alvosVoltam > 0 && --k.alvosVoltam === 0) k.alvos = [true, true, true];
@@ -763,8 +863,9 @@ export function passo(k: Mesa, comando: number) {
       // no trilho da rampa: anda por ele, e sai no fim, caindo na primeira pista
       b.trilho += TRILHO_POR_PASSO;
       const g = MESAS[k.mesa];
-      const fim = g.trilhoAcc[g.trilhoAcc.length - 1];
-      const [x, y] = pontoDoTrilho(b.trilho - 1, g);
+      const r: { trilho: readonly [number, number][]; trilhoAcc: readonly number[] } = !b.rampa ? g : b.rampa === 1 ? g.rampa2! : PULO_DO_SAPO;
+      const fim = r.trilhoAcc[r.trilhoAcc.length - 1];
+      const [x, y] = pontoDoTrilho(b.trilho - 1, r);
       b.x = x;
       b.y = y;
       if (b.trilho - 1 >= fim) {
@@ -829,12 +930,41 @@ export function passo(k: Mesa, comando: number) {
       const g = MESAS[k.mesa];
       if (py > g.boca.y && b.y <= g.boca.y && b.x > g.boca.x0 && b.x < g.boca.x1 && b.vy < -VELOCIDADE_DA_BOCA && !k.tilt) {
         b.trilho = 1;
+        b.rampa = 0;
         b.x = g.trilho[0][0];
         b.y = g.trilho[0][1];
         // vx guarda o lado da entrada (metade), para a saída
         b.vx = b.vx * 0.5;
         b.vy = 0;
         k.eventos.push({ tipo: 'rampa', x: g.trilho[0][0], y: g.trilho[0][1], pontos: marcar(k, PONTOS_DA_RAMPA, 150) });
+        if (g.rampa2) duplaDoLago(k, 0, g.trilho[0][0], g.trilho[0][1]);
+        continue;
+      }
+      // o lago: a segunda rampa, e o sapo da raia de saída da esquerda
+      if (g.rampa2) {
+        const r2 = g.rampa2;
+        if (py > r2.boca.y && b.y <= r2.boca.y && b.x > r2.boca.x0 && b.x < r2.boca.x1 && b.vy < -VELOCIDADE_DA_BOCA && !k.tilt) {
+          b.trilho = 1;
+          b.rampa = 1;
+          b.x = r2.trilho[0][0];
+          b.y = r2.trilho[0][1];
+          b.vx = b.vx * 0.5;
+          b.vy = 0;
+          k.eventos.push({ tipo: 'rampa', x: r2.trilho[0][0], y: r2.trilho[0][1], pontos: marcar(k, PONTOS_DA_RAMPA, 150) });
+          duplaDoLago(k, 1, r2.trilho[0][0], r2.trilho[0][1]);
+          continue;
+        }
+      }
+      if (g.sapo && k.sapo && !k.tilt && py < SAPO.y && b.y >= SAPO.y && b.x < SAPO.x) {
+        k.sapo = false;
+        b.trilho = 1;
+        b.rampa = 2;
+        b.x = PULO_DO_SAPO.trilho[0][0];
+        b.y = PULO_DO_SAPO.trilho[0][1];
+        // sai do pulo com um empurrão leve para dentro (a saída do trilho guarda o vx)
+        b.vx = 40;
+        b.vy = 0;
+        k.eventos.push({ tipo: 'sapo', x: 16, y: SAPO.y, pontos: marcar(k, PONTOS_DO_SAPO, 50) });
         continue;
       }
       if (py > ORBITA_Y && b.y <= ORBITA_Y && b.x < GUIA_DA_ORBITA_X) b.orbita = 120;
@@ -941,6 +1071,7 @@ export function passo(k: Mesa, comando: number) {
       } else {
         k.bolas.push(bolaNaMola(false));
         k.salvaPronta = true;
+        if (MESAS[k.mesa].sapo) k.sapo = true;
       }
     }
   }

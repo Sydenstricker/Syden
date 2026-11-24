@@ -282,14 +282,14 @@
   opacity: 1;
 }
 .pinball-mesas .pinball-previa {
-  height: min(36vh, 300px);
+  height: min(32vh, 260px);
   width: auto;
 }
-/* na tela estreita (20/11/2026, medido a 390 px): as duas mesas da largada cabem lado a lado, sem rolar para o lado */
+/* na tela estreita (20/11/2026, medido a 390 px): as mesas da largada cabem lado a lado, sem rolar para o lado (três desde 24/11/2026) */
 @media (max-width: 560px) {
   .pinball-mesas .pinball-previa {
     height: auto;
-    width: min(36vw, 180px);
+    width: min(26vw, 150px);
   }
 }
 

@@ -5,7 +5,7 @@ import { criarImpacto } from './impacto';
 import { Crown, Star, Vibrate } from 'lucide-react';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { desenharFundo, desenharMesa, type Texto } from './pinball/desenho';
-import { BOLAS, compactar, DIR, ESQ, FINAL_PASSOS, FINAL_VEZES, LARGURA, MISSOES, MOLA, novaMesa, PASSO, passo, PASSOS_POR_TRECHO, pilotoAutomatico, SACUDIR, type Evento, type IdDaMissao, type Mesa } from './pinball/sim';
+import { BOLAS, compactar, DIR, ESQ, FINAL_PASSOS, FINAL_VEZES, LARGURA, missoesDa, MOLA, novaMesa, PASSO, passo, PASSOS_POR_TRECHO, pilotoAutomatico, SACUDIR, type Evento, type IdDaMissao, type Mesa } from './pinball/sim';
 import { tocar, type Efeito } from './somDosJogos';
 import './pinball/pinball.css';
 
@@ -44,6 +44,8 @@ export interface EstadoPinball {
   /** No Solo (19/11/2026): a mesa da partida (0 a horta, 1 o pomar) e o meu recorde no pomar. */
   mesa?: number;
   recordeDoPomar?: number | null;
+  /** A terceira mesa (24/11/2026): o meu recorde no lago. */
+  recordeDoLago?: number | null;
   resultado?: { pontos: number; recorde: boolean; anterior: number | null } | null;
   /** Na sala: mais pontos primeiro (os pontos refeitos pelo servidor). */
   placar?: { userId: number; username: string; pontos: number; bola: number; terminou: boolean; posicao: number | null }[];
@@ -109,11 +111,12 @@ function PinballSolo({ estado, eu, jogador, agir }: Props) {
   }
   const r = estado.resultado;
   const meuNaHorta = estado.recordes?.find((x) => x.userId === eu);
-  const meu = mesa === 1 ? (estado.recordeDoPomar != null ? { pontos: estado.recordeDoPomar } : undefined) : meuNaHorta;
+  const doSolo = mesa === 1 ? estado.recordeDoPomar : mesa === 2 ? estado.recordeDoLago : null;
+  const meu = mesa === 0 ? meuNaHorta : doSolo != null ? { pontos: doSolo } : undefined;
   return (
     <div className="pinball pinball-escolha">
       <div className="pinball-mesas" role="radiogroup" aria-label={t('Mesa')}>
-        {[0, 1].map((n) => (
+        {[0, 1, 2].map((n) => (
           <button key={n} type="button" role="radio" aria-checked={mesa === n} aria-label={`${t('Mesa')} ${n + 1}`} className={mesa === n ? 'escolhida' : undefined} onClick={() => setMesa(n)}>
             <Previa mesa={n} />
           </button>
@@ -266,6 +269,8 @@ const SOM: Partial<Record<Evento['tipo'], Efeito>> = {
   extra: 'medalha',
   rampa: 'turbo',
   final: 'torcida',
+  sapo: 'pulo',
+  dupla: 'combo',
 };
 
 /** O texto de cada missão (19/11/2026), com a meta dela. */
@@ -276,6 +281,7 @@ const TEXTO_DA_MISSAO: Record<IdDaMissao, string> = {
   rampas: chave('Suba {n} rampas'),
   toca: chave('Ponha a bola na toca'),
   estilingues: chave('Acerte {n} estilingues'),
+  pistas: chave('Acenda as três pistas do alto'),
 };
 
 /** As faíscas dos rebatedores (19/11/2026, só desenho). */
@@ -345,7 +351,7 @@ function Partida({
     aviso: null,
     missao: 0,
     missaoConta: 0,
-    missaoResta: MISSOES[0].passos,
+    missaoResta: missoesDa(mesa)[0].passos,
     patente: 1,
     final: 0,
   });
@@ -395,6 +401,12 @@ function Partida({
         impacto.tremer(0.18, 100);
         soltarFaiscas(e.x, e.y, 6, '#ffffff');
       } else if (e.tipo === 'rampa' || e.tipo === 'tacada') soltarFaiscas(e.x, e.y, 10, '#ffd65a');
+      // o lago (24/11/2026): o sapo devolve a bola (gotas), e a dupla das rampas treme como a missão
+      else if (e.tipo === 'sapo') soltarFaiscas(e.x, e.y, 10, '#8fd0f0');
+      else if (e.tipo === 'dupla') {
+        impacto.tremer(0.35, 180);
+        soltarFaiscas(e.x, e.y, 16, '#ffd65a');
+      }
       if (e.tipo === 'tacada') avisar('tacada', 2000);
       else if (e.tipo === 'extra') avisar('extra', 2200);
       else if (e.tipo === 'missao' && e.cumpriu) {
@@ -606,9 +618,9 @@ function Partida({
               <span className="pinball-patente" title={`★ ${painel.patente}`}>
                 <Star size={12} aria-hidden="true" /> {painel.patente}
               </span>
-              <span className="pinball-missao-texto">{t(TEXTO_DA_MISSAO[MISSOES[painel.missao].id], { n: MISSOES[painel.missao].meta })}</span>
+              <span className="pinball-missao-texto">{t(TEXTO_DA_MISSAO[missoesDa(mesa)[painel.missao].id], { n: missoesDa(mesa)[painel.missao].meta })}</span>
               <span className="pinball-missao-conta">
-                {painel.missaoConta}/{MISSOES[painel.missao].meta} · {Math.ceil(painel.missaoResta * PASSO)}s
+                {painel.missaoConta}/{missoesDa(mesa)[painel.missao].meta} · {Math.ceil(painel.missaoResta * PASSO)}s
               </span>
             </div>
           )}

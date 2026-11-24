@@ -9,6 +9,7 @@
  */
 import {
   MESAS,
+  SAPO,
   ALVOS_X,
   ALVOS_Y,
   ALTURA,
@@ -140,6 +141,8 @@ function contorno(): [number, number][] {
 const TEMAS = [
   { grama: '#4f8a3a', gramaEscura: COR.gramaEscura, gramaClara: COR.gramaClara },
   { grama: '#8a7d34', gramaEscura: '#7d702e', gramaClara: '#a8963f' },
+  // o lago (24/11/2026): a água, com as ondinhas claras no lugar do salpicado da grama
+  { grama: '#3f7f96', gramaEscura: '#387489', gramaClara: '#8fd0e6' },
 ];
 
 export function desenharFundo(mesa = 0): HTMLCanvasElement {
@@ -178,7 +181,9 @@ export function desenharFundo(mesa = 0): HTMLCanvasElement {
   c.fillStyle = COR.madeiraEscura;
   c.fillRect(RAIA_ESQ, 140, RAIA_DIR - RAIA_ESQ, MOLA_Y + RAIO - 140);
   // a terra embaixo dos repolhos e em volta da toca
-  for (const r of g.repolhos) circulo(c, r.x, r.y + 2, r.r + 4, COR.terraEscura);
+  if (mesa !== 2) for (const r of g.repolhos) circulo(c, r.x, r.y + 2, r.r + 4, COR.terraEscura);
+  // no lago, a sombra das folhas é a água mais funda, e a toca fica numa ilhota
+  if (mesa === 2) for (const r of g.repolhos) circulo(c, r.x, r.y + 2, r.r + 4, '#2f667a');
   circulo(c, g.toca.x, g.toca.y + 1, 12, COR.terraEscura);
   circulo(c, g.toca.x, g.toca.y, 10, COR.terra);
   // a raia da órbita, de terra batida
@@ -218,6 +223,36 @@ function cenoura(c: Ctx, x: number, y: number, alt: number, acesa: boolean) {
   ponto(c, x - 1, y - 1, acesa ? COR.folha : COR.madeiraEscura);
   ponto(c, x + 1, y - 2, acesa ? COR.folha : COR.madeiraEscura);
   ponto(c, x, y - 2, acesa ? COR.folhaEscura : COR.madeiraEscura);
+}
+
+/** A vitória-régia do lago: a folha redonda com o corte e a borda virada; acesa, a flor abre no meio. */
+function vitoria(c: Ctx, x: number, y: number, r: number, aceso: boolean) {
+  circulo(c, x, y, r + 1, COR.folhaEscura);
+  circulo(c, x, y, r, aceso ? '#c9f0a0' : '#5aa845');
+  circulo(c, x, y, r - 3, aceso ? '#e4ffc8' : '#6fbf55');
+  // o corte da folha, até o meio
+  poligono(c, [[x, y], [x + r + 1, y - 4], [x + r + 1, y + 1]], '#3f7f96');
+  // as nervuras
+  const nervura = aceso ? '#a8d880' : '#4f9a3e';
+  linha(c, x, y, x - r + 3, y, nervura);
+  linha(c, x, y, x, y - r + 3, nervura);
+  linha(c, x, y, x, y + r - 3, nervura);
+  // a flor: rosa, aberta quando acende
+  circulo(c, x - 2, y + 2, aceso ? 4 : 2.5, aceso ? '#ffd0e6' : '#e88ab8');
+  if (aceso) circulo(c, x - 2, y + 2, 1.5, '#ffd65a');
+}
+
+/** O sapo da raia de saída: aceso, verde e de olhos abertos; usado, apagado na pedra. */
+function sapo(c: Ctx, x: number, y: number, aceso: boolean, pisca: boolean) {
+  circulo(c, x, y + 3, 7, '#6b6b5e');
+  const corpo = aceso ? '#5fbf4a' : '#3d5a32';
+  circulo(c, x, y, 5, corpo);
+  circulo(c, x - 3, y - 4, 2, corpo);
+  circulo(c, x + 3, y - 4, 2, corpo);
+  ponto(c, x - 3, y - 4, aceso ? '#ffffff' : '#2a3a20');
+  ponto(c, x + 3, y - 4, aceso ? '#ffffff' : '#2a3a20');
+  linha(c, x - 2, y + 1, x + 2, y + 1, aceso ? COR.folhaEscura : '#2a3a20');
+  if (aceso && pisca) circulo(c, x, y + 9, 1.5, COR.luz);
 }
 
 /** A abóbora do pomar: o corpo laranja com os gomos e o cabinho. */
@@ -321,7 +356,7 @@ export function desenharMesa(c: Ctx, fundo: HTMLCanvasElement, k: Mesa, textos: 
   for (let i = 0; i < 3; i++) cenoura(c, TOCA.x - 8 + i * 8, TOCA.y + 14, 5, !k.alvos[i]);
 
   // os repolhos (piscam quando acertados) e os elásticos dos estilingues
-  for (const r of g.repolhos) (k.mesa === 1 ? abobora : repolho)(c, r.x, r.y, r.r, k.passo - k.acesoEm[r.n!] < 6);
+  for (const r of g.repolhos) (k.mesa === 1 ? abobora : k.mesa === 2 ? vitoria : repolho)(c, r.x, r.y, r.r, k.passo - k.acesoEm[r.n!] < 6);
   for (const [t, n] of [
     [ESTILINGUE_ESQ, 3],
     [ESTILINGUE_DIR, 4],
@@ -355,24 +390,29 @@ export function desenharMesa(c: Ctx, fundo: HTMLCanvasElement, k: Mesa, textos: 
   palheta(c, 1, k.dir);
 
   // A RAMPA (19/11/2026): a boca com as três setas que acendem, e o trilho de dois fios até o alto, por cima da mesa
-  for (let i = 0; i < 3; i++) {
-    const acesa = ((quadro >> 3) + i) % 3 === 0;
-    const y = g.boca.y + 10 + i * 6;
-    const xm = (g.boca.x0 + g.boca.x1) / 2;
-    linha(c, xm - 4, y + 3, xm, y, acesa ? COR.luz : COR.apagada);
-    linha(c, xm, y, xm + 4, y + 3, acesa ? COR.luz : COR.apagada);
+  // (o lago, 24/11/2026, tem duas)
+  for (const rampa of g.rampa2 ? [g, g.rampa2] : [g]) {
+    for (let i = 0; i < 3; i++) {
+      const acesa = ((quadro >> 3) + i) % 3 === 0;
+      const y = rampa.boca.y + 10 + i * 6;
+      const xm = (rampa.boca.x0 + rampa.boca.x1) / 2;
+      linha(c, xm - 4, y + 3, xm, y, acesa ? COR.luz : COR.apagada);
+      linha(c, xm, y, xm + 4, y + 3, acesa ? COR.luz : COR.apagada);
+    }
+    for (let i = 0; i < rampa.trilho.length - 1; i++) {
+      const [ax, ay] = rampa.trilho[i];
+      const [bx, by] = rampa.trilho[i + 1];
+      const dx = bx - ax;
+      const dy = by - ay;
+      const l = Math.hypot(dx, dy) || 1;
+      const nx = (-dy / l) * 3.5;
+      const ny = (dx / l) * 3.5;
+      linha(c, ax + nx, ay + ny, bx + nx, by + ny, '#c9d3dc');
+      linha(c, ax - nx, ay - ny, bx - nx, by - ny, '#8796a5');
+    }
   }
-  for (let i = 0; i < g.trilho.length - 1; i++) {
-    const [ax, ay] = g.trilho[i];
-    const [bx, by] = g.trilho[i + 1];
-    const dx = bx - ax;
-    const dy = by - ay;
-    const l = Math.hypot(dx, dy) || 1;
-    const nx = (-dy / l) * 3.5;
-    const ny = (dx / l) * 3.5;
-    linha(c, ax + nx, ay + ny, bx + nx, by + ny, '#c9d3dc');
-    linha(c, ax - nx, ay - ny, bx - nx, by - ny, '#8796a5');
-  }
+  // o sapo do lago, na raia de saída da esquerda, um pouco acima do sensor
+  if (g.sapo) sapo(c, 16, SAPO.y - 22, k.sapo, pisca);
 
   // as bolas
   for (const b of k.bolas) {

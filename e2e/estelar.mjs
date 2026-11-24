@@ -6,6 +6,8 @@
 //   os eventos vão ao servidor, que confere cada um, e a tela diz "Vitória!" e "Novo recorde!" com os pontos DELE (iguais
 //   aos da tela).
 //
+// - Desde 24/11/2026 a largada pede a rota: ROTA=gelo voa a rota do gelo (a nave-mãe no fim); sem ele, a do planeta.
+//
 //   SITE=http://localhost:5307 node e2e/estelar.mjs   (API de teste e site de desenvolvimento; não precisa do LiveKit)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -31,6 +33,7 @@ try {
   const painel = lia.locator('.jogos-painel');
   await painel.waitFor();
   await painel.locator('.jogos-solo button', { hasText: 'Rota Estelar' }).click();
+  await painel.locator('.corrida-pista-botao', { hasText: process.env.ROTA === 'gelo' ? 'Rota do gelo' : 'Rota do planeta' }).click();
   await lia.locator('.estelar-caixa:not(.escondida)').waitFor({ timeout: 40000 });
   ok('no quarto, sem chamada, a Rota Estelar abriu a cena 3D');
   await lia.waitForFunction(() => (window.estelarDoTeste?.passo ?? -1) > 5, null, { timeout: 15000 });

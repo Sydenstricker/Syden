@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { CEUS, carregarCeu, cupulaDoCeu, giroPara, type CupulaDoCeu } from '../ceus';
 import { carregarCoelho, copiarCoelho, type CoelhoCopiado, type CoresDoCoelho } from '../coelho3d';
-import { BIFURCA, BOMBA_RAIO, CHAO, CHEFE_T, LIM_X, LIM_Y, RAIO_ANEL, SUBCHEFE_T, Z_FIM_DO_CHAO, passoDoAnel, posicaoBala, posicaoInimigo, posicaoItem, zNave, type Ramo, type Tipo } from './sim';
+import { BIFURCA, BOMBA_RAIO, CHAO, CHEFE_T, LIM_X, LIM_Y, RAIO_ANEL, SUBCHEFE_T, Z_FIM_DO_CHAO, ROTA_DO_GELO, ehChefe, passoDoAnel, posicaoBala, posicaoInimigo, posicaoItem, zNave, type Ramo, type Tipo } from './sim';
 import { posicaoTiro, type Mundo } from './mundo';
 
 /**
@@ -22,6 +22,9 @@ const BASE = `${import.meta.env.BASE_URL}estelar/`;
 export const COR_DO_CEU = '#c9a7d8';
 const COR_DO_ESPACO = '#0b1030';
 const COR_DO_CHAO = '#d9824c';
+/** A rota do gelo (24/11/2026): o chão de neve e gelo, e o céu azulado do planeta gelado. */
+const COR_DO_GELO = '#dfeef7';
+const COR_DO_CEU_DO_GELO = '#a9c8e6';
 
 const MODELOS = ['dropship', 'lander_A', 'spacetruck_large', 'rock_A', 'rock_B', 'rocks_A', 'dome', 'basemodule_A', 'windturbine_tall', 'solarpanel', 'structure_tall', 'landingpad_large'] as const;
 type Modelo = (typeof MODELOS)[number];
@@ -72,28 +75,28 @@ function etiqueta(texto: string): THREE.Sprite {
   return s;
 }
 
-/** O chão do planeta: areia laranja com crateras e pedrinhas, num quadro que se repete. */
-function texturaDoChao(): THREE.CanvasTexture {
+/** O chão do planeta: areia laranja com crateras e pedrinhas, num quadro que se repete (no gelo, neve com as rachaduras azuis). */
+function texturaDoChao(gelo = false): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = c.height = 256;
   const g = c.getContext('2d')!;
-  g.fillStyle = COR_DO_CHAO;
+  g.fillStyle = gelo ? COR_DO_GELO : COR_DO_CHAO;
   g.fillRect(0, 0, 256, 256);
   const r = sorteio(99);
   for (let k = 0; k < 140; k++) {
-    g.fillStyle = r() < 0.5 ? 'rgba(160, 82, 44, 0.35)' : 'rgba(246, 184, 120, 0.35)';
+    g.fillStyle = r() < 0.5 ? (gelo ? 'rgba(120, 170, 210, 0.3)' : 'rgba(160, 82, 44, 0.35)') : gelo ? 'rgba(255, 255, 255, 0.5)' : 'rgba(246, 184, 120, 0.35)';
     g.beginPath();
     g.arc(r() * 256, r() * 256, 2 + r() * 7, 0, Math.PI * 2);
     g.fill();
   }
   for (let k = 0; k < 6; k++) {
     const x = r() * 256, y = r() * 256, raio = 10 + r() * 16;
-    g.strokeStyle = 'rgba(130, 64, 34, 0.5)';
+    g.strokeStyle = gelo ? 'rgba(90, 150, 200, 0.5)' : 'rgba(130, 64, 34, 0.5)';
     g.lineWidth = 3;
     g.beginPath();
     g.arc(x, y, raio, 0, Math.PI * 2);
     g.stroke();
-    g.fillStyle = 'rgba(170, 88, 48, 0.4)';
+    g.fillStyle = gelo ? 'rgba(150, 200, 235, 0.45)' : 'rgba(170, 88, 48, 0.4)';
     g.fill();
   }
   const t = new THREE.CanvasTexture(c);
@@ -259,12 +262,14 @@ export class CenaEstelar {
    * abaixo do horizonte a cúpula é a cor da névoa (o chão ao longe some nela). Sem as imagens, a cor lisa de sempre.
    */
   private async ceuDaKenney() {
-    const [a, b] = await Promise.all([carregarCeu('alienigena'), carregarCeu('galaxia')]).catch(() => [null, null]);
+    // (a rota do gelo, 24/11/2026: o céu azul do dia no lugar do lilás)
+    const qual = this.mundo.r.rota === ROTA_DO_GELO ? 'dia' : 'alienigena';
+    const [a, b] = await Promise.all([carregarCeu(qual), carregarCeu('galaxia')]).catch(() => [null, null]);
     if (!a || !b || this.morta) return;
     const s = this.sol.position;
-    const c = cupulaDoCeu(a, b, giroPara(CEUS.alienigena.sol, s.x, s.z), giroPara(CEUS.galaxia.sol, 0, 1), CEUS.alienigena.horizonte);
+    const c = cupulaDoCeu(a, b, giroPara(CEUS[qual].sol, s.x, s.z), giroPara(CEUS.galaxia.sol, 0, 1), CEUS[qual].horizonte);
     this.descartaveis.push(c.mesh.geometry, c.material);
-    this.ceu.set(CEUS.alienigena.horizonte);
+    this.ceu.set(CEUS[qual].horizonte);
     this.espaco.set(CEUS.galaxia.horizonte);
     this.cena.add(c.mesh);
     this.cupula = c;
@@ -282,7 +287,13 @@ export class CenaEstelar {
     c.add(this.sol, this.sol.target);
 
     // o chão do planeta, que acaba em Z_FIM_DO_CHAO
-    const tex = texturaDoChao();
+    const gelo = r.rota === ROTA_DO_GELO;
+    if (gelo) {
+      this.ceu.set(COR_DO_CEU_DO_GELO);
+      c.background = this.ceu.clone();
+      (c.fog as THREE.Fog).color.set(COR_DO_CEU_DO_GELO);
+    }
+    const tex = texturaDoChao(gelo);
     this.descartaveis.push(tex);
     const comp = Z_FIM_DO_CHAO + 260;
     tex.repeat.set(10, comp / 40);
@@ -305,6 +316,8 @@ export class CenaEstelar {
     const viga = this.material(new THREE.MeshStandardMaterial({ color: '#f2c14e', metalness: 0.4, roughness: 0.45 }));
     const vigaEscura = this.material(new THREE.MeshStandardMaterial({ color: '#3a3f4f', metalness: 0.5, roughness: 0.5 }));
     const caixaG = this.geometria(new THREE.BoxGeometry(1, 1, 1));
+    const gelo1 = this.material(new THREE.MeshStandardMaterial({ color: '#9fd8f0', emissive: '#2a6a8a', emissiveIntensity: 0.35, metalness: 0.1, roughness: 0.15, transparent: true, opacity: 0.88 }));
+    const gelo2 = this.material(new THREE.MeshStandardMaterial({ color: '#f4fbff', emissive: '#7fb8d8', emissiveIntensity: 0.4, roughness: 0.3 }));
     for (const ob of r.obstaculos) {
       let o: THREE.Object3D;
       const alto = ob.y1 - ob.y0;
@@ -316,6 +329,27 @@ export class CenaEstelar {
         o = this.clonar('windturbine_tall');
         o.scale.setScalar(alto / 2.2);
         o.position.set(ob.x, ob.y0 + (0.49 * alto) / 2.2, ob.z);
+      } else if (ob.modelo === 'cristal') {
+        // o cristal de gelo (por código): um prisma de seis faces de ponta, inclinado um pouco
+        const cr = new THREE.Mesh(this.geometria(new THREE.ConeGeometry(1, 1, 6)), gelo1);
+        cr.scale.set(ob.raio * 1.1, alto, ob.raio * 1.1);
+        cr.position.y = alto / 2;
+        const gr = new THREE.Group();
+        gr.add(cr);
+        gr.position.set(ob.x, ob.y0, ob.z);
+        gr.rotation.z = (ob.x % 1) * 0.3;
+        o = gr;
+      } else if (ob.modelo === 'arco') {
+        // a laje de gelo (o arco e as portas do anel de gelo), com a borda mais clara
+        const gr = new THREE.Group();
+        const corpo = new THREE.Mesh(caixaG, gelo1);
+        corpo.scale.set(ob.raio * 2, alto, ob.fundo * 2);
+        const borda = new THREE.Mesh(caixaG, gelo2);
+        borda.scale.set(ob.raio * 2 + 0.1, 0.25, ob.fundo * 2 + 0.1);
+        borda.position.y = (ob.y1 > 0 ? -1 : 1) * (alto / 2);
+        gr.add(corpo, borda);
+        gr.position.set(ob.x, (ob.y0 + ob.y1) / 2, ob.z);
+        o = gr;
       } else if (ob.modelo === 'bloco') {
         o = this.clonar('landingpad_large');
         o.scale.set((ob.raio * 2) / 2.5, 0.8, (ob.fundo * 2) / 2.5);
@@ -379,10 +413,11 @@ export class CenaEstelar {
     for (let k = 0; k < 40; k++) {
       const ramo: 1 | 2 = k % 2 === 0 ? 1 : 2;
       const lado = er() < 0.5 ? -1 : 1;
-      const o = ramo === 1 ? this.clonar(er() < 0.5 ? 'rock_B' : 'rocks_A', 14 + er() * 16) : this.clonar(er() < 0.5 ? 'basemodule_A' : 'dome', 6 + er() * 4);
+      // (na rota do gelo, as duas rotas passam entre rochas: a nebulosa e o anel de gelo)
+      const o = ramo === 1 || gelo ? this.clonar(er() < 0.5 ? 'rock_B' : 'rocks_A', 14 + er() * 16) : this.clonar(er() < 0.5 ? 'basemodule_A' : 'dome', 6 + er() * 4);
       const giro = er() * Math.PI * 2;
       o.rotation.set(er() * 3, giro, er() * 3);
-      if (ramo === 2) o.rotation.set(0, giro, 0);
+      if (ramo === 2 && !gelo) o.rotation.set(0, giro, 0);
       o.position.set(lado * (24 + er() * 30), -14 + er() * 28, zb + 40 + er() * (zNave(CHEFE_T) - zb + 200));
       c.add(o);
       this.enfeitesDasRotas.push({ o, ramo, lado, giro });
@@ -606,6 +641,67 @@ export class CenaEstelar {
       const e = new THREE.Mesh(this.geometria(new THREE.SphereGeometry(0.7, 12, 8)), olho);
       e.position.set(0, 3.8, -3.1);
       g.add(canhao, e);
+    } else if (tipo === 'mina') {
+      // a mina da rota do gelo (por código): a bola de metal com os espetos e a luz vermelha em cima
+      const bola = new THREE.Mesh(this.geometria(new THREE.IcosahedronGeometry(0.85, 1)), metal);
+      g.add(bola);
+      const espeto = this.geometria(new THREE.ConeGeometry(0.18, 0.6, 6));
+      for (const [x, y, z] of [
+        [1, 0, 0],
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, -1, 0],
+        [0, 0, 1],
+        [0, 0, -1],
+      ]) {
+        const m = new THREE.Mesh(espeto, roxo);
+        m.position.set(x * 0.95, y * 0.95, z * 0.95);
+        m.lookAt(x * 2, y * 2, z * 2);
+        m.rotateX(Math.PI / 2);
+        g.add(m);
+      }
+      const e = new THREE.Mesh(this.geometria(new THREE.SphereGeometry(0.25, 8, 6)), olho);
+      e.position.set(0, 0.55, -0.6);
+      g.add(e);
+      g.userData.gira = bola;
+    } else if (tipo === 'sentinela') {
+      // a sentinela (por código): o anel grande que gira em volta do miolo com o olho
+      metal.emissive.set('#3a4a66');
+      roxo.emissive.set('#2a3f6a');
+      const anel = new THREE.Mesh(this.geometria(new THREE.TorusGeometry(3, 0.55, 10, 32)), metal);
+      const miolo = new THREE.Mesh(this.geometria(new THREE.SphereGeometry(1.5, 16, 12)), roxo);
+      const e = new THREE.Mesh(this.geometria(new THREE.SphereGeometry(0.7, 12, 8)), olho);
+      e.position.set(0, 0, -1.3);
+      const giro = new THREE.Group();
+      giro.add(anel);
+      for (let k = 0; k < 4; k++) {
+        const luz = new THREE.Mesh(this.geometria(new THREE.SphereGeometry(0.35, 8, 6)), olho);
+        const a = (k / 4) * Math.PI * 2;
+        luz.position.set(Math.cos(a) * 3, Math.sin(a) * 3, 0);
+        giro.add(luz);
+      }
+      g.add(giro, miolo, e);
+      g.userData.anel = giro;
+    } else if (tipo === 'mae') {
+      // a nave-mãe: o cargueiro do pacote em tamanho de chefe, com a ponte de comando, o hangar aceso e os canhões
+      metal.emissive.set('#3a3550');
+      roxo.emissive.set('#3b2466');
+      const o = this.clonar('dropship', 7);
+      o.rotation.y = Math.PI;
+      o.position.y = -2;
+      const ponte = new THREE.Mesh(this.geometria(new THREE.BoxGeometry(3, 1.6, 2.4)), roxo);
+      ponte.position.set(0, 2.6, 1.5);
+      const hangar = new THREE.Mesh(this.geometria(new THREE.BoxGeometry(3.2, 1.2, 0.3)), this.material(new THREE.MeshBasicMaterial({ color: '#ffd24a' })));
+      hangar.position.set(0, -0.6, -4.2);
+      const e = new THREE.Mesh(this.geometria(new THREE.SphereGeometry(0.8, 12, 8)), olho);
+      e.position.set(0, 2.6, 0.2);
+      g.add(o, ponte, hangar, e);
+      for (const lado of [-1, 1]) {
+        const canhao = new THREE.Mesh(this.geometria(new THREE.CylinderGeometry(0.4, 0.5, 3, 8)), metal);
+        canhao.rotation.x = Math.PI / 2;
+        canhao.position.set(lado * 4.5, 0.4, -2.5);
+        g.add(canhao);
+      }
     } else {
       // o polvo de lata: a cabeça redonda, o olho grande e oito braços em gomos (com um brilho próprio: no espaço a luz é pouca)
       metal.emissive.set('#3a3550');
@@ -738,7 +834,7 @@ export class CenaEstelar {
       }
       o.position.set(p.x, p.y, p.z);
       const vira = q.eu ? Math.atan2(q.eu.x - p.x, -(p.z - zn)) * 0.5 : 0;
-      if (e.tipo !== 'rocha' && e.tipo !== 'chefe' && e.tipo !== 'subchefe') o.rotation.y = vira;
+      if (e.tipo !== 'rocha' && e.tipo !== 'mina' && !ehChefe(e.tipo)) o.rotation.y = vira;
       if (e.tipo === 'drone' && !this.calmo) o.rotation.z = Math.sin(this.relogio * 3 + i) * 0.2;
       if (o.userData.gira && !this.calmo) (o.userData.gira as THREE.Object3D).rotation.set(this.relogio * 0.7 + i, this.relogio * 0.4, 0);
       if (o.userData.bracos) {
@@ -747,6 +843,7 @@ export class CenaEstelar {
         });
         if (!this.calmo) o.rotation.y = Math.sin(this.relogio * 0.5) * 0.25;
       }
+      if (o.userData.anel && !this.calmo) (o.userData.anel as THREE.Object3D).rotation.z = this.relogio * 1.2;
       // o golpe faz o inimigo piscar de branco por um instante
       const ferido = m.efeitos.some((f) => f.tipo === 'faisca' && nInteiro - f.em < 4 && Math.abs(f.z - p.z) < 6 && Math.abs(f.x - p.x) < 5);
       o.scale.setScalar(((o.userData.escala as number | undefined) ?? 1) * (ferido ? 1.08 : 1));
@@ -878,7 +975,7 @@ export class CenaEstelar {
     const alvo = q.alvo !== null ? posicaoInimigo(r.inimigos[q.alvo], n) : null;
     this.marca.visible = !!alvo;
     if (alvo) {
-      const raio = q.alvo !== null && (r.inimigos[q.alvo].tipo === 'chefe' || r.inimigos[q.alvo].tipo === 'subchefe') ? 5 : 2;
+      const raio = q.alvo !== null && ehChefe(r.inimigos[q.alvo].tipo) ? 5 : 2;
       this.marca.position.set(alvo.x, alvo.y, alvo.z);
       this.marca.scale.setScalar(raio);
       this.marca.lookAt(this.camera.position);

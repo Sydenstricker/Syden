@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { Mundo } from '../src/estelar/mundo';
 import { pilotar } from '../src/estelar/piloto';
-import { BIFURCA, CHEFE_T, FIM, Ficha, SUBCHEFE_T, posicaoInimigo, roteiro, vaivem, zNave } from '../src/estelar/sim';
+import { BIFURCA, CHEFE_T, FIM, Ficha, ROTA_DO_GELO, ROTA_DO_PLANETA, SUBCHEFE_T, posicaoInimigo, roteiro, rotaValida, vaivem, zNave } from '../src/estelar/sim';
 
 /** A Rota Estelar (estelar/sim.ts ↔ server/src/estelar-sim.ts): o roteiro determinístico e o piloto automático. */
 
@@ -86,4 +86,66 @@ test('a ficha recusa o acerto inventado, o tiro fora da cadência, o inimigo da 
   assert.equal(f.posicao(110, 12, 0), 'Lugar inválido.', 'a nave não anda 12 em 10 passos');
   assert.equal(f.atingida(200, 0, 0, 99), 'Evento inválido.', 'golpe de tamanho que não existe');
   assert.equal(f.rota(BIFURCA + 1, 0, 0), 'Evento inválido.', 'a rota só no passo da bifurcação');
+});
+
+// ---------------- O lote E (24/11/2026): a segunda rota, a do gelo ----------------
+
+test('a rota do planeta não mudou com a do gelo: a mesma semente dá o mesmo roteiro de antes (o resumo guardado em 24/11/2026)', async () => {
+  const { createHash } = await import('node:crypto');
+  const guardados: [number, string][] = [
+    [1, '43e4ac0d781971d2'],
+    [2, '294175d908dc725f'],
+    [3, '2fc679dfc51d7790'],
+    [42, 'c44487186ba09ed0'],
+  ];
+  for (const [s, h] of guardados) {
+    const { rota, inimigos, aneis, obstaculos } = roteiro(s);
+    assert.equal(rota, ROTA_DO_PLANETA);
+    assert.equal(createHash('sha256').update(JSON.stringify({ inimigos, aneis, obstaculos })).digest('hex').slice(0, 16), h, `semente ${s}`);
+    assert.deepEqual(roteiro(s, 0), roteiro(s));
+  }
+  assert.equal(rotaValida(7), ROTA_DO_PLANETA);
+  assert.equal(rotaValida('1'), ROTA_DO_PLANETA);
+  assert.equal(rotaValida(1), ROTA_DO_GELO);
+});
+
+test('a rota do gelo: o roteiro dela (minas, cristais, arcos, portas, a sentinela e a nave-mãe no fim), outro da mesma semente', () => {
+  const r = roteiro(42, ROTA_DO_GELO);
+  assert.equal(r.rota, ROTA_DO_GELO);
+  assert.deepEqual(r, roteiro(42, ROTA_DO_GELO));
+  assert.notDeepEqual(r.inimigos, roteiro(42).inimigos);
+  assert.equal(r.inimigos.at(-1)?.tipo, 'mae', 'a nave-mãe é a última');
+  assert.equal(r.inimigos.at(-1)?.t, CHEFE_T);
+  assert.ok(r.inimigos.some((e) => e.tipo === 'sentinela' && e.t === SUBCHEFE_T));
+  assert.ok(!r.inimigos.some((e) => e.tipo === 'chefe' || e.tipo === 'subchefe'), 'nenhum chefe da outra rota');
+  assert.ok(r.inimigos.some((e) => e.tipo === 'mina' && e.ramo === 0) && r.inimigos.some((e) => e.tipo === 'mina' && e.ramo === 1));
+  assert.ok(r.inimigos.some((e) => e.tipo === 'rocha' && e.ramo === 2), 'o anel de gelo tem rochas');
+  assert.ok(r.inimigos.some((e) => e.tipo === 'drone' && e.t > CHEFE_T), 'a nave-mãe solta escoltas');
+  assert.ok(r.inimigos.every((e) => e.ramo === 0 || e.t > BIFURCA));
+  assert.ok(r.obstaculos.some((o) => o.modelo === 'cristal') && r.obstaculos.some((o) => o.modelo === 'arco' && o.ramo === 0) && r.obstaculos.some((o) => o.modelo === 'arco' && o.ramo === 2));
+  assert.equal(r.inimigos.find((e) => e.item)?.item, 'duplo', 'o primeiro item é o laser duplo');
+  // a porta tem vão: as duas lajes do mesmo z deixam espaço para a nave
+  const portas = r.obstaculos.filter((o) => o.modelo === 'arco' && o.ramo === 2);
+  for (let i = 0; i + 1 < portas.length; i += 2) assert.ok(portas[i].y0 - portas[i + 1].y1 >= 5, 'o vão da porta');
+});
+
+test('a rota do gelo: o piloto termina as duas rotas dela derrubando a nave-mãe, e o servidor aceita cada evento', () => {
+  for (const semente of [1, 2, 3, 4]) {
+    const m = new Mundo(semente, true, ROTA_DO_GELO);
+    const servidor = new Ficha(roteiro(semente, ROTA_DO_GELO));
+    let recusas = 0;
+    for (let n = 0; n <= FIM && !m.ficha.acabou; n++) {
+      m.avancar(pilotar(m));
+      if (n % 6 === 0) {
+        for (const ev of m.eventos.splice(0)) if (servidor.aplicar(ev) !== null) recusas++;
+        if (servidor.posicao(m.passo, m.nave.x, m.nave.y) !== null) recusas++;
+      }
+    }
+    for (const ev of m.eventos.splice(0)) if (servidor.aplicar(ev) !== null) recusas++;
+    assert.equal(recusas, 0, `semente ${semente}: o servidor recusou ${recusas} eventos`);
+    assert.ok(m.ficha.chefeEm !== null, `semente ${semente}: a nave-mãe não caiu`);
+    assert.equal(servidor.ramo, semente % 2 ? 1 : 2);
+    assert.equal(servidor.total(FIM, true), m.ficha.total(FIM, true));
+    assert.ok([...servidor.mortos.keys()].some((i) => servidor.inimigos[i].tipo === 'sentinela'), 'a sentinela caiu');
+  }
 });

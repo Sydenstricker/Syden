@@ -19,6 +19,8 @@ import {
   VOLEIAS,
   Z_FIM_DO_CHAO,
   balaEncosta,
+  ehChefe,
+  ehChefeFinal,
   chegadaDaTrava,
   passoDoAnel,
   posicaoBala,
@@ -160,8 +162,10 @@ export class Mundo {
   constructor(
     readonly semente: number,
     readonly jogador: boolean,
+    /** A rota (24/11/2026): a do planeta (0) ou a do gelo (1). */
+    readonly rota = 0,
   ) {
-    this.r = roteiro(semente);
+    this.r = roteiro(semente, rota);
     this.ficha = new Ficha(this.r);
     const ini = this.r.inimigos;
     this.ordem = ini.map((_, i) => i).sort((a, b) => ini[a].t - ini[b].t);
@@ -433,8 +437,8 @@ export class Mundo {
     const e = this.r.inimigos[i];
     const p = posicaoInimigo(e, n);
     o.derrubou = true;
-    if (e.tipo === 'chefe') o.chefe = true;
-    if (p) this.efeitos.push({ tipo: 'explosao', ...p, em: n, grande: e.tipo === 'cargueiro' || e.tipo === 'subchefe' || e.tipo === 'chefe' });
+    if (ehChefeFinal(e.tipo)) o.chefe = true;
+    if (p) this.efeitos.push({ tipo: 'explosao', ...p, em: n, grande: e.tipo === 'cargueiro' || ehChefe(e.tipo) });
     if (e.item) this.soltos.push([i, n]);
   }
 

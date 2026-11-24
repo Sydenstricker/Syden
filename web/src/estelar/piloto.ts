@@ -1,4 +1,4 @@
-import { CHEFE_T, LIM_X, LIM_Y, RAIO, RAIO_NAVE, VEL_NAVE, passoDoAnel, posicaoInimigo, posicaoItem, zNave, BIFURCA, SUBCHEFE_T } from './sim';
+import { ehChefe, CHEFE_T, LIM_X, LIM_Y, RAIO, RAIO_NAVE, VEL_NAVE, passoDoAnel, posicaoInimigo, posicaoItem, zNave, BIFURCA, SUBCHEFE_T } from './sim';
 import { posicaoTiro, type Comandos, type Mundo } from './mundo';
 
 /**
@@ -44,7 +44,7 @@ export function pilotar(m: Mundo): Comandos {
       if (!p) continue;
       const dz = p.z - zNave(n0 + 10);
       if (dz < 10 || dz > 120) continue;
-      const nota = dz + (ini[i].tipo === 'chefe' || ini[i].tipo === 'subchefe' ? -200 : 0);
+      const nota = dz + (ehChefe(ini[i].tipo) ? -200 : 0);
       if (nota < melhor) {
         melhor = nota;
         alvo = { x: Math.max(-LIM_X, Math.min(LIM_X, p.x)), y: Math.max(-LIM_Y, Math.min(LIM_Y, p.y)) };

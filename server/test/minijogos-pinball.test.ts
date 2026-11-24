@@ -191,3 +191,30 @@ test('o pomar (19/11/2026): a pessoa escolhe a mesa, e o recorde dele é à part
   assert.equal(e.recordeDoPomar, k.pontos);
   assert.equal(db.recordeDoPinball(caioId), daHorta, 'o da horta não mudou');
 });
+
+test('o lago (24/11/2026): a terceira mesa, com o recorde à parte na tabela comum (variante lago)', () => {
+  const daHorta = db.recordeDoPinball(caioId);
+  const doPomar = db.recordeDoSolo(caioId, 'pinball', 'pomar')?.valor ?? null;
+  const { ctx } = contexto([caioId], { solo: true });
+  const jogo = pinball.comecar(ctx, { naSala: [caioId], criadaPor: caioId, corpo: {} });
+  assert.equal(jogo.acao(caioId, { tipo: 'jogar', mesa: 2 }), null);
+  assert.equal(jogo.publico(caioId).mesa, 2);
+  const k = sim.novaMesa(sim.PASSOS_MAXIMOS, 2);
+  const comandos: number[] = [];
+  while (!k.terminou) {
+    const c = sim.pilotoAutomatico(k);
+    comandos.push(c);
+    sim.passo(k, c);
+  }
+  assert.ok(k.passo < sim.PASSOS_MAXIMOS, 'acabou pelas bolas');
+  mandar(jogo, caioId, comandos);
+  const e = jogo.publico(caioId) as { resultado: { pontos: number; recorde: boolean }; recordeDoLago: number | null };
+  assert.equal(e.resultado.pontos, k.pontos);
+  assert.ok(e.resultado.recorde);
+  assert.equal(e.recordeDoLago, k.pontos);
+  assert.equal(db.recordeDoPinball(caioId), daHorta, 'o da horta não mudou');
+  assert.equal(db.recordeDoSolo(caioId, 'pinball', 'pomar')?.valor ?? null, doPomar, 'o do pomar não mudou');
+  // mesa que não existe vira a horta
+  assert.equal(jogo.acao(caioId, { tipo: 'jogar', mesa: 9 }), null);
+  assert.equal(jogo.publico(caioId).mesa, 0);
+});
