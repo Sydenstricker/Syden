@@ -51,11 +51,12 @@ export interface EstadoNaval {
 /** A arma da vez: o tiro comum, ou uma das especiais (server/src/minijogo-naval.ts, `usarArma`). */
 type ArmaDaTela = 'tiro' | 'cruz' | 'sonar';
 
-/** A frota que a pessoa vê no 3D (só aparência, só neste aparelho): a pirata ou a moderna. */
+/** A frota que a pessoa vê no 3D (só aparência, só neste aparelho): a pirata, a moderna (civil) ou a de guerra (24/11/2026). */
 const FROTA_GUARDADA = 'syden:naval-frota';
 function frotaGuardada(): FrotaDaCena {
   try {
-    return localStorage.getItem(FROTA_GUARDADA) === 'moderna' ? 'moderna' : 'piratas';
+    const f = localStorage.getItem(FROTA_GUARDADA);
+    return f === 'moderna' || f === 'guerra' ? f : 'piratas';
   } catch {
     return 'piratas';
   }
@@ -186,18 +187,18 @@ export function JogoNaval({
       {/* a frota que se vê no 3D: no 2D, o casco é um só */}
       {temWebGL() && (
         <div className="naval-frotas" role="radiogroup" aria-label={t('Navios')}>
-          {(['piratas', 'moderna'] as const).map((f) => (
+          {(['piratas', 'moderna', 'guerra'] as const).map((f) => (
             <button
               key={f}
               type="button"
               role="radio"
               aria-checked={frota === f}
               className={`naval-frotas-opcao${frota === f ? ' escolhida' : ''}`}
-              aria-label={f === 'piratas' ? t('Navios piratas') : t('Navios modernos')}
-              title={f === 'piratas' ? t('Navios piratas') : t('Navios modernos')}
+              aria-label={f === 'piratas' ? t('Navios piratas') : f === 'moderna' ? t('Navios modernos') : t('Navios de guerra')}
+              title={f === 'piratas' ? t('Navios piratas') : f === 'moderna' ? t('Navios modernos') : t('Navios de guerra')}
               onClick={() => escolherFrota(f)}
             >
-              {f === 'piratas' ? <FiguraPirata /> : <FiguraModerna />}
+              {f === 'piratas' ? <FiguraPirata /> : f === 'moderna' ? <FiguraModerna /> : <FiguraGuerra />}
             </button>
           ))}
         </div>
@@ -691,6 +692,20 @@ function FiguraModerna() {
       <path d="M9 6h12v4H9z" fill="#e8e8e2" />
       <path d="M17 1h4v5h-4z" fill="#d8453a" />
       <path d="M8 12h2M12 12h2M16 12h2M20 12h2" stroke="#2f5d8a" strokeWidth="1.4" />
+    </svg>
+  );
+}
+function FiguraGuerra() {
+  return (
+    <svg viewBox="0 0 32 24" width="32" height="24" aria-hidden="true">
+      <path d="M1 15h30l-5 7H5z" fill="#4d5566" />
+      <path d="M5 20.5h22l-1 1.5H6z" fill="#cf4f45" />
+      <path d="M12 9h9v6h-9z" fill="#c9cfdb" />
+      <path d="M13.5 10.5h6v1.6h-6z" fill="#33384a" />
+      <path d="M16 2v7" stroke="#5a6273" strokeWidth="1.4" />
+      <path d="M14 4h5v1.4h-5z" fill="#e9ecf2" />
+      <path d="M5 12h3.5v3H5z" fill="#aeb6c6" />
+      <path d="M1.5 13h3.5" stroke="#5a6273" strokeWidth="1.2" />
     </svg>
   );
 }

@@ -17,7 +17,12 @@ const BASE = `${import.meta.env.BASE_URL}naval3d/`;
  * mesmo tamanho vão pegando um de cada vez, na ordem em que vêm. A moderna é do Watercraft Kit da Kenney (CC0,
  * web/public/naval3d/moderna/License.txt).
  */
-export type FrotaDaCena = 'piratas' | 'moderna';
+/**
+ * A DE GUERRA (24/11/2026): porta-aviões, destróier, fragata, corveta e patrulha, feitos por NÓS em script do Blender
+ * (web/scripts/modelos/ponte-mesas-naval/frota_de_guerra.py) no jeito do Watercraft Kit, porque nenhum pacote livre tem navio de
+ * guerra moderno. Os tamanhos dos três mares (8, 10 e 12) são todos de 2 a 5 casas: os cinco modelos servem a todos.
+ */
+export type FrotaDaCena = 'piratas' | 'moderna' | 'guerra';
 const FROTAS: Record<FrotaDaCena, Record<number, string[]>> = {
   piratas: {
     5: ['pirata/ship-pirate-large.glb'],
@@ -30,6 +35,12 @@ const FROTAS: Record<FrotaDaCena, Record<number, string[]>> = {
     4: ['moderna/ship-cargo-a.glb'],
     3: ['moderna/boat-tug-a.glb', 'moderna/boat-fishing-small.glb'],
     2: ['moderna/boat-speed-a.glb'],
+  },
+  guerra: {
+    5: ['guerra/porta-avioes.glb'],
+    4: ['guerra/destroier.glb'],
+    3: ['guerra/fragata.glb', 'guerra/corveta.glb'],
+    2: ['guerra/patrulha.glb'],
   },
 };
 /** O modelo do `k`-ésimo navio de `tamanho` na frota. */

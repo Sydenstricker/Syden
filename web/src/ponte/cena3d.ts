@@ -36,6 +36,12 @@ import { ALTURA, COR_DO_FUNDO, LARGURA, MODELOS_DA_PONTE, type OpcoesDaMontagem,
  */
 
 const BASE = `${import.meta.env.BASE_URL}ponte/`;
+/**
+ * O CENÁRIO POR SCRIPT (24/11/2026): as árvores, a pedra do rio, os pilares, o bloco de apoio, o barco dos canais e a bandeira
+ * de chegada, feitos por NÓS no Blender (web/scripts/modelos/ponte-mesas-naval/ponte_cenario.py), um nó por peça, com as mesmas
+ * medidas das peças por código, que ficam de reserva enquanto ele carrega ou se falhar.
+ */
+const CENARIO = 'cenario.glb';
 
 /** O plano da treliça da frente (onde se monta) e a frente da maquete. */
 const ZF = 0.75;
@@ -550,15 +556,42 @@ export class CenaDaPonte implements VistaDaPonte {
   /** Carrega os modelos e monta o que não muda. Rejeita se um veículo não vier (a tela fica no 2D); sem o coelho, a carroça vai só. */
   async montar(): Promise<void> {
     const usados = [...new Set(this.fase.trafego.map((t) => MODELO[t].arquivo))];
-    const [modelos, coelho] = await Promise.all([
+    const [modelos, coelho, cenario] = await Promise.all([
       Promise.all(usados.map(carregar)),
       this.fase.trafego.includes('carroca') ? carregarCoelho().catch(() => null) : Promise.resolve(null),
+      // o cenário por script (24/11/2026): sem ele, as peças por código de antes
+      carregar(CENARIO).catch(() => null),
     ]);
     if (this.morta) return;
+    this.cenario = cenario;
     const porArquivo = new Map(usados.map((u, i) => [u, modelos[i]]));
     this.montarMundo();
     this.montarPecas();
     this.fase.trafego.forEach((t) => this.montarVeiculo(t, porArquivo.get(MODELO[t].arquivo)!, coelho));
+  }
+
+  /** O cenário por script (cenario.glb), ou null enquanto não veio ou se falhou: aí ficam as peças por código. */
+  private cenario: GLTF | null = null;
+
+  /**
+   * Uma cópia de uma peça do cenário (o nó pelo nome), com a sombra, e os materiais trocados pelos da cena quando o nome
+   * bate (a copa das árvores segue a fase seca, a pedra a cor da cena). A geometria é a do cache: não vai a `descartaveis`.
+   */
+  private peca(nome: string, materiais: Record<string, THREE.Material> = {}): THREE.Object3D | null {
+    const no = this.cenario?.scene.getObjectByName(nome);
+    if (!no) return null;
+    const o = no.clone(true);
+    o.position.set(0, 0, 0);
+    o.traverse((m) => {
+      const mm = m as THREE.Mesh;
+      if (!mm.isMesh) return;
+      mm.castShadow = this.sombras;
+      mm.receiveShadow = this.sombras;
+      const nomeDoMat = (mm.material as THREE.Material).name;
+      const troca = Object.entries(materiais).find(([k]) => nomeDoMat === k || nomeDoMat.startsWith(`${k}.`));
+      if (troca) mm.material = troca[1];
+    });
+    return o;
   }
 
   private guardar<T extends { dispose(): void }>(o: T): T {
@@ -665,6 +698,14 @@ export class CenaDaPonte implements VistaDaPonte {
       const px = f.pedras[i];
       const topo = f.pedras[i + 1];
       const alto = topo - 0.12 - (f.fundo - 0.4);
+      const modelo = this.peca('pedra-do-rio', { pedra });
+      if (modelo) {
+        modelo.scale.set(1, alto, 1);
+        modelo.rotation.y = px * 1.3;
+        modelo.position.set(px, f.fundo - 0.4, 0);
+        c.add(modelo);
+        continue;
+      }
       const g = this.guardar(new THREE.CylinderGeometry(0.85, 1.45, alto, 7, 2));
       const pos = g.attributes.position;
       const rr = sorteio(px * 31 + 7);
@@ -690,6 +731,22 @@ export class CenaDaPonte implements VistaDaPonte {
       const fora = ax === 0 ? -1 : 1;
       const xa = Math.min(ax, ax + fora * 0.8);
       for (const z of [ZF + 0.12, -ZF - 0.12]) {
+        // por script: as fiadas de pedra empilhadas (cada uma esticada um pouco até a soma dar a altura) e o capitel
+        const capitelDoModelo = this.peca('capitel');
+        if (capitelDoModelo) {
+          const alto = ay + 0.35;
+          const n = Math.max(1, Math.round(alto / 0.5));
+          for (let k = 0; k < n; k++) {
+            const fiada = this.peca('pilar-fiada');
+            if (!fiada) break;
+            fiada.scale.set(1, alto / n / 0.5, 1);
+            fiada.position.set(xa + 0.4, (k * alto) / n, z);
+            c.add(fiada);
+          }
+          capitelDoModelo.position.set(xa + 0.4, alto, z);
+          c.add(capitelDoModelo);
+          continue;
+        }
         const m = this.caixaNaCena(xa, xa + 0.8, 0, ay + 0.35, z - 0.2, z + 0.2, pilar);
         m.castShadow = this.sombras;
         this.caixaNaCena(xa - 0.07, xa + 0.87, ay + 0.35, ay + 0.5, z - 0.26, z + 0.26, capitel);
@@ -703,7 +760,7 @@ export class CenaDaPonte implements VistaDaPonte {
     const geoMarca = this.guardar(new THREE.CylinderGeometry(0.15, 0.15, 0.06, 18).rotateX(Math.PI / 2));
     for (let i = 0; i < f.ancoras.length; i += 2) {
       for (const z of [ZF, -ZF]) {
-        const b = new THREE.Mesh(geoBloco, bloco);
+        const b = this.peca('bloco') ?? new THREE.Mesh(geoBloco, bloco);
         b.position.set(f.ancoras[i], f.ancoras[i + 1], z);
         c.add(b);
         const m = new THREE.Mesh(geoMarca, vermelho);
@@ -720,17 +777,25 @@ export class CenaDaPonte implements VistaDaPonte {
     const geoCopa = this.guardar(new THREE.ConeGeometry(0.55, 1.4, 7));
     const geoBola = this.guardar(new THREE.IcosahedronGeometry(0.6, 0));
     const arvore = (x: number, z: number, s: number, pinheiro: boolean) => {
-      const g = new THREE.Group();
-      const t = new THREE.Mesh(geoTronco, tronco);
-      t.position.y = 0.4;
-      g.add(t);
-      const k = new THREE.Mesh(pinheiro ? geoCopa : geoBola, r() < 0.5 ? copa : copa2);
-      k.position.y = pinheiro ? 1.3 : 1.15;
-      g.add(k);
+      // o mesmo número de sorteios nos dois caminhos: a floresta fica no mesmo lugar com ou sem o modelo
+      const escura = r() < 0.5;
+      const giro = r() * 6;
+      const g =
+        this.peca(pinheiro ? 'pinheiro' : 'arvore', { tronco, copa: escura ? copa : copa2, 'copa-clara': escura ? copa2 : copa }) ??
+        (() => {
+          const g = new THREE.Group();
+          const t = new THREE.Mesh(geoTronco, tronco);
+          t.position.y = 0.4;
+          g.add(t);
+          const k = new THREE.Mesh(pinheiro ? geoCopa : geoBola, escura ? copa : copa2);
+          k.position.y = pinheiro ? 1.3 : 1.15;
+          g.add(k);
+          g.traverse((o) => (o.castShadow = this.sombras));
+          return g;
+        })();
       g.scale.setScalar(s);
       g.position.set(x, 0, z);
-      g.rotation.y = r() * 6;
-      g.traverse((o) => (o.castShadow = this.sombras));
+      g.rotation.y = giro;
       c.add(g);
     };
     const filaFim = fimDaFila(f);
@@ -787,16 +852,27 @@ export class CenaDaPonte implements VistaDaPonte {
       const geoBoia = this.guardar(new THREE.SphereGeometry(0.13, 12, 8));
       for (let k = 0; k + 1 < canais.length; k += 2) {
         const g = new THREE.Group();
-        const m = new THREE.Mesh(geoCasco, casco);
-        m.position.y = 0.12;
-        g.add(m);
-        const friso = new THREE.Mesh(geoFriso, borda);
-        friso.position.y = 0.38;
-        g.add(friso);
-        const mastro = new THREE.Mesh(geoMastro, tronco);
-        mastro.position.y = alto / 2;
-        g.add(mastro);
-        g.add(new THREE.Mesh(geoVela, vela), new THREE.Mesh(geoBandeira, bandeira));
+        // por script: o casco com a cabine e os caixotes, o mastro e a vela esticados na altura do canal; a flâmula é a de sempre
+        const cascoDoModelo = this.peca('barco-casco');
+        const mastroDoModelo = this.peca('barco-mastro');
+        const velaDoModelo = this.peca('barco-vela');
+        if (cascoDoModelo && mastroDoModelo && velaDoModelo) {
+          mastroDoModelo.scale.set(1, alto, 1);
+          velaDoModelo.position.set(0.06, 0.55, 0.05);
+          velaDoModelo.scale.set(0.89, alto - 0.85, 1);
+          g.add(cascoDoModelo, mastroDoModelo, velaDoModelo, new THREE.Mesh(geoBandeira, bandeira));
+        } else {
+          const m = new THREE.Mesh(geoCasco, casco);
+          m.position.y = 0.12;
+          g.add(m);
+          const friso = new THREE.Mesh(geoFriso, borda);
+          friso.position.y = 0.38;
+          g.add(friso);
+          const mastro = new THREE.Mesh(geoMastro, tronco);
+          mastro.position.y = alto / 2;
+          g.add(mastro);
+          g.add(new THREE.Mesh(geoVela, vela), new THREE.Mesh(geoBandeira, bandeira));
+        }
         g.traverse((o) => (o.castShadow = this.sombras));
         g.position.set((canais[k] + canais[k + 1]) / 2, base, -16);
         c.add(g);
@@ -810,7 +886,13 @@ export class CenaDaPonte implements VistaDaPonte {
       }
     }
 
-    // ---- a bandeira de chegada ----
+    // ---- a bandeira de chegada (por script: o mastro com a ponteira, a base de pedra e o pano xadrez com a onda) ----
+    const chegada = this.peca('chegada');
+    if (chegada) {
+      chegada.position.set(L + 2.6, 0, -1.25);
+      c.add(chegada);
+      return;
+    }
     const mastro = new THREE.Mesh(this.guardar(new THREE.CylinderGeometry(0.04, 0.04, 1.8, 8)), tronco);
     mastro.position.set(L + 2.6, 0.9, -1.25);
     c.add(mastro);

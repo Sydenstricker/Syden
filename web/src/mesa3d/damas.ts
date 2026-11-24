@@ -71,7 +71,18 @@ export class Damas3D extends MesaBase<DamasDaCena> {
         if ((o as THREE.Mesh).isMesh) o.receiveShadow = this.sombras;
       });
       this.cena.add(t);
-    } else this.tabuleiroDe10();
+    } else {
+      // O DE 10 POR SCRIPT (24/11/2026): no jeito e na paleta do board_A do KayKit (web/scripts/modelos/ponte-mesas-naval/
+      // mesas.py), as casas em cima a 0,30 (o TOPO); sem ele, o de código.
+      const de10 = await carregarModelo('tabuleiro-damas-10').catch(() => null);
+      if (de10) {
+        const t = copiaDe(de10, false);
+        t.traverse((o) => {
+          if ((o as THREE.Mesh).isMesh) o.receiveShadow = this.sombras;
+        });
+        this.cena.add(t);
+      } else this.tabuleiroDe10();
+    }
   }
 
   /**

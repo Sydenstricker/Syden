@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { fundoAconchegante, materialDeMadeira } from './ambiente';
-import { iluminar, marcaPlana, MesaBase } from './base';
+import { carregarModelo, copiaDe, iluminar, marcaPlana, MesaBase } from './base';
 import { previaDaSemeadura, type VarianteDaMancala } from '../mancalaPrevia';
 
 /**
@@ -65,7 +65,18 @@ export class Mancala3D extends MesaBase<MancalaDaCena> {
     mesa.position.y = -0.3;
     mesa.receiveShadow = this.sombras;
     this.cena.add(mesa);
-    // o tabuleiro: uma tábua comprida mais clara, com as covas e os depósitos escuros por cima
+    // O TABULEIRO POR SCRIPT (24/11/2026): a tábua com as covas e os depósitos ESCAVADOS, na paleta do KayKit
+    // (web/scripts/modelos/ponte-mesas-naval/mesas.py); o fundo das covas fica no TOPO, onde as sementes pousam. Sem ele, a de código.
+    const modelo = await carregarModelo('tabuleiro-mancala').catch(() => null);
+    if (modelo) this.cena.add(copiaDe(modelo, this.sombras));
+    else this.tabuaPorCodigo();
+    const geoSemente = new THREE.SphereGeometry(RAIO_DA_SEMENTE, 12, 8);
+    this.descartaveis.push(geoSemente);
+    this.montarResto(geoSemente);
+  }
+
+  /** O tabuleiro de antes, por código: a tábua comprida mais clara, com as covas e os depósitos escuros por cima. */
+  private tabuaPorCodigo() {
     const tabuaGeo = new THREE.BoxGeometry(17.4, 0.4, 5.2);
     const tabuaMat = new THREE.MeshStandardMaterial({
       color: '#b07a45',
@@ -91,8 +102,9 @@ export class Mancala3D extends MesaBase<MancalaDaCena> {
       m.receiveShadow = this.sombras;
       this.cena.add(m);
     }
-    const geoSemente = new THREE.SphereGeometry(RAIO_DA_SEMENTE, 12, 8);
-    this.descartaveis.push(geoSemente);
+  }
+
+  private montarResto(geoSemente: THREE.SphereGeometry) {
     for (let i = 0; i < 14; i++) {
       const tela = document.createElement('canvas');
       tela.width = tela.height = 64;

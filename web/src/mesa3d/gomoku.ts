@@ -133,6 +133,19 @@ export class Gomoku3D extends MesaBase<GomokuDaCena> {
     });
     const caixa = new THREE.BoxGeometry(lado, 0.24, lado);
     this.descartaveis.push(textura, topo, borda, caixa);
+    // A TÁBUA POR SCRIPT (24/11/2026): chanfrada, com o rodapé e os pezinhos na paleta do KayKit (web/scripts/modelos/
+    // ponte-mesas-naval/mesas.py), de 16 casas de lado (esticada para o `lado`); o tampo recebe a mesma textura das linhas.
+    const modelo = await carregarModelo('tabuleiro-gomoku').catch(() => null);
+    if (modelo) {
+      const t = copiaDe(modelo, this.sombras);
+      t.scale.set(lado / 16, 1, lado / 16);
+      t.traverse((o) => {
+        const m = o as THREE.Mesh;
+        if (m.isMesh && (m.material as THREE.Material).name === 'topo') m.material = topo;
+      });
+      this.cena.add(t);
+      return;
+    }
     const tabua = new THREE.Mesh(caixa, [borda, borda, topo, borda, borda, borda]);
     tabua.receiveShadow = this.sombras;
     this.cena.add(tabua);
