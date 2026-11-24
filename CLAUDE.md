@@ -1128,7 +1128,7 @@ mesmo script, agora com `--lingua`/`--dic` (o português regenerado sai byte a b
 RLA-ES em LGPL/MPL (a licença é tripla, à escolha) e o Grammalecte (MPL 2.0). **O alemão não tem corretor que sirva** (o igerman98
 é GPL, ou a OASIS, que proíbe modificar e só vale para programas ODF): os chutes vêm da wortliste do projeto Trennmuster (MIT, com
 as flexões), filtrada pelo que o OpenThesaurus (LGPL) marca como vulgar (`server/scripts/palavras-do-alemao.mjs`), e a chave é só
-a-z (BÄR é BAER, ß é SS). **O italiano ficou de fora**: corretor e thesaurus são GPL 3, e o Morph-it! tem a licença ambígua. No
+a-z (BÄR é BAER, ß é SS; fica assim, decisão dele, 24/11/2026). **O italiano ficou de fora**: corretor e thesaurus são GPL 3, e o Morph-it! tem a licença ambígua (não escrever aos autores: decisão dele, 24/11/2026). No
 espanhol o Ñ é letra ("niño" não é "nino"); os teclados da tela seguem cada língua (Ñ, AZERTY, QWERTZ). Nas línguas novas ficam
 fora dos chutes os palavrões que o dicionário marca e uma lista curta de ofensas (na revelação a sala vê as letras); o português
 continua como era (decisão dele). O recorde e a sequência do Solo são à parte por idioma (variante com `~en`, `~es`, `~fr`, `~de`).
