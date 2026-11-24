@@ -39,7 +39,7 @@ interface Linha {
   posicao: number | null;
 }
 
-function comecar(v: number, arena = 'horta', comunidade = 0) {
+function comecar(v: number, arena = 'horta', comunidade = 0, extra: Record<string, unknown> = {}) {
   let agora = 9_000_000;
   const relogio: { ms: number; depois: () => void }[] = [];
   const difundidos: Record<string, unknown>[] = [];
@@ -54,7 +54,7 @@ function comecar(v: number, arena = 'horta', comunidade = 0) {
     comunidade,
     difundir: (d: unknown) => difundidos.push(d as Record<string, unknown>),
   };
-  const jogo = criarBalao({ agora: () => agora, aleatorio: () => v }).comecar(ctx, { naSala, criadaPor: anaId, corpo: { arena } });
+  const jogo = criarBalao({ agora: () => agora, aleatorio: () => v }).comecar(ctx, { naSala, criadaPor: anaId, corpo: { arena, ...extra } });
   assert.ok(typeof jogo !== 'string');
   // a largada
   assert.equal(relogio[0].ms, LARGADA_MS);
@@ -112,6 +112,8 @@ function comecar(v: number, arena = 'horta', comunidade = 0) {
       for (let i = 0; i < 400 && Math.hypot(pos.get(id)!.x - x, pos.get(id)!.y - y) > 0.01; i++) t.andar(4);
     },
     mandar: (id: number, dados: Record<string, unknown>) => jogo.tempoReal!(id, dados),
+    /** O fim do tempo (o que o relógio agendou). */
+    fim: () => relogio[0].depois(),
     /** O relógio anda sem posição de ninguém (os calados). */
     esperar(ms: number) {
       agora += ms;
@@ -363,4 +365,77 @@ test('a batida avisada por quem levou: vale com o outro perto e rápido pelas po
   t.mandar(biaId, { tipo: 'batida', de: anaId, n: t.N });
   assert.equal(t.linha(biaId).baloes, sim.BALOES - 1);
   t.jogo.parar?.();
+});
+
+test('a cenoura dourada (24/11/2026): o servidor a dá a quem passa por ela, a tira de quem leva (a batida), conta o tempo e classifica por ele', () => {
+  const t = comecar(0.5, 'horta', 2, { modo: 'dourada' });
+  const estado = () => t.jogo.publico(anaId) as { modo: string; dourada: { dono: number | null; x: number; y: number }; jogadores: (Linha & { dourada: number })[] };
+  assert.equal(estado().modo, 'dourada');
+  const [dx, dy] = sim.lugarDaDourada(sim.arenaPorId('horta'), Math.floor(0.5 * 2 ** 31));
+  assert.deepEqual([estado().dourada.x, estado().dourada.y], [dx, dy]);
+  assert.equal(estado().dourada.dono, null);
+  // a Ana vai até ela (dando a volta no feno) e a pega
+  t.ir(anaId, 262, 640);
+  t.ir(anaId, dx, 640);
+  assert.equal(estado().dourada.dono, null, 'ainda longe');
+  t.ir(anaId, dx, dy);
+  assert.equal(estado().dourada.dono, anaId);
+  const pegou = t.N;
+  assert.ok(t.difundidos.some((d) => d.tipo === 'dourada' && d.dono === anaId));
+  // ela anda com a cenoura e para; a Bia vem no turbo e bate nela: a cenoura cai ali, e nenhum balão estoura
+  t.ir(anaId, 600, 640);
+  t.ir(biaId, 700, 640);
+  t.andar(60);
+  t.velocidades.set(biaId, 12);
+  t.ir(biaId, 540, 640);
+  const batida = t.difundidos.find((d) => d.tipo === 'estourou');
+  assert.ok(batida, 'a batida valeu');
+  assert.equal(batida!.alvo, anaId);
+  assert.equal(t.linha(anaId).baloes, sim.BALOES, 'no modo da cenoura, balão não estoura');
+  // a Bia passou por cima dela logo depois: pegou
+  assert.equal(estado().dourada.dono, biaId);
+  const caiu = t.difundidos.find((d) => d.tipo === 'dourada' && d.dono === null && d.n !== 0) as { n: number; x: number; y: number };
+  assert.ok(caiu && Math.hypot(caiu.x - 600, caiu.y - 640) < 2, 'caiu onde a Ana estava');
+  const daAna = caiu.n - pegou;
+  assert.ok(daAna > 0);
+  // a Ana, parada onde caiu, não a pega de volta (nem poderia: está com a Bia); a Bia segura até o fim
+  t.velocidades.set(biaId, 8);
+  t.andar(600);
+  t.fim();
+  const fim = estado().jogadores;
+  const ana = fim.find((l) => l.userId === anaId)!, bia = fim.find((l) => l.userId === biaId)!;
+  assert.equal(ana.dourada, Math.round(daAna / sim.PASSOS_POR_SEGUNDO));
+  assert.ok(bia.dourada > ana.dourada);
+  assert.equal(bia.posicao, 1);
+  assert.equal(ana.posicao, 2);
+  assert.deepEqual(t.recusadas, []);
+  t.jogo.parar?.();
+});
+
+test('a cenoura dourada: quem bate na pessoa que a segura passa por cima dela e a toma', () => {
+  const t = comecar(0.5, 'horta', 0, { modo: 'dourada' });
+  const estado = () => t.jogo.publico(anaId) as { dourada: { dono: number | null } };
+  const [dx, dy] = sim.lugarDaDourada(sim.arenaPorId('horta'), Math.floor(0.5 * 2 ** 31));
+  t.ir(anaId, 262, 640);
+  t.ir(anaId, dx, 640);
+  t.ir(anaId, dx, dy);
+  t.ir(anaId, 600, 640);
+  t.ir(biaId, 700, 700);
+  t.ir(biaId, 640, 640);
+  t.velocidades.set(biaId, 12);
+  t.ir(biaId, 560, 640);
+  assert.equal(estado().dourada.dono, biaId);
+  assert.equal(t.linha(anaId).baloes, sim.BALOES);
+  t.jogo.parar?.();
+});
+
+test('a cenoura dourada no Solo: o fim guarda os segundos com ela, que não passam da partida', () => {
+  let agora = 5_000_000;
+  const ctx = { agendar: () => {}, avisar: () => {}, terminar: () => {}, naSala: () => [anaId], nome: () => 'ana', solo: true };
+  const jogo = criarBalao({ agora: () => agora }).comecar(ctx, { naSala: [anaId], criadaPor: anaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  agora += 160_000;
+  assert.equal(jogo.acao(anaId, { tipo: 'fim', posicao: 1, total: 4, baloes: 3, estouros: 1, passos: 9000, dourada: 200 }), 'Partida inválida.');
+  assert.equal(jogo.acao(anaId, { tipo: 'fim', posicao: 1, total: 4, baloes: 3, estouros: 1, passos: 9000, dourada: 61 }), null);
+  assert.deepEqual((jogo.publico(anaId) as { resultadoDoSolo: unknown }).resultadoDoSolo, { posicao: 1, total: 4, baloes: 3, estouros: 1, dourada: 61 });
 });

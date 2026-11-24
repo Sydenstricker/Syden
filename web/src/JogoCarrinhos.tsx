@@ -27,7 +27,9 @@ import {
   passo,
   PASSO,
   pilotoAutomatico,
+  pilotoComTroca,
   trechoEm,
+  TROCA,
   VMAX,
   VOLTAS,
   type Carro,
@@ -94,6 +96,9 @@ declare global {
 /** O ACELERADOR: teclado, mouse e toque dão tudo ou nada; o gatilho do controle dá o meio-termo. */
 function useAcelerador(ativo: boolean) {
   const apertado = useRef({ tecla: false, ponteiro: false });
+  /** A TROCA DE FAIXA (24/11/2026): um toque guardado até o próximo passo da corrida. */
+  const troca = useRef(false);
+  const padAntes = useRef(false);
   useEffect(() => {
     if (!ativo) return;
     const tecla = (e: KeyboardEvent, desce: boolean) => {
@@ -102,6 +107,9 @@ function useAcelerador(ativo: boolean) {
       const k = e.key.toLowerCase();
       if (k === ' ' || k === 'arrowup' || k === 'w') {
         apertado.current.tecla = desce;
+        e.preventDefault();
+      } else if (k === 'shift' || k === 'arrowdown' || k === 's' || k === 'x') {
+        if (desce && !e.repeat) troca.current = true;
         e.preventDefault();
       }
     };
@@ -138,7 +146,17 @@ function useAcelerador(ativo: boolean) {
     onPointerCancel: () => (apertado.current.ponteiro = false),
     onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
   };
-  return { ler, ponteiro };
+  /** O toque da troca de faixa desde a última leitura (teclado, o botão da tela ou o X do controle). */
+  const lerTroca = (): boolean => {
+    const x = !!lerControle()?.x;
+    if (x && !padAntes.current) troca.current = true;
+    padAntes.current = x;
+    const t = troca.current;
+    troca.current = false;
+    return t;
+  };
+  const tocarTroca = () => (troca.current = true);
+  return { ler, lerTroca, tocarTroca, ponteiro };
 }
 
 interface Painel {
@@ -152,6 +170,8 @@ interface Painel {
   /** O tanque (de 0 a 1) na resistência, e se estou parado no box enchendo; null nas corridas de 5 voltas. */
   combustivel: number | null;
   enchendo: boolean;
+  /** A troca de faixa armada (só nas pistas com agulha). */
+  armado: boolean;
 }
 
 /** Um rival da sala: as posições que o servidor repassou, pelo passo da corrida dele. */
@@ -159,7 +179,8 @@ interface Rival {
   nome: string;
   faixa: number;
   avatar: number | string | null;
-  posicoes: { n: number; s: number; f: number; d: number }[];
+  /** As posições: o passo, a distância NA FAIXA `x` (a de agora, que muda na agulha) e `e`, a de onde veio na agulha (−1). */
+  posicoes: { n: number; s: number; f: number; d: number; x: number; e: number }[];
   /** O passo (no meu relógio) em que ele saiu da pista, para o desenho do voo. */
   saiuEm: number | null;
   chegou: boolean;
@@ -180,12 +201,17 @@ interface ConfigDaCorrida {
   contagem: number;
   pausa?: Pausa;
   ler: () => number;
+  /** O toque da troca de faixa (só nas pistas com agulha). */
+  lerTroca?: () => boolean;
   aoPainel: (p: Painel) => void;
   aoChegar: (entradas: Entradas, ordem: Painel['ordem']) => void;
-  aoPosicao?: (dados: { n: number; s: number; f: number; d: number }) => void;
+  aoPosicao?: (dados: { n: number; s: number; f: number; d: number; x: number; e: number }) => void;
   aoPronta: () => void;
   aoFalhar: () => void;
 }
+
+/** A pista tem agulha (a troca de faixa, 24/11/2026)? */
+const temAgulha = (pista: Pista) => pista.trechos[0].some((t) => t.troca);
 
 /** Até onde à frente (em unidades da pista; a reta tem 4) a marca da curva aparece. */
 const ALCANCE_DA_MARCA = 6;
@@ -200,9 +226,13 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
   if (eu && import.meta.env.DEV) window.carrinhosDoTeste = eu;
   const gravar = gravador();
   const robos = cfg.robos.map((r) => ({ ...r, carro: novoCarro(r.faixa, cfg.pista, cfg.voltas), piloto: criarRobo(r.semente, r.habilidade) }));
+  /** A pista tem agulha: a troca de faixa vale (o toque vai junto com o acelerador, `TROCA`). */
+  const temAgulha = cfg.pista.trechos[0].some((t) => t.troca);
   const fantasmas = cfg.fantasmas.map((f) => ({ ...f, carro: novoCarro(FAIXA_DO_RECORDE, cfg.pista, cfg.voltas), ler: leitor(f.entradas) }));
   const rivais = cfg.rivais ? [...cfg.rivais.entries()] : [];
   let antes = new Map<Carro, number>();
+  /** A faixa de cada carro no passo anterior: trocou na agulha, a distância de antes é de outra faixa. */
+  let faixaAntes = new Map<Carro, number>();
   let mandou = false;
   let ordemFinal: Painel['ordem'] | null = null;
   let ultimoPainel = 0;
@@ -237,15 +267,17 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
   let nAssistindo = 0;
   const nAgora = () => (eu ? eu.passo : nAssistindo);
 
-  const posicaoDoRival = (r: Rival, n: number): { s: number; f: number; d: number } | null => {
+  const posicaoDoRival = (r: Rival, n: number): { s: number; f: number; d: number; x: number; e: number } | null => {
     const l = r.posicoes;
     if (!l.length) return null;
     if (n <= l[0].n) return l[0];
     for (let i = l.length - 1; i > 0; i--) {
       if (l[i - 1].n <= n && n <= l[i].n) {
         const a = l[i - 1], b = l[i];
+        // trocou de faixa no meio: a distância é de outra faixa, sem meio-termo
+        if (a.x !== b.x) return b;
         const k = (n - a.n) / Math.max(1, b.n - a.n);
-        return { s: a.s + (b.s - a.s) * k, f: b.f, d: b.d };
+        return { s: a.s + (b.s - a.s) * k, f: b.f, d: b.d, x: b.x, e: b.e };
       }
     }
     return l[l.length - 1];
@@ -257,7 +289,7 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
     robos.forEach((r, i) => linhas.push({ id: `robo${i}`, nome: r.nome, eu: false, chegou: r.carro.chegou ? r.carro.voltas[cfg.voltas - 1] : null, andou: r.carro.s / cfg.pista.volta[r.faixa] }));
     for (const [uid, r] of rivais) {
       const p = r.posicoes.at(-1);
-      linhas.push({ id: `r${uid}`, nome: r.nome, eu: false, chegou: null, andou: p ? p.s / cfg.pista.volta[r.faixa] : 0 });
+      linhas.push({ id: `r${uid}`, nome: r.nome, eu: false, chegou: null, andou: p ? p.s / cfg.pista.volta[p.x] : 0 });
     }
     linhas.sort((a, b) => (a.chegou !== null && b.chegou !== null ? a.chegou - b.chegou : a.chegou !== null ? -1 : b.chegou !== null ? 1 : b.andou - a.andou));
     return linhas.map(({ id, nome, eu }) => ({ id, nome, eu }));
@@ -303,11 +335,13 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
             continue;
           }
           antes = new Map(todos().map((c) => [c, c.s]));
+          faixaAntes = new Map(todos().map((c) => [c, c.faixa]));
           nAssistindo++;
           if (eu && !eu.chegou) {
-            const g = import.meta.env.DEV && window.carrinhosPilotoAutomatico ? pilotoAutomatico(eu, 0.3) : cfg.ler();
+            const toque = temAgulha && !!cfg.lerTroca?.();
+            const g = import.meta.env.DEV && window.carrinhosPilotoAutomatico ? pilotoComTroca(eu, 0.3) : cfg.ler() + (toque ? TROCA : 0);
             gravar.anotar(g);
-            ultimoG = g;
+            ultimoG = g % TROCA;
             const ev = passo(eu, g);
             if (ev === 'saiu') tocar('queda');
             else if (ev === 'voltou') tocar('mola');
@@ -324,7 +358,7 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
             const treme = eu.derrapa > 0;
             if (treme && !tremiaAntes && !calmo) navigator.vibrate?.(25);
             tremiaAntes = treme;
-            if (eu.passo % 4 === 0 || ev === 'chegou') cfg.aoPosicao?.({ n: eu.passo, s: eu.s, f: eu.fora > 0 ? 1 : 0, d: eu.derrapa });
+            if (eu.passo % 4 === 0 || ev === 'chegou') cfg.aoPosicao?.({ n: eu.passo, s: eu.s, f: eu.fora > 0 ? 1 : 0, d: eu.derrapa, x: eu.faixa, e: eu.de });
           } else if (eu) passo(eu, 0);
           for (const r of robos) passo(r.carro, r.piloto(r.carro));
           for (const f of fantasmas) passo(f.carro, f.ler());
@@ -333,7 +367,9 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
         const k = contagem > 0 ? 1 : Math.min(1, acumulado / PASSO);
         const desenho = (c: Carro): QuadroDoCarro => {
           const a = antes.get(c) ?? c.s;
-          return { s: a + (c.s - a) * k, fora: c.fora, pisca: c.pisca, derrapa: c.derrapa, saiuA: c.saiuA };
+          // na agulha em que trocou, a distância de antes é de outra faixa: sem meio-termo
+          const s = (faixaAntes.get(c) ?? c.faixa) !== c.faixa ? c.s : a + (c.s - a) * k;
+          return { s, fora: c.fora, pisca: c.pisca, derrapa: c.derrapa, saiuA: c.saiuA, faixa: c.faixa, de: c.de };
         };
         const nR = nAgora() - 6;
         const quadros: QuadroDoCarro[] = [
@@ -346,7 +382,7 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
             if (p.f && r.saiuEm === null) r.saiuEm = nR;
             if (!p.f) r.saiuEm = null;
             const fora = p.f && r.saiuEm !== null ? Math.max(1, FORA_PASSOS - (nR - r.saiuEm)) : 0;
-            return { s: p.s, fora, pisca: 0, derrapa: p.d, saiuA: 8 };
+            return { s: p.s, fora, pisca: 0, derrapa: p.d, saiuA: 8, faixa: p.x, de: p.e };
           }),
         ];
         const curva = eu && !eu.chegou && eu.fora === 0 && contagem === 0 ? curvaAFrente(eu) : null;
@@ -367,6 +403,7 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
             ordem: ordemFinal ?? ordem(),
             combustivel: eu && !eu.chegou ? eu.combustivel : null,
             enchendo: !!eu && eu.combustivel !== null && eu.v === 0 && noBox(eu) && eu.combustivel < 1 && contagem === 0,
+            armado: !!eu && temAgulha && eu.armado,
           });
         }
         if (eu?.chegou && !mandou) {
@@ -390,11 +427,15 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
 }
 
 
-function Comandos({ solo = false }: { solo?: boolean }) {
+function Comandos({ solo = false, agulha = false }: { solo?: boolean; agulha?: boolean }) {
   const t = useT();
   return (
     <ComandosDoJogo
-      itens={[{ teclas: ['espaco', 'setas'], toque: 'toque-segurar', rotulo: t('Acelerar') }, ...(solo ? [comandoDaPausa(t)] : [])]}
+      itens={[
+        { teclas: ['espaco', 'setas'], toque: 'toque-segurar', rotulo: t('Acelerar') },
+        ...(agulha ? [{ teclas: ['x' as const], rotulo: t('Troca de faixa') }] : []),
+        ...(solo ? [comandoDaPausa(t)] : []),
+      ]}
     />
   );
 }
@@ -432,6 +473,7 @@ function Corrida({
       caixa: caixa.current,
       pausa,
       ler: acelerador.ler,
+      lerTroca: acelerador.lerTroca,
       aoPainel: setPainel,
       aoPronta: () => setEstado('pronta'),
       aoFalhar: () => setEstado('falhou'),
@@ -469,6 +511,23 @@ function Corrida({
               )}
             </>
           )}
+          {piloto && config.pista.trechos[0].some((t) => t.troca) && (
+            <button
+              type="button"
+              className={`carrinhos-troca${painel.armado ? ' armada' : ''}`}
+              aria-label={t('Troca de faixa')}
+              aria-pressed={painel.armado}
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                acelerador.tocarTroca();
+              }}
+            >
+              <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+                <path d="M8 22 V2 M8 17 L16 7 V2" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12.5 4.5 L16 1.5 L19.5 4.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
           {piloto && painel.combustivel !== null && painel.combustivel < 0.2 && !painel.enchendo && <span className="carrinhos-aviso carrinhos-aviso-box">{t('Pare no box, antes da linha, para encher o tanque.')}</span>}
           {painel.ordem.length > 1 && !chegou && (
             <ol className="carrinhos-ordem">
@@ -498,6 +557,8 @@ export function JogoCarrinhos(props: { estado: EstadoCarrinhos & Partida; eu: nu
 
 const NOME_DA_DIFICULDADE: Record<Dificuldade, string> = { facil: chave('Fácil'), medio: chave('Médio'), dificil: chave('Difícil') };
 
+/** As pistas do campeonato: os cinco traçados de 20/11/2026 (a Agulha, de 24/11, fica fora: o texto diz "os cinco"). */
+const PISTAS_DO_CAMPEONATO = IDS_DAS_PISTAS.slice(0, 5);
 /** Os pontos do CAMPEONATO por posição entre os quatro carros. */
 const PONTOS_DO_CAMPEONATO = [10, 6, 3, 1];
 /** Os ids da ordem da corrida ('eu', 'robo0'…) como números, para somar os pontos (−1 a pessoa, −100 − i os robôs). */
@@ -554,7 +615,7 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
   /** Uma corrida do campeonato: a pista da vez, 5 voltas, os três robôs e nenhum fantasma. */
   const correrNoCampeonato = (indice: number) => {
     setOrdemFinal(null);
-    tentar({ tipo: 'correr', pista: IDS_DAS_PISTAS[indice], voltas: VOLTAS, fantasmas: [], robos: FAIXAS - 1 });
+    tentar({ tipo: 'correr', pista: PISTAS_DO_CAMPEONATO[indice], voltas: VOLTAS, fantasmas: [], robos: FAIXAS - 1 });
   };
   const comecar = () => {
     if (campeonatoEscolhido) {
@@ -571,7 +632,7 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
     setCampeonato({ ...campeonato, indice, somada: false });
     correrNoCampeonato(indice);
   };
-  const ultimaDoCampeonato = campeonato ? campeonato.indice === IDS_DAS_PISTAS.length - 1 : true;
+  const ultimaDoCampeonato = campeonato ? campeonato.indice === PISTAS_DO_CAMPEONATO.length - 1 : true;
   /** O tempo do piloto (a régua das medalhas) na pista e nas voltas escolhidas; null nas do editor. */
   const baseDaMedalha = useMemo(() => tempoDoPilotoNosCarrinhos(pista.id, voltas), [pista.id, voltas]);
   const alternar = (id: number) => {
@@ -589,7 +650,7 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
         <div className="carrinhos-escolha">
           {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
           <p className="settings-hint">{t('Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.')}</p>
-          <Comandos solo />
+          <Comandos solo agulha={temAgulha(pista)} />
           <button
             type="button"
             className={`carrinhos-campeonato${campeonatoEscolhido ? ' escolhido' : ''}`}
@@ -675,7 +736,7 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
       {campeonato && (
         <div className="carrinhos-topo">
           <strong>{t('Campeonato')}</strong>
-          <span>{t('Rodada {n} de {total}', { n: campeonato.indice + 1, total: IDS_DAS_PISTAS.length })}</span>
+          <span>{t('Rodada {n} de {total}', { n: campeonato.indice + 1, total: PISTAS_DO_CAMPEONATO.length })}</span>
         </div>
       )}
       <Corrida
@@ -808,11 +869,12 @@ function CarrinhosNaSala({
     const chegada = (m: { channelId?: number; dados?: Record<string, unknown> }) => {
       if (m.channelId !== channelId || !m.dados || typeof m.dados.userId !== 'number') return;
       const r = rivais.current?.get(m.dados.userId);
-      const { n, s, f, d } = m.dados as { n: number; s: number; f: number; d: number };
+      const { n, s, f, d, x, e } = m.dados as { n: number; s: number; f: number; d: number; x?: number; e?: number };
       if (!r || typeof n !== 'number' || typeof s !== 'number') return;
       const ultima = r.posicoes.at(-1);
       if (ultima && ultima.n >= n) return;
-      r.posicoes.push({ n, s, f: f ? 1 : 0, d: typeof d === 'number' ? d : 0 });
+      const faixa = typeof x === 'number' && x >= 0 && x < FAIXAS ? x : r.faixa;
+      r.posicoes.push({ n, s, f: f ? 1 : 0, d: typeof d === 'number' ? d : 0, x: faixa, e: typeof e === 'number' && e >= 0 && e < FAIXAS ? e : -1 });
       if (r.posicoes.length > 3000) r.posicoes.splice(0, 1500);
     };
     socket.on('minijogo:tempo-real', chegada);
@@ -861,7 +923,7 @@ function CarrinhosNaSala({
           ))}
         </ol>
       )}
-      {piloto && !fim && !chegou && <Comandos />}
+      {piloto && !fim && !chegou && <Comandos agulha={temAgulha(pistaDoEstado(estado))} />}
     </div>
   );
 }

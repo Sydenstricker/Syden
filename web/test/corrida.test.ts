@@ -372,3 +372,31 @@ test('a Fazenda (21/11/2026): a porteira fechada é parede pelo passo, sempre de
     for (const r of robos) assert.ok(r.kart.terminou, `${dificuldade}: ${r.nome} não terminou a Fazenda`);
   }
 });
+
+test('os robôs na sala (24/11/2026): quem larga na última fila da grade passa na conferência do servidor em toda pista', async () => {
+  const { validarCorrida, PISTAS: DO_SERVIDOR } = await import('../../server/src/corrida.ts');
+  const { CASA_DE_QUEM_JOGA, porNaGrade, criarRobos, andarRobo } = await import('../src/corrida/robos');
+  for (const def of PISTAS) {
+    const p = montarPista(def);
+    const k = novoKart(p);
+    porNaGrade(k, p, CASA_DE_QUEM_JOGA);
+    // a primeira posição ao vivo: perto da linha (o servidor aceita até 60 mais o que o kart anda) e na volta 0
+    const linha = DO_SERVIDOR[def.id].linha;
+    assert.ok(Math.hypot(k.x - linha[0], k.y - linha[1]) < 60 + 30, `${def.id}: a última fila longe da linha (o servidor aceita 60 + 30 com robôs)`);
+    assert.equal(Math.floor(progresso(k, p)), 0, `${def.id}: a largada é da volta 0`);
+    const caminho: number[] = [];
+    while (!k.terminou && k.passos < 60 * 60 * 5) {
+      passo(k, pilotoAutomatico(k, p, true), p);
+      if (!k.terminou || caminho.length < 3 * (Math.floor((k.passos - 1) / AMOSTRA) + 1)) amostrar(k, caminho);
+    }
+    const v = validarCorrida(def.id, { voltas: k.voltas, amostras: caminho });
+    assert.ok('ok' in v, `${def.id}: o servidor recusou: ${JSON.stringify(v)}`);
+    // os mesmos robôs (a mesma conta) em dois computadores: passo a passo, o mesmo lugar
+    const a = criarRobos(p, 7, 'medio'), b = criarRobos(p, 7, 'medio');
+    for (let n = 0; n < 600; n++) {
+      for (const r of a) andarRobo(r, p);
+      for (const r of b) andarRobo(r, p);
+    }
+    a.forEach((r, i) => assert.ok(r.kart.x === b[i].kart.x && r.kart.y === b[i].kart.y, `${def.id}: o robô ${i} se separou`));
+  }
+});

@@ -29,6 +29,7 @@ import {
   FAIXA_DO_RECORDE,
   FAIXAS,
   IDS_DAS_PISTAS,
+  parceiraDa,
   PISTA_PADRAO,
   PISTAS,
   pistaPedida,
@@ -207,7 +208,10 @@ function solo(ctx: Parameters<Definicao['comecar']>[0], eu: number, agora: () =>
 // =====================================================================================================================
 
 interface Piloto {
+  /** A faixa da largada (a corrida é refeita a partir dela). */
   faixa: number;
+  /** A faixa de agora, pelas posições (a troca de faixa, 24/11/2026, muda na agulha): só para conferir e repassar. */
+  agora: number;
   tempoMs: number | null;
   voltas: number[];
   andou: number;
@@ -221,7 +225,7 @@ function sala(ctx: Parameters<Definicao['comecar']>[0], naSala: number[], pista:
   let prazoAberto = false;
   const inscritos = naSala.slice(0, FAIXAS);
   const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
-  const pilotos = new Map<number, Piloto>(inscritos.map((id, i) => [id, { faixa: i, tempoMs: null, voltas: [], andou: 0, ultima: null }]));
+  const pilotos = new Map<number, Piloto>(inscritos.map((id, i) => [id, { faixa: i, agora: i, tempoMs: null, voltas: [], andou: 0, ultima: null }]));
   let ficaram: Set<number> | null = null;
 
   /** `o` ficou na frente de `l`: chegou com menos tempo; quem chegou fica na frente de quem não chegou; senão, andou mais. */
@@ -277,13 +281,19 @@ function sala(ctx: Parameters<Definicao['comecar']>[0], naSala: number[], pista:
     ctx.avisar();
   });
 
-  /** O carro só anda o que a reta deixa: nenhum salto, e nenhum passo à frente do relógio do servidor. */
-  const posicaoPossivel = (p: Piloto, n: number, s: number) => {
+  /**
+   * O carro só anda o que a reta deixa: nenhum salto, e nenhum passo à frente do relógio do servidor. Na troca de faixa (só na
+   * outra faixa da fileira e só numa pista com agulha), a distância passa a ser a da faixa nova: o salto não é conferido ali.
+   */
+  const temAgulha = pista.trechos[0].some((t) => t.troca);
+  const posicaoPossivel = (p: Piloto, n: number, s: number, faixa: number) => {
     if (!Number.isInteger(n) || n < 1) return false;
     if (n > ((agora() - verdeEm) * 60) / 1000 + PASSOS_DE_FOLGA) return false;
-    if (s < 0 || s > voltas * pista.volta[p.faixa] + 12) return false;
+    if (faixa !== p.agora && (!temAgulha || faixa !== parceiraDa(p.agora))) return false;
+    if (s < 0 || s > voltas * pista.volta[faixa] + 12) return false;
     const u = p.ultima ?? { n: 0, s: 0 };
     if (n <= u.n) return false;
+    if (faixa !== p.agora) return true;
     return s >= u.s - 0.01 && s - u.s <= ((n - u.n) * VMAX) / 60 + 0.5;
   };
 
@@ -323,15 +333,20 @@ function sala(ctx: Parameters<Definicao['comecar']>[0], naSala: number[], pista:
     tempoReal(quem: number, dados: unknown) {
       const p = pilotos.get(quem);
       if (!p || fase !== 'correndo' || !dados || typeof dados !== 'object') return null;
-      const { n, s, f, d } = dados as Record<string, unknown>;
+      const { n, s, f, d, x, e } = dados as Record<string, unknown>;
       if (typeof n !== 'number' || typeof s !== 'number' || !Number.isFinite(s)) return null;
-      if (!posicaoPossivel(p, n, s)) return null;
-      if (p.tempoMs === null) p.andou = s;
+      const faixa = x === undefined ? p.agora : x;
+      if (typeof faixa !== 'number' || !Number.isInteger(faixa)) return null;
+      if (!posicaoPossivel(p, n, s, faixa)) return null;
+      p.agora = faixa;
+      // `andou` em voltas da faixa da largada, para comparar quem trocou com quem não trocou
+      if (p.tempoMs === null) p.andou = (s / pista.volta[faixa]) * pista.volta[p.faixa];
       p.ultima = { n, s, em: agora() };
       // fora da pista e a derrapagem vão só para o desenho dos outros
       const fora = f === 1 ? 1 : 0;
       const derrapa = typeof d === 'number' && Number.isFinite(d) ? Math.max(0, Math.min(1, Math.round(d * 10) / 10)) : 0;
-      return { userId: quem, n, s: Math.round(s * 1000) / 1000, f: fora, d: derrapa };
+      const de = e === parceiraDa(faixa) ? e : -1;
+      return { userId: quem, n, s: Math.round(s * 1000) / 1000, f: fora, d: derrapa, x: faixa, e: temAgulha ? de : -1 };
     },
     conferir,
   };

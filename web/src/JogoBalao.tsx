@@ -13,7 +13,7 @@ import { NOMES_DAS_ARENAS } from './balao/nomes';
 import { figuraDoItem, rodarBalao, TIPOS_DO_BALAO, type EventoDoBalao, type Participante } from './balao/laco';
 import { corDoBalao } from './balao/render';
 import { DIFICULDADES_DO_BALAO, type DificuldadeDoBalao } from './balao/robo';
-import { ARENAS, BALOES, type ItemDoBalao } from './balao/sim';
+import { ARENAS, BALOES, MODOS_DO_BALAO, type ItemDoBalao, type ModoDoBalao } from './balao/sim';
 import './balao/balao.css';
 
 /**
@@ -39,6 +39,8 @@ export interface JogadorDoBalao {
   estouros: number;
   vivo: boolean;
   posicao: number | null;
+  /** O modo da cenoura dourada (24/11/2026): os segundos com ela. */
+  dourada?: number;
 }
 
 export interface EstadoBalao {
@@ -49,6 +51,10 @@ export interface EstadoBalao {
   arena?: string;
   /** A sala em duplas (21/11/2026). */
   duplas?: boolean;
+  /** O modo (24/11/2026): os balões de sempre, ou a cenoura dourada. */
+  modo?: ModoDoBalao;
+  /** No modo da cenoura: com quem ela está (null: no chão, em x, y), desde o passo n. */
+  dourada?: { dono: number | null; x: number; y: number; n: number } | null;
   semente?: number;
   decorridoMs?: number | null;
   duracaoMs?: number;
@@ -57,7 +63,7 @@ export interface EstadoBalao {
   username?: string;
   avatar?: number | string | null;
   robos?: { userId: number; username: string }[];
-  resultadoDoSolo?: { posicao: number; total: number; baloes: number; estouros: number } | null;
+  resultadoDoSolo?: { posicao: number; total: number; baloes: number; estouros: number; dourada?: number | null } | null;
 }
 
 type Props = {
@@ -72,6 +78,7 @@ type Props = {
 const ARENA_GUARDADA = 'syden:balaoArena';
 const ROBOS_GUARDADOS = 'syden:balaoRobos';
 const DIFICULDADE_GUARDADA = 'syden:balaoDificuldade';
+const MODO_GUARDADO = 'syden:balaoModo';
 /**
  * AS DUPLAS NO SOLO (21/11/2026): eu e um robô de parceiro contra os outros, em times de dois. A opção leva o número de robôs
  * NEGATIVO (o mesmo 3 de "cada um por si" seria outra mesa), e a figura mostra os times.
@@ -101,7 +108,7 @@ const guardar = (chave: string, valor: string) => {
 
 export function JogoBalao({ estado, eu, jogador, agir, socket = null, channelId = 0 }: Props) {
   const fim = estado.terminada || estado.fase === 'fim';
-  const [escolha, setEscolha] = useState<{ arena: string; robos: number; dificuldade: DificuldadeDoBalao; duplas: boolean } | null>(null);
+  const [escolha, setEscolha] = useState<{ arena: string; robos: number; dificuldade: DificuldadeDoBalao; duplas: boolean; modo: ModoDoBalao } | null>(null);
   if (fim) return <TelaDoFim estado={estado} eu={eu} />;
   if (estado.solo) {
     if (!escolha) return <EscolhaDoSolo aoEscolher={setEscolha} />;
@@ -112,6 +119,7 @@ export function JogoBalao({ estado, eu, jogador, agir, socket = null, channelId 
         quantos={escolha.robos}
         dificuldade={escolha.dificuldade}
         duplas={escolha.duplas}
+        dourada={escolha.modo === 'dourada'}
         eu={eu}
         nome={estado.username ?? ''}
         avatar={estado.avatar ?? null}
@@ -164,11 +172,28 @@ function MapaDaArena({ id, lado }: { id: string; lado: number }) {
 }
 
 /** A escolha da arena da sala (para quem começa a partida: `aoEscolher` vai com o id, que o servidor recebe em `arena`). */
-export function EscolhaDaArena({ aoEscolher, aoVoltar }: { aoEscolher: (arena: string, extra?: { duplas: boolean }) => void; aoVoltar: () => void }) {
+/** O MODO (24/11/2026): os balões de sempre, ou a cenoura dourada. Figura e nome, nas duas escolhas (a sala e o Solo). */
+function EscolhaDoModo({ modo, aoMudar }: { modo: ModoDoBalao; aoMudar: (m: ModoDoBalao) => void }) {
+  const t = useT();
+  return (
+    <div className="minijogo-abas corrida-dificuldade" role="radiogroup" aria-label={t('Modo')}>
+      {MODOS_DO_BALAO.map((m) => (
+        <button key={m} type="button" role="radio" aria-checked={modo === m} className={modo === m ? 'ativa' : undefined} onClick={() => aoMudar(m)}>
+          {m === 'dourada' ? `🥕 ${t('Cenoura dourada')}` : `🎈 ${t('Balões')}`}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export function EscolhaDaArena({ aoEscolher, aoVoltar }: { aoEscolher: (arena: string, extra?: { duplas: boolean; modo: ModoDoBalao }) => void; aoVoltar: () => void }) {
   const t = useT();
   const [duplas, setDuplas] = useState(false);
+  const [modo, setModo] = useState<ModoDoBalao>('baloes');
   return (
     <div className="corrida-escolha">
+      <EscolhaDoModo modo={modo} aoMudar={setModo} />
+      {modo === 'dourada' && <p className="settings-hint">{t('Segure a cenoura dourada: quem leva um item ou uma batida a derruba. Ganha quem a segurar por mais tempo.')}</p>}
       <div className="minijogo-abas corrida-dificuldade" role="radiogroup">
         {[false, true].map((d) => (
           <button key={String(d)} type="button" role="radio" aria-checked={duplas === d} className={duplas === d ? 'ativa' : undefined} onClick={() => setDuplas(d)}>
@@ -180,7 +205,7 @@ export function EscolhaDaArena({ aoEscolher, aoVoltar }: { aoEscolher: (arena: s
       <ul className="corrida-pistas">
         {ARENAS.map((a) => (
           <li key={a.id}>
-            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(a.id, { duplas })}>
+            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(a.id, { duplas, modo })}>
               <MapaDaArena id={a.id} lado={72} />
               <strong>{t(NOMES_DAS_ARENAS[a.id] ?? a.id)}</strong>
             </button>
@@ -196,8 +221,9 @@ export function EscolhaDaArena({ aoEscolher, aoVoltar }: { aoEscolher: (arena: s
   );
 }
 
-function EscolhaDoSolo({ aoEscolher }: { aoEscolher: (e: { arena: string; robos: number; dificuldade: DificuldadeDoBalao; duplas: boolean }) => void }) {
+function EscolhaDoSolo({ aoEscolher }: { aoEscolher: (e: { arena: string; robos: number; dificuldade: DificuldadeDoBalao; duplas: boolean; modo: ModoDoBalao }) => void }) {
   const t = useT();
+  const [modo, setModo] = useState<ModoDoBalao>(() => (lerGuardado(MODO_GUARDADO, 'baloes') === 'dourada' ? 'dourada' : 'baloes'));
   const [arena, setArena] = useState(() => {
     const g = lerGuardado(ARENA_GUARDADA, 'horta');
     return ARENAS.some((a) => a.id === g) ? g : 'horta';
@@ -215,11 +241,13 @@ function EscolhaDoSolo({ aoEscolher }: { aoEscolher: (e: { arena: string; robos:
     guardar(ARENA_GUARDADA, arena);
     guardar(ROBOS_GUARDADOS, String(robos));
     guardar(DIFICULDADE_GUARDADA, dificuldade);
+    guardar(MODO_GUARDADO, modo);
     tocar('clique');
-    aoEscolher({ arena, robos: Math.abs(robos), dificuldade, duplas: robos < 0 });
+    aoEscolher({ arena, robos: Math.abs(robos), dificuldade, duplas: robos < 0, modo });
   };
   return (
     <div className="balao-escolha">
+      <EscolhaDoModo modo={modo} aoMudar={setModo} />
       <ul className="corrida-pistas">
         {ARENAS.map((a) => (
           <li key={a.id}>
@@ -371,7 +399,7 @@ const relogio = (ms: number) => {
  * balões no canto de cima à esquerda e o quadro do item no meio, com a figura do item (a mesma pixel art da arena) ampliada.
  * Só desenho: a lista de todos (BaloesDeTodos) e o botão do item dizem o mesmo ao leitor de tela.
  */
-function MeuPainel({ quantos, cor, item }: { quantos: number; cor: string; item: ItemDoBalao | null }) {
+function MeuPainel({ quantos, cor, item, semBaloes = false }: { quantos: number; cor: string; item: ItemDoBalao | null; semBaloes?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const c = ref.current;
@@ -388,11 +416,13 @@ function MeuPainel({ quantos, cor, item }: { quantos: number; cor: string; item:
   }, [item]);
   return (
     <div className="balao-meu" aria-hidden="true">
-      <span className="balao-meus-baloes">
-        {Array.from({ length: BALOES }, (_, i) => (
-          <i key={i} className={i < quantos ? 'cheio' : undefined} style={i < quantos ? { background: cor } : undefined} />
-        ))}
-      </span>
+      {!semBaloes && (
+        <span className="balao-meus-baloes">
+          {Array.from({ length: BALOES }, (_, i) => (
+            <i key={i} className={i < quantos ? 'cheio' : undefined} style={i < quantos ? { background: cor } : undefined} />
+          ))}
+        </span>
+      )}
       <span className={`balao-item${item ? ' com-item' : ''}`}>
         <canvas ref={ref} width={32} height={32} />
       </span>
@@ -426,6 +456,30 @@ function BaloesDeTodos({ participantes, baloes, eu, duplas = false }: { particip
   );
 }
 
+/**
+ * O MODO CENOURA DOURADA (24/11/2026): no lugar dos balões, o tempo de cada um com a cenoura, do mais ao menos; quem está com
+ * ela agora leva a cenoura ao lado do nome. Nas duplas, a cor do time.
+ */
+function DouradaDeTodos({ participantes, dourada, eu, duplas = false }: { participantes: Participante[]; dourada: { dono: number | null; segundos: Map<number, number> }; eu: number; duplas?: boolean }) {
+  const t = useT();
+  const ordem = [...participantes].sort((a, b) => (dourada.segundos.get(b.id) ?? 0) - (dourada.segundos.get(a.id) ?? 0));
+  return (
+    <ol className="balao-todos" aria-label={t('Cenoura dourada')}>
+      {ordem.map((q) => (
+        <li key={q.id} className={q.id === eu ? 'eu' : undefined}>
+          <span className="balao-bolinhas">
+            <i style={{ background: corDe(q, duplas) }} />
+          </span>
+          <span className="balao-nome">
+            {dourada.dono === q.id ? '🥕 ' : ''}
+            {q.nome} · {relogio((dourada.segundos.get(q.id) ?? 0) * 1000)}
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 function Comandos_({ piloto, solo = false }: { piloto: boolean; solo?: boolean }) {
   const t = useT();
   if (!piloto) return null;
@@ -448,6 +502,7 @@ function PartidaSolo({
   quantos,
   dificuldade,
   duplas,
+  dourada = false,
   eu,
   nome,
   avatar,
@@ -458,16 +513,19 @@ function PartidaSolo({
   quantos: number;
   dificuldade: DificuldadeDoBalao;
   duplas: boolean;
+  dourada?: boolean;
   eu: number;
   nome: string;
   avatar: number | string | null;
   robos: { userId: number; username: string }[];
-  aoTerminar: (r: { posicao: number; total: number; baloes: number; estouros: number; passos: number }) => void;
+  aoTerminar: (r: { posicao: number; total: number; baloes: number; estouros: number; passos: number; dourada?: number }) => void;
 }) {
   const t = useT();
   const canvas = useRef<HTMLCanvasElement>(null);
   const tela = useRef<HTMLDivElement>(null);
   const [acabou, setAcabou] = useState(false);
+  const [ouro, setOuro] = useState<{ dono: number | null; segundos: Map<number, number> }>({ dono: null, segundos: new Map() });
+  const ouroRef = useRef(ouro);
   const controles = useControles(!acabou);
   // ESC pausa (só aqui, no Solo: na sala o relógio é o de todos)
   const { pausa, pausado, continuar } = usePausaComEsc(!acabou);
@@ -495,6 +553,14 @@ function PartidaSolo({
       robos: lista.filter((q) => q.id !== eu).map((q) => q.id),
       dificuldade,
       duplas,
+      dourada,
+      aoDourada: (d) => {
+        const a = ouroRef.current;
+        if (a.dono === d.dono && [...d.segundos].every(([id, s]) => a.segundos.get(id) === s)) return;
+        if (d.dono !== a.dono) tocar(d.dono === eu ? 'moeda' : a.dono === eu ? 'queda' : 'clique');
+        ouroRef.current = d;
+        setOuro(d);
+      },
       semente: Math.floor(Math.random() * 2 ** 31),
       verdeEm: performance.now() + 3000,
       baloes: new Map(lista.map((q) => [q.id, BALOES])),
@@ -515,7 +581,7 @@ function PartidaSolo({
       aoFim: (r) => {
         setAcabou(true);
         tocar('fim');
-        aoTerminar(r);
+        aoTerminar(dourada ? { ...r, dourada: ouroRef.current.segundos.get(eu) ?? 0 } : r);
       },
     });
     return parar;
@@ -529,14 +595,24 @@ function PartidaSolo({
           <span />
           <span className="corrida-relogio">{relogio(restante.restanteMs)}</span>
         </div>
-        <BaloesDeTodos participantes={participantes.current} baloes={baloes} eu={eu} duplas={duplas} />
-        {!acabou && (baloes.get(eu) ?? BALOES) === 0 && <p className="balao-aviso">{t('Sem balões: você segue de fantasma, soltando itens.')}</p>}
-        {!acabou && <MeuPainel quantos={baloes.get(eu) ?? BALOES} cor={corDoBalao(0)} item={item} />}
+        {dourada ? (
+          <DouradaDeTodos participantes={participantes.current} dourada={ouro} eu={eu} duplas={duplas} />
+        ) : (
+          <BaloesDeTodos participantes={participantes.current} baloes={baloes} eu={eu} duplas={duplas} />
+        )}
+        {!acabou && !dourada && (baloes.get(eu) ?? BALOES) === 0 && <p className="balao-aviso">{t('Sem balões: você segue de fantasma, soltando itens.')}</p>}
+        {!acabou && <MeuPainel quantos={baloes.get(eu) ?? BALOES} cor={corDoBalao(0)} item={item} semBaloes={dourada} />}
         {!acabou && <BotoesDeToque controles={controles} item={item} />}
           {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
       </div>
       <Comandos_ piloto={!acabou} solo />
-      {!acabou && <p className="settings-hint corrida-dica">{t('Pegue as caixas e estoure os balões dos outros. Quem fica sem balão sai.')}</p>}
+      {!acabou && (
+        <p className="settings-hint corrida-dica">
+          {dourada
+            ? t('Segure a cenoura dourada: quem leva um item ou uma batida a derruba. Ganha quem a segurar por mais tempo.')
+            : t('Pegue as caixas e estoure os balões dos outros. Quem fica sem balão sai.')}
+        </p>
+      )}
     </div>
   );
 }
@@ -561,6 +637,9 @@ function PartidaNaSala({
   const [restante, setRestante] = useState({ restanteMs: 0, pausado: false });
   const jogadores = estado.jogadores ?? [];
   const duplas = !!estado.duplas;
+  const dourada = estado.modo === 'dourada';
+  const [ouro, setOuro] = useState<{ dono: number | null; segundos: Map<number, number> }>({ dono: null, segundos: new Map() });
+  const ouroRef = useRef(ouro);
   const participantes = useRef<Participante[]>(jogadores.map((j) => ({ id: j.userId, nome: j.username, avatar: j.avatar, largada: j.largada, equipe: j.equipe })));
   const baloesVerdade = useRef(new Map(jogadores.map((j) => [j.userId, j.baloes])));
   const [baloes, setBaloes] = useState(new Map(baloesVerdade.current));
@@ -592,9 +671,15 @@ function PartidaNaSala({
     const chegada = (m: { channelId?: number; dados?: Record<string, unknown> }) => {
       if (m.channelId !== channelId || !m.dados) return;
       const d = m.dados;
+      if (d.tipo === 'dourada') {
+        // a cenoura dourada (o servidor diz com quem está): na ordem em que chega
+        if (typeof d.n !== 'number' || typeof d.x !== 'number' || typeof d.y !== 'number') return;
+        eventos.current.push({ tipo: 'dourada', dono: typeof d.dono === 'number' ? d.dono : null, x: d.x, y: d.y, n: d.n });
+        return;
+      }
       if ((TIPOS_DO_BALAO as readonly unknown[]).includes(d.tipo)) {
         if (typeof d.id !== 'string') return;
-        if (!eventos.current.some((e) => e.id === d.id && e.tipo === d.tipo)) eventos.current.push(d as unknown as EventoDoBalao);
+        if (!eventos.current.some((e) => e.tipo !== 'dourada' && e.id === d.id && e.tipo === d.tipo)) eventos.current.push(d as unknown as EventoDoBalao);
         return;
       }
       if (typeof d.userId !== 'number') return;
@@ -619,6 +704,8 @@ function PartidaNaSala({
     const verdeEm =
       estado.fase === 'largada' ? performance.now() + Math.max(0, estado.restanteMs ?? 0) : performance.now() - Math.max(0, estado.decorridoMs ?? 0);
     const enviar = (dados: Record<string, unknown>) => socket?.emit('minijogo:tempo-real', { channelId, dados });
+    // quem abre no meio da partida: a cenoura onde o servidor diz que está agora (o tempo de antes, só no placar do fim)
+    if (dourada && estado.dourada && (estado.dourada.dono !== null || estado.dourada.n > 0)) eventos.current.push({ tipo: 'dourada', ...estado.dourada });
     return rodarBalao({
       canvas: canvas.current,
       comandos: controles.comandos.current,
@@ -627,6 +714,14 @@ function PartidaNaSala({
       piloto,
       participantes: participantes.current,
       duplas,
+      dourada,
+      aoDourada: (d) => {
+        const a = ouroRef.current;
+        if (a.dono === d.dono && [...d.segundos].every(([id, s]) => a.segundos.get(id) === s)) return;
+        if (d.dono !== a.dono) tocar(d.dono === eu ? 'moeda' : a.dono === eu ? 'queda' : 'clique');
+        ouroRef.current = d;
+        setOuro(d);
+      },
       semente: estado.semente ?? 0,
       verdeEm,
       baloes: baloesVerdade.current,
@@ -657,13 +752,23 @@ function PartidaNaSala({
           <span />
           <span className="corrida-relogio">{relogio(restante.restanteMs)}</span>
         </div>
-        <BaloesDeTodos participantes={participantes.current} baloes={baloes} eu={eu} duplas={duplas} />
-        {piloto && !euVivo && <p className="balao-aviso">{t('Sem balões: você segue de fantasma, soltando itens.')}</p>}
-        {piloto && <MeuPainel quantos={baloes.get(eu) ?? 0} cor={corDe(participantes.current.find((q) => q.id === eu), duplas)} item={item} />}
+        {dourada ? (
+          <DouradaDeTodos participantes={participantes.current} dourada={ouro} eu={eu} duplas={duplas} />
+        ) : (
+          <BaloesDeTodos participantes={participantes.current} baloes={baloes} eu={eu} duplas={duplas} />
+        )}
+        {piloto && !dourada && !euVivo && <p className="balao-aviso">{t('Sem balões: você segue de fantasma, soltando itens.')}</p>}
+        {piloto && <MeuPainel quantos={baloes.get(eu) ?? 0} cor={corDe(participantes.current.find((q) => q.id === eu), duplas)} item={item} semBaloes={dourada} />}
         {piloto && <BotoesDeToque controles={controles} item={item} />}
       </div>
       <Comandos_ piloto={piloto} />
-      {euVivo && <p className="settings-hint corrida-dica">{t('Pegue as caixas e estoure os balões dos outros. Quem fica sem balão sai.')}</p>}
+      {euVivo && (
+        <p className="settings-hint corrida-dica">
+          {dourada
+            ? t('Segure a cenoura dourada: quem leva um item ou uma batida a derruba. Ganha quem a segurar por mais tempo.')
+            : t('Pegue as caixas e estoure os balões dos outros. Quem fica sem balão sai.')}
+        </p>
+      )}
     </div>
   );
 }
@@ -681,7 +786,9 @@ function TelaDoFim({ estado, eu }: { estado: EstadoBalao; eu: number }) {
       <div className="balao-fim-solo">
         <p className="minijogo-situacao">{r.posicao === 1 ? t('Você venceu!') : t('{posicao}º lugar, entre {total}', { posicao: r.posicao, total: r.total })}</p>
         <p className="settings-hint">
-          {t('Balões que sobraram: {n}', { n: r.baloes })} · {t('Balões estourados: {n}', { n: r.estouros })}
+          {typeof r.dourada === 'number'
+            ? `🥕 ${relogio(r.dourada * 1000)}`
+            : `${t('Balões que sobraram: {n}', { n: r.baloes })} · ${t('Balões estourados: {n}', { n: r.estouros })}`}
         </p>
       </div>
     );
@@ -693,7 +800,7 @@ function TelaDoFim({ estado, eu }: { estado: EstadoBalao; eu: number }) {
       linhas={(linhas.length ? linhas : estado.jogadores ?? []).map((j) => ({
         userId: j.userId,
         username: j.username,
-        valor: `🎈 ${j.baloes} · 💥 ${j.estouros}`,
+        valor: estado.modo === 'dourada' ? `🥕 ${relogio((j.dourada ?? 0) * 1000)} · 💥 ${j.estouros}` : `🎈 ${j.baloes} · 💥 ${j.estouros}`,
         posicao: j.posicao ?? undefined,
       }))}
     />

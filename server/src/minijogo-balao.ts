@@ -35,6 +35,13 @@
  * `i % (total / 2)`, que larga do mesmo lado). O item e a batida não pegam o colega; acaba quando sobra um time com balão, e
  * o troféu é do time que venceu (os dois em 1º).
  *
+ * O MODO CENOURA DOURADA (24/11/2026): quem convida escolhe (`corpo.modo: 'dourada'`). Ninguém perde balão: os itens e as
+ * batidas valem como sempre (o mesmo "quem leva decide", conferido igual), mas o que se perde é a CENOURA DOURADA, que quem
+ * a segurava DERRUBA onde estava. QUEM ESTÁ COM ELA É DO SERVIDOR: ele a dá a quem passou perto (pela reta entre duas
+ * posições aceitas, o mesmo caminho em que confere os itens), a tira de quem levou (no `estourar`, que só ele decide) e
+ * de quem saiu da sala, e conta o tempo de cada um pelo relógio da partida. Todo mundo fica sabendo pelo `difundir`
+ * ({ tipo: 'dourada', dono, x, y, n }). Ganha quem a segurou mais tempo; nas duplas, o time (a soma).
+ *
  * O SOLO: contra coelhos do computador, a partida inteira roda no navegador (web/src/balao/), e aqui só se guarda o fim, sem
  * troféu (o troféu é um registro entre amigos).
  */
@@ -45,16 +52,20 @@ import {
   BALOES,
   BATIDA_DE_NOVO,
   caminhoDoRepolho,
+  DOURADA_DE_NOVO,
   DURACAO_PASSOS,
   INVULNERAVEL,
   itemDaCaixa,
   ITENS_DO_BALAO,
   lamaPegou,
+  lugarDaDourada,
   naParede,
+  passouPerto,
   PASSOS_POR_SEGUNDO,
   quemPerde,
   RAIO_DA_BATIDA,
   RAIO_DA_CAIXA,
+  RAIO_DA_DOURADA,
   RAIO_DA_LAMA,
   RAIO_DO_REPOLHO,
   repolhoNoPasso,
@@ -127,6 +138,8 @@ interface Jogador {
   conferidoAte: number;
   /** As últimas posições aceitas (para as batidas). */
   rastro: { n: number; x: number; y: number }[];
+  /** O modo da cenoura dourada: os passos em que a segurou (os de agora não entram até ela soltar ou o jogo acabar). */
+  dourada: number;
 }
 
 type ItemVivo =
@@ -143,6 +156,8 @@ export interface LinhaDoBalao {
   estouros: number;
   vivo: boolean;
   posicao: number | null;
+  /** O modo da cenoura dourada: os segundos que a segurou (no fim, os pontos do troféu). */
+  dourada: number;
 }
 
 export const balao: Definicao = criarBalao();
@@ -159,6 +174,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
       const inscritos = [...naSala];
       const duplas = corpo.duplas === true && inscritos.length >= 4 && inscritos.length % 2 === 0;
       const times = duplas ? inscritos.length / 2 : inscritos.length;
+      const modoDourada = corpo.modo === 'dourada';
       const evento = `balao-${ctx.comunidade ?? 0}-${agora()}`;
       const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
       const jogadores = new Map<number, Jogador>(
@@ -183,6 +199,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
               ultima: { n: 0, x, y, em: 0 },
               conferidoAte: 0,
               rastro: [{ n: 0, x, y }],
+              dourada: 0,
             },
           ];
         }),
@@ -201,6 +218,35 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
       const presentes = () => new Set(ctx.naSala());
       const difundir = (dados: unknown) => ctx.difundir?.(dados);
 
+      /**
+       * A CENOURA DOURADA (só no modo dela): com quem está (null: no chão, em x, y, desde o passo n), quem a derrubou por último
+       * e quando. Quem a segura soma os passos ao soltar (ou no fim); `segurada` dá o total de agora.
+       */
+      const [dx0, dy0] = lugarDaDourada(arena, semente);
+      const dourada: { dono: number | null; x: number; y: number; n: number; soltou: number | null; soltouEm: number } = { dono: null, x: dx0, y: dy0, n: 0, soltou: null, soltouEm: -Infinity };
+      const seguradaPor = (j: Jogador, ate: number) =>
+        j.dourada + (dourada.dono !== null && jogadores.get(dourada.dono) === j ? Math.max(0, Math.min(ate, DURACAO_PASSOS) - dourada.n) : 0);
+      const segurada = (id: number, ate: number) => seguradaPor(jogadores.get(id)!, ate);
+      const avisarDourada = () => difundir({ tipo: 'dourada', dono: dourada.dono, x: dourada.x, y: dourada.y, n: dourada.n });
+      /** `quem` derruba a cenoura no passo `s`, onde estava. */
+      const derrubar = (quem: number, s: number, x: number, y: number) => {
+        if (dourada.dono !== quem) return;
+        const j = jogadores.get(quem)!;
+        j.dourada = segurada(quem, s);
+        Object.assign(dourada, { dono: null, x, y, n: s, soltou: quem, soltouEm: s });
+        avisarDourada();
+        ctx.avisar();
+      };
+      /** `quem` passou pela cenoura (a reta entre duas posições aceitas): pega, se está no chão e não acabou de derrubá-la. */
+      const pegarDourada = (quem: number, de: { n: number; x: number; y: number }, ate: { n: number; x: number; y: number }) => {
+        if (!modoDourada || dourada.dono !== null || ate.n < dourada.n || ate.n > DURACAO_PASSOS) return;
+        if (dourada.soltou === quem && ate.n < dourada.soltouEm + DOURADA_DE_NOVO) return;
+        if (!passouPerto(de.x, de.y, ate.x, ate.y, dourada.x, dourada.y, RAIO_DA_DOURADA - RAIO_DO_SERVIDOR)) return;
+        Object.assign(dourada, { dono: quem, n: Math.max(ate.n - 2, dourada.n, de.n) });
+        avisarDourada();
+        ctx.avisar();
+      };
+
       /** Da mesma dupla (e não é a mesma pessoa): o item e a batida não pegam. */
       const mesmaEquipe = (a: number, b: number) => duplas && a !== b && jogadores.get(a)?.equipe === jogadores.get(b)?.equipe;
       /** O placar de um time nas duplas: alguém com balão, os balões somados, os estouros somados. */
@@ -217,7 +263,19 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
        * `o` ficou na frente de `l`: nas duplas, primeiro o time; depois quem tem balão na frente; entre eles, mais balões,
        * depois mais estouros; quem saiu depois, na frente.
        */
-      const naFrente = (o: Jogador, l: Jogador): boolean =>
+      const naFrente = (o: Jogador, l: Jogador): boolean => (modoDourada ? naFrenteNaDourada(o, l) : naFrenteNosBaloes(o, l));
+      /** O modo da cenoura dourada: nas duplas o time (a soma), depois quem a segurou mais, depois quem estourou mais. */
+      const pontosDe = (j: Jogador) => seguradaPor(j, fase === 'jogando' ? passoAgora() : 0);
+      const timeNaDourada = (e: number) => [...jogadores.values()].filter((j) => j.equipe === e).reduce((s, j) => s + pontosDe(j), 0);
+      const naFrenteNaDourada = (o: Jogador, l: Jogador): boolean => {
+        if (duplas && o.equipe !== l.equipe) {
+          const a = timeNaDourada(o.equipe), b = timeNaDourada(l.equipe);
+          if (a !== b) return a > b;
+        }
+        const a = pontosDe(o), b = pontosDe(l);
+        return a !== b ? a > b : o.estouros > l.estouros || (o.estouros === l.estouros && o.levou < l.levou);
+      };
+      const naFrenteNosBaloes = (o: Jogador, l: Jogador): boolean =>
         duplas && o.equipe !== l.equipe && timeNaFrente(o.equipe, l.equipe) !== 0
           ? timeNaFrente(o.equipe, l.equipe) > 0
           : o.vivo !== l.vivo
@@ -245,6 +303,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
           estouros: l.j.estouros,
           vivo: l.j.vivo,
           posicao,
+          dourada: modoDourada ? Math.round(pontosDe(l.j) / PASSOS_POR_SEGUNDO) : 0,
         });
         return [
           ...ficou.sort(ordenar).map((l) => linha(l, 1 + ficou.filter((o) => naFrente(o.j, l.j)).length)),
@@ -260,6 +319,12 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
       const fechar = () => {
         if (fase === 'fim') return;
         pararTique();
+        // a cenoura na mão de alguém no fim: o tempo dela conta até agora
+        if (modoDourada && dourada.dono !== null) {
+          const j = jogadores.get(dourada.dono)!;
+          j.dourada = segurada(dourada.dono, fase === 'jogando' ? passoAgora() : 0);
+          dourada.dono = null;
+        }
         fase = 'fim';
         ficaram = new Set(inscritos.filter((id) => presentes().has(id)));
         const ordem = classificacao();
@@ -277,10 +342,11 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
               userId: l.userId,
               evento,
               communityId: ctx.comunidade ?? 0,
+              // o modo da cenoura dourada guarda a mesma pista: o placar do troféu é o tempo com ela, em segundos
               pista: 'balao',
               posicao: l.posicao,
               tempoMs: null,
-              pontos: l.baloes,
+              pontos: modoDourada ? l.dourada : l.baloes,
               rivais: turma.map((o) => o.userId).filter((id) => id !== l.userId),
             });
           }
@@ -319,6 +385,18 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
           const escudo = j.escudo.id;
           j.escudo = null;
           difundir({ tipo: 'segurou', alvo: quem, id, escudo });
+          return;
+        }
+        // O MODO CENOURA DOURADA: nenhum balão estoura; quem a segurava a derruba onde estava (a rodada é a de sempre)
+        if (modoDourada) {
+          j.levou++;
+          j.ultimoEstouro = s;
+          const dono = jogadores.get(doDono);
+          if (dono) dono.estouros++;
+          const onde = ondeEstava(quem, s) ?? j.ultima;
+          derrubar(quem, s, onde.x, onde.y);
+          difundir({ tipo: 'estourou', alvo: quem, id, dono: doDono, baloes: j.baloes, n: s });
+          ctx.avisar();
           return;
         }
         j.baloes--;
@@ -425,6 +503,11 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
           const parado = { n, x: j.ultima.x, y: j.ultima.y };
           conferirCaminho(id, { ...parado, n: j.conferidoAte }, parado);
         }
+        // quem saiu da sala com a cenoura a deixa onde estava
+        if (modoDourada && dourada.dono !== null && !presentes().has(dourada.dono)) {
+          const j = jogadores.get(dourada.dono)!;
+          derrubar(dourada.dono, Math.max(n, dourada.n), j.ultima.x, j.ultima.y);
+        }
         conferirFim();
       };
 
@@ -435,6 +518,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
         ctx.agendar((DURACAO_PASSOS * 1000) / PASSOS_POR_SEGUNDO + FOLGA_DO_FIM_MS, fechar);
         tique = setInterval(tiquetaquear, TIQUE_MS);
         tique.unref?.();
+        if (modoDourada) avisarDourada();
         ctx.avisar();
       };
       ctx.agendar(LARGADA_MS, jogar);
@@ -457,6 +541,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
         if (j.rastro.length > RASTRO) j.rastro.shift();
         conferirCaminho(quem, antes, j.ultima);
         if (j.vivo) conferirBatidas(quem, antes, j.ultima);
+        pegarDourada(quem, antes, j.ultima);
         return true;
       };
 
@@ -465,6 +550,8 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
           fase,
           arena: arena.id,
           duplas,
+          modo: modoDourada ? 'dourada' : 'baloes',
+          dourada: modoDourada ? { dono: dourada.dono, x: dourada.x, y: dourada.y, n: dourada.n } : null,
           semente,
           partidaId: evento,
           decorridoMs: fase === 'jogando' ? agora() - verdeEm : null,
@@ -568,7 +655,7 @@ function comecarSolo(ctx: Contexto, naSala: number[], agora: () => number): Jogo
   const inicio = agora();
   const evento = `balao-solo-${quem}-${inicio}`;
   let fase: 'jogando' | 'fim' = 'jogando';
-  let resultado: { posicao: number; total: number; baloes: number; estouros: number } | null = null;
+  let resultado: { posicao: number; total: number; baloes: number; estouros: number; dourada?: number } | null = null;
   const terminar = (completa: boolean) => {
     if (fase === 'fim') return;
     fase = 'fim';
@@ -593,7 +680,10 @@ function comecarSolo(ctx: Contexto, naSala: number[], agora: () => number): Jogo
       if ((passos as number) < 0 || (passos as number) > DURACAO_PASSOS) return 'Partida inválida.';
       // ninguém joga mais passos do que o relógio deixou
       if (((passos as number) * 1000) / PASSOS_POR_SEGUNDO > agora() - inicio + 2000) return 'Partida inválida.';
-      resultado = { posicao: p, total: t, baloes: baloes as number, estouros: estouros as number };
+      // o modo da cenoura dourada (24/11/2026): os segundos com ela, que não passam da partida (só para a tela do fim)
+      const dourada = c.dourada === undefined ? null : c.dourada;
+      if (dourada !== null && (!inteiro(dourada) || dourada < 0 || dourada > Math.ceil((passos as number) / PASSOS_POR_SEGUNDO))) return 'Partida inválida.';
+      resultado = { posicao: p, total: t, baloes: baloes as number, estouros: estouros as number, ...(dourada !== null ? { dourada: dourada as number } : {}) };
       terminar(true);
       return null;
     },

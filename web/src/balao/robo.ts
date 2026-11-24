@@ -70,6 +70,10 @@ export interface VisaoDoRobo {
   rivais: { x: number; y: number }[];
   /** As caixas que estão lá para este robô. */
   caixas: { x: number; y: number }[];
+  /** O MODO CENOURA DOURADA (24/11/2026): para onde ir buscá-la (no chão, ou quem a segura); null: nada a buscar. */
+  dourada?: { x: number; y: number } | null;
+  /** Está com a cenoura: foge dos outros, juntando itens. */
+  fugindo?: boolean;
 }
 
 const diferenca = (a: number, b: number) => {
@@ -128,7 +132,20 @@ function decidir(k: Kart, v: VisaoDoRobo, m: MemoriaDoRobo): Comandos {
   };
   const rival = maisPerto(v.rivais);
   const caixa = maisPerto(v.caixas);
-  const alvo = (v.item ? rival.alvo : caixa.alvo) ?? rival.alvo ?? caixa.alvo;
+  let alvo = (v.item ? rival.alvo : caixa.alvo) ?? rival.alvo ?? caixa.alvo;
+  if (v.dourada) alvo = v.dourada;
+  else if (v.fugindo) {
+    // com a cenoura: a caixa mais longe do rival mais perto (andar sem parar, e longe de quem vem tomar)
+    let melhor: { x: number; y: number } | null = null, md = -1;
+    for (const c of v.caixas.length ? v.caixas : v.arena.caixas.map(([x, y]) => ({ x, y }))) {
+      const d = rival.alvo ? Math.hypot(c.x - rival.alvo.x, c.y - rival.alvo.y) : 0;
+      if (d > md && Math.hypot(c.x - k.x, c.y - k.y) > 30) {
+        md = d;
+        melhor = c;
+      }
+    }
+    alvo = melhor ?? alvo;
+  }
   let quer = k.angulo;
   if (alvo) quer = Math.atan2(alvo.y - k.y, alvo.x - k.x);
 

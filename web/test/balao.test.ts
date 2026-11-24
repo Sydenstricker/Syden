@@ -4,7 +4,7 @@ import { Chao, chaoEm } from '../src/corrida/pista';
 import { largadaDa, montarArena } from '../src/balao/arena';
 import { novoKart, passo } from '../src/corrida/fisica';
 import { criarPartida, type EventoDoBalao, type ResultadoDoSolo } from '../src/balao/partida';
-import { ARENAS, BALOES, caminhoDoRepolho, DURACAO_PASSOS, itemDaCaixa, MARGEM_DO_KART, naParede, RAIO_DA_BATIDA } from '../src/balao/sim';
+import { ARENAS, BALOES, caminhoDoRepolho, DOURADA_DE_NOVO, DURACAO_PASSOS, itemDaCaixa, MARGEM_DO_KART, naParede, RAIO_DA_BATIDA } from '../src/balao/sim';
 
 /**
  * O Estoura-balão no site: as arenas pintadas batem com a forma que o servidor conhece (sim.ts), o repolho não atravessa
@@ -343,4 +343,56 @@ test('quem saiu continua (21/11/2026): sem balão, o meu kart segue andando de f
   assert.ok(Math.hypot(meu.kart.x - antes.x, meu.kart.y - antes.y) > 30, 'o fantasma anda');
   assert.equal(partida.acabou, false, 'a partida segue com os três robôs');
   assert.equal(eventos.filter((e) => e.tipo === 'estourou' && e.alvo === eu).length, 1, 'nada mais estoura no fantasma');
+});
+
+test('a cenoura dourada no Solo (24/11/2026): os robôs a buscam e a tomam, ninguém perde balão, e quem derrubou espera 1,5 s', () => {
+  let trocasNoTotal = 0;
+  for (const p of arenas) {
+    for (const duplas of [false, true]) {
+      const eu = 1;
+      const robos = [-1, -2, -3];
+      const participantes = [eu, ...robos].map((id, i) => ({ id, nome: String(id), avatar: null, largada: i, ...(duplas ? { equipe: i % 2 } : {}) }));
+      const eventos: EventoDoBalao[] = [];
+      let fim: ResultadoDoSolo | null = null;
+      const partida = criarPartida({
+        arena: p,
+        comandos: { acelera: false, freia: false, vira: 0, derrapa: false },
+        eu,
+        piloto: true,
+        autopiloto: () => true,
+        participantes,
+        robos,
+        duplas,
+        dourada: true,
+        semente: 4242,
+        baloes: new Map(participantes.map((q) => [q.id, BALOES])),
+        rivais: new Map(),
+        eventos,
+        aoFim: (r) => (fim = r),
+      });
+      while (!fim && partida.n < DURACAO_PASSOS + 10) partida.passo();
+      assert.ok(fim, `${p.arena.id}: acabou`);
+      assert.ok(partida.n >= DURACAO_PASSOS, `${p.arena.id}: só acaba no tempo`);
+      for (const q of participantes) assert.equal(partida.baloesDe(q.id), BALOES, 'balão não estoura');
+      const douradas = eventos.filter((e): e is Extract<EventoDoBalao, { tipo: 'dourada' }> => e.tipo === 'dourada');
+      assert.ok(douradas.some((e) => e.dono !== null), `${p.arena.id}: alguém pegou a cenoura`);
+      trocasNoTotal += douradas.filter((e) => e.dono === null).length;
+      // quem acabou de derrubar só a pega de novo 1,5 s depois (a regra vale para quem a derrubou por último)
+      let dono: number | null = null;
+      let soltou: { id: number; n: number } | null = null;
+      for (const e of douradas) {
+        if (e.dono === null && dono !== null) soltou = { id: dono, n: e.n };
+        if (e.dono !== null && soltou && e.dono === soltou.id) assert.ok(e.n >= soltou.n + DOURADA_DE_NOVO, `${p.arena.id}: pegou de volta cedo`);
+        dono = e.dono;
+      }
+      // o tempo de todos não passa da partida, e o primeiro é quem segurou mais (ou, nas duplas, o time)
+      const total = participantes.reduce((s, q) => s + partida.tempoComADourada(q.id), 0);
+      assert.ok(total <= DURACAO_PASSOS + 1);
+      if (!duplas) {
+        const melhor = Math.max(...participantes.map((q) => partida.tempoComADourada(q.id)));
+        assert.equal(fim!.posicao === 1, partida.tempoComADourada(eu) === melhor);
+      }
+    }
+  }
+  assert.ok(trocasNoTotal > 0, 'a cenoura cai de alguém em algum momento (os itens e as batidas valem)');
 });

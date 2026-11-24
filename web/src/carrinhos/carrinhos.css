@@ -414,3 +414,27 @@
   text-align: center;
   max-width: 80%;
 }
+
+/* A TROCA DE FAIXA (24/11/2026): o botão da agulha, embaixo à esquerda; aceso quando a troca está armada. */
+.carrinhos-troca {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  background: rgba(40, 24, 12, 0.45);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: pointer;
+}
+.carrinhos-troca.armada {
+  background: #ffb02e;
+  color: #3a2410;
+  border-color: #fff4d6;
+  box-shadow: 0 0 12px rgba(255, 196, 80, 0.8);
+}

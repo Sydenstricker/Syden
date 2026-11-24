@@ -166,6 +166,13 @@ export interface OpcoesDoLaco {
    * fila da grade, e a chegada avisa a classificação (aoClassificacao) antes do aoChegar.
    */
   robos?: { quantos: number; dificuldade: DificuldadeDaCorrida };
+  /**
+   * OS ROBÔS NA SALA (24/11/2026): os mesmos robôs andam em todo computador da sala, pela mesma conta, passo a passo desde o
+   * verde de cada um. Para não se separarem de um computador para o outro, eles só usam o que todos sabem igual: o item sai da
+   * posição entre os robôs (e o roxo mira o robô da frente), os eventos deles ficam aqui (não vão ao servidor), e um robô só é
+   * derrubado por item de robô. Os itens dos robôs pegam as pessoas pela regra de sempre: quem leva decide.
+   */
+  robosNaSala?: boolean;
   /** A classe rápida (o teto vezes isto), só contra os robôs. */
   classe?: number;
   /** A classificação na hora em que quem joga cruzou a chegada: quem chegou antes, eu, e quem ainda corria (pelo quanto andou). */
@@ -367,6 +374,13 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       o.itens!.eventos.push(e);
       o.itens!.aoEvento(e);
     };
+    /** O evento de um robô: no Solo, como os meus; na sala, só aqui (cada computador o faz igual). */
+    const lancarDoRobo = (e: EventoDeItem) => {
+      if (o.robosNaSala) o.itens!.eventos.push(e);
+      else lancar(e);
+    };
+    /** Na sala: os itens que já pegaram um robô (só os robôs contam, para todo computador ver o mesmo). */
+    const sumiramParaOsRobos = new Set<string>();
 
     const andar = () => {
       if (contagem > 0) {
@@ -395,7 +409,7 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       passo(kart, c, p);
       // OS ROBÔS andam o mesmo passo, e a posição deles entra na lista dos rivais (no passo da minha corrida)
       for (const r of robos) {
-        andarRobo(r, p, progresso(kart, p));
+        andarRobo(r, p, o.robosNaSala ? undefined : progresso(kart, p));
         const rv = todosOsRivais!.get(r.id)!;
         const andou = r.kart.terminou ? p.def.voltas + 0.5 - r.chegada / 1e6 : progressoDoRobo(r, p);
         rv.posicoes.push({ n: kart.passos, x: r.kart.x, y: r.kart.y, a: r.kart.angulo, andou });
@@ -523,7 +537,9 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
     const itensDosRobos = () => {
       const n = kart.passos;
       const eventos = o.itens!.eventos;
-      const sumiram = new Set(eventos.filter((e) => e.tipo === 'acertou').map((e) => e.id));
+      const sumiram = o.robosNaSala ? sumiramParaOsRobos : new Set(eventos.filter((e) => e.tipo === 'acertou').map((e) => e.id));
+      // na sala, a posição e o kart da frente só entre os robôs (o que todo computador sabe igual)
+      const entreRobos = o.robosNaSala ? [...robos].sort((a, b) => progressoDoRobo(b, p) - progressoDoRobo(a, p)) : null;
       for (const r of robos) {
         const k = r.kart;
         if (k.terminou) continue;
@@ -533,7 +549,7 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
           for (let i = 0; i < caixas.length; i++) {
             if (minhas[i] <= n && Math.hypot(caixas[i].x - k.x, caixas[i].y - k.y) < 8) {
               minhas[i] = n + 120;
-              const item = sortearItem(posicaoDe.get(r.id) ?? 0, quantos, r.sorte);
+              const item = entreRobos ? sortearItem(entreRobos.indexOf(r), entreRobos.length, r.sorte) : sortearItem(posicaoDe.get(r.id) ?? 0, quantos, r.sorte);
               mao = { item, usos: item === 'cenouras' ? 3 : 1, usarEm: n + 30 + Math.floor(r.sorte() * 150) };
               maoDoRobo.set(r.id, mao);
               break;
@@ -546,15 +562,16 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
           const lado = +(-(k.x - q.x) * q.dy + (k.y - q.y) * q.dx).toFixed(1);
           const s = +(p.la[k.indice] + 16).toFixed(1);
           const it = mao.item;
+          const aFrenteDoRobo = entreRobos ? (entreRobos[entreRobos.indexOf(r) - 1]?.id ?? null) : (aFrenteDe.get(r.id) ?? null);
           if (it === 'cenoura' || it === 'cenouras') k.turbo = Math.max(k.turbo, 1.1);
-          else if (it === 'repolho') lancar({ tipo: 'repolho', id, dono: r.id, n, s, lado });
-          else if (it === 'repolho-roxo') lancar({ tipo: 'repolho-roxo', id, dono: r.id, n, s, lado, alvo: aFrenteDe.get(r.id) ?? null });
-          else if (it === 'lama') lancar({ tipo: 'lama', id, dono: r.id, n, x: +(k.x - Math.cos(k.angulo) * 12).toFixed(1), y: +(k.y - Math.sin(k.angulo) * 12).toFixed(1) });
+          else if (it === 'repolho') lancarDoRobo({ tipo: 'repolho', id, dono: r.id, n, s, lado });
+          else if (it === 'repolho-roxo') lancarDoRobo({ tipo: 'repolho-roxo', id, dono: r.id, n, s, lado, alvo: aFrenteDoRobo });
+          else if (it === 'lama') lancarDoRobo({ tipo: 'lama', id, dono: r.id, n, x: +(k.x - Math.cos(k.angulo) * 12).toFixed(1), y: +(k.y - Math.sin(k.angulo) * 12).toFixed(1) });
           else {
             if (it === 'alface') escudoDoRobo.set(r.id, { id, ate: n + VIDA_DA_ALFACE });
             else if (it === 'toca') k.toca = TEMPO_DA_TOCA;
             else andouDoDono.set(id, progressoDoRobo(r, p));
-            lancar({ tipo: it, id, dono: r.id, n });
+            lancarDoRobo({ tipo: it, id, dono: r.id, n });
           }
           mao.usos--;
           if (mao.usos <= 0) maoDoRobo.delete(r.id);
@@ -565,6 +582,8 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
         // o robô foi atingido?
         for (const e of eventos) {
           if (e.tipo === 'acertou' || e.tipo === 'gastou' || e.dono === r.id) continue;
+          // na sala, o robô só leva item de robô (o das pessoas chega a cada computador numa hora)
+          if (o.robosNaSala && e.dono >= 0) continue;
           if (e.tipo === 'regador') {
             const chave = `${r.id}|${e.id}`;
             if (regadoresVistos.has(chave) || n < e.n) continue;
@@ -588,9 +607,9 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
           }
           if (!pegou) continue;
           sumiram.add(e.id);
-          lancar({ tipo: 'acertou', id: e.id });
+          lancarDoRobo({ tipo: 'acertou', id: e.id });
           if (escudo && escudoDoRobo.has(r.id)) {
-            lancar({ tipo: 'gastou', id: escudo.id });
+            lancarDoRobo({ tipo: 'gastou', id: escudo.id });
             escudoDoRobo.delete(r.id);
           } else atingir(k, e.tipo === 'lama' ? 0.7 : 1);
         }

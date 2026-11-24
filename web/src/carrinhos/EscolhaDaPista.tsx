@@ -79,6 +79,16 @@ export function MapaDaPista({ tracado, aberto = false }: { tracado: string; aber
         riscos.push(`M${t.x.toFixed(2)} ${t.z.toFixed(2)} L${bx.toFixed(2)} ${bz.toFixed(2)}`);
       }),
     );
+    // as agulhas (24/11/2026): o desvio de cada faixa para a outra da fileira, tracejado
+    const agulhas: string[] = [];
+    pista.trechos.forEach((lista, f) =>
+      lista.forEach((t, i) => {
+        if (!t.troca) return;
+        const o = pista.trechos[f ^ 1][i];
+        const bx = o.x + Math.cos(t.rumo) * 4, bz = o.z + Math.sin(t.rumo) * 4;
+        agulhas.push(`M${t.x.toFixed(2)} ${t.z.toFixed(2)} L${bx.toFixed(2)} ${bz.toFixed(2)}`);
+      }),
+    );
     // a largada: um traço de lado a lado no começo
     const a = pontos[0], b = pontos[1] ?? { x: a.x + 1, z: a.z };
     const l = Math.hypot(b.x - a.x, b.z - a.z) || 1;
@@ -91,7 +101,7 @@ export function MapaDaPista({ tracado, aberto = false }: { tracado: string; aber
       [0, -1],
     ][((fim.q % 4) + 4) % 4];
     const seta = `M${fim.x + dx * 1.8} ${fim.z + dz * 1.8} L${fim.x - dz * 1.2} ${fim.z + dx * 1.2} L${fim.x + dz * 1.2} ${fim.z - dx * 1.2} Z`;
-    return { vista: `${x0} ${z0} ${w} ${h}`, caminho, riscos, largada, seta };
+    return { vista: `${x0} ${z0} ${w} ${h}`, caminho, riscos, agulhas, largada, seta };
   }, [tracado]);
   return (
     <svg className="carrinhos-mapa" viewBox={desenho.vista} aria-hidden="true">
@@ -101,6 +111,9 @@ export function MapaDaPista({ tracado, aberto = false }: { tracado: string; aber
           <path d={desenho.caminho} fill="none" stroke="#f3ead2" strokeWidth="0.18" strokeDasharray="0.8 0.8" />
           {desenho.riscos.map((d, i) => (
             <path key={i} d={d} stroke="#ffe08a" strokeWidth="0.3" />
+          ))}
+          {desenho.agulhas.map((d, i) => (
+            <path key={`a${i}`} d={d} stroke="#ffd36b" strokeWidth="0.3" strokeDasharray="0.6 0.5" />
           ))}
           <path d={desenho.largada} stroke="#ffffff" strokeWidth="0.7" />
         </>
@@ -124,6 +137,12 @@ function FiguraDaPeca({ peca }: { peca: LetraDaPeca }) {
           <path d="M8 21 L16 3 M16 21 L8 3" stroke="currentColor" strokeWidth="2" />
         </>
       )}
+      {peca === 'T' && (
+        <>
+          <path d="M12 22 V2" {...asfalto} strokeWidth={9} opacity={0.35} />
+          <path d="M9.5 22 V2 M9.5 18 L14.5 6 V2" fill="none" stroke="currentColor" strokeWidth="2" />
+        </>
+      )}
     </svg>
   );
 }
@@ -133,6 +152,7 @@ const PECAS_DO_EDITOR: { peca: LetraDaPeca; rotulo: string }[] = [
   { peca: '-', rotulo: chave('Curva à esquerda') },
   { peca: '+', rotulo: chave('Curva à direita') },
   { peca: 'X', rotulo: chave('Cruzamento') },
+  { peca: 'T', rotulo: chave('Troca de faixa') },
 ];
 
 const MENSAGEM: Record<ErroDoTracado, string> = {

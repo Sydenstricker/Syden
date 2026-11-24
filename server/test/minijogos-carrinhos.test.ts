@@ -226,3 +226,40 @@ test('a sala: a pista do editor e a resistência vão a todos; código que não 
   assert.equal(ana.tempoMs, Math.round((a.passos * 1000) / 60));
   assert.equal(db.recordeDosCarrinhos(anaId, sim.codigoDaPista(tracado) + '@20c'), null, 'a corrida da sala não vira recorde');
 });
+
+test('a Agulha na sala (24/11/2026): a troca de faixa vai nas posições (só para a outra da fileira) e o servidor refaz a corrida que troca', () => {
+  const pista = sim.PISTAS['agulha-1'];
+  const { ctx, relogio } = contexto([anaId, biaId], { comunidadeId: comunidade.id });
+  const jogo = carrinhos.comecar(ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { pista: 'agulha-1' } });
+  assert.ok(typeof jogo !== 'string');
+  agora += LARGADA_MS;
+  relogio[0].depois();
+  agora += 1000;
+  assert.ok(jogo.tempoReal!(anaId, { n: 60, s: 5, f: 0, x: 0 }));
+  assert.equal(jogo.tempoReal!(anaId, { n: 61, s: 5.1, x: 2 }), null, 'só a outra faixa da mesma fileira');
+  const r = jogo.tempoReal!(anaId, { n: 62, s: 3, x: 1, e: 0 }) as { x: number; e: number } | null;
+  assert.ok(r, 'na troca, a distância é a da faixa nova');
+  assert.equal(r!.x, 1);
+  assert.equal(r!.e, 0);
+  // a corrida que troca: o piloto com a troca, refeito pelo servidor a partir da faixa da largada
+  const c = sim.novoCarro(0, pista);
+  const g = sim.gravador();
+  while (!c.chegou) {
+    const a = sim.pilotoComTroca(c, 0.3);
+    g.anotar(a);
+    sim.passo(c, a);
+  }
+  assert.ok(g.entradas.some((v, i) => i % 2 === 1 && v >= sim.TROCA), 'trocou de faixa');
+  agora += Math.round((c.voltas[4] * 1000) / 60) + FOLGA_MS;
+  assert.equal(jogo.acao(anaId, { tipo: 'chegada', entradas: g.entradas }), null);
+  const ana = (jogo.publico(anaId) as { pilotos: { userId: number; tempoMs: number | null }[] }).pilotos.find((x) => x.userId === anaId)!;
+  assert.equal(ana.tempoMs, Math.round((c.voltas[4] * 1000) / 60));
+  // numa pista sem agulha, trocar de faixa pelas posições não passa
+  const outra = contexto([anaId, biaId], { comunidadeId: comunidade.id });
+  const j2 = carrinhos.comecar(outra.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: {} });
+  assert.ok(typeof j2 !== 'string');
+  agora += LARGADA_MS;
+  outra.relogio[0].depois();
+  agora += 1000;
+  assert.equal(j2.tempoReal!(anaId, { n: 60, s: 5, x: 1 }), null);
+});

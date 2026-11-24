@@ -308,15 +308,26 @@ const corDoFundo = (def: DefinicaoDaPista) => {
   return `rgb(${c & 0xff}, ${(c >> 8) & 0xff}, ${(c >> 16) & 0xff})`;
 };
 
-/** A ESCOLHA DA PISTA da corrida na sala: as três, ou a copa com as três seguidas. */
-export function EscolhaDaPista({ aoEscolher, aoVoltar }: { aoEscolher: (pista: string) => void; aoVoltar: () => void }) {
+/**
+ * A ESCOLHA DA PISTA da corrida na sala: as pistas, ou uma copa. E, desde 24/11/2026, se o computador completa a largada (os
+ * robôs: `aoEscolher` leva `{ robos: true }`, que o servidor recebe no corpo).
+ */
+export function EscolhaDaPista({ aoEscolher, aoVoltar }: { aoEscolher: (pista: string, extra?: { robos: boolean }) => void; aoVoltar: () => void }) {
   const t = useT();
+  const [robos, setRobos] = useState(false);
   return (
     <div className="corrida-escolha">
+      <div className="minijogo-abas corrida-dificuldade" role="radiogroup" aria-label={t('Computador')}>
+        {[false, true].map((r) => (
+          <button key={String(r)} type="button" role="radio" aria-checked={robos === r} className={robos === r ? 'ativa' : undefined} onClick={() => setRobos(r)}>
+            {r ? `🤖 ${t('Completar com o computador')}` : `🏁 ${t('Só a turma')}`}
+          </button>
+        ))}
+      </div>
       <ul className="corrida-pistas">
         {PISTAS.map((def) => (
           <li key={def.id}>
-            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(def.id)}>
+            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(def.id, { robos })}>
               <MapaDaPista def={def} lado={72} />
               <strong>{nomeDaPistaEm(t, def.id)}</strong>
             </button>
@@ -324,7 +335,7 @@ export function EscolhaDaPista({ aoEscolher, aoVoltar }: { aoEscolher: (pista: s
         ))}
         {Object.entries(COPAS).map(([copa, pistas]) => (
           <li key={copa}>
-            <button type="button" className="corrida-pista-botao copa" onClick={() => aoEscolher(copa)}>
+            <button type="button" className="corrida-pista-botao copa" onClick={() => aoEscolher(copa, { robos })}>
               <span className="corrida-copa-mapas" aria-hidden="true">
                 <Trophy size={40} />
               </span>
@@ -648,6 +659,8 @@ export interface EstadoCorrida {
   corridas?: number;
   voltasDaCorrida: number;
   itens?: boolean;
+  /** Os robôs que completam a largada (24/11/2026): cada computador anda os mesmos, e eles não entram na classificação. */
+  robos?: number;
   /** Em ordem: quem chegou, pelo tempo; depois quem não chegou, pelo quanto andou. */
   pilotos: LinhaDaCorrida[];
   /** Na copa: os pontos somados, do primeiro ao último. */
@@ -810,6 +823,8 @@ function CorridaDaSala({
       meuAvatar: estado.pilotos.find((p) => p.userId === eu)?.avatar ?? null,
       rivais: rivais.current,
       itens: estado.itens === false ? undefined : { eventos: eventos.current, aoEvento: enviar, aoItem: (i, usos) => setItem({ item: i, usos }) },
+      // OS ROBÔS NA SALA (24/11/2026): os mesmos em todo computador, no médio, só para quem pilota (quem assiste vê a turma)
+      ...(piloto && estado.robos ? { robos: { quantos: estado.robos, dificuldade: 'medio' as const }, robosNaSala: true } : {}),
       contagem,
       aoPlacar: setPlacar,
       aoOrdem: setOrdem,

@@ -1,4 +1,4 @@
-import { FAIXA_DO_RECORDE, IDS_DAS_PISTAS, novoCarro, passo, PASSOS_MAXIMOS, pilotoAutomatico, PISTAS } from './sim';
+import { FAIXA_DO_RECORDE, IDS_DAS_PISTAS, novoCarro, passo, PASSOS_MAXIMOS, pilotoComTroca, PISTAS } from './sim';
 
 /**
  * AS MEDALHAS DOS CARRINHOS (20/11/2026), só nos traçados prontos (as pistas do editor não têm): ouro, prata e bronze sobre o
@@ -18,7 +18,7 @@ export function tempoDoPilotoNosCarrinhos(id: string, voltas: number): number | 
   let t = guardados.get(chave);
   if (t === undefined) {
     const c = novoCarro(FAIXA_DO_RECORDE, PISTAS[id], voltas);
-    while (!c.chegou && c.passo < PASSOS_MAXIMOS) passo(c, pilotoAutomatico(c, 0.15));
+    while (!c.chegou && c.passo < PASSOS_MAXIMOS) passo(c, pilotoComTroca(c, 0.15));
     t = c.voltas[voltas - 1] ?? 0;
     guardados.set(chave, t);
   }

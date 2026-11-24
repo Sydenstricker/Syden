@@ -256,3 +256,94 @@ test('o combustível: o piloto automático para no box e termina as 20 voltas em
   }
   assert.ok(secou);
 });
+
+test('a troca de faixa (24/11/2026): na agulha, o carro armado passa à outra faixa da fileira, no mesmo ponto da peça', () => {
+  const pista = sim.PISTAS['agulha-1'];
+  const i = [...pista.tracado].indexOf('T');
+  assert.ok(i > 0 && pista.trechos.every((l) => l[i].troca));
+  for (const f of [0, 1, 2, 3]) {
+    const c = sim.novoCarro(f, pista);
+    // arma no primeiro passo (o toque vai junto com o acelerador) e acelera com o piloto
+    sim.passo(c, sim.TROCA + sim.ACELERADOR_MAXIMO);
+    assert.equal(c.armado, true);
+    while (sim.indiceEm(pista, c.faixa, c.s) < i && !c.chegou) sim.passo(c, sim.pilotoAutomatico(c));
+    assert.equal(c.faixa, sim.parceiraDa(f), `faixa ${f}`);
+    assert.equal(c.de, f);
+    assert.equal(c.armado, false, 'a troca desarma depois de usada');
+    assert.equal(sim.indiceEm(pista, c.faixa, c.s), i, 'no mesmo ponto da peça');
+    const u = c.s - pista.trechos[c.faixa][i].inicio;
+    assert.ok(u >= 0 && u < 0.3);
+    // saindo da agulha, o desenho para de deslizar
+    while (sim.indiceEm(pista, c.faixa, c.s) === i) sim.passo(c, sim.pilotoAutomatico(c));
+    assert.equal(c.de, -1);
+  }
+  // um segundo toque desarma
+  const c = sim.novoCarro(1, pista);
+  sim.passo(c, sim.TROCA);
+  sim.passo(c, sim.TROCA + 3);
+  assert.equal(c.armado, false);
+  // o código das entradas aceita o toque (16 a 24) e recusa o que fica no meio
+  assert.ok(sim.entradasValidas([3, 24, 10, 8]));
+  assert.ok(!sim.entradasValidas([3, 12]));
+});
+
+test('a troca de faixa: sem agulha, o toque não muda nada (os fantasmas de antes e os traçados de sempre)', () => {
+  for (const id of ['toca-1', 'troca-1']) {
+    const pista = sim.PISTAS[id];
+    const g = sim.gravador();
+    const c = correr(1, (k) => {
+      const a = sim.pilotoAutomatico(k, 0.3) + (k.passo % 97 === 0 ? sim.TROCA : 0);
+      g.anotar(a);
+      return a;
+    }, pista);
+    const sem = correr(1, (k) => sim.pilotoAutomatico(k, 0.3), pista);
+    assert.deepEqual(c.voltas, sem.voltas, id);
+    assert.equal(c.faixa, 1);
+    assert.deepEqual(sim.refazer(1, g.entradas, pista).voltas, c.voltas, 'o servidor refaz igual');
+  }
+});
+
+test('a Agulha: quem troca bem ganha, as faixas ficam a 1% uma da outra trocando, e o refazer dá a mesma corrida', () => {
+  const pista = sim.PISTAS['agulha-1'];
+  for (const voltas of [sim.VOLTAS, sim.VOLTAS_DA_RESISTENCIA]) {
+    for (const margem of [0.15, 0.3]) {
+      const tempos = [0, 1, 2, 3].map((f) => {
+        const g = sim.gravador();
+        const c = correr(f, (k) => {
+          const a = sim.pilotoComTroca(k, margem);
+          g.anotar(a);
+          return a;
+        }, pista, voltas);
+        assert.ok(c.chegou);
+        assert.equal(c.saidas, 0);
+        const r = sim.refazer(f, g.entradas, pista, voltas);
+        assert.deepEqual(r.voltas, c.voltas, 'o servidor refaz igual');
+        assert.equal(r.faixa, c.faixa);
+        return c.voltas[voltas - 1];
+      });
+      assert.ok((Math.max(...tempos) - Math.min(...tempos)) / Math.min(...tempos) < 0.01, `${voltas} voltas, margem ${margem}: ${tempos}`);
+      if (voltas === sim.VOLTAS) {
+        const sem = Math.min(...[0, 1, 2, 3].map((f) => correr(f, (k) => sim.pilotoAutomatico(k, margem), pista, voltas).voltas[voltas - 1]));
+        assert.ok(Math.min(...tempos) < sem, `trocar ganha: ${Math.min(...tempos)} contra ${sem}`);
+      }
+    }
+  }
+  // o editor aceita a agulha
+  assert.ok('pista' in sim.validarTracado(pista.tracado));
+  assert.equal(sim.lerCodigoDaPista(sim.codigoDaPista(pista.tracado)), pista.tracado);
+});
+
+test('os robôs trocam de faixa na Agulha e terminam', () => {
+  const pista = sim.PISTAS['agulha-1'];
+  let trocas = 0;
+  for (let i = 0; i < 4; i++) {
+    const robo = criarRobo(300 + i, 0.8);
+    const c = correr(i, (k) => {
+      const a = robo(k);
+      if (a >= sim.TROCA) trocas++;
+      return a;
+    }, pista);
+    assert.ok(c.chegou);
+  }
+  assert.ok(trocas > 0);
+});

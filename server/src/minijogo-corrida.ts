@@ -19,6 +19,14 @@
  * pessoas ou mais, vai para o quarto de quem ficou nele (corrida_trofeus); e cada copa corrida até o fim pela turma conta na
  * conquista coletiva do salão (corrida_copas). Com itens, a corrida da sala NÃO vira recorde: a cenoura turbo faria o
  * recorde de uma corrida com itens valer contra o contra o relógio, que não os tem.
+ *
+ * OS ROBÔS NA SALA (24/11/2026): quem convida pode completar a largada com karts do computador (`corpo.robos`), até 8 na
+ * pista. Como os barcos da Regata, o servidor só diz QUANTOS (`robos` no público): cada computador da sala anda os mesmos
+ * robôs pela mesma conta (web/src/corrida/robos.ts, no médio), desde o verde dele, e as pessoas largam na última fila da
+ * grade. Os itens dos robôs pegam as pessoas pela regra de sempre (quem leva decide); um robô só é derrubado por item de
+ * robô (o das pessoas chega a cada computador numa hora, e os robôs de um computador se separariam dos do outro). Os robôs
+ * NÃO ENTRAM NA CLASSIFICAÇÃO do servidor: aparecem na ordem ao vivo da tela, e a posição, os pontos da copa, o pódio e os
+ * troféus são só da turma (um robô não tira medalha de ninguém, e o servidor nem os vê).
  */
 import * as db from './db.js';
 import { PISTAS, validarCorrida } from './corrida.js';
@@ -39,6 +47,8 @@ export const LARGADA_MS = 4000;
 export const PRAZO_MS = 30_000;
 /** O placar entre as corridas da copa. */
 export const INTERVALO_MS = 10_000;
+/** Os karts na pista com os robôs da sala: as pessoas mais os robôs, até a grade cheia (7 robôs no máximo). */
+export const KARTS_NA_SALA = 8;
 /** Uma corrida não passa disto (a de 3 voltas leva ~1 min). */
 const CORRIDA_MS = 5 * 60_000;
 export const PONTOS = [10, 8, 6, 5, 4, 3, 2, 1];
@@ -76,6 +86,8 @@ const ITENS_DO_KART = ['alface', 'toca', 'regador'] as const;
 const AMOSTRA_DA_POSICAO = 4;
 /** A primeira posição sai da largada: perto da linha de chegada (o kart larga três pontos antes dela). */
 const PERTO_DA_LINHA_NA_LARGADA = 60;
+/** Com os robôs, a turma larga na última fila da grade (web/src/corrida/robos.ts, CASA_DE_QUEM_JOGA): até ~84 da linha. */
+const A_MAIS_NA_ULTIMA_FILA = 30;
 
 /** A distância entre dois pontos da linha do meio, dando a volta (o fim da volta encosta no começo). */
 function distanciaNaVolta(a: number, b: number, comprimento: number) {
@@ -154,6 +166,8 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
       let prazoAberto = false;
       /** Quem começou a partida: só eles correm (a copa inteira), e quem sai da sala fica sem pontos dali em diante. */
       const inscritos = [...naSala];
+      /** Os robôs que completam a largada (quem convidou pediu): o mesmo número em toda corrida da copa. */
+      const robos = corpo.robos === true ? Math.max(0, Math.min(KARTS_NA_SALA - 1, KARTS_NA_SALA - inscritos.length)) : 0;
       /** O coelho de cada um (o avatar pronto), lido uma vez: cada kart corre com as cores do seu. */
       const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
       let pilotos = new Map<number, Piloto>();
@@ -318,7 +332,7 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
         const u = p.ultima;
         if (!u) {
           if (Math.floor(andou) !== 0) return false;
-          return Math.hypot(x - def.linha[0], y - def.linha[1]) <= PERTO_DA_LINHA_NA_LARGADA + n * ANDA_POR_PASSO;
+          return Math.hypot(x - def.linha[0], y - def.linha[1]) <= PERTO_DA_LINHA_NA_LARGADA + (robos ? A_MAIS_NA_ULTIMA_FILA : 0) + n * ANDA_POR_PASSO;
         }
         if (n <= u.n) return false;
         const passos = Math.min(n - u.n, ((agora() - u.em) * 60) / 1000 + 60);
@@ -345,6 +359,7 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
           corridas: corridas.length,
           voltasDaCorrida: VOLTAS,
           itens: true,
+          robos,
           pilotos: classificacao().map(({ userId, username, tempoMs, voltas, posicao }) => ({ userId, username, tempoMs, voltas, posicao, avatar: avatares.get(userId) ?? null })),
           placarDaCopa: copa ? placarDaCopa().map(({ userId, username, pontos: p, posicao }) => ({ userId, username, pontos: p, posicao })) : null,
           ultima: resultados.length ? resultados[resultados.length - 1].pilotos.map(({ userId, username, tempoMs, posicao }) => ({ userId, username, tempoMs, posicao })) : null,

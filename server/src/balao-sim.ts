@@ -392,3 +392,42 @@ export function itemDaCaixa(semente: number, quem: number, k: number): ItemDoBal
   const r = (h >>> 0) % 100;
   return r < 40 ? 'repolho' : r < 65 ? 'cenoura' : r < 85 ? 'lama' : 'alface';
 }
+
+/**
+ * O MODO CENOURA DOURADA (24/11/2026): ninguém perde balão. Uma CENOURA DOURADA fica na arena; quem passa por ela a pega, e o
+ * tempo que a segura vira ponto (o placar é em passos, contados pelo relógio da partida). Quem a segura e é atingido (o item
+ * ou a batida, pela mesma regra de sempre, inclusive os 2 s sem levar outro e o escudo) a DERRUBA ali mesmo, e só a pega de
+ * novo depois de DOURADA_DE_NOVO. Ganha quem a segurou mais tempo; nas duplas, o time.
+ */
+export type ModoDoBalao = 'baloes' | 'dourada';
+export const MODOS_DO_BALAO: readonly ModoDoBalao[] = ['baloes', 'dourada'];
+/** Pega-se a cenoura dourada passando a menos disto dela. */
+export const RAIO_DA_DOURADA = 14;
+/** Quem derrubou a cenoura só a pega de novo depois disto (1,5 s): ela não volta à mão de quem acabou de levar. */
+export const DOURADA_DE_NOVO = 90;
+
+/**
+ * Onde a cenoura dourada aparece na largada: no meio do caminho entre uma caixa (sorteada pela semente) e o centro da arena,
+ * se ali não for parede; senão, na própria caixa (as caixas ficam sempre em lugar livre).
+ */
+export function lugarDaDourada(a: Arena, semente: number): [number, number] {
+  let h = Math.imul(semente | 0, 0x9e3779b1) ^ 0x2545f491;
+  h ^= h >>> 16;
+  h = Math.imul(h, 0x7feb352d);
+  h ^= h >>> 15;
+  const [cx, cy] = a.caixas[(h >>> 0) % a.caixas.length];
+  const [mx, my] = centroDa(a);
+  const x = (cx + mx) / 2, y = (cy + my) / 2;
+  return naParede(a, x, y, -RAIO_DA_DOURADA) ? [cx, cy] : [x, y];
+}
+
+/** A reta de (x0, y0) a (x1, y1) passa a menos de `raio` do ponto (px, py)? (Quem pega a cenoura entre duas posições.) */
+export function passouPerto(x0: number, y0: number, x1: number, y1: number, px: number, py: number, raio: number): boolean {
+  const dx = x1 - x0, dy = y1 - y0;
+  const l2 = dx * dx + dy * dy;
+  let t = l2 > 0 ? ((px - x0) * dx + (py - y0) * dy) / l2 : 0;
+  if (t < 0) t = 0;
+  if (t > 1) t = 1;
+  const ex = x0 + dx * t - px, ey = y0 + dy * t - py;
+  return ex * ex + ey * ey < raio * raio;
+}

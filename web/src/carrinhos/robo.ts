@@ -1,4 +1,4 @@
-import { FOLGA, pilotoAutomatico, trechoEm, type Carro, type Trecho } from './sim';
+import { FOLGA, pilotoAutomatico, querTrocar, trechoEm, TROCA, type Carro, type Trecho } from './sim';
 import type { Dificuldade } from '../corrida/robos';
 
 /**
@@ -34,6 +34,7 @@ export function criarRobo(semente: number, habilidade: number) {
       const erro = aleatorio() < 0.03 * (1.3 - habilidade);
       margem = erro ? -(FOLGA + 0.3 + aleatorio() * 0.6) : 0.15 + (1 - habilidade) * 0.9 + aleatorio() * 0.35;
     }
-    return pilotoAutomatico(c, margem);
+    // na pista com agulha, o robô troca de faixa como o piloto automático (24/11/2026)
+    return pilotoAutomatico(c, margem) + (querTrocar(c) !== c.armado ? TROCA : 0);
   };
 }

@@ -353,3 +353,27 @@ test('a medalha da tela é a do troféu: quem saiu não tem posição, e empate 
   assert.equal((await trofeu(bia.token)).posicao, 1, 'o empate dá o primeiro lugar às duas');
   assert.equal(await trofeu(caio.token), undefined, 'quem saiu não ganha troféu');
 });
+
+test('os robôs na sala (24/11/2026): o servidor só diz quantos; a turma larga da última fila, e a classificação é só da turma', () => {
+  const m = contexto([anaId, biaId], comunidade.id);
+  const jogo = corrida.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { pista: 'horta-1', robos: true } });
+  assert.ok(typeof jogo !== 'string');
+  assert.equal((jogo.publico(anaId) as { robos: number }).robos, 6, 'oito karts na pista: duas pessoas e seis robôs');
+  m.relogio[0].depois();
+  agora += 10_000;
+  // da última fila (uns 80 da linha da Horta, em 250, 190): sem robôs não passaria, com eles passa
+  const [lx, ly] = PISTAS['horta-1'].linha;
+  assert.ok(jogo.tempoReal!(anaId, { x: lx - 76, y: ly, a: 0, n: 1, andou: 0.97 }), 'a primeira posição da última fila');
+  // o item de um robô não existe para o servidor: o "acertou" dele não vale e não vai a ninguém
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'acertou', id: '-1-300' }), null);
+  // a classificação: só a turma
+  assert.deepEqual((jogo.publico(anaId) as { pilotos: { userId: number }[] }).pilotos.map((p) => p.userId).sort(), [anaId, biaId].sort());
+  // sem pedir, nenhum robô; e a largada de sempre
+  const m2 = contexto([anaId, biaId], comunidade.id);
+  const j2 = corrida.comecar(m2.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { pista: 'horta-1' } });
+  assert.ok(typeof j2 !== 'string');
+  assert.equal((j2.publico(anaId) as { robos: number }).robos, 0);
+  m2.relogio[0].depois();
+  agora += 10_000;
+  assert.equal(j2.tempoReal!(anaId, { x: lx - 76, y: ly, a: 0, n: 1, andou: 0.97 }), null, 'sem robôs, a última fila não existe');
+});

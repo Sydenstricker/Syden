@@ -31,6 +31,13 @@
  * depois dele, a faixa que era de dentro nas curvas "+" é a de fora. Ele tem o mesmo comprimento em todas as faixas, e um
  * traçado tem de ter um número PAR deles, para cada faixa voltar ao lado em que largou.
  *
+ * A TROCA DE FAIXA (24/11/2026): a peça T (a AGULHA, como o trilho que muda das pistas de brinquedo digitais) é uma reta em
+ * que o carro PODE passar para a outra faixa da MESMA fileira (0 ↔ 1, 2 ↔ 3). Quem joga ARMA a troca (um toque no botão; outro
+ * toque desarma), e ela acontece ao entrar na próxima agulha. No que o site manda, o toque é o acelerador + TROCA (16 a 24)
+ * naquele passo: um acelerador de 0 a 8 é o de sempre, e os fantasmas de antes continuam iguais. Na agulha a distância andada é
+ * a mesma nas duas faixas (a reta tem 4 em todas); a distância da volta é contada de novo na faixa nova, no mesmo ponto da
+ * peça. Sem trocar, a agulha é uma reta: os traçados sem T correm exatamente como antes.
+ *
  * OS TRAÇADOS: os prontos (TRACADOS, cada um com o seu id, recorde e fantasma) e os do EDITOR (19/11/2026), que chegam como um
  * código de texto ("SYDP1-" + as peças) e valem só se `validarTracado` aceitar: fecha, não se cruza, cruzamentos em par,
  * comprimento mínimo. O servidor confere o código colado com a mesma função e refaz a corrida sobre ele.
@@ -87,10 +94,14 @@ const MEIO_PI = 1.5707963267948966;
 
 /**
  * As peças de um traçado: R é uma reta; + e − são curvas de 90°, para um lado e para o outro; X é o CRUZAMENTO (uma reta em
- * que as faixas trocam de lado).
+ * que as faixas trocam de lado); T é a AGULHA (uma reta em que o carro pode passar à outra faixa da fileira, 24/11/2026).
  */
-export type LetraDaPeca = 'R' | '+' | '-' | 'X';
-export const LETRAS: readonly LetraDaPeca[] = ['R', '+', '-', 'X'];
+export type LetraDaPeca = 'R' | '+' | '-' | 'X' | 'T';
+export const LETRAS: readonly LetraDaPeca[] = ['R', '+', '-', 'X', 'T'];
+/** No que o site manda: o acelerador + TROCA arma (ou desarma) a troca de faixa naquele passo. */
+export const TROCA = 16;
+/** A outra faixa da mesma fileira (a da troca de faixa). */
+export const parceiraDa = (faixa: number) => faixa ^ 1;
 
 /**
  * Os traçados prontos, pela ordem da escolha. A Toca é a de sempre (o id 'toca-1' guarda os recordes de antes). Os outros
@@ -110,6 +121,9 @@ export const TRACADOS: Record<string, string> = {
   'troca-1': 'R-+RR+RXR+RRRX-++RRR+R',
   // a estrada longa: as retas mais compridas, a melhor para a resistência (62 s; 4 min em 20 voltas)
   'longa-1': 'R-+RRRRR+RRR++-RRRRRRR++R',
+  // a agulha (24/11/2026): a volta da Toca com duas AGULHAS (T), escolhida entre as retas trocadas por agulha. Sem trocar, é a
+  // Toca; o piloto que troca bem ganha ~1,4% e as faixas ficam a 0,8% uma da outra (medido com `pilotoComTroca`)
+  'agulha-1': 'RRRR+RT++-R-++RT+',
 };
 export const IDS_DAS_PISTAS = Object.keys(TRACADOS);
 export const PISTA_PADRAO_ID = 'toca-1';
@@ -131,11 +145,13 @@ export interface Trecho {
   /** No cruzamento, o quanto a faixa anda de lado do começo ao fim (no desenho); 0 nos outros. */
   ladoX: number;
   ladoZ: number;
+  /** A agulha: aqui o carro pode passar à outra faixa da fileira. */
+  troca: boolean;
 }
 
 export interface Peca {
   /** 'reta', 'pequena' ou 'grande': a peça da Kenney; 'cruzamento' é a reta com as faixas trocando de lado. */
-  tipo: 'reta' | 'pequena' | 'grande' | 'cruzamento';
+  tipo: 'reta' | 'pequena' | 'grande' | 'cruzamento' | 'agulha';
   sentido: number;
   /** A entrada da peça (a linha do meio da fileira) e o rumo nela. */
   x: number;
@@ -234,11 +250,11 @@ export function montarPista(tracado: string, id = idDoTracado(tracado)): Pista {
         const s = p === '+' ? 1 : -1;
         const raio = RAIO_DO_MEIO - s * o;
         const comprimento = MEIO_PI * raio;
-        lista.push({ inicio, comprimento, sentido: s, raio, limite: LIMITE_DO_RAIO[raio], x, z, rumo, cx: mx + lx * s * RAIO_DO_MEIO, cz: mz + lz * s * RAIO_DO_MEIO, ladoX: 0, ladoZ: 0 });
+        lista.push({ inicio, comprimento, sentido: s, raio, limite: LIMITE_DO_RAIO[raio], x, z, rumo, cx: mx + lx * s * RAIO_DO_MEIO, cz: mz + lz * s * RAIO_DO_MEIO, ladoX: 0, ladoZ: 0, troca: false });
         inicio += comprimento;
       } else {
         const cruza = p === 'X';
-        lista.push({ inicio, comprimento: COMPRIMENTO_DA_RETA, sentido: 0, raio: 0, limite: VMAX, x, z, rumo, cx: 0, cz: 0, ladoX: cruza ? -2 * o * lx : 0, ladoZ: cruza ? -2 * o * lz : 0 });
+        lista.push({ inicio, comprimento: COMPRIMENTO_DA_RETA, sentido: 0, raio: 0, limite: VMAX, x, z, rumo, cx: 0, cz: 0, ladoX: cruza ? -2 * o * lx : 0, ladoZ: cruza ? -2 * o * lz : 0, troca: p === 'T' });
         inicio += COMPRIMENTO_DA_RETA;
         if (cruza) lado = -lado;
       }
@@ -256,6 +272,7 @@ export function montarPista(tracado: string, id = idDoTracado(tracado)): Pista {
       const x = mx + lx * fileira, z = mz + lz * fileira;
       if (p === 'R') return { tipo: 'reta', sentido: 0, x, z, rumo, fileira };
       if (p === 'X') return { tipo: 'cruzamento', sentido: 0, x, z, rumo, fileira };
+      if (p === 'T') return { tipo: 'agulha', sentido: 0, x, z, rumo, fileira };
       const s = p === '+' ? 1 : -1;
       return { tipo: s === fileira ? 'pequena' : 'grande', sentido: s, x, z, rumo, fileira };
     });
@@ -402,15 +419,18 @@ export function pistaPedida(id: unknown, codigo: unknown): Pista | null {
 // A CORRIDA
 // =====================================================================================================================
 
-/** O trecho em que está a distância `s` (de qualquer volta). */
-export function trechoEm(pista: Pista, faixa: number, s: number): Trecho {
+/** O índice do trecho (a peça do traçado) em que está a distância `s` (de qualquer volta). */
+export function indiceEm(pista: Pista, faixa: number, s: number): number {
   const v = pista.volta[faixa];
   let d = s - Math.floor(s / v) * v;
   if (d < 0) d = 0;
   const lista = pista.trechos[faixa];
-  for (let i = lista.length - 1; i >= 0; i--) if (d >= lista[i].inicio) return lista[i];
-  return lista[0];
+  for (let i = lista.length - 1; i >= 0; i--) if (d >= lista[i].inicio) return i;
+  return 0;
 }
+
+/** O trecho em que está a distância `s` (de qualquer volta). */
+export const trechoEm = (pista: Pista, faixa: number, s: number): Trecho => pista.trechos[faixa][indiceEm(pista, faixa, s)];
 
 export const limiteEm = (pista: Pista, faixa: number, s: number) => trechoEm(pista, faixa, s).limite;
 
@@ -437,6 +457,10 @@ export interface Carro {
   chegou: boolean;
   /** O tanque, de 0 a 1, só na resistência (null nas corridas de 5 voltas). */
   combustivel: number | null;
+  /** A troca de faixa armada: acontece na próxima agulha. */
+  armado: boolean;
+  /** Na agulha em que trocou, a faixa de onde veio (o desenho passa de uma à outra); -1 fora disso. */
+  de: number;
 }
 
 export const novoCarro = (faixa: number, pista: Pista = PISTA_PADRAO, meta: number = VOLTAS): Carro => ({
@@ -454,6 +478,8 @@ export const novoCarro = (faixa: number, pista: Pista = PISTA_PADRAO, meta: numb
   voltas: [],
   chegou: false,
   combustivel: meta >= VOLTAS_DA_RESISTENCIA ? 1 : null,
+  armado: false,
+  de: -1,
 });
 
 /** O quanto o carro já andou nesta volta (de 0 ao comprimento da volta da faixa dele). */
@@ -473,6 +499,11 @@ function acelerar(v: number, g: number): number {
 export function passo(c: Carro, acelerador: number): Evento {
   c.passo++;
   if (c.pisca > 0) c.pisca--;
+  // o toque da troca de faixa arma (ou desarma), também fora da pista
+  if (acelerador >= TROCA) {
+    acelerador -= TROCA;
+    c.armado = !c.armado;
+  }
   if (c.fora > 0) {
     c.fora--;
     if (c.fora === 0) {
@@ -501,7 +532,9 @@ export function passo(c: Carro, acelerador: number): Evento {
     c.derrapa = (c.v - limite) / FOLGA;
     c.v -= ATRITO_DA_DERRAPAGEM * PASSO;
   }
+  const antes = indiceEm(c.pista, c.faixa, c.s);
   c.s += c.v * PASSO;
+  trocarNaAgulha(c, antes);
   if (c.combustivel !== null && !c.chegou) {
     if (g > 0 && c.combustivel > 0) {
       c.combustivel -= ((g / ACELERADOR_MAXIMO) * c.v * PASSO) / (AUTONOMIA * c.pista.volta[c.faixa]);
@@ -520,6 +553,31 @@ export function passo(c: Carro, acelerador: number): Evento {
     return 'volta';
   }
   return null;
+}
+
+/**
+ * A AGULHA: o carro que ENTROU numa peça T com a troca armada passa à outra faixa da fileira, no mesmo ponto da peça (a
+ * distância da volta é contada de novo na faixa nova). Saindo da peça, o desenho para de passar de uma faixa à outra.
+ */
+function trocarNaAgulha(c: Carro, antes: number) {
+  const v = c.pista.volta[c.faixa];
+  const base = c.voltas.length * v;
+  // passou da linha: a agulha nunca é a primeira peça (a largada é numa reta)
+  if (c.s - base >= v) {
+    c.de = -1;
+    return;
+  }
+  const i = indiceEm(c.pista, c.faixa, c.s);
+  if (i === antes) return;
+  c.de = -1;
+  const lista = c.pista.trechos[c.faixa];
+  if (!lista[i].troca || !c.armado) return;
+  const nova = parceiraDa(c.faixa);
+  const u = c.s - base - lista[i].inicio;
+  c.de = c.faixa;
+  c.faixa = nova;
+  c.s = c.voltas.length * c.pista.volta[nova] + c.pista.trechos[nova][i].inicio + u;
+  c.armado = false;
 }
 
 /**
@@ -568,6 +626,54 @@ function paradaNoBox(c: Carro): number | null {
   return null;
 }
 
+/** Onde o carro está, em peças desde a largada (as voltas × as peças + a peça de agora): só cresce. */
+const pecasAndadas = (c: Carro) => c.voltas.length * c.pista.trechos[c.faixa].length + indiceEm(c.pista, c.faixa, c.s);
+
+/** Quantas peças à frente fica a próxima agulha (1 a n), ou 0 se o traçado não tem nenhuma. */
+function proximaAgulha(pista: Pista, faixa: number, i: number): number {
+  const lista = pista.trechos[faixa];
+  for (let k = 1; k <= lista.length; k++) if (lista[(i + k) % lista.length].troca) return k;
+  return 0;
+}
+
+/** A escolha da troca do piloto automático, guardada por carro: a peça em que decidiu e o que decidiu. */
+const escolhas = new WeakMap<Carro, { onde: number; quer: boolean }>();
+
+/**
+ * A TROCA DO PILOTO AUTOMÁTICO (24/11/2026): ao entrar numa peça, se a próxima agulha está à frente, ele experimenta as duas
+ * faixas (cópias do carro, com o próprio piloto, `margem`) até a agulha SEGUINTE, e quer a troca armada se a outra faixa
+ * chega antes. Só do site e dos testes: o servidor não decide nada por ninguém. Devolve se a troca deve estar armada.
+ */
+export function querTrocar(c: Carro, margem = 0.3): boolean {
+  if (c.chegou) return false;
+  const onde = pecasAndadas(c);
+  const guardada = escolhas.get(c);
+  if (guardada && guardada.onde === onde) return guardada.quer;
+  const i = indiceEm(c.pista, c.faixa, c.s);
+  const ate = proximaAgulha(c.pista, c.faixa, i);
+  let quer = false;
+  if (ate > 0) {
+    const n = c.pista.trechos[c.faixa].length;
+    const depois = proximaAgulha(c.pista, c.faixa, (i + ate) % n);
+    const alvo = onde + ate + (depois || n);
+    const ensaio = (armar: boolean) => {
+      const k: Carro = { ...c, voltas: [...c.voltas], armado: armar };
+      let passos = 0;
+      while (!k.chegou && pecasAndadas(k) < alvo && passos < 4000) {
+        passo(k, pilotoAutomatico(k, margem));
+        passos++;
+      }
+      return passos;
+    };
+    quer = ensaio(true) < ensaio(false);
+  }
+  escolhas.set(c, { onde, quer });
+  return quer;
+}
+
+/** O acelerador do piloto automático com a troca de faixa (o toque, quando a vontade muda): o que vai a `passo`. */
+export const pilotoComTroca = (c: Carro, margem = 0.3) => pilotoAutomatico(c, margem) + (querTrocar(c, margem) !== c.armado ? TROCA : 0);
+
 /** O acelerador em trechos: [passos, acelerador, passos, acelerador, …]. */
 export type Entradas = number[];
 
@@ -577,7 +683,7 @@ export function entradasValidas(e: unknown): e is Entradas {
   let total = 0;
   for (let i = 0; i < e.length; i += 2) {
     const n = e[i], g = e[i + 1];
-    if (!Number.isInteger(n) || n < 1 || !Number.isInteger(g) || g < 0 || g > ACELERADOR_MAXIMO) return false;
+    if (!Number.isInteger(n) || n < 1 || !Number.isInteger(g) || g < 0 || g > TROCA + ACELERADOR_MAXIMO || (g > ACELERADOR_MAXIMO && g < TROCA)) return false;
     total += n;
     if (total > PASSOS_MAXIMOS) return false;
   }
@@ -637,4 +743,25 @@ export function poseNaFaixa(pista: Pista, faixa: number, s: number): { x: number
   const ox = t.x - t.cx, oz = t.z - t.cz;
   const c = Math.cos(ang), sn = Math.sin(ang);
   return { x: t.cx + ox * c - oz * sn, z: t.cz + ox * sn + oz * c, rumo: t.rumo + ang };
+}
+
+/**
+ * DESENHO: a pose do carro, contando a troca de faixa: na agulha em que trocou (`de` ≥ 0), ele desliza da faixa de onde veio à
+ * nova ao longo da peça.
+ */
+export function poseDoCarro(pista: Pista, faixa: number, s: number, de: number): { x: number; z: number; rumo: number } {
+  const b = poseNaFaixa(pista, faixa, s);
+  if (de < 0 || de === faixa) return b;
+  const i = indiceEm(pista, faixa, s);
+  const t = pista.trechos[faixa][i];
+  const v = pista.volta[faixa];
+  let u = s - Math.floor(s / v) * v - t.inicio;
+  if (u < 0) u = 0;
+  const a = poseNaFaixa(pista, de, pista.trechos[de][i].inicio + u);
+  const k = Math.min(1, u / t.comprimento);
+  const m = k * k * (3 - 2 * k);
+  const dx = b.x - a.x, dz = b.z - a.z;
+  const cr = Math.cos(t.rumo), sr = Math.sin(t.rumo);
+  const desvio = Math.atan2((cr * dz - sr * dx) * 6 * k * (1 - k), t.comprimento);
+  return { x: a.x + dx * m, z: a.z + dz * m, rumo: b.rumo + desvio };
 }

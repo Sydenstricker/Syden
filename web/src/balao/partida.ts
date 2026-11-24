@@ -6,15 +6,19 @@ import {
   BALOES,
   BATIDA_DE_NOVO,
   caminhoDoRepolho,
+  DOURADA_DE_NOVO,
   DURACAO_PASSOS,
   INVULNERAVEL,
   itemDaCaixa,
   lamaPegou,
+  lugarDaDourada,
   naParede,
+  passouPerto,
   PASSOS_POR_SEGUNDO,
   quemPerde,
   RAIO_DA_BATIDA,
   RAIO_DA_CAIXA,
+  RAIO_DA_DOURADA,
   repolhoPegou,
   VIDA_DA_ALFACE,
   VOLTA_DA_CAIXA,
@@ -45,9 +49,21 @@ export type EventoDoBalao =
   /** Um balão estourou (o servidor diz; no Solo, a partida daqui). `baloes` é quantos sobraram. */
   | { tipo: 'estourou'; alvo: number; id: string; dono: number; baloes: number; n: number }
   /** O escudo de alface `escudo` segurou o item `id`. */
-  | { tipo: 'segurou'; alvo: number; id: string; escudo: string };
+  | { tipo: 'segurou'; alvo: number; id: string; escudo: string }
+  /** O MODO CENOURA DOURADA (24/11/2026): com quem ela está agora (null: no chão, em x, y), desde o passo n. */
+  | { tipo: 'dourada'; dono: number | null; x: number; y: number; n: number };
 
-export const TIPOS_DO_BALAO = ['repolho', 'lama', 'cenoura', 'alface', 'estourou', 'segurou'] as const;
+export const TIPOS_DO_BALAO = ['repolho', 'lama', 'cenoura', 'alface', 'estourou', 'segurou', 'dourada'] as const;
+
+/** A cenoura dourada como a partida a conhece: com quem está, onde (no chão), desde quando, e quem a derrubou por último. */
+export interface CenouraDourada {
+  dono: number | null;
+  x: number;
+  y: number;
+  n: number;
+  soltou: number | null;
+  soltouEm: number;
+}
 
 export interface Participante {
   id: number;
@@ -99,6 +115,11 @@ export interface OpcoesDaPartida {
   participantes: Participante[];
   /** As duplas: o item e a batida não pegam quem é do mesmo time, e vence o time que sobrar. */
   duplas?: boolean;
+  /**
+   * O MODO CENOURA DOURADA (24/11/2026): ninguém perde balão; quem é atingido com a cenoura a derruba, e ganha quem a segurou
+   * mais tempo. Na sala, quem está com ela é o servidor que diz (os eventos 'dourada'); no Solo, a partida daqui decide.
+   */
+  dourada?: boolean;
   /** Os ids que andam AQUI, pelo cérebro do robô (o Solo). */
   robos?: number[];
   /** A dificuldade deles (só o Solo; sem ela, o médio, que é o robô de antes). */
@@ -159,6 +180,23 @@ export function criarPartida(o: OpcoesDaPartida) {
   const escudosGastos = new Set<string>();
   let lidos = 0;
 
+  /** A CENOURA DOURADA (só no modo dela) e o tempo que cada um já a segurou (os passos, sem o de agora). */
+  const [ox, oy] = lugarDaDourada(arena, o.semente);
+  const ouro: CenouraDourada = { dono: null, x: ox, y: oy, n: 0, soltou: null, soltouEm: -Infinity };
+  const segurou = new Map<number, number>();
+  /** Os passos com a cenoura de `id` até o passo `m` (os de antes e os de agora, se está com ela). */
+  const tempoComADourada = (id: number, m = n) =>
+    (segurou.get(id) ?? 0) + (ouro.dono === id ? Math.max(0, Math.min(m, DURACAO_PASSOS) - ouro.n) : 0);
+  /** A cenoura muda de mão (ou cai): o tempo de quem a tinha fecha. */
+  const mudarDourada = (e: { dono: number | null; x: number; y: number; n: number }) => {
+    if (ouro.dono !== null) segurou.set(ouro.dono, tempoComADourada(ouro.dono, e.n));
+    if (ouro.dono !== null && e.dono === null) {
+      ouro.soltou = ouro.dono;
+      ouro.soltouEm = e.n;
+    }
+    Object.assign(ouro, { dono: e.dono, x: e.x, y: e.y, n: e.n });
+  };
+
   const local = (id: number) => locais.find((k) => k.id === id);
   const equipeDe = (id: number) => o.participantes.find((q) => q.id === id)?.equipe;
   /** Da mesma dupla (e não é a mesma pessoa): o item e a batida não pegam. */
@@ -172,6 +210,8 @@ export function criarPartida(o: OpcoesDaPartida) {
     return pos ? { x: pos.x, y: pos.y, a: pos.a } : null;
   };
   const baloesDe = (id: number) => {
+    // no modo da cenoura, balão não estoura
+    if (o.dourada) return BALOES;
     const l = local(id);
     return Math.max(0, (o.baloes.get(id) ?? BALOES) - (l ? l.previstos.size : 0));
   };
@@ -187,6 +227,10 @@ export function criarPartida(o: OpcoesDaPartida) {
       if (e.tipo === 'repolho') {
         const c = caminhoDoRepolho(arena, e);
         if (c) caminhos.set(e.id, c);
+        continue;
+      }
+      if (e.tipo === 'dourada') {
+        mudarDourada(e);
         continue;
       }
       if (e.tipo !== 'estourou' && e.tipo !== 'segurou') continue;
@@ -232,12 +276,14 @@ export function criarPartida(o: OpcoesDaPartida) {
       l.escudo = null;
       return;
     }
-    const sobra = Math.max(0, (o.baloes.get(l.id) ?? BALOES) - 1);
+    const sobra = o.dourada ? BALOES : Math.max(0, (o.baloes.get(l.id) ?? BALOES) - 1);
     l.ultimoEstouro = m;
     atingir(l.kart);
     if (l === meu) o.aoTremor?.(8);
     const quem = local(dono);
     if (quem) quem.estouros++;
+    // no modo da cenoura, quem a segurava a derruba onde está
+    if (o.dourada && ouro.dono === l.id) o.eventos.push({ tipo: 'dourada', dono: null, x: l.kart.x, y: l.kart.y, n: m });
     o.eventos.push({ tipo: 'estourou', alvo: l.id, id, dono, baloes: sobra, n: m });
   };
 
@@ -259,11 +305,27 @@ export function criarPartida(o: OpcoesDaPartida) {
         if (pos) rivais.push(pos);
       }
       const caixas = arena.caixas.filter((_, i) => l.caixaVolta[i] <= n).map(([x, y]) => ({ x, y }));
-      c = comandoDoRobo(k, { arena, item: l.naMao, rivais, caixas }, l.memoria);
+      // a cenoura dourada: no chão, vai até ela; com outro, persegue quem a tem; comigo, foge (e junta itens)
+      let dourada: { x: number; y: number } | null = null;
+      let fugindo = false;
+      if (o.dourada) {
+        if (ouro.dono === null) dourada = ouro.soltou === l.id && n < ouro.soltouEm + DOURADA_DE_NOVO ? null : { x: ouro.x, y: ouro.y };
+        else if (ouro.dono === l.id) fugindo = true;
+        else if (!mesmaEquipe(ouro.dono, l.id)) dourada = posicaoDe(ouro.dono, n);
+      }
+      c = comandoDoRobo(k, { arena, item: l.naMao, rivais, caixas, dourada, fugindo }, l.memoria);
     } else c = o.comandos;
     if (acabou || n > DURACAO_PASSOS) c = { acelera: false, freia: false, vira: 0, derrapa: false };
+    const xAntes = k.x, yAntes = k.y;
     passo(k, c, p);
     if (k.rodando > 0) k.angulo += RODOPIO_A_MAIS * PASSO;
+    // NO SOLO, a cenoura dourada no chão: quem passa por ela pega (quem a derrubou, só depois de DOURADA_DE_NOVO)
+    if (o.dourada && solo && !acabou && n <= DURACAO_PASSOS && ouro.dono === null && n >= ouro.n && (ouro.soltou !== l.id || n >= ouro.soltouEm + DOURADA_DE_NOVO)) {
+      if (passouPerto(xAntes, yAntes, k.x, k.y, ouro.x, ouro.y, RAIO_DA_DOURADA)) {
+        o.eventos.push({ tipo: 'dourada', dono: l.id, x: ouro.x, y: ouro.y, n });
+        lerEventos();
+      }
+    }
     if (l === meu && k.bateu) o.aoTremor?.(6);
 
     // A CAIXA: passando perto, com a mão vazia; o item é o do sorteio que o servidor também faz
@@ -417,6 +479,17 @@ export function criarPartida(o: OpcoesDaPartida) {
    * saiu depois.
    */
   const naFrente = (a: number, b: number): boolean => {
+    if (o.dourada) {
+      // o modo da cenoura: nas duplas o time (a soma), depois quem a segurou mais, depois quem estourou mais
+      const soma = (ids: number[]) => ids.reduce((s, id) => s + tempoComADourada(id), 0);
+      if (o.duplas && equipeDe(a) !== equipeDe(b)) {
+        const time = (e: number | undefined) => o.participantes.filter((q) => q.equipe === e).map((q) => q.id);
+        const ta = soma(time(equipeDe(a))), tb = soma(time(equipeDe(b)));
+        if (ta !== tb) return ta > tb;
+      }
+      const ta = tempoComADourada(a), tb = tempoComADourada(b);
+      return ta !== tb ? ta > tb : (local(a)?.estouros ?? 0) > (local(b)?.estouros ?? 0);
+    }
     const placar = (ids: number[]) => [ids.some(temBalao) ? 1 : 0, ids.reduce((s, id) => s + baloesDe(id), 0), ids.reduce((s, id) => s + (local(id)?.estouros ?? 0), 0)];
     const comparar = (x: number[], y: number[]) => {
       for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] > y[i] ? 1 : -1;
@@ -437,7 +510,7 @@ export function criarPartida(o: OpcoesDaPartida) {
     for (const q of o.participantes) if (!temBalao(q.id) && !saidas.has(q.id)) saidas.set(q.id, saidas.size + 1);
     const vivos = o.participantes.filter((q) => temBalao(q.id));
     const lados = o.duplas ? new Set(vivos.map((q) => q.equipe)).size : vivos.length;
-    if (lados > 1 && n < DURACAO_PASSOS) return;
+    if ((o.dourada || lados > 1) && n < DURACAO_PASSOS) return;
     acabou = true;
     const frente = o.participantes.filter((q) => q.id !== meu.id && naFrente(q.id, meu.id)).length;
     o.aoFim({ posicao: 1 + frente, total: o.participantes.length, baloes: baloesDe(meu.id), estouros: meu.estouros, passos: Math.min(n, DURACAO_PASSOS) });
@@ -453,6 +526,9 @@ export function criarPartida(o: OpcoesDaPartida) {
     temBalao,
     escudoAtivo,
     lerEventos,
+    /** A cenoura dourada (no modo dela) e os passos de cada um com ela. */
+    ouro,
+    tempoComADourada,
     get n() {
       return n;
     },

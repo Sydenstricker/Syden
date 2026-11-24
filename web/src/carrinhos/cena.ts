@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { carregarCoelho, copiarCoelho, type CoelhoCopiado, type CoresDoCoelho } from '../coelho3d';
-import { BOX_COMPRIMENTO, COMPRIMENTO_DA_RETA, FAIXAS, FORA_PASSOS, poseNaFaixa, trechoEm, type Peca, type Pista } from './sim';
+import { BOX_COMPRIMENTO, COMPRIMENTO_DA_RETA, FAIXAS, FORA_PASSOS, parceiraDa, poseDoCarro, poseNaFaixa, trechoEm, type Peca, type Pista } from './sim';
 
 /**
  * A CENA DOS CARRINHOS DA TOCA (06/11/2026): a pista de sim.ts montada com as peças largas do Toy Car Kit da Kenney (CC0,
@@ -16,8 +16,8 @@ import { BOX_COMPRIMENTO, COMPRIMENTO_DA_RETA, FAIXAS, FORA_PASSOS, poseNaFaixa,
 const BASE = `${import.meta.env.BASE_URL}carrinhos/`;
 /** O fundo da cena (o chão do quarto), que é também a cor da caixa enquanto carrega. */
 export const COR_DO_FUNDO = '#c79b6e';
-const MODELO_DA_PECA: Record<Peca['tipo'], string> = { reta: 'track-road-wide-straight', pequena: 'track-road-wide-corner-small', grande: 'track-road-wide-corner-large', cruzamento: 'track-road-wide-straight' };
-const RAIO_DA_PECA: Record<Peca['tipo'], number> = { reta: 0, pequena: 2, grande: 4, cruzamento: 0 };
+const MODELO_DA_PECA: Record<Peca['tipo'], string> = { reta: 'track-road-wide-straight', pequena: 'track-road-wide-corner-small', grande: 'track-road-wide-corner-large', cruzamento: 'track-road-wide-straight', agulha: 'track-road-wide-straight' };
+const RAIO_DA_PECA: Record<Peca['tipo'], number> = { reta: 0, pequena: 2, grande: 4, cruzamento: 0, agulha: 0 };
 /** Um carro por faixa. */
 const CARROS = ['vehicle-racer', 'vehicle-speedster', 'vehicle-racer-low', 'vehicle-vintage-racer'];
 const ENFEITES = ['tree', 'tree-pine', 'item-cone', 'gate-finish'];
@@ -70,6 +70,10 @@ export interface QuadroDoCarro {
   saiuA: number;
   /** Escondido (o rival que ainda não mandou posição). */
   escondido?: boolean;
+  /** A faixa de agora (a troca de faixa, 24/11/2026: muda na agulha); sem ela, a da montagem. */
+  faixa?: number;
+  /** Na agulha em que trocou, a faixa de onde veio (o carro desliza de uma à outra); -1 ou nada fora disso. */
+  de?: number;
 }
 
 interface Montado {
@@ -246,6 +250,27 @@ export class CenaDosCarrinhos {
       }
     }
 
+    // A AGULHA (24/11/2026): a reta da Kenney, com o desvio de cada faixa para a outra da fileira riscado por cima, tracejado
+    // (o trilho que muda; o kit não tem a peça)
+    const desvio = new THREE.MeshBasicMaterial({ color: '#ffd36b', transparent: true, opacity: 0.8 });
+    for (let f = 0; f < FAIXAS; f++) {
+      const outra = this.tracado.trechos[parceiraDa(f)];
+      this.tracado.trechos[f].forEach((t, i) => {
+        if (!t.troca) return;
+        const ax = t.x, az = t.z;
+        const bx = outra[i].x + Math.cos(t.rumo) * COMPRIMENTO_DA_RETA, bz = outra[i].z + Math.sin(t.rumo) * COMPRIMENTO_DA_RETA;
+        for (let k = 0; k < 5; k++) {
+          const k0 = (k + 0.15) / 5, k1 = (k + 0.65) / 5;
+          const x0 = ax + (bx - ax) * k0, z0 = az + (bz - az) * k0, x1 = ax + (bx - ax) * k1, z1 = az + (bz - az) * k1;
+          const m = new THREE.Mesh(new THREE.PlaneGeometry(Math.hypot(x1 - x0, z1 - z0), 0.07), desvio);
+          m.rotation.x = -Math.PI / 2;
+          m.rotation.z = -Math.atan2(z1 - z0, x1 - x0);
+          m.position.set((x0 + x1) / 2, ALTURA_DA_PISTA + 0.013 + f * 0.001, (z0 + z1) / 2);
+          pista.add(m);
+        }
+      });
+    }
+
     // a largada: um pórtico em cada fileira, no começo da primeira reta
     const largada = this.tracado.pecas.slice(0, 2);
     for (const p of largada) {
@@ -391,7 +416,8 @@ export class CenaDosCarrinhos {
         m.raiz.visible = false;
         return;
       }
-      const pose = poseNaFaixa(this.tracado, m.faixa, q.s);
+      const faixa = q.faixa ?? m.faixa;
+      const pose = poseDoCarro(this.tracado, faixa, q.s, q.de ?? -1);
       m.raiz.position.set(pose.x, ALTURA_DA_PISTA, pose.z);
       m.raiz.rotation.set(0, giroDoCarro(pose.rumo), 0);
       m.corpo.position.set(0, 0, 0);
@@ -402,7 +428,7 @@ export class CenaDosCarrinhos {
         // O VOO: o carro segue reto (a tangente) e sobe, girando, e cai deitado no tapete ao lado da pista
         const t = Math.min(1, (FORA_PASSOS - q.fora) / 45);
         const longe = Math.min(3, 0.35 * q.saiuA) * (1 - (1 - t) * (1 - t));
-        const tr = trechoEm(this.tracado, m.faixa, q.s);
+        const tr = trechoEm(this.tracado, faixa, q.s);
         // para fora da curva: o lado contrário ao centro
         const fora = -tr.sentido;
         // (o carro gira em volta do meio dele, então sobe metade da altura para não afundar no tapete)
@@ -419,7 +445,7 @@ export class CenaDosCarrinhos {
       } else {
         if (q.derrapa > 0) {
           // a traseira escorrega para fora da curva e o carro treme
-          const tr = trechoEm(this.tracado, m.faixa, q.s);
+          const tr = trechoEm(this.tracado, faixa, q.s);
           const k = Math.min(1, q.derrapa);
           m.corpo.rotation.y = tr.sentido * 0.45 * k + Math.sin(this.relogio * 47) * 0.06 * k;
           m.corpo.position.x = Math.sin(this.relogio * 61) * 0.03 * k;
