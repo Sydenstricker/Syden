@@ -247,6 +247,9 @@ export function desenharMarca(g: CanvasRenderingContext2D, x: number, y: number,
   g.stroke();
 }
 
+/** O contorno escuro por baixo dos anéis e dos efeitos claros, para não sumirem na areia e na neve. */
+const CONTORNO_ESCURO = 'rgba(40, 26, 16, 0.5)';
+
 /** A sombra do coelho. */
 export function desenharSombra(g: CanvasRenderingContext2D, x: number, y: number) {
   g.fillStyle = 'rgba(30,40,20,0.3)';
@@ -352,11 +355,15 @@ export function desenharZona(g: CanvasRenderingContext2D, z: ZonaNaTela, cx: num
   g.arc(x, y, z.raio * k, 0, Math.PI * 2);
   g.fill();
   g.globalAlpha = Math.floor(tempo / (k > 0.6 ? 90 : 180)) % 2 ? 0.95 : 0.55;
-  g.strokeStyle = cor;
-  g.lineWidth = 2;
   g.setLineDash([6, 4]);
   g.beginPath();
   g.arc(x, y, z.raio, 0, Math.PI * 2);
+  // o contorno escuro por baixo: na areia clara da praia, o anel sozinho sumia (a auditoria de 25/11/2026)
+  g.strokeStyle = CONTORNO_ESCURO;
+  g.lineWidth = 4;
+  g.stroke();
+  g.strokeStyle = cor;
+  g.lineWidth = 2;
   g.stroke();
   g.setLineDash([]);
   g.globalAlpha = 1;
@@ -435,55 +442,81 @@ export function desenharEfeito(g: CanvasRenderingContext2D, e: Efeito, cx: numbe
     if (t > 320) return false;
     const r = (e.raio ?? 50) * Math.min(1, 0.4 + t / 160);
     g.globalAlpha = 1 - t / 320;
-    g.strokeStyle = cor;
-    g.lineWidth = 4;
     g.beginPath();
     g.arc(x, y, r, 0, Math.PI * 2);
+    g.strokeStyle = CONTORNO_ESCURO;
+    g.lineWidth = 6;
+    g.stroke();
+    g.strokeStyle = cor;
+    g.lineWidth = 4;
     g.stroke();
     g.globalAlpha = 1;
     return true;
   }
   if (e.tipo === 'numero') {
-    if (t > 700) return false;
-    g.font = e.forca === 1 ? 'bold 13px sans-serif' : '10px sans-serif';
+    // O NÚMERO DO DANO (25/11/2026): era 10 px cinza sem contorno, ilegível na areia. Agora maior, com contorno escuro, e o
+    // golpe que vale mais cresce num pulo no começo; o que vale menos continua menor e mais apagado, mas legível.
+    if (t > 800) return false;
+    const base = e.forca === 1 ? 17 : e.forca === 2 ? 12 : 14;
+    const pulo = e.forca === 1 && t < 120 ? 1 + 0.35 * (1 - t / 120) : 1;
+    g.font = `bold ${Math.round(base * pulo)}px sans-serif`;
     g.textAlign = 'center';
-    g.globalAlpha = 1 - t / 700;
-    g.fillStyle = 'rgba(0,0,0,0.6)';
-    g.fillText(e.texto ?? '', x + 1, y - 92 - t / 30 + 1);
-    g.fillStyle = e.forca === 1 ? '#ffd84a' : e.forca === 2 ? '#b8c0c8' : '#ffffff';
-    g.fillText(e.texto ?? '', x, y - 92 - t / 30);
+    g.lineJoin = 'round';
+    g.globalAlpha = t < 500 ? 1 : 1 - (t - 500) / 300;
+    // nasce acima da etiqueta do nome (a 92 px, cobria o nome no começo)
+    const ny = Math.round(y - 106 - t / 25);
+    g.strokeStyle = '#1e140c';
+    g.lineWidth = 4;
+    g.strokeText(e.texto ?? '', x, ny);
+    g.fillStyle = e.forca === 1 ? '#ffd84a' : e.forca === 2 ? '#d6dde4' : '#ffffff';
+    g.fillText(e.texto ?? '', x, ny);
     g.globalAlpha = 1;
     g.textAlign = 'start';
+    g.lineJoin = 'miter';
     return true;
   }
   if (e.tipo === 'pegou') {
     if (t > 400) return false;
     g.globalAlpha = 1 - t / 400;
-    g.strokeStyle = '#fff6c8';
-    g.lineWidth = 2;
     g.beginPath();
     g.arc(x, y - 14, 8 + t / 20, 0, Math.PI * 2);
+    g.strokeStyle = CONTORNO_ESCURO;
+    g.lineWidth = 4;
+    g.stroke();
+    g.strokeStyle = '#fff6c8';
+    g.lineWidth = 2;
     g.stroke();
     g.globalAlpha = 1;
     return true;
   }
   if (e.tipo === 'caiu') {
-    // as estrelinhas rodando e a fumaça subindo: quem cai sai de cena, sem machucado
+    // as estrelinhas rodando e a fumaça subindo: quem cai sai de cena, sem machucado. A fumaça em dois tons, o de fora
+    // acinzentado: a creme sozinha sumia na areia da praia (a auditoria de 25/11/2026)
     if (t > 1100) return false;
-    for (let k = 0; k < 5; k++) {
-      const a = (k / 5) * Math.PI * 2 + t / 180;
-      g.fillStyle = '#ffe680';
-      g.fillRect(Math.round(x + Math.cos(a) * 16) - 1, Math.round(y - 60 + Math.sin(a) * 6) - 1, 3, 3);
-    }
+    const some = Math.max(0, 1 - t / 1100);
     for (let k = 0; k < 6; k++) {
       const r = 8 + k * 2 + t / 60;
-      g.globalAlpha = Math.max(0, 0.55 - t / 1100);
+      const fx = x + Math.cos(k * 1.7) * 10, fy = y - 20 - k * 6 - t / 25;
+      g.globalAlpha = 0.6 * some;
+      g.fillStyle = '#8a7e74';
+      g.beginPath();
+      g.arc(fx, fy, r + 2, 0, Math.PI * 2);
+      g.fill();
+      g.globalAlpha = 0.75 * some;
       g.fillStyle = '#e8e4dc';
       g.beginPath();
-      g.arc(x + Math.cos(k * 1.7) * 10, y - 20 - k * 6 - t / 25, r, 0, Math.PI * 2);
+      g.arc(fx - 1, fy - 1, r, 0, Math.PI * 2);
       g.fill();
     }
     g.globalAlpha = 1;
+    for (let k = 0; k < 5; k++) {
+      const a = (k / 5) * Math.PI * 2 + t / 180;
+      const sx = Math.round(x + Math.cos(a) * 16), sy = Math.round(y - 60 + Math.sin(a) * 6);
+      g.fillStyle = '#3a2614';
+      g.fillRect(sx - 2, sy - 2, 5, 5);
+      g.fillStyle = '#ffe680';
+      g.fillRect(sx - 1, sy - 1, 3, 3);
+    }
     return true;
   }
   return false;

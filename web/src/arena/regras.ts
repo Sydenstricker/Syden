@@ -323,8 +323,13 @@ export class Cliente {
   balas: MinhaBala[] = [];
   efeitos: Efeito[] = [];
   sons: Som[] = [];
-  /** Os outros que levaram um golpe agora (id → até quando piscam), e de que lado veio (para o recuo). */
-  feridos = new Map<number, { ate: number; dx: number; dy: number }>();
+  /** Quem levou um golpe agora (id → de quando a quando pisca), e de que lado veio (para o recuo). Eu também, sem o recuo. */
+  feridos = new Map<number, { de: number; ate: number; dx: number; dy: number }>();
+  /**
+   * O IMPACTO (25/11/2026, a auditoria de game feel: a Arena não tinha nenhum): o golpe que eu acertei, o que eu levei e a
+   * minha queda, com a hora em que aparecem na tela. Só desenho: a tela (JogoArena) tira daqui o tremor e a pausa.
+   */
+  impactos: { em: number; tipo: 'acertei' | 'levei' | 'cai'; forte: boolean }[] = [];
   private proximoTiro = 1;
   private posicionado = false;
   private vistos = new Set<number>();
@@ -394,15 +399,21 @@ export class Cliente {
           this.eu.recuoY = uy;
           this.eu.recuoAte = agora + 160;
           this.sons.push('erro');
+          this.feridos.set(alvo, { de: agora, ate: agora + 220, dx: ux, dy: uy });
+          this.impactos.push({ em: agora, tipo: 'levei', forte: efic === 1 });
         } else {
-          this.feridos.set(alvo, { ate: agora + ATRASO_MS + 220, dx: ux, dy: uy });
-          if (dono === this.id) this.sons.push('acerto');
+          this.feridos.set(alvo, { de: agora + ATRASO_MS, ate: agora + ATRASO_MS + 220, dx: ux, dy: uy });
+          if (dono === this.id) {
+            this.sons.push('acerto');
+            this.impactos.push({ em: agora + ATRASO_MS, tipo: 'acertei', forte: efic === 1 });
+          }
         }
       } else if (tipo === 'k') {
         // [quem, vidas, x, y]: vira estrelinhas e fumaça
         this.efeitos.push({ tipo: 'caiu', x: r[2], y: r[3], em: agora + (r[0] === this.id ? 0 : ATRASO_MS) });
         this.sons.push('queda');
         if (r[0] === this.id) {
+          this.impactos.push({ em: agora, tipo: 'cai', forte: true });
           this.eu.estado = r[1] === 0 ? 2 : 1;
           this.eu.acao = 'fora';
         }

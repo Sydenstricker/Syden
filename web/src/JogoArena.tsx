@@ -9,6 +9,7 @@ import { ESPECIES, GOLPES } from './bichos/regras';
 import { chave, useT } from './i18n';
 import { primeiraForma, type Partida } from './minijogos';
 import { tocar } from './somDosJogos';
+import { criarImpacto } from './impacto';
 import { CENARIOS, H, KITS, marcaDe, MATO, moitaEm, MUNDO_H, MUNDO_W, OBSTACULOS, PONTOS_DA_ZONA, PV, TECLAS_DE_GOLPE, W, ZONA_FINAL, type Cenario, type Marca, type TeclaDeGolpe } from './arena/conta';
 import { prepararCoelho, quadroDaArena, receitaDoAvatar } from './arena/coelhos';
 import {
@@ -298,6 +299,9 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
     let sobra = 0;
     let ultimoHud = 0;
     let camX = -1, camY = -1;
+    // O IMPACTO (25/11/2026, a auditoria de game feel: a Arena não tinha nenhum). Só desenho: a pausa no acerto e o tremor,
+    // na hora em que o golpe aparece na tela (o meu acerto no outro chega com o atraso de quem eu vejo)
+    const impacto = criarImpacto({ pixelsPorForca: 5 });
     const piloto = () => import.meta.env.DEV && !!window.arenaPilotoAutomatico;
     const menosMovimento = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (import.meta.env.DEV) (window as unknown as { arenaDoTeste?: unknown }).arenaDoTeste = cliente;
@@ -315,8 +319,10 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
       if (!p) return;
       if (o.piscando && Math.floor(agora / 90) % 2) return;
       let x = o.x - camX, y = o.y - camY;
-      const ferido = cliente.feridos.get(o.id);
-      if (ferido && ferido.ate > agora) {
+      const f0 = cliente.feridos.get(o.id);
+      const ferido = f0 && f0.de <= agora && f0.ate > agora ? f0 : null;
+      // o recuo é só dos outros: o meu coelho já recua pela regra
+      if (ferido && !meu) {
         x += ferido.dx * 3;
         y += ferido.dy * 3;
       }
@@ -342,8 +348,9 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
         }
         g.drawImage(q.c, Math.round(x - q.pe[0]), Math.round(y - q.pe[1]));
         g.globalAlpha = 1;
-        if (ferido && ferido.ate > agora && Math.floor(agora / 60) % 2 === 0) {
-          g.globalAlpha = 0.5;
+        // o clarão de quem leva: forte nos primeiros 90 ms, depois piscando
+        if (ferido && (agora - ferido.de < 90 || Math.floor(agora / 60) % 2 === 0)) {
+          g.globalAlpha = agora - ferido.de < 90 ? 0.9 : 0.5;
           g.globalCompositeOperation = 'lighter';
           g.drawImage(q.c, Math.round(x - q.pe[0]), Math.round(y - q.pe[1]));
           g.globalCompositeOperation = 'source-over';
@@ -423,6 +430,15 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
         cliente.passo(cmd, 1 / 60, agora, v);
       }
       for (const s of cliente.sons.splice(0)) tocar(s);
+      // os impactos que já aparecem na tela
+      for (let k = cliente.impactos.length - 1; k >= 0; k--) {
+        const i = cliente.impactos[k];
+        if (i.em > agora) continue;
+        cliente.impactos.splice(k, 1);
+        if (i.tipo === 'acertei') impacto.acerto({ forca: i.forte ? 0.35 : 0.15, pausaMs: i.forte ? 60 : 40 });
+        else if (i.tipo === 'levei') impacto.acerto({ forca: i.forte ? 0.7 : 0.45, tremorMs: 220 });
+        else impacto.tremer(0.9, 360);
+      }
       const v = cliente.vista(agora);
 
       if (agora - ultimoHud > 200 && v.fase) {
@@ -454,8 +470,13 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
       camY += (ay - camY) * Math.min(1, dt * 9);
       const cx = Math.round(camX), cy = Math.round(camY);
       const tempo = menosMovimento ? Math.floor(agora / 400) * 400 : agora;
-
-      g.drawImage(chao, cx, cy, W, H, 0, 0, W, H);
+      // a pausa no acerto: a tela fica no quadro do golpe (o meu coelho e o envio acima seguem; só o desenho para)
+      const imp = impacto.quadro(agora);
+      if (imp.congelado) return;
+      g.save();
+      g.translate(imp.dx, imp.dy);
+      // com o tremor, o chão passa um pouco da tela, para a borda não mostrar o quadro de antes
+      g.drawImage(chao, cx - 8, cy - 8, W + 16, H + 16, -8, -8, W + 16, H + 16);
       // o aviso de cada zona, pelo tamanho dela (a da arena, a do especial, a do forte e a pedrada da pedra)
       // segurando a zona: o círculo do meio, na cor de quem o segura sozinho
       if (estado.objetivo === 'zona') desenharZonaDoObjetivo(g, cx, cy, v.zona && v.zona.dono >= 0 ? corDoTime(v.zona.dono, estado.formato) : null, tempo);
@@ -484,6 +505,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
       // as balas, por cima
       for (const b of [...v.balas, ...cliente.minhasBalas(agora)]) desenharBala(g, b.elemento, b.x - cx, b.y - cy, b.dx, b.dy, b.golpe.raio, tempo);
       for (let k = cliente.efeitos.length - 1; k >= 0; k--) if (!desenharEfeito(g, cliente.efeitos[k], cx, cy, agora)) cliente.efeitos.splice(k, 1);
+      g.restore();
       // as setas na borda: os suprimentos e os outros fora da tela
       for (const s of v.suprimentos) {
         const sx = s.x - cx, sy = s.y - cy;

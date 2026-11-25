@@ -1782,8 +1782,12 @@ pelo piloto automático (`e2e/auditoria-gf-*.mjs`; o relatório e as folhas em `
 verdade, consertados no mesmo dia: **a pausa no acerto era pedida e nunca lida** na Masmorra, na Esquadrilha, no Pulo e na Horta
 em cascata (só a Briga lia o `congelado`; agora, congelado, o quadro não é redesenhado e a tela fica no golpe); **a toupeira do
 Chefe nunca piscava** (a `sombra()` devolvia o alpha a 1 no meio do desenho; agora devolve o que estava); e **o coelhinho da
-gaiola do Comando** sai em três pulinhos, como o comentário prometia. **Regra: jogo que pede `pausaMs` lê o `congelado`.** As
-sugestões do relatório (a Arena sem impacto nenhum, a explosão da granada, a fumaça atrasada) esperam a decisão dele. Na mesma
+gaiola do Comando** sai em três pulinhos, como o comentário prometia. **Regra: jogo que pede `pausaMs` lê o `congelado`.** **A
+Arena ganhou o impacto no mesmo dia (pedido dele):** a pausa no acerto meu (40 ms, 60 no golpe que vale mais), o tremor no golpe
+que levo e na minha queda, o clarão em quem leva (eu também), na hora em que o golpe aparece na tela (`impactos` em
+`arena/regras.ts`); o número do dano maior, com contorno escuro, nascendo acima do nome; e contorno escuro nos anéis e na fumaça,
+que sumiam na areia. Só desenho. Conferido por agente pelas folhas (só o gramado saiu; a praia, não). As outras sugestões do
+relatório (a explosão da granada, a fumaça atrasada) esperam a decisão dele. Na mesma
 leva, os e2e de briga, plataforma, tabuleiro, lobisomem-microfone, estelar (`ROTA=gelo`) e quiz, antes "escritos, não rodados",
 PASSARAM; o que falhava eram os testes, não os jogos.
 
