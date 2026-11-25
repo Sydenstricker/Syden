@@ -280,7 +280,7 @@ function Palco({
       for (const b of v.balasDosOutros) desenharBala(g, b.x, b.h, b.dx, b.dh, cx, false, b.arma, tempo);
       for (const b of cliente.minhasBalas(agora)) desenharBala(g, b.x, b.h, b.dx, b.dh, cx, true, b.arma, tempo);
       for (const gr of v.granadas) desenharGranada(g, gr.x0, gr.h0, gr.x, Math.max(0, Math.min(1, 1 - gr.resta / GRANADA.voo)), cx);
-      for (let k = cliente.efeitos.length - 1; k >= 0; k--) if (!desenharEfeito(g, cliente.efeitos[k], cx, agora)) cliente.efeitos.splice(k, 1);
+      for (let k = cliente.efeitos.length - 1; k >= 0; k--) if (!desenharEfeito(g, cliente.efeitos[k], cx, agora, folhaDe(folha, null))) cliente.efeitos.splice(k, 1);
       g.restore();
       const chefe = v.bichos.find((b) => BICHOS[b.tipo].comp === 'chefe' && b.estado !== 'morto');
       if (chefe) desenharBarraDoChefe(g, chefe.hp);

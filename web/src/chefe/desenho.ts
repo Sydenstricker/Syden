@@ -123,9 +123,11 @@ export function desenharArena(g: CanvasRenderingContext2D) {
 
 // ---------------- AS SOMBRAS E OS AVISOS ----------------
 export function sombra(g: CanvasRenderingContext2D, x: number, y: number, rx: number, ry: number) {
-  g.globalAlpha = 0.35;
+  // devolve o alpha que estava (a toupeira piscando desenha com 0,45, e voltar a 1 aqui apagava o piscar)
+  const antes = g.globalAlpha;
+  g.globalAlpha = antes * 0.35;
   disco(g, x, y, rx, ry, '#2a1e1a');
-  g.globalAlpha = 1;
+  g.globalAlpha = antes;
 }
 
 /** As marcas no chão vão por baixo de tudo; o que voa (pedra, torrão) vai depois, em `desenharNoAr`. */

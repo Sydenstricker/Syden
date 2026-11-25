@@ -33,7 +33,8 @@ try {
   const painel = lia.locator('.jogos-painel');
   await painel.waitFor();
   await painel.locator('.jogos-solo button', { hasText: 'Rota Estelar' }).click();
-  await painel.locator('.corrida-pista-botao', { hasText: process.env.ROTA === 'gelo' ? 'Rota do gelo' : 'Rota do planeta' }).click();
+  // a escolha da rota abre fora do painel da estante
+  await lia.locator('.corrida-pista-botao', { hasText: process.env.ROTA === 'gelo' ? 'Rota do gelo' : 'Rota do planeta' }).click();
   await lia.locator('.estelar-caixa:not(.escondida)').waitFor({ timeout: 40000 });
   ok('no quarto, sem chamada, a Rota Estelar abriu a cena 3D');
   await lia.waitForFunction(() => (window.estelarDoTeste?.passo ?? -1) > 5, null, { timeout: 15000 });

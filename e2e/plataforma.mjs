@@ -82,7 +82,8 @@ try {
   await edu.locator('.pulo-tela canvas').waitFor();
   await terminarComPiloto(edu);
   await edu.locator('.corrida-recorde').waitFor({ timeout: 10000 });
-  const tempoEdu = await edu.locator('.corrida-relogio.grande').innerText();
+  // só o tempo: desde as medalhas (20/11/2026) o relógio grande leva a medalha ao lado (0:32.48 🥇)
+  const tempoEdu = (await edu.locator('.corrida-relogio.grande').innerText()).match(/\d+:\d+\.\d+/)?.[0] ?? '';
   ok(`o Edu chegou em ${tempoEdu}, com "Novo recorde!"`);
   await foto(edu, 'chegada');
   await edu.locator('.corrida-fim').getByRole('button', { name: 'Outros jogos' }).click();

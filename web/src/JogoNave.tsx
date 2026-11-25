@@ -428,6 +428,8 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
         setLetreiro({ fase: base, ate: agoraMs + 2600 });
       }
       const tremor = impacto.quadro();
+      // a pausa no acerto: a tela fica no quadro do golpe (a nave e o envio acima seguem; só o desenho para)
+      if (tremor.congelado) return;
       ctx.save();
       ctx.translate(tremor.dx, tremor.dy);
       desenhar(ctx, {

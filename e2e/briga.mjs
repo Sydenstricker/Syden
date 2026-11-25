@@ -121,8 +121,9 @@ try {
   pontos[0] > 0 ? ok(`no Solo, os acertos contam: ${pontos[0]}`) : falhou('no Solo, ninguém pontuou');
   await foto(duda, 'solo');
   await duda.getByRole('button', { name: 'Encerrar partida' }).click();
-  await duda.locator('.minijogo-estante').waitFor({ timeout: 10000 });
-  ok('encerrar o Solo volta à estante');
+  // encerrar o Solo fecha o painel (como em briga-fases.mjs), ou volta à estante
+  await duda.waitForFunction(() => !document.querySelector('.briga-tela'), null, { timeout: 10000 });
+  ok('encerrar o Solo tira a partida da tela');
 } catch (e) {
   falhou(e.stack ?? String(e));
 } finally {

@@ -8,7 +8,7 @@
 // - Ana encerra a partida: todos falam de novo.
 //
 //   node e2e/lobisomem-microfone.mjs   (API de teste na 3099, site na 5174 e LiveKit local na 7880)
-//   ESCRITO, NÃO RODADO (20/11/2026: o LiveKit local não estava de pé).
+//   Passou em 25/11/2026.
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { abrirNavegador, cadastrar, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
@@ -33,7 +33,8 @@ const api = (pagina, metodo, caminho, corpo) =>
     async ([api, metodo, caminho, corpo]) => {
       const r = await fetch(api + caminho, {
         method: metodo,
-        headers: { authorization: 'Bearer ' + localStorage.getItem('janja.token'), 'content-type': 'application/json' },
+        // o cabeçalho de JSON só com corpo: sem corpo, o servidor recusa (a largada e o encerrar não levam)
+        headers: { authorization: 'Bearer ' + localStorage.getItem('janja.token'), ...(corpo === undefined ? {} : { 'content-type': 'application/json' }) },
         body: corpo === undefined ? undefined : JSON.stringify(corpo),
       });
       return r.json().catch(() => null);

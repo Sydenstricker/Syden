@@ -33,6 +33,7 @@ import {
   type Efeito,
 } from './briga/desenho';
 import { desenharCenario } from './briga/cenarios';
+import { criarCamadaPixelfx, pixelfxLigado } from './briga/efeitosPixelfx';
 import { bicho, CAMPANHA, CORPO, FASES_DA_BRIGA, noGelo, pistaDaBriga, raioDaOnda, type TipoDeInimigo } from './briga/fases';
 import { alturaDoBicho, carregarFolhas, desenhaPelaFolha, desenharBichoDaFolha, desenharTiro } from './briga/sprites';
 import { nomeDaPistaEm } from './corrida/nomes';
@@ -91,6 +92,8 @@ declare global {
   interface Window {
     /** Só no desenvolvimento: o coelho anda e bate sozinho (e2e/briga.mjs). */
     brigaPilotoAutomatico?: boolean;
+    /** Só no desenvolvimento: quantos efeitos do pixelfx estão vivos (e2e/briga-pixelfx.mjs). */
+    brigaFxVivos?: () => string[] | null;
   }
 }
 
@@ -258,6 +261,20 @@ function Palco({
     const linha = new LinhaDoTempo();
     const eu_ = novoCoelho(40, 20);
     const efeitos: Efeito[] = [];
+    // O PILOTO DO PIXELFX (25/11/2026): o golpe forte e a fumaça do bicho vêm da biblioteca; desligado, os de antes
+    const fx = pixelfxLigado() ? criarCamadaPixelfx() : null;
+    const ehForte = (golpe: string | null | undefined) =>
+      golpe === 'soco3' || golpe === 'especial' || golpe === 'voadora' || golpe === 'arremesso';
+    // o soco comum continua a nossa faísca pequena; o forte é a do pixelfx (a auditoria do piloto, ver efeitosPixelfx.ts)
+    const faisca = (x: number, y: number, z: number, em: number, golpe?: string | null, lado = 1) => {
+      if (!fx || !ehForte(golpe)) return void efeitos.push({ tipo: 'faisca', x, y, z, em });
+      fx.pedir('acerto-forte', x, y, z, lado);
+    };
+    let fxAnterior = performance.now();
+    // os bichos derrotados que ainda estão na tela, e onde cada bicho foi desenhado por último (a fumaça sai ali)
+    const derrotados = new Set<number>();
+    const ultimoLugar = new Map<number, { x: number; y: number }>();
+    if (import.meta.env.DEV) window.brigaFxVivos = () => fx?.tipos() ?? null;
     const vistos = new Set<number>();
     const piscandoOutros = new Map<number, number>();
     const piscandoInimigo = new Map<number, number>();
@@ -332,7 +349,8 @@ function Palco({
           vidaAte.set(ini, agoraMs + 2000);
           // o meu acerto eu já mostrei na hora (o arremesso é do servidor: ele derruba no caminho)
           if (quem !== eu || golpe === 'arremesso') {
-            efeitos.push({ tipo: 'faisca', x, y, z, em: agoraMs + 100 });
+            // o meu arremesso já soltou a faísca forte na hora (o 3º soco): o eco do servidor só soa
+            if (quem !== eu) faisca(x, y, z, agoraMs + 100, golpe);
             somDoAcerto(golpe, false);
             if (golpe === 'arremesso') impacto.tremer(0.3);
           }
@@ -356,14 +374,14 @@ function Palco({
         } else if (tipo === 'p' && r[0] === eu) {
           apanhar(eu_, r[2] === 1, r[3]);
           apanhouEm.set(eu, agoraMs);
-          efeitos.push({ tipo: 'faisca', x: eu_.x, y: eu_.y, z: eu_.z, em: agoraMs });
+          faisca(eu_.x, eu_.y, eu_.z, agoraMs, r[2] === 1 ? 'soco3' : null, -eu_.lado);
           tocar(r[2] === 1 ? 'queda' : 'dano');
           impacto.tremer(r[2] === 1 ? 0.4 : 0.2);
         } else if (tipo === 'p') {
           piscandoOutros.set(r[0], agoraMs + 400);
           apanhouEm.set(r[0], agoraMs);
           const outro = q.j.find((l) => l[0] === r[0]);
-          if (outro) efeitos.push({ tipo: 'faisca', x: outro[1], y: outro[2], z: outro[3], em: agoraMs + 100 });
+          if (outro) faisca(outro[1], outro[2], outro[3], agoraMs + 100);
         } else if (tipo === 'k' && r[0] === eu) {
           eu_.hp = 0;
           eu_.acao = 'caido';
@@ -375,7 +393,9 @@ function Palco({
           eu_.piscandoAte = eu_.relogio + 2000;
         } else if (tipo === 'x') {
           const ini = q.i.find((l) => l[0] === r[0]);
-          if (ini) efeitos.push({ tipo: 'poeira', x: ini[2], y: ini[3], z: 0, em: agoraMs + 100 });
+          // com o pixelfx, a fumaça espera o bicho sumir da tela e sai onde ele estava DESENHADO (abaixo)
+          if (fx) derrotados.add(r[0]);
+          else if (ini) efeitos.push({ tipo: 'poeira', x: ini[2], y: ini[3], z: 0, em: agoraMs + 100 });
           tocar('derrota');
         }
       }
@@ -445,6 +465,20 @@ function Palco({
         ms: l[8] * 50,
       }));
       // os elementos de cenário (21/11/2026), interpolados como os bichos: o tronco e o rodamoinho andam
+      if (fx) {
+        const naTelaIds = new Set<number>();
+        for (const b of naTelaAgora) {
+          naTelaIds.add(b.id);
+          ultimoLugar.set(b.id, { x: b.x, y: b.y });
+        }
+        for (const id of derrotados) {
+          if (naTelaIds.has(id)) continue;
+          const l = ultimoLugar.get(id);
+          if (l) fx.pedir('fumaca', l.x, l.y, 0, 1);
+          derrotados.delete(id);
+        }
+        for (const id of ultimoLugar.keys()) if (!naTelaIds.has(id) && !derrotados.has(id)) ultimoLugar.delete(id);
+      }
       const elementos = (volta ? misturar(volta.a.el ?? [], volta.b.el ?? [], volta.k, [2, 3]) : []).map(elementoDaLinha);
       // os tiros no ar, interpolados como os bichos: [id, tipo, x, y, lado]
       const tiros = volta ? misturar(volta.a.t ?? [], volta.b.t ?? [], volta.k, [2]) : [];
@@ -491,7 +525,7 @@ function Palco({
               z: Math.round(eu_.z),
               ...(eu_.golpe === 'especial' ? { v: eu_.volta } : {}),
             });
-            efeitos.push({ tipo: 'faisca', x: c_[1], y: c_[2], z: 0, em: agoraMs });
+            faisca(c_[1], c_[2], 0, agoraMs, eu_.golpe, eu_.lado);
             somDoAcerto(eu_.golpe, true);
           }
           for (const i of naTelaAgora) {
@@ -507,7 +541,7 @@ function Palco({
               z: Math.round(eu_.z),
               ...(eu_.golpe === 'especial' ? { v: eu_.volta } : {}),
             });
-            efeitos.push({ tipo: 'faisca', x: i.x, y: i.y, z: i.z, em: agoraMs });
+            faisca(i.x, i.y, i.z, agoraMs, eu_.golpe, eu_.lado);
             piscandoInimigo.set(i.id, agoraMs + 140);
             vidaAte.set(i.id, agoraMs + 2000);
             somDoAcerto(eu_.golpe, true);
@@ -640,6 +674,9 @@ function Palco({
       }
       coisas.sort((a, b) => a.y - b.y).forEach((c_) => c_.desenhar());
       for (let k = efeitos.length - 1; k >= 0; k--) if (!desenharEfeito(g, efeitos[k], cam, agoraMs)) efeitos.splice(k, 1);
+      // os do pixelfx param na pausa do acerto, como o resto do que se desenha
+      if (fx) fx.quadro(g, cam, imp.congelado ? 0 : (agoraMs - fxAnterior) / 1000);
+      fxAnterior = agoraMs;
       // o "+" de quem se curou, em cima dele
       for (let k = curou.length - 1; k >= 0; k--) {
         const c_ = curou[k];

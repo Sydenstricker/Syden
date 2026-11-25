@@ -445,11 +445,14 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
       g.alarmou = alto;
       const contagem = e.fase === 'largada' && inicio.current !== null ? Math.max(1, Math.ceil((inicio.current - Date.now()) / 1000)) : null;
       const fim = g.s.e.fim !== null || e.meu?.fim === true;
-      const { dx, dy } = impacto.quadro(performance.now());
-      ctx.save();
-      ctx.translate(Math.round(dx), Math.round(dy));
-      desenharTabuleiro(ctx, g.s.e, { cursor: g.cursor, escolhida: g.escolhida, avisos: g.avisos, faiscas: g.faiscas, contagem, apagado: fim });
-      ctx.restore();
+      const { dx, dy, congelado } = impacto.quadro(performance.now());
+      // a pausa no acerto: o tabuleiro fica no quadro da cadeia (a partida e o envio seguem)
+      if (!congelado) {
+        ctx.save();
+        ctx.translate(Math.round(dx), Math.round(dy));
+        desenharTabuleiro(ctx, g.s.e, { cursor: g.cursor, escolhida: g.escolhida, avisos: g.avisos, faiscas: g.faiscas, contagem, apagado: fim });
+        ctx.restore();
+      }
       if (++quadro % 6 === 0) {
         const lixos = g.s.e.fila.reduce((a, l) => a + l.altura, 0) + g.s.lixos.filter((l) => l.n >= g.s.e.passo).reduce((a, l) => a + l.altura, 0);
         const recusada = Date.now() < g.recusadaAte;

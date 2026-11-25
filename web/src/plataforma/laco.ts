@@ -243,6 +243,8 @@ export function rodarFase(o: OpcoesDoLaco): () => void {
     };
 
     const desenhar = () => {
+      // a pausa no acerto: a tela fica no quadro do golpe (a física e o envio seguem; só o desenho para)
+      if (impacto.quadro().congelado) return;
       const n = o.piloto ? k.passos : nAssistindo;
       const rivais = rivaisEm(n);
       let foco = { x: k.x, y: k.y };

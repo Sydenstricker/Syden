@@ -328,7 +328,7 @@ function bola(g: G, cx: number, cy: number, r: number) {
 }
 
 /** Os efeitos: faísca, fumaça (o bicho derrubado), explosão, pancada, a gaiola aberta. Devolve false quando acabou. */
-export function desenharEfeito(g: G, e: Efeito, camX: number, tempo: number): boolean {
+export function desenharEfeito(g: G, e: Efeito, camX: number, tempo: number, folha: CanvasImageSource | null = null): boolean {
   const idade = tempo - e.em;
   if (idade < 0) return true;
   const { sx, sy } = naTela(camX, e.x, e.h);
@@ -394,8 +394,18 @@ export function desenharEfeito(g: G, e: Efeito, camX: number, tempo: number): bo
     return true;
   }
   if (e.tipo === 'solto') {
-    // o coelhinho sai pulando para cima, com estrelinhas
+    // o coelhinho sai da gaiola em três pulinhos para a frente, e some no último; as estrelinhas sobem
     if (idade > 900) return false;
+    if (folha) {
+      const fase = (idade % 300) / 300;
+      const pulo = Math.round(Math.sin(fase * Math.PI) * 10);
+      g.save();
+      g.globalAlpha = idade > 600 ? 1 - (idade - 600) / 300 : 1;
+      g.translate(Math.round(sx + (idade / 900) * 36), sy - 3 - pulo);
+      g.scale(0.5, 0.5);
+      g.drawImage(folha, 0, 0, 80, 80, -42, -69, 80, 80);
+      g.restore();
+    }
     g.fillStyle = '#ffd36a';
     for (let k = 0; k < 5; k++) {
       const a = (k / 5) * 6.28 + idade / 200;

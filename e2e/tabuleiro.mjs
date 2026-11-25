@@ -145,9 +145,10 @@ try {
 
   await duda.getByRole('button', { name: 'Mini-games' }).click();
   await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Solo' }).click();
-  (await duda.locator('.minijogo-jogo', { hasText: 'Tabuleiro da turma' }).count()) === 0
-    ? ok('o tabuleiro não está na aba Solo')
-    : falhou('o tabuleiro apareceu no Solo');
+  // desde 05/11/2026 o Tabuleiro tem Solo, contra os robôs (CLAUDE.md, "Os outros coletivos no Solo")
+  (await duda.locator('.minijogo-jogo', { hasText: 'Tabuleiro da turma' }).count()) === 1
+    ? ok('o tabuleiro está também na aba Solo (contra os robôs)')
+    : falhou('o tabuleiro sumiu da aba Solo');
   await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Coletivo' }).click();
   await duda.locator('.minijogo-jogo', { hasText: 'Tabuleiro da turma' }).click();
   await duda.locator('.tab-rodadas-botao', { hasText: '5' }).first().click();

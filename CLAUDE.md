@@ -1743,6 +1743,50 @@ desenho e Codenames têm aderência alta. A recomendação foi medir quais dos 8
 5. Adiado: trivia, truco, mahjong, "Onde e quando?" com foto (o TimeGuessr nosso: curadoria pesada,
    a mesma lição da aba de cultura).
 
+## A auditoria antes de ir ao ar: quem confere não é quem fez
+
+**Decidido em 25/11/2026, pelo Sydenstricker**, depois de avaliar três materiais que ele viu (reels): o **Claude Code
+Game Studios** (MIT; 49 agentes com cargos de estúdio, para Godot/Unity/Unreal), o **pixelfx** e o **Game Feel Prompts**.
+Do primeiro entrou só a ideia, não os 49 agentes: *mudança que a pessoa vê não está pronta até o jogo ser aberto, olhado e
+fotografado.* "Escrito, não rodado" e "ninguém jogou com gente" aparecem dezenas de vezes neste arquivo; teste que passa não
+prova que a tela está certa.
+
+**A etapa mora na skill `.claude/skills/auditoria-de-jogo/`** (o passo a passo e o checklist de game feel): o pedido vira uma
+lista de itens conferíveis; o e2e joga (piloto automático ou teclas por script) e fotografa, com FOLHA DE QUADROS para efeito e
+animação (modelo: `e2e/briga-pixelfx.mjs`); um agente NOVO, sem o raciocínio de quem fez, confere item a item pelas fotos
+(feito / falta / quebrado, com o quadro que prova); só com tudo "feito" vai ao ar. O relatório diz sempre se alguém jogou com gente.
+
+**O Game Feel Prompts** (game-feel-prompts.pages.dev) é pago (US$ 15) e proíbe repassar os prompts: NÃO foi comprado. Entrou
+a lista PÚBLICA dos momentos que eles cobrem (acerto, levar dano, derrotar, coletar, pousar, combo, largada, vitória…), virada
+num checklist NOSSO, com os números e as regras do Syden (`game-feel.md` na skill). Cada "não" é sugestão, não mudança.
+
+**O pixelfx** (github.com/patch-gg/pixelfx, MIT, efeitos de pixel art feitos por código) está COPIADO em
+`web/src/vendor/pixelfx/` (só o motor e os efeitos usados; a origem e o commit no `ORIGEM.txt`; o crédito nos termos, seção 10,
+e o texto da licença servido em `web/public/licencas/pixelfx.txt`, porque o build minificado tira os comentários de licença). Efeito novo: copiar o arquivo e o .d.ts.
+**O PILOTO NA BRIGA** (`efeitosPixelfx.ts`): a faísca do golpe FORTE (`hit-spark-pequena.js`, a hit-spark a 60% do tamanho) e o
+bicho que vira FUMAÇA (`poof-pequeno.js`: o poof a 60%, sem o estouro branco, nas cores quentes da horta), que sai onde o bicho estava DESENHADO, no quadro em que ele
+some da tela; o soco comum e a poeira do caixote continuam os nossos. Sem a LUZ da biblioteca (a composição com luz 0). Só desenho, e para na pausa do acerto.
+`localStorage['syden.brigaPixelfx'] = 'nao'` volta aos de antes. **A própria auditoria mudou o piloto:** a primeira versão
+(hit-spark em todo soco, blunt-hit no forte, luz 0,55) foi reprovada pelo agente conferente: a biblioteca desenha para quadros
+de 110–140 px e o coelho tem ~45, então o soco comum ficava do tamanho do coelho, a blunt-hit cobria o coelho de bolha e
+poeira, e a luz sobre o céu claro virava mancha branca. A segunda rodada achou o resto: mesmo a 0,15 a luz fazia uma nuvem creme do
+tamanho do coelho (o brilho tem 22 a 38 px de raio), a faísca saía duas vezes no arremesso (a minha e o eco do servidor), e a
+fumaça nascia ao lado do bicho, que continuava inteiro na tela (a posição do quadro do servidor não é a desenhada). A terceira, o estouro BRANCO do começo da fumaça (fixo no
+código dela: a paleta não o troca) e a faísca no meio do bicho em vez do contato. Foram quatro rodadas até passar. **Lição para usar a biblioteca noutro jogo: medir a escala do efeito
+contra o personagem e a luz contra o fundo, antes de trocar.** **Ele viu as folhas e aceitou como está (25/11/2026)**, com as ressalvas da
+4ª rodada (a faísca 10–15 px atrás do punho, o anel claro fino no começo da fumaça, e o piscar creme antigo do bicho, que é
+nosso e continua maior que os efeitos novos). Os próximos candidatos, se ele quiser: o Comando, a Masmorra e a Arena. Ninguém jogou com gente.
+
+**A primeira auditoria de game feel (25/11/2026)** passou o checklist em Comando, Masmorra, Arena, Chefe, Caça e Esquadrilha
+pelo piloto automático (`e2e/auditoria-gf-*.mjs`; o relatório e as folhas em `e2e/fotos/auditoria-gf/`), e achou defeitos de
+verdade, consertados no mesmo dia: **a pausa no acerto era pedida e nunca lida** na Masmorra, na Esquadrilha, no Pulo e na Horta
+em cascata (só a Briga lia o `congelado`; agora, congelado, o quadro não é redesenhado e a tela fica no golpe); **a toupeira do
+Chefe nunca piscava** (a `sombra()` devolvia o alpha a 1 no meio do desenho; agora devolve o que estava); e **o coelhinho da
+gaiola do Comando** sai em três pulinhos, como o comentário prometia. **Regra: jogo que pede `pausaMs` lê o `congelado`.** As
+sugestões do relatório (a Arena sem impacto nenhum, a explosão da granada, a fumaça atrasada) esperam a decisão dele. Na mesma
+leva, os e2e de briga, plataforma, tabuleiro, lobisomem-microfone, estelar (`ROTA=gelo`) e quiz, antes "escritos, não rodados",
+PASSARAM; o que falhava eram os testes, não os jogos.
+
 ## Gerar arte com IA: interesse registrado, não agora
 
 **Decidido em 03/10/2026, pelo Sydenstricker: amadurecer como foi feito com os idiomas, mas não

@@ -1,0 +1,11 @@
+pixelfx — efeitos de pixel art feitos por código (MIT, ver LICENSE e NOTICE.md)
+Origem: https://github.com/patch-gg/pixelfx, commit 5294518ce7c72e48b6100a744596e0acf57f2826 (v0.3.1), copiado em 25/11/2026.
+
+Copiado sem mudar: core/ inteiro (o motor).
+Adaptados para a escala da Briga (o cabeçalho de cada um diz o que mudou): fx/impacts/hit-spark-pequena.js (a hit-spark a
+60%) e fx/spawn/poof-pequeno.js (o poof a 60%, sem o estouro branco, mais curto).
+Os .d.ts são nossos (tipos mínimos para o TypeScript).
+
+Efeito novo: copiar o arquivo (e o _lib.js da categoria, se ele importar) e o .d.ts igual aos outros.
+Para VER um efeito antes: clonar o repositório e `node tools/render.mjs <categoria>/<nome>` (escreve contact.png).
+Crédito: termos, seção 10. A licença vai ao ar em web/public/licencas/pixelfx.txt (o build minificado tira os comentários): efeito de outra fonte, outro arquivo lá.

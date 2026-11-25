@@ -62,6 +62,8 @@ try {
   (await capa.count()) === 1 ? ok('o quiz está na aba Coletivo') : falhou('o quiz não está na aba Coletivo');
   await foto(duda, 'estante');
   await capa.click();
+  // desde 20/11/2026 a largada escolhe as rodadas (1, 3 ou 5) antes do convite: fica a de fábrica
+  await duda.getByRole('button', { name: 'Começar' }).first().click({ timeout: 5000 });
   await edu.locator('.minijogo-convite').waitFor({ timeout: 10000 });
   await edu.locator('.minijogo-convite').getByRole('button', { name: 'Jogar' }).click();
   await duda.locator('.minijogo-espera-lista li', { hasText: 'edu' + s }).waitFor({ timeout: 5000 });
@@ -115,6 +117,8 @@ try {
   await duda.getByRole('button', { name: 'Mini-games' }).click();
   await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Coletivo' }).click();
   await duda.locator('.minijogo-jogo', { hasText: /^Países$/ }).click();
+  // desde o modo Bandeira (20/11/2026), Países abre a escolha: Clássico ou Bandeira
+  await duda.locator('.quiz-categorias button', { hasText: 'Clássico' }).click();
   await edu.locator('.minijogo-convite').waitFor({ timeout: 10000 });
   await edu.locator('.minijogo-convite').getByRole('button', { name: 'Jogar' }).click();
   await duda.locator('.minijogo-espera-lista li', { hasText: 'edu' + s }).waitFor({ timeout: 5000 });

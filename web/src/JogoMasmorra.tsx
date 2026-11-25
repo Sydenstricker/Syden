@@ -760,6 +760,8 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
       }
 
       const tremor = impacto.quadro();
+      // a pausa no acerto: a tela fica no quadro do golpe (o coelho e o envio acima seguem; só o desenho para)
+      if (tremor.congelado) return;
       g.save();
       g.translate(tremor.dx, tremor.dy);
       desenharSala(g, sala, { ...mundo, blocos: [] }, ultimo.p, ultimo.pl, ultimo.bau, agoraMs, ultimo.cg === 1);
