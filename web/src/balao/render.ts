@@ -1,4 +1,4 @@
-import { H, HORIZONTE, projetar, W, type Camera, type Figura } from '../corrida/render';
+import { H, HORIZONTE, projetar, TELA_H, TELA_W, W, type Camera, type Figura } from '../corrida/render';
 import { MUNDO } from '../corrida/pista';
 import type { Solido } from './arena';
 import type { Arena } from './sim';
@@ -278,6 +278,8 @@ export function pontoNoMapaDaArena(ctx: CanvasRenderingContext2D, a: Arena, x0: 
 
 /** A moldura do retrovisor (olhando para trás), como a da corrida. */
 export function retrovisor(ctx: CanvasRenderingContext2D) {
+  // desenhado com o contexto ampliado (o painel, na medida de 320 × 180)
+  const W = TELA_W, H = TELA_H;
   ctx.fillStyle = '#1e1822';
   ctx.fillRect(0, 0, W, 3);
   ctx.fillRect(0, H - 3, W, 3);
@@ -289,6 +291,7 @@ export function retrovisor(ctx: CanvasRenderingContext2D) {
 
 /** O semáforo da largada (três luzes vermelhas que acendem, e as verdes na saída). */
 export function semaforo(ctx: CanvasRenderingContext2D, contagem: number) {
+  const W = TELA_W;
   const acesas = contagem > 0 ? Math.min(3, Math.max(0, 3 - Math.floor((contagem - 1) / 60))) : 3;
   const verde = contagem <= 0;
   // abaixo do quadro do item, que é HTML por cima da tela (16/11/2026)

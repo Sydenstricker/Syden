@@ -32,7 +32,7 @@ try {
   await painel.locator('.jogos-solo button', { hasText: 'Planador da toca' }).click();
   await lia.locator('.planador-desafios').waitFor({ timeout: 10000 });
   ok('no quarto, sem chamada, o Planador abriu na escolha do desafio');
-  await lia.locator('.planador-desafio', { hasText: 'Asa-delta' }).click();
+  await lia.locator('.planador-desafio', { hasText: 'Asa-delta' }).first().click(); // cinco níveis de asa desde 19/11
   await foto(lia, 'escolha');
   await lia.getByRole('button', { name: /Começar/ }).click();
   await lia.locator('.planador-tela').waitFor({ timeout: 10000 });
@@ -61,7 +61,7 @@ try {
     if (nome === 'asa') await lia.getByRole('button', { name: 'Jogar de novo' }).click();
     else {
       await lia.getByRole('button', { name: 'Correr contra' }).click();
-      await lia.locator('.planador-desafio', { hasText: rotulo }).click();
+      await lia.locator('.planador-desafio', { hasText: rotulo }).first().click();
       await lia.getByRole('button', { name: /Começar/ }).click();
     }
     await lia.evaluate(() => (window.planadorPilotoAutomatico = true));
@@ -75,7 +75,7 @@ try {
     }
     await lia.locator('.planador-fim').waitFor({ timeout: 200_000 });
     const daTela = await lia.evaluate(() => window.planadorDoTeste.fim.total);
-    const doServidor = Number(await lia.locator('.planador-pontos dd.total').innerText());
+    const doServidor = Number((await lia.locator('.planador-pontos dd.total').innerText()).split('/')[0]); // "110 / 140" desde as medalhas
     doServidor === daTela ? ok(`${rotulo}: o servidor refez o voo, ${doServidor} pontos`) : falhou(`${rotulo}: a tela tinha ${daTela} e o servidor deu ${doServidor}`);
     const aneis = await lia.evaluate(() => window.planadorDoTeste.pegos === window.planadorDoTeste.d.aneis.length);
     aneis ? ok(`${rotulo}: passou por todos os anéis`) : falhou(`${rotulo}: faltou anel`);

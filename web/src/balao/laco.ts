@@ -1,7 +1,8 @@
 import { PASSO, type Comandos } from '../corrida/fisica';
 import { comandosComControle } from '../corrida/controle';
+import { caixaNoChao } from '../corrida/caixaEmFatias';
 import type { Rival } from '../corrida/laco';
-import { cameraAtras, desenharChao, faiscas, figuraNoChao, H, kartNaTela, prepararDesenho, projetar, W, type Desenho, type Figura } from '../corrida/render';
+import { cameraAtras, desenharChao, faiscas, figuraNoChao, ESCALA_DA_TELA, TELA_H as H, kartNaTela, prepararDesenho, projetar, TELA_W as W, type Desenho, type Figura } from '../corrida/render';
 import { arenaPintada, largadaDa, temaDaArena } from './arena';
 import type { DificuldadeDoBalao } from './robo';
 import { criarPartida, type EventoDoBalao, type Participante, type ResultadoDoSolo } from './partida';
@@ -221,7 +222,9 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
         if (euJogo && meu!.caixaVolta[i] > n) continue;
         // do tamanho do kart (4,4: uns 12 de largura no mundo; era 3,4, e de longe a caixa sumia), dentro da área de pegar
         // (RAIO_DA_CAIXA, 16)
-        const f = figuraNoChao(d, cam, 'caixa', arena.caixas[i][0], arena.caixas[i][1], 4.4 + 0.2 * Math.sin(tempo * 3.8));
+        // em fatias (caixaEmFatias.ts), cada uma num giro próprio e fixo. O cubo sai 1,6× (o da corrida); 2,2 aqui volta ao
+        // tamanho do kart, que era o da figura de 4,4
+        const f = caixaNoChao(d, cam, arena.caixas[i][0], arena.caixas[i][1], 2.2, i * 0.9, 1 + 0.025 * Math.sin(tempo * 3.8));
         if (f) figuras.push(f);
       }
       // os itens no chão e rolando
@@ -310,6 +313,9 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
       }
       figuras.sort((a, b) => b.z - a.z);
       for (const f of figuras) f.desenhar(d.ctx);
+      // o painel (faíscas, chuva, item, mapa, semáforo, pausa) na medida de 320 × 180, ampliado (render.ts, ESCALA_DA_TELA)
+      d.ctx.save();
+      d.ctx.scale(ESCALA_DA_TELA, ESCALA_DA_TELA);
       if (euJogo && !olhando && meu!.kart.turbo > 0) faiscas(d.ctx, W / 2, 168, 2, tempo, meu!.kart.deriva);
       if (olhando) retrovisor(d.ctx);
       // o que fica na tela: o mapa pequeno e a contagem. Os meus balões e o item na mão são HTML por cima (JogoBalao.tsx,
@@ -333,6 +339,7 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
         d.ctx.fillRect(W / 2 - 12, H / 2 - 14, 8, 28);
         d.ctx.fillRect(W / 2 + 4, H / 2 - 14, 8, 28);
       }
+      d.ctx.restore();
     };
 
     const ciclo = (agora: number) => {

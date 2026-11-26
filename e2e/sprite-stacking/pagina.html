@@ -1,0 +1,104 @@
+<title>Fatias na corrida</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday: um piloto técnico para ele decidir, com cara de fliperama
+   IDEA a tela do próprio jogo, duas vezes, como a comparação lado a lado de uma revista de videogame
+   PICTURE as duas telas da corrida rodando juntas, no mesmo quadro, e a vitrine girando um objeto
+   COLOUR noite roxa da caixa do fliperama, creme do texto, laranja de cenoura de destaque, verde da horta
+   TYPE Pixelify Sans nos títulos + Inter no texto
+   LAYOUT laptop: título curto, as duas telas lado a lado, controles embaixo; celular: uma tela sobre a outra */
+:root{color-scheme:dark;--bg:#1d1727;--painel:#2a2238;--borda:#3d3350;--ink:#f6eddc;--suave:#bfb3c9;--cenoura:#f08a3a;--horta:#86bc62}
+*{box-sizing:border-box;min-width:0}
+html,body{background:var(--bg);color:var(--ink)}
+body{font:16px/1.55 Inter,system-ui,sans-serif;margin:0;overflow-x:clip}
+.band{padding-block:clamp(20px,3vw,40px);padding-left:max(5vw,16px,env(safe-area-inset-left,0px));padding-right:max(5vw,16px,env(safe-area-inset-right,0px));max-width:1320px;margin:0 auto}
+h1,h2{font-family:"Pixelify Sans",Inter,sans-serif;font-weight:700;letter-spacing:-.01em;line-height:1.05;margin:0}
+h1{font-size:clamp(32px,4.4vw,48px)}
+h2{font-size:clamp(24px,3vw,32px);margin-bottom:6px}
+.lede{color:var(--suave);max-width:68ch;margin:10px 0 0}
+.duas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:20px}
+@media(max-width:640px){.duas{grid-template-columns:minmax(0,1fr)}}
+figure{margin:0;background:var(--painel);border:1px solid var(--borda);border-radius:10px;padding:10px}
+canvas{display:block;width:100%;aspect-ratio:16/9;image-rendering:pixelated;border-radius:4px;background:#000}
+figcaption{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 12px;margin-top:8px}
+figcaption b{font-family:"Pixelify Sans",Inter,sans-serif;font-size:20px;font-weight:700}
+.novo b{color:var(--cenoura)}
+.ms{font-size:13px;color:var(--suave);font-variant-numeric:tabular-nums;white-space:nowrap}
+.controles{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-top:14px}
+label{display:flex;gap:8px;align-items:center;font-size:15px;color:var(--suave)}
+select,button,input[type=range]{font:inherit;font-size:16px}
+select,button{background:var(--painel);color:var(--ink);border:1px solid var(--borda);border-radius:8px;padding:8px 12px;min-height:44px}
+button{cursor:pointer;font-weight:600}
+button:hover,select:hover{border-color:var(--cenoura)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--cenoura);outline-offset:2px}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--cenoura)}
+input[type=range]{accent-color:var(--cenoura);width:160px}
+.notas{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px 32px;margin-top:8px}
+.notas h3{font-size:17px;margin:0 0 6px;color:var(--horta)}
+.notas ul{margin:0;padding-left:20px;color:var(--suave)}
+.notas li{margin-bottom:6px}
+.notas li strong{color:var(--ink);font-weight:600}
+</style>
+
+<div class="band">
+  <h1>A caixa em fatias</h1>
+  <p class="lede">A Corrida dos coelhos de verdade, na Horta, desenhada duas vezes no mesmo quadro. À direita, a caixa de item é a do jogo em fatias (o mesmo código que iria para o Syden). "Parar na fileira" leva o kart para logo antes das caixas; o tamanho muda na hora.</p>
+  <div class="controles">
+    <button id="parar">Parar na fileira</button>
+    <label>Resolução da tela <select id="res"><option value="1">320 × 180 (hoje)</option><option value="1.5">480 × 270</option><option value="2">640 × 360</option></select></label>
+    <label>Tamanho da caixa <input type="range" id="escala" min="0.6" max="1.6" step="0.04" value="0.72"> <span id="escala-valor" class="ms">×0,72</span></label>
+    <label><input type="checkbox" id="miolo" checked> Miolo de madeira</label>
+    <label><input type="checkbox" id="tampo"> Tampo liso</label>
+    <label>Reforço de longe <input type="range" id="longe" min="0" max="1" step="0.05" value="0"> <span id="longe-valor" class="ms">nenhum</span></label>
+  </div>
+  <div class="duas">
+    <figure><canvas id="atual" width="320" height="180"></canvas>
+      <figcaption><b>Hoje</b><span class="ms" id="ms-atual">…</span></figcaption></figure>
+    <figure class="novo"><canvas id="fatias" width="320" height="180"></canvas>
+      <figcaption><b>Fatias</b><span class="ms" id="ms-fatias">…</span></figcaption></figure>
+  </div>
+  <div class="controles">
+    <label>Pista <select id="pista">
+      <option value="horta-1">Horta</option><option value="pomar-1">Pomar</option>
+      <option value="bosque-1">Bosque</option><option value="neve-1">Neve</option>
+    </select></label>
+    <button id="pausa" aria-pressed="false">Pausar</button>
+    <label>Velocidade <select id="vel"><option value="0.25">¼×</option><option value="0.5">½×</option><option value="1" selected>1×</option></select></label>
+    <label>Fatias <select id="assadas"><option value="sim">Pré-giradas</option><option value="nao">Empilhadas a cada quadro</option></select></label>
+    <label><input type="checkbox" id="contorno" checked> Contorno nas fatias</label>
+    <label><input type="checkbox" id="resto"> Árvores e cenouras em fatias também</label>
+  </div>
+</div>
+
+<div class="band">
+  <h2>Um objeto, a câmera dando a volta</h2>
+  <p class="lede">É aqui que a diferença aparece: a figura de hoje é sempre a mesma de frente, de qualquer lado; a pilha mostra os lados, e a caixa gira com a fileira dela.</p>
+  <div class="duas">
+    <figure><canvas id="v-atual" width="320" height="180"></canvas><figcaption><b>Hoje</b></figcaption></figure>
+    <figure class="novo"><canvas id="v-fatias" width="320" height="180"></canvas><figcaption><b>Fatias</b></figcaption></figure>
+  </div>
+  <div class="controles">
+    <label>Objeto <select id="objeto"><option value="arvore">Árvore da pista</option><option value="caixa">Caixa de item</option><option value="cenoura">Cenoura</option></select></label>
+    <label>Distância <input type="range" id="dist" min="32" max="90" value="40"></label>
+  </div>
+</div>
+
+<div class="band">
+  <div class="notas">
+    <div><h3>Como as fatias foram feitas</h3><ul>
+      <li><strong>Sem arte nova.</strong> Cada linha da figura de hoje vira um disco do mesmo raio, com as cores dela; a caixa vira um cubo com a figura pintada nas quatro faces e no tampo.</li>
+      <li><strong>O contorno é feito na tela</strong>, com a espessura de um pixel da peça, para casar com o contorno das figuras de hoje.</li>
+      <li><strong>Só desenho.</strong> A pista, a física, o piloto automático e o servidor são os de hoje, sem mudança.</li>
+    </ul></div>
+    <div><h3>O que fica de fora do piloto</h3><ul>
+      <li><strong>Coqueiro, cacto, girassol e pedra</strong> não se torneiam (galhos abertos virariam um anel), e por isso ficaram fora das pistas da escolha: pediriam fatias desenhadas uma a uma.</li>
+      <li><strong>O kart continua o de hoje</strong> (a folha de 24 ângulos do Blender já resolve o giro dele).</li>
+      <li><strong>O custo</strong> aparece embaixo de cada tela, medido no seu computador: o tempo de desenhar as peças a cada quadro, sem contar o chão.</li>
+    </ul></div>
+  </div>
+</div>
+
+<script>{ const m = /#res-([0-9.]+)/.exec(location.hash); globalThis.__RES = m && [1, 1.5, 2].includes(Number(m[1])) ? Number(m[1]) : 1; }</script>
+<script>/*APP*/</script>

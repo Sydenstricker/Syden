@@ -850,6 +850,20 @@ chão: o fantasma de quem bate só fica mais lento. Pista sem porteira roda a co
 é o mesmo). Medidas em `PISTAS` (server/src/corrida.ts), a copa em `COPAS` dos dois lados, as medalhas em `TEMPO_DO_PILOTO`.
 Equilíbrio chute: ninguém jogou.
 
+**A TELA EM 640 × 360 E A CAIXA EM FATIAS (26/11/2026, decisão dele, depois do piloto em `e2e/sprite-stacking/`: "em 640 ainda
+mantém a estética de Super Nintendo, mas melhora a legibilidade").** O sprite stacking (fatias empilhadas) foi testado no cenário
+inteiro e ficou SÓ NA CAIXA DE ITEM ("de resto o ganho é marginal"): a árvore torneada vira bolha, o pinheiro perde os andares, a
+cenoura vira ovo. A caixa é um cubo com a figura de sempre nas faces, o tampo liso de tábuas e o miolo de madeira, 1,6× a figura,
+virada com a fileira (`web/src/corrida/caixaEmFatias.ts`, montada uma vez por ângulo e distância e guardada; no balão, do tamanho
+do kart). **Em 320 × 180 ela virava mancha de longe, por isso a tela da Corrida e do Estoura-balão passou a 640 × 360**
+(`ESCALA_DA_TELA` em `corrida/render.ts`): o chão, o céu e a caixa ganham pixels, as figuras de frente continuam com os delas,
+ampliadas. **O painel desenhado na tela (mapa, semáforo, pausa, faíscas, chuva, retrovisor, quadro do item) é feito na medida de
+antes, `TELA_W × TELA_H`, com o contexto ampliado** — nos dois `laco.ts`, `W` e `H` são esses 320 × 180 (importados com apelido);
+o canvas usa os 640 × 360. O Planador pega o céu da corrida na medida antiga (`prepararDesenho(…, true)`). Regata e Jato têm motor
+próprio e ficaram em 320. Medido: o quadro inteiro de ~1 para ~2,5 ms (quase tudo o chão). `localStorage['syden.caixaFatias'] =
+'nao'` volta à figura de frente. Auditoria: `e2e/caixa-em-fatias.mjs`, duas rodadas reprovadas (a caixa grande e em "gaiola", depois
+ilegível em 320) antes de passar. Ninguém jogou com gente.
+
 **A Regata da toca, a segunda copa (21/11/2026):** três pistas novas, a **Represa** (`represa-1`, lago frio da manhã, slalom e
 rampas; 3 voltas, ~70 s no piloto), a **Corredeira** (`corredeira-1`, correntezas fortes e três pontes) e o **Igarapé**
 (`igarape-1`, água verde no fim da tarde), e a **Copa da correnteza**, só no site como a primeira. Medidas em

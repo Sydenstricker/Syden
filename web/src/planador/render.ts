@@ -135,7 +135,7 @@ export function prepararTela(canvas: HTMLCanvasElement, tema: Desafio['tema'] = 
   ctx.imageSmoothingEnabled = false;
   const imagem = ctx.createImageData(W, H);
   // o céu, as árvores e as flores são os da corrida (desenhados por código lá)
-  const corrida = prepararDesenho(document.createElement('canvas'), (PISTA_DO_TEMA[tema] ?? HORTA).tema);
+  const corrida = prepararDesenho(document.createElement('canvas'), (PISTA_DO_TEMA[tema] ?? HORTA).tema, true);
   const ceuH = 58;
   return {
     ctx,

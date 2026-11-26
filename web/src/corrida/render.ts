@@ -12,13 +12,23 @@ import { MUNDO, RES, sorteio, type Pista, type Tema } from './pista';
  * custa pouco ao processador (o chão inteiro são ~40 mil pontos por quadro).
  */
 
-export const W = 320;
-export const H = 180;
-export const HORIZONTE = 58;
+/**
+ * A TELA EM 640 × 360 (26/11/2026, decisão dele, depois do teste em e2e/sprite-stacking: "em 640 ainda mantém a estética de
+ * Super Nintendo, mas melhora a legibilidade"). O chão, o céu e o que é feito em fatias (a caixa) ganham pixels; as figuras
+ * de frente continuam com os pixels delas, ampliados. O painel desenhado na tela (o mapa, o semáforo, a pausa, as faíscas,
+ * a chuva, o retrovisor) é feito na medida de antes, TELA_W × TELA_H, com o contexto ampliado por ESCALA_DA_TELA.
+ */
+export const ESCALA_DA_TELA = 2;
+export const TELA_W = 320;
+export const TELA_H = 180;
+export const W = TELA_W * ESCALA_DA_TELA;
+export const H = TELA_H * ESCALA_DA_TELA;
+export const HORIZONTE = 58 * ESCALA_DA_TELA;
+const HORIZONTE_DA_TELA = HORIZONTE;
 /** A câmera: altura, distância atrás do kart e a "lente" (quanto um ponto do mundo cresce na tela). */
 const ALTURA = 22;
 export const ATRAS = 38;
-const FOCO = 172;
+const FOCO = 172 * ESCALA_DA_TELA;
 const K = RES / MUNDO;
 
 export interface Camera {
@@ -46,7 +56,8 @@ export interface Desenho {
   coelho: HTMLImageElement | null;
 }
 
-export function prepararDesenho(canvas: HTMLCanvasElement, tema: Tema): Desenho {
+/** `ceuDeAntes`: o céu na medida da tela de 320 × 180 (o Planador usa o céu da corrida na tela dele, que continua de 320). */
+export function prepararDesenho(canvas: HTMLCanvasElement, tema: Tema, ceuDeAntes = false): Desenho {
   canvas.width = W;
   canvas.height = H;
   const ctx = canvas.getContext('2d')!;
@@ -58,7 +69,7 @@ export function prepararDesenho(canvas: HTMLCanvasElement, tema: Tema): Desenho 
     pontos: new Uint32Array(imagem.data.buffer),
     nevoa: tema.ceu.baixo,
     fora: tema.grama[1],
-    ceu: desenharCeu(tema),
+    ceu: ceuDeAntes ? desenharCeu(tema, 58, TELA_W * 4) : desenharCeu(tema),
     figuras: {
       arvore: arvore(),
       laranjeira: laranjeira(),
@@ -92,7 +103,8 @@ const rgb = (r: number, g: number, b: number) => (0xff000000 | (b << 16) | (g <<
  * fileiras de morros, a de trás mais clara. Desenhado uma vez, ponto a ponto, como pixel art.
  */
 const CEU_W = W * 4;
-function desenharCeu(tema: Tema): Uint32Array {
+const CEU_DA_TELA = CEU_W;
+function desenharCeu(tema: Tema, HORIZONTE = HORIZONTE_DA_TELA, CEU_W = CEU_DA_TELA): Uint32Array {
   const ceu = new Uint32Array(CEU_W * HORIZONTE);
   const { topo, meio, baixo } = tema.ceu;
   const [fundoClaro, fundoCor, frenteCor, frenteFaixa] = tema.morros.map((c) => rgb(...c));
@@ -545,7 +557,7 @@ export function projetar(cam: Camera, x: number, y: number): { sx: number; sy: n
   const z = dx * fx + dy * fy;
   if (z < 6) return null;
   const lado = -dx * fy + dy * fx;
-  return { sx: W / 2 + (lado * FOCO) / z, sy: HORIZONTE + (ALTURA * FOCO) / z, escala: ATRAS / z, z };
+  return { sx: W / 2 + (lado * FOCO) / z, sy: HORIZONTE + (ALTURA * FOCO) / z, escala: (ATRAS * ESCALA_DA_TELA) / z, z };
 }
 
 /** O desenho do kart (de 0 a 23) para um kart que aponta `angulo`, visto da câmera em (cx, cy). */
@@ -599,7 +611,7 @@ export function kartNaTela(
   const e = pr.escala;
   const w = LADO_DO_KART * e;
   if (w < 2 || pr.sx + w < 0 || pr.sx - w > W) return null;
-  const x = pr.sx - PE_X * e, y = pr.sy - PE_Y * e - pulo * e * 2.2 + (opcoes.tremor ?? 0);
+  const x = pr.sx - PE_X * e, y = pr.sy - PE_Y * e - pulo * e * 2.2 + (opcoes.tremor ?? 0) * ESCALA_DA_TELA;
   const img = folhaDoAvatar(d.coelho, opcoes.avatar ?? null);
   return {
     z: pr.z,
@@ -616,12 +628,12 @@ export function kartNaTela(
       ctx.drawImage(img, n * LADO_DO_KART, 0, LADO_DO_KART, LADO_DO_KART, Math.round(x), Math.round(y), Math.round(w), Math.round(w));
       ctx.globalAlpha = 1;
       // o nome de quem dirige, em cima do kart (só perto o bastante para caber)
-      if (opcoes.nome && e > 0.25) {
-        ctx.font = '7px sans-serif';
+      if (opcoes.nome && e > 0.25 * ESCALA_DA_TELA) {
+        ctx.font = 7 * ESCALA_DA_TELA + 'px sans-serif';
         ctx.textAlign = 'center';
         const tx = Math.round(pr.sx), ty = Math.round(y + 2 * e);
         ctx.fillStyle = '#1e1822';
-        ctx.fillText(opcoes.nome, tx + 1, ty + 1);
+        ctx.fillText(opcoes.nome, tx + ESCALA_DA_TELA, ty + ESCALA_DA_TELA);
         ctx.fillStyle = '#fbf3e4';
         ctx.fillText(opcoes.nome, tx, ty);
       }

@@ -21,18 +21,20 @@ import { criarMotor, tocar } from '../somDosJogos';
 import { comandosComControle } from './controle';
 import { andarRobo, CASA_DE_QUEM_JOGA, criarRobos, largadaDoRobo, ordemDaCorrida, porNaGrade, progressoDoRobo, type DificuldadeDaCorrida, type RoboDoKart } from './robos';
 import { HORTA, ladoFechado, montarPista, passosAteFechar, type DefinicaoDaPista, type Pista } from './pista';
+import { caixaNoChao } from './caixaEmFatias';
 import {
   cameraAtras,
   desenharChao,
   faiscas,
   figuraNoChao,
-  H,
+  TELA_H as H,
   kartNaTela,
   mapaDaPista,
   pontoNoMapa,
   prepararDesenho,
   projetar,
-  W,
+  TELA_W as W,
+  ESCALA_DA_TELA,
   type Desenho,
   type Figura,
 } from './render';
@@ -351,7 +353,7 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
     const caixas = o.itens
       ? o.pista.caixas.flatMap((f) => {
           const q = pontoNaLinha(p, f * p.comprimento);
-          return [-18, -6, 6, 18].map((lado) => ({ x: q.x - q.dy * lado, y: q.y + q.dx * lado, ate: 0 }));
+          return [-18, -6, 6, 18].map((lado) => ({ x: q.x - q.dy * lado, y: q.y + q.dx * lado, giro: Math.atan2(q.dy, q.dx), ate: 0 }));
         })
       : [];
     /** Cada robô pega as caixas dele (como cada pessoa na sala): até que passo cada caixa está pega para ele. */
@@ -712,7 +714,8 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       // as caixas pulsam devagar; a que eu peguei some até voltar
       for (const cx of caixas) {
         if (o.piloto && cx.ate > n) continue;
-        const f = figuraNoChao(d, cam, 'caixa', cx.x, cx.y, 1.1 + 0.06 * Math.sin(performance.now() / 260));
+        // a caixa em fatias, virada com a fileira (caixaEmFatias.ts); pulsa devagar
+        const f = caixaNoChao(d, cam, cx.x, cx.y, 1.1, cx.giro, 1 + 0.04 * Math.sin(performance.now() / 260));
         if (f) figuras.push(f);
       }
       if (o.itens) {
@@ -753,6 +756,9 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       }
       figuras.sort((a, b) => b.z - a.z);
       for (const f of figuras) f.desenhar(d.ctx);
+      // o painel (faíscas, chuva, item, mapa, semáforo, pausa) na medida de 320 × 180, ampliado (render.ts, ESCALA_DA_TELA)
+      d.ctx.save();
+      d.ctx.scale(ESCALA_DA_TELA, ESCALA_DA_TELA);
       if (o.piloto && !olhando && kart.toca === 0 && (kart.deriva !== 0 || kart.turbo > 0)) {
         faiscas(d.ctx, W / 2, 168, kart.turbo > 0 ? 2 : nivelDaCarga(kart), performance.now() / 1000, kart.deriva);
       }
@@ -780,6 +786,7 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
         d.ctx.fillRect(W / 2 - 12, H / 2 - 14, 8, 28);
         d.ctx.fillRect(W / 2 + 4, H / 2 - 14, 8, 28);
       }
+      d.ctx.restore();
 
       // a ordem de quem está na frente: eu pelo meu progresso, os rivais pelo deles no mesmo passo
       if (todosOsRivais) {
