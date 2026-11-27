@@ -13,6 +13,8 @@ import { QuemDigita } from './QuemDigita';
 import { MobileBackButton } from './MobileBackButton';
 import { FixadasDoCanal } from './FixadasDoCanal';
 import {
+  applyDadoRevelado,
+  type DadoRevelado,
   applyEdit,
   type Edicao,
   applyReactionUpdate,
@@ -110,6 +112,9 @@ export function TextChannel({
     socket.on('attachment:removed', onAnexoRetirado);
     socket.on('user:deleted', onUserDeleted);
     socket.on('poll:tally', onTally);
+    // quem rolou revelou a rolagem secreta (chat-routes.ts)
+    const onDadoRevelado = (r: DadoRevelado) => setMessages((list) => applyDadoRevelado(list, r));
+    socket.on('dado:revelado', onDadoRevelado);
     socket.on('reaction:updated', onReaction);
     socket.on('thread:created', onThread);
     socket.on('thread:updated', onThread);
@@ -127,6 +132,7 @@ export function TextChannel({
       socket.off('attachment:removed', onAnexoRetirado);
       socket.off('user:deleted', onUserDeleted);
       socket.off('poll:tally', onTally);
+      socket.off('dado:revelado', onDadoRevelado);
       socket.off('reaction:updated', onReaction);
       socket.off('thread:created', onThread);
       socket.off('thread:updated', onThread);

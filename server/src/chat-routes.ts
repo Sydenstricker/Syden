@@ -5,10 +5,11 @@ import type { Server as IOServer } from 'socket.io';
 import { barrarEdicao, barrarMensagem, soQuemAdministra } from './automod.js';
 import * as db from './db.js';
 import { talvezDestacar } from './destaques-routes.js';
+import * as dadosDoChat from './dados.js';
 import { pontuarMensagem } from './niveis.js';
 import { entregarArquivo } from './entregar.js';
 import { decodeDataUrl, sniffAttachmentMime } from './media.js';
-import { channelRoom, communityRoom, publicarMensagem } from './realtime.js';
+import { channelRoom, communityRoom, publicarMensagem, salaDaPessoa } from './realtime.js';
 import { canUseChannel, cotaEsgotada, poderDeOperador, requireUser } from './routes.js';
 
 const MB = 1024 * 1024;
@@ -90,9 +91,15 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
     }
 
     /** Manda a mensagem pronta para quem tem que receber: a comunidade toda, ou só a conversa privada. */
-    function publish(channel: db.Channel, message: db.Message) {
+    function publish(channel: db.Channel, message: db.Message, completaParaQuemRolou?: db.Message) {
       const room = channelRoom(channel);
-      publicarMensagem(io, channel, message);
+      if (completaParaQuemRolou) {
+        // A rolagem SECRETA: a sala recebe a mensagem sem o resultado, e só as telas de quem rolou recebem a completa.
+        io.to(room).except(salaDaPessoa(message.author.id)).emit('message:new', { ...message, communityId: channel.communityId });
+        io.to(salaDaPessoa(message.author.id)).emit('message:new', { ...completaParaQuemRolou, communityId: channel.communityId });
+      } else {
+        publicarMensagem(io, channel, message);
+      }
       if (message.threadId !== null) {
         const thread = db.findThread(message.threadId);
         if (thread) io.to(room).emit('thread:updated', { ...thread, communityId: channel.communityId });
@@ -226,6 +233,127 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       },
     );
 
+    // ---------- Dados, moedas e sorteios (27/11/2026; o porquê no CLAUDE.md, "O bot de dados") ----------
+    //
+    // Quem sorteia é o servidor, e o resultado guarda a conta inteira; o site só encena. A mensagem leva o resumo no texto
+    // (para a prévia, a busca e telas antigas). A rolagem SECRETA vai à sala sem o resultado: só quem rolou o recebe, até revelar.
+
+    /** No máximo 20 sorteios por minuto por pessoa: dado não é jeito de encher o canal. */
+    const sorteiosRecentes = new Map<number, number[]>();
+    const sorteioDemais = (userId: number) => {
+      const agora = Date.now();
+      const lista = (sorteiosRecentes.get(userId) ?? []).filter((t) => agora - t < 60_000);
+      lista.push(agora);
+      sorteiosRecentes.set(userId, lista);
+      return lista.length > 20;
+    };
+
+    type PedidoDeDado = {
+      tipo?: string;
+      expressao?: string;
+      min?: number;
+      max?: number;
+      opcoes?: string[];
+      nomes?: string[];
+      quantos?: number;
+      entradas?: { nome?: string; mod?: number }[];
+      secreta?: boolean;
+      rotulo?: string;
+      threadId?: number;
+    };
+
+    authed.post<{ Params: { id: string }; Body: PedidoDeDado }>('/api/channels/:id/dados', async (request, reply) => {
+      const where = destination(request, reply, request.body?.threadId);
+      if (!where) return reply;
+      const corpo = request.body ?? {};
+
+      let dado: dadosDoChat.Dado;
+      try {
+        switch (corpo.tipo ?? 'dados') {
+          case 'dados':
+            dado = dadosDoChat.rolar(String(corpo.expressao ?? ''));
+            break;
+          case 'moeda':
+            dado = dadosDoChat.moeda();
+            break;
+          case 'numero':
+            dado = dadosDoChat.numero(corpo.min, corpo.max);
+            break;
+          case 'escolha':
+            dado = dadosDoChat.escolher(corpo.opcoes);
+            break;
+          case 'ordem':
+            dado = dadosDoChat.embaralhar(corpo.opcoes);
+            break;
+          case 'times':
+            dado = dadosDoChat.dividirEmTimes(corpo.nomes, corpo.quantos);
+            break;
+          case 'iniciativa':
+            dado = dadosDoChat.iniciativa(corpo.entradas);
+            break;
+          default:
+            return reply.code(400).send({ error: 'Não conheço esse tipo de sorteio.' });
+        }
+      } catch (erro) {
+        if (erro instanceof dadosDoChat.ErroDeDados) return reply.code(400).send({ error: erro.message });
+        throw erro;
+      }
+
+      const rotulo = String(corpo.rotulo ?? '').trim().slice(0, dadosDoChat.LIMITES.rotulo) || null;
+      // a moderação da comunidade vale para tudo o que a pessoa escreveu e os outros vão ler (o modo lento, as palavras, os links)
+      const barrada = barrarMensagem(where.channel, request.user.id, dadosDoChat.textosDoPedido({ ...corpo, rotulo }));
+      if (barrada) return reply.code(400).send({ error: barrada });
+      if (sorteioDemais(request.user.id)) return reply.code(429).send({ error: 'Calma: são no máximo 20 sorteios por minuto.' });
+
+      const secreta = corpo.secreta === true;
+      const message = db.createMessage(where.channel.id, request.user.id, db.textoDoDado(dado, secreta, rotulo), where.threadId);
+      db.criarDado(message.id, dado, secreta, rotulo);
+      // à sala vai a versão de quem não pode ver a secreta; a quem rolou, a completa
+      const completa = { ...message, dado: db.dadoDaMensagem(message.id, request.user.id, request.user.id) };
+      message.dado = db.dadoDaMensagem(message.id, request.user.id, -1);
+      publish(where.channel, message, secreta ? completa : undefined);
+      return completa;
+    });
+
+    /** Revela a rolagem secreta: o resultado vai à sala e o texto da mensagem passa a dizê-lo. Só quem rolou. */
+    authed.post<{ Params: { id: string } }>('/api/messages/:id/dado/revelar', async (request, reply) => {
+      const message = db.findMessage(Number(request.params.id));
+      const channel = message && db.findChannel(message.channelId);
+      if (!message || !channel || !canUseChannel(request.user, channel) || !db.mensagemVisivelPara(message.id, request.user.id)) {
+        return reply.code(404).send({ error: 'Mensagem não encontrada.' });
+      }
+      if (message.userId !== request.user.id) return reply.code(403).send({ error: 'Só quem rolou pode revelar.' });
+      const content = db.revelarDado(message.id);
+      if (content === null) return reply.code(400).send({ error: 'Esta rolagem não está escondida.' });
+      const dado = db.dadoDaMensagem(message.id, message.userId, -1);
+      io.to(channelRoom(channel)).emit('dado:revelado', { id: message.id, channelId: message.channelId, threadId: message.threadId, content, dado });
+      return { content, dado };
+    });
+
+    // As rolagens que a pessoa guardou com nome, só dela.
+    authed.get('/api/me/dados-atalhos', async (request) => ({ atalhos: db.atalhosDeDados(request.user.id) }));
+
+    authed.post<{ Body: { nome?: string; expressao?: string } }>('/api/me/dados-atalhos', async (request, reply) => {
+      const nome = String(request.body?.nome ?? '').trim().slice(0, 40);
+      if (!nome) return reply.code(400).send({ error: 'Dê um nome ao atalho.' });
+      try {
+        const rolagem = dadosDoChat.lerExpressao(String(request.body?.expressao ?? ''));
+        const expressao = String(request.body?.expressao ?? '').trim().toLowerCase().slice(0, dadosDoChat.LIMITES.expressao);
+        void rolagem;
+        const criado = db.criarAtalhoDeDados(request.user.id, nome, expressao);
+        if (!criado) return reply.code(400).send({ error: `Você pode guardar até ${db.MAXIMO_DE_ATALHOS_DE_DADOS} atalhos.` });
+        return criado;
+      } catch (erro) {
+        if (erro instanceof dadosDoChat.ErroDeDados) return reply.code(400).send({ error: erro.message });
+        throw erro;
+      }
+    });
+
+    authed.delete<{ Params: { id: string } }>('/api/me/dados-atalhos/:id', async (request, reply) => {
+      if (!db.apagarAtalhoDeDados(request.user.id, Number(request.params.id))) return reply.code(404).send({ error: 'Atalho não encontrado.' });
+      return { ok: true };
+    });
+
     // ---------- Editar (23/11/2026; o porquê no fim de db.ts) ----------
     //
     // Só quem escreveu, e só o texto. Mensagem com enquete ou figurinha não se edita (não tem texto que seja dela); com
@@ -239,7 +367,7 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       }
       if (message.userId !== request.user.id) return reply.code(403).send({ error: 'Só quem escreveu a mensagem pode editá-la.' });
       const tem = db.oQueAMensagemTem(message.id);
-      if (!tem || tem.enquetes > 0 || tem.figurinhas > 0) return reply.code(400).send({ error: 'Esta mensagem não tem texto para editar.' });
+      if (!tem || tem.enquetes > 0 || tem.figurinhas > 0 || tem.dados > 0) return reply.code(400).send({ error: 'Esta mensagem não tem texto para editar.' });
       const content = String(request.body?.content ?? '').trim();
       if (content.length > 2000) return reply.code(400).send({ error: 'Mensagem longa demais.' });
       if (!content && tem.anexos === 0) return reply.code(400).send({ error: 'A mensagem não pode ficar vazia. Para tirá-la, apague.' });

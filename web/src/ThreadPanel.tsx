@@ -5,7 +5,7 @@ import { api } from './api';
 import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem } from './MessageItem';
-import { applyEdit, applyReactionUpdate, applyTally, removeAuthor, removeMessage, replacePoll, replaceReactions, type PollTally, type ReactionUpdate, type Edicao } from './messageState';
+import { applyDadoRevelado, type DadoRevelado, applyEdit, applyReactionUpdate, applyTally, removeAuthor, removeMessage, replacePoll, replaceReactions, type PollTally, type ReactionUpdate, type Edicao } from './messageState';
 import type { Message, Reaction, Role, ThreadSummary, User } from './types';
 import { useT } from './i18n';
 
@@ -75,6 +75,9 @@ export function ThreadPanel({
     socket.on('attachment:removed', onAnexoRetirado);
     socket.on('user:deleted', onUserDeleted);
     socket.on('poll:tally', onTally);
+    // quem rolou revelou a rolagem secreta (chat-routes.ts)
+    const onDadoRevelado = (r: DadoRevelado) => setMessages((list) => applyDadoRevelado(list, r));
+    socket.on('dado:revelado', onDadoRevelado);
     socket.on('reaction:updated', onReaction);
     return () => {
       socket.off('message:new', onMessage);
@@ -83,6 +86,7 @@ export function ThreadPanel({
       socket.off('attachment:removed', onAnexoRetirado);
       socket.off('user:deleted', onUserDeleted);
       socket.off('poll:tally', onTally);
+      socket.off('dado:revelado', onDadoRevelado);
       socket.off('reaction:updated', onReaction);
     };
   }, [socket, thread.id]);

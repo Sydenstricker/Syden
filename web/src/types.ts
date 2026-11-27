@@ -247,6 +247,45 @@ export interface Poll {
   voters: number;
 }
 
+// ---------- Dados, moedas e sorteios (espelho de server/src/dados.ts) ----------
+
+export interface TermoDeDados {
+  tipo: 'dados';
+  sinal: 1 | -1;
+  n: number;
+  faces: number | 'F';
+  mods: string;
+  rolados: number[];
+  usados: boolean[];
+  subtotal: number;
+  sucessos: boolean;
+}
+export interface TermoFixo {
+  tipo: 'num';
+  sinal: 1 | -1;
+  valor: number;
+}
+export type TermoDaRolagem = TermoDeDados | TermoFixo;
+
+export type DadoSorteado =
+  | { tipo: 'dados'; expressao: string; termos: TermoDaRolagem[]; total: number; modo: 'vantagem' | 'desvantagem' | null; destaque: 'critico' | 'falha' | null }
+  | { tipo: 'moeda'; resultado: 'cara' | 'coroa' }
+  | { tipo: 'numero'; min: number; max: number; valor: number }
+  | { tipo: 'escolha'; opcoes: string[]; escolhida: number }
+  | { tipo: 'ordem'; itens: string[] }
+  | { tipo: 'times'; times: string[][] }
+  | { tipo: 'iniciativa'; entradas: { nome: string; mod: number; dado: number; total: number }[] };
+
+/** O dado como a mensagem o leva a quem lê. `oculta`: a rolagem secreta que você ainda não pode ver. */
+export interface DadoNaMensagem {
+  id: number;
+  rotulo: string | null;
+  secreta: boolean;
+  revelada: boolean;
+  oculta: boolean;
+  dado: DadoSorteado | null;
+}
+
 /** Uma reação (emoji comum ou :nome: de um emoji da comunidade) e quantos marcaram. */
 export interface Reaction {
   emoji: string;
@@ -275,6 +314,8 @@ export interface Message {
   threadId: number | null;
   attachments: Attachment[];
   poll: Poll | null;
+  /** O dado, a moeda ou o sorteio desta mensagem; null ou ausente nas mensagens comuns. */
+  dado?: DadoNaMensagem | null;
   thread: ThreadSummary | null;
   reactions: Reaction[];
   /** Quando a mensagem é uma ideia mandada pela tela inicial: o número dela e se já foi acolhida. */

@@ -1,5 +1,5 @@
 // Pequenas transformações da lista de mensagens, usadas tanto pelo canal quanto pelo painel de tópico.
-import type { Message, Poll, Reaction, ThreadSummary } from './types';
+import type { DadoNaMensagem, Message, Poll, Reaction, ThreadSummary } from './types';
 
 /** O que o servidor manda quando alguém vota: só a contagem — quem votou no quê é de cada um. */
 export interface PollTally {
@@ -88,4 +88,17 @@ export function applyEdit(list: Message[], edicao: Edicao): Message[] {
     if (m.replyTo?.id === edicao.id) return { ...m, replyTo: { ...m.replyTo, content: edicao.content.slice(0, 200) } };
     return m;
   });
+}
+
+/** O que o servidor manda quando quem rolou revela a rolagem secreta (chat-routes.ts): o texto novo e o dado inteiro. */
+export interface DadoRevelado {
+  id: number;
+  channelId: number;
+  threadId: number | null;
+  content: string;
+  dado: DadoNaMensagem | null;
+}
+
+export function applyDadoRevelado(list: Message[], revelado: DadoRevelado): Message[] {
+  return list.map((m) => (m.id === revelado.id ? { ...m, content: revelado.content, dado: revelado.dado } : m));
 }

@@ -1,4 +1,4 @@
-import { BarChart3, FileText, Film, ImageUp, MonitorPlay, Plus, Reply, Smile, Sticker, X, Timer } from 'lucide-react';
+import { BarChart3, Dices, FileText, Film, ImageUp, MonitorPlay, Plus, Reply, Smile, Sticker, X, Timer } from 'lucide-react';
 import { duracaoCurta } from './Moderacao';
 import { silencioVale } from './ModeracaoDaPessoa';
 import {
@@ -21,6 +21,8 @@ import { mandarFigurinha, type Figurinha } from './figurinhas';
 import { SeletorDeFigurinhas } from './SeletorDeFigurinhas';
 import { type Gif, gifsDisponiveis } from './gifs';
 import { PollDialog } from './PollDialog';
+import { DadosDialog } from './DadosDialog';
+import { comandoDeRolar } from './dadosNotacao';
 import { MAX_ATTACHMENT_BYTES, formatBytes, prepareAttachment, type PreparedFile } from './upload';
 import type { Message } from './types';
 import { nomeDe } from './directory';
@@ -79,6 +81,7 @@ export const Composer = forwardRef<ComposerHandle, {
   // Recado em vídeo de tela: aparece acima da caixa enquanto está sendo gravado.
   const [gravandoTela, setGravandoTela] = useState(false);
   const [pollOpen, setPollOpen] = useState(false);
+  const [dadosOpen, setDadosOpen] = useState(false);
   const [sending, setSending] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -179,6 +182,27 @@ export const Composer = forwardRef<ComposerHandle, {
     }
     if (staged.length === 0) {
       if (!content) return;
+      // "/r 2d6+3" (ou /roll, /rolar): o servidor rola e o cartão chega pelo chat. Sem a expressão, abre a janela.
+      const aRolar = comandoDeRolar(content);
+      if (aRolar !== null) {
+        if (aRolar === '') {
+          setDraft('');
+          setDadosOpen(true);
+          return;
+        }
+        setSending(true);
+        try {
+          await api<Message>(`/api/channels/${channelId}/dados`, { method: 'POST', body: { tipo: 'dados', expressao: aRolar, threadId } });
+          setDraft('');
+          setError(null);
+          onSent?.();
+        } catch (e) {
+          setError((e as Error).message);
+        } finally {
+          setSending(false);
+        }
+        return;
+      }
       const citada = respondendo;
       socket.emit('message:send', { channelId, content, threadId, replyTo }, (result: { ok: boolean; error?: string }) => {
         setError(result.ok ? null : (result.error ?? 'Falha ao enviar.'));
@@ -366,6 +390,15 @@ export const Composer = forwardRef<ComposerHandle, {
               >
                 <BarChart3 size={18} /> {t('Criar enquete')}
               </button>
+              <button
+                role="menuitem"
+                onClick={() => {
+                  setMenuOpen(false);
+                  setDadosOpen(true);
+                }}
+              >
+                <Dices size={18} /> {t('Rolar dados')}
+              </button>
               {podeGravarTela() && (
                 <button
                   role="menuitem"
@@ -461,6 +494,9 @@ export const Composer = forwardRef<ComposerHandle, {
           : ''}
       </p>
 
+      {dadosOpen && (
+        <DadosDialog channelId={channelId} threadId={threadId} onClose={() => setDadosOpen(false)} onCreated={() => onSent?.()} />
+      )}
       {pollOpen && (
         <PollDialog channelId={channelId} threadId={threadId} onClose={() => setPollOpen(false)} onCreated={() => onSent?.()} />
       )}

@@ -1,0 +1,49 @@
+sucessos
+Crítico!
+Falha crítica
+com vantagem
+com desvantagem
+Cara
+de {min} a {max}
+Time {n}
+Cara ou coroa
+Número sorteado
+Sorteio
+Ordem sorteada
+Times sorteados
+Iniciativa
+Rolagem secreta
+Só quem rolou vê o resultado, até revelar.
+Só você vê.
+Revelando…
+Revelar para todos
+Número
+Escolher um
+Embaralhar
+Times
+Rolar dados
+Dados
+O que rolar
+Somar um d{n}
+Diminuir o modificador
+mod.
+Aumentar o modificador
+Limpar
+Vantagem
+Desvantagem
+Seus atalhos
+Apagar o atalho {nome}
+Guardar como atalho
+Nome do atalho (ex.: ataque com a espada)
+De
+Até
+Quem entra (um por linha; "Ana +3" soma o modificador)
+Quem entra (um por linha)
+Um por linha
+Trazer quem está na sala de voz ({n})
+Quantos times
+Rótulo (opcional)
+ataque, teste de furtividade…
+Rolagem secreta (só você vê, até revelar)
+Rolando…
+Rolar

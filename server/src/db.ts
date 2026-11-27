@@ -7,6 +7,7 @@ import { imagemAnimada } from './imagemAnimada.js';
 import { nomeDoPilotoRobo } from './corrida-pilotos.js';
 import type { ArquivoGuardado } from './entregar.js';
 import type { NovoServidor, ServidorDeJogo } from './jogos.js';
+import { resumoDoDado, RESUMO_DO_SECRETO, type Dado } from './dados.js';
 
 /** 'dm' são as conversas privadas (direta entre duas pessoas ou grupo), fora de qualquer comunidade. */
 export type ChannelType = 'text' | 'voice' | 'dm';
@@ -242,6 +243,8 @@ export interface Message {
   threadId: number | null;
   attachments: Attachment[];
   poll: Poll | null;
+  /** O dado, a moeda ou o sorteio desta mensagem (ver dados.ts e o fim deste arquivo); null nas mensagens comuns. */
+  dado: DadoNaMensagem | null;
   /** O tópico que pendura nesta mensagem, quando alguém criou um. */
   thread: ThreadSummary | null;
   reactions: Reaction[];
@@ -3657,6 +3660,7 @@ function toMessage(row: MessageRow): Message {
     author: row.sistema === 1 ? { id: row.userId, username: 'Syden', app: true } : { id: row.userId, username: row.username, nomeDeExibicao: row.nomeDeExibicao ?? null },
     attachments: [],
     poll: null,
+    dado: null,
     thread: null,
     reactions: [],
     suggestion: null,
@@ -3806,6 +3810,14 @@ function hydrate(messages: Message[], viewerId: number): Message[] {
         voters: tally.voters,
       };
     }
+  }
+
+  const rolagens = db
+    .prepare(`SELECT id, message_id AS messageId, dados, secreta, revelada_em AS reveladaEm, rotulo FROM rolagens WHERE message_id IN (${ids})`)
+    .all() as unknown as LinhaDeRolagem[];
+  for (const row of rolagens) {
+    const message = byId.get(row.messageId);
+    if (message) message.dado = dadoParaLeitor(row, message.author.id, viewerId);
   }
 
   const ideias = db
@@ -8756,10 +8768,11 @@ export function oQueAMensagemTem(id: number) {
     .prepare(
       `SELECT (SELECT COUNT(*) FROM attachments a WHERE a.message_id = m.id) AS anexos,
               (SELECT COUNT(*) FROM attachments a WHERE a.message_id = m.id AND a.figurinha = 1) AS figurinhas,
-              (SELECT COUNT(*) FROM polls p WHERE p.message_id = m.id) AS enquetes
+              (SELECT COUNT(*) FROM polls p WHERE p.message_id = m.id) AS enquetes,
+              (SELECT COUNT(*) FROM rolagens r WHERE r.message_id = m.id) AS dados
        FROM messages m WHERE m.id = ?`,
     )
-    .get(id) as { anexos: number; figurinhas: number; enquetes: number } | undefined;
+    .get(id) as { anexos: number; figurinhas: number; enquetes: number; dados: number } | undefined;
 }
 
 // ---------- Convites com prazo e limite de usos ----------
@@ -8889,4 +8902,137 @@ export function convitesDaComunidade(communityId: number) {
 
 export function revogarConvite(code: string): boolean {
   return Number(db.prepare('DELETE FROM convites WHERE code = ?').run(code).changes) > 0;
+}
+
+// ---------- Os dados do chat (27/11/2026; o porquê no CLAUDE.md, "O bot de dados") ----------
+//
+// Uma rolagem é uma mensagem com uma linha em `rolagens`, como a enquete. A conta inteira fica em JSON (dados.ts: a notação, o
+// que saiu em cada dado, o que foi descartado, o total), e o TEXTO da mensagem é o resumo ("🎲 2d6+3 = 12"), para a prévia, a
+// busca, o que cai na caixa-preta e qualquer tela antiga terem o que mostrar. A rolagem SECRETA guarda o resultado, mas o texto
+// da mensagem só diz que existe uma até quem rolou revelar: ninguém além dela lê o resultado antes (`dadoParaLeitor`).
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS rolagens (
+    id          INTEGER PRIMARY KEY,
+    message_id  INTEGER NOT NULL UNIQUE REFERENCES messages(id) ON DELETE CASCADE,
+    tipo        TEXT NOT NULL,
+    dados       TEXT NOT NULL,
+    secreta     INTEGER NOT NULL DEFAULT 0,
+    revelada_em TEXT,
+    rotulo      TEXT
+  );
+
+  -- As rolagens que a pessoa guardou com nome ("ataque com a espada = 1d20+5"). Só dela, e somem com a conta.
+  CREATE TABLE IF NOT EXISTS dados_atalhos (
+    id        INTEGER PRIMARY KEY,
+    user_id   INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    nome      TEXT NOT NULL,
+    expressao TEXT NOT NULL,
+    criado_em TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_dados_atalhos_user ON dados_atalhos(user_id);
+`);
+
+/** O dado como a mensagem o leva a quem lê. `oculta` é a rolagem secreta que quem lê ainda não pode ver. */
+export interface DadoNaMensagem {
+  id: number;
+  rotulo: string | null;
+  secreta: boolean;
+  revelada: boolean;
+  oculta: boolean;
+  dado: Dado | null;
+}
+
+interface LinhaDeRolagem {
+  id: number;
+  messageId: number;
+  dados: string;
+  secreta: number;
+  reveladaEm: string | null;
+  rotulo: string | null;
+}
+
+/** Só quem rolou lê a secreta antes de ser revelada; quem lê com `viewerId` -1 (a difusão para a sala) nunca. */
+function dadoParaLeitor(row: LinhaDeRolagem, autorId: number, viewerId: number): DadoNaMensagem {
+  const secreta = row.secreta === 1;
+  const revelada = row.reveladaEm !== null;
+  const oculta = secreta && !revelada && autorId !== viewerId;
+  return { id: row.id, rotulo: row.rotulo, secreta, revelada, oculta, dado: oculta ? null : (JSON.parse(row.dados) as Dado) };
+}
+
+/** O texto que a mensagem leva: o resumo, com o rótulo; a secreta ainda escondida não diz o que saiu. */
+export function textoDoDado(dado: Dado, secreta: boolean, rotulo: string | null): string {
+  const base = secreta ? RESUMO_DO_SECRETO : resumoDoDado(dado);
+  return rotulo ? `${base} — ${rotulo}` : base;
+}
+
+export function criarDado(messageId: number, dado: Dado, secreta: boolean, rotulo: string | null): number {
+  const r = db
+    .prepare('INSERT INTO rolagens (message_id, tipo, dados, secreta, rotulo) VALUES (?, ?, ?, ?, ?)')
+    .run(messageId, dado.tipo, JSON.stringify(dado), secreta ? 1 : 0, rotulo);
+  return Number(r.lastInsertRowid);
+}
+
+/** O dado da mensagem como `viewerId` o vê (use -1 para o que vai a toda a sala). */
+export function dadoDaMensagem(messageId: number, autorId: number, viewerId: number): DadoNaMensagem | null {
+  const row = db
+    .prepare('SELECT id, message_id AS messageId, dados, secreta, revelada_em AS reveladaEm, rotulo FROM rolagens WHERE message_id = ?')
+    .get(messageId) as unknown as LinhaDeRolagem | undefined;
+  return row ? dadoParaLeitor(row, autorId, viewerId) : null;
+}
+
+/** Revela a rolagem secreta (só chamada para quem a rolou) e põe o resultado no texto da mensagem. Devolve o texto novo. */
+export function revelarDado(messageId: number): string | null {
+  const row = db
+    .prepare('SELECT id, message_id AS messageId, dados, secreta, revelada_em AS reveladaEm, rotulo FROM rolagens WHERE message_id = ?')
+    .get(messageId) as unknown as LinhaDeRolagem | undefined;
+  if (!row || row.secreta !== 1 || row.reveladaEm !== null) return null;
+  const texto = textoDoDado(JSON.parse(row.dados) as Dado, false, row.rotulo);
+  db.exec('BEGIN');
+  try {
+    db.prepare("UPDATE rolagens SET revelada_em = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id = ?").run(row.id);
+    db.prepare('UPDATE messages SET content = ? WHERE id = ?').run(texto, messageId);
+    db.exec('COMMIT');
+  } catch (erro) {
+    db.exec('ROLLBACK');
+    throw erro;
+  }
+  return texto;
+}
+
+export const MAXIMO_DE_ATALHOS_DE_DADOS = 20;
+
+export function atalhosDeDados(userId: number) {
+  return db.prepare('SELECT id, nome, expressao FROM dados_atalhos WHERE user_id = ? ORDER BY id').all(userId) as unknown as {
+    id: number;
+    nome: string;
+    expressao: string;
+  }[];
+}
+
+/** Guarda um atalho; null quando a pessoa já tem o máximo. */
+export function criarAtalhoDeDados(userId: number, nome: string, expressao: string) {
+  const tem = (db.prepare('SELECT COUNT(*) AS n FROM dados_atalhos WHERE user_id = ?').get(userId) as { n: number }).n;
+  if (tem >= MAXIMO_DE_ATALHOS_DE_DADOS) return null;
+  const r = db.prepare('INSERT INTO dados_atalhos (user_id, nome, expressao) VALUES (?, ?, ?)').run(userId, nome, expressao);
+  return { id: Number(r.lastInsertRowid), nome, expressao };
+}
+
+export function apagarAtalhoDeDados(userId: number, id: number): boolean {
+  return Number(db.prepare('DELETE FROM dados_atalhos WHERE id = ? AND user_id = ?').run(id, userId).changes) > 0;
+}
+
+/** Tudo o que a pessoa rolou, para o "Levar seus dados" (as secretas também: são dela). */
+export function rolagensDe(userId: number) {
+  return db
+    .prepare(
+      `SELECT m.created_at AS quando, c.name AS canal, r.tipo, r.dados, r.secreta, r.revelada_em AS reveladaEm, r.rotulo
+       FROM rolagens r JOIN messages m ON m.id = r.message_id JOIN channels c ON c.id = m.channel_id
+       WHERE m.user_id = ? ORDER BY m.id`,
+    )
+    .all(userId)
+    .map((r) => {
+      const linha = r as unknown as { quando: string; canal: string | null; tipo: string; dados: string; secreta: number; reveladaEm: string | null; rotulo: string | null };
+      return { ...linha, secreta: linha.secreta === 1, dados: JSON.parse(linha.dados) as Dado };
+    });
 }

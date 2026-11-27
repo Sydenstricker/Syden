@@ -21,6 +21,7 @@ import { isolar, nomeDeCanal } from './bidi';
 import { desktopBridge } from './desktop';
 import { oferecerAvisoDeLigacao, PedidoDeAvisoDeLigacao } from './PedidoDeAvisoDeLigacao';
 import { sounds } from './sounds';
+import { definirPessoasNaSala } from './pessoasNaSala';
 import { aplicarComunidade, buscarComunidade, clearDirectory, loadDirectory, nomeDe, syncDirectory, useDirectory } from './directory';
 import { ligarDigitacao } from './digitando';
 import { ligarStatusDasSalas } from './statusDasSalas';
@@ -366,6 +367,10 @@ export function Shell({
     const achada = Object.entries(voiceByCommunity).find(([, gente]) => gente.some((m) => m.channelId === voice.channelId));
     return achada ? ([Number(achada[0]), achada[1].filter((m) => m.channelId === voice.channelId)] as const) : [null, []] as const;
   })();
+  // Quem está na sala de voz em que estou, para a janela dos dados oferecer "quem começa?" e "times" (pessoasNaSala.ts).
+  useEffect(() => {
+    definirPessoasNaSala(genteDaSala.map((m) => nomeDe({ userId: m.userId, username: m.username, nomeDeExibicao: m.nomeDeExibicao })));
+  });
   const onlineHere = presence.filter((p) => members.has(p.id));
   const myStatus = presence.find((p) => p.id === user.id)?.status ?? loadMyStatus();
 

@@ -13,6 +13,7 @@ import { nomeDe, nomeNaComunidade, useDirectory } from './directory';
 import { RECIBO_DA_IDEIA } from './recibo';
 import { corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
 import { EmojiPicker } from './EmojiPicker';
+import { DadoCard } from './DadoCard';
 import { PollCard } from './PollCard';
 import { formatBytes } from './upload';
 import type { Attachment, Citacao, Message, Poll, Reaction, ThreadSummary } from './types';
@@ -390,7 +391,7 @@ export function MessageItem({
   const [editando, setEditando] = useState(false);
   const [historicoAberto, setHistoricoAberto] = useState(false);
   const podeEditar =
-    meuId !== undefined && message.author.id === meuId && !message.author.app && !message.poll && !message.attachments.some((a) => a.figurinha);
+    meuId !== undefined && message.author.id === meuId && !message.author.app && !message.poll && !message.dado && !message.attachments.some((a) => a.figurinha);
   const podeDenunciar = meuId !== undefined && message.author.id !== meuId && !message.author.app;
   async function reactWith(emoji: string) {
     try {
@@ -419,13 +420,15 @@ export function MessageItem({
       {editando ? (
         <EdicaoDaMensagem message={message} aoFechar={() => setEditando(false)} />
       ) : (
-        message.content && <MessageText content={message.content} sufixo={marcaDeEditada} />
+        // o texto de um dado é só o resumo (para a prévia e a busca): na conversa, quem fala é o cartão
+        message.content && !message.dado && <MessageText content={message.content} sufixo={marcaDeEditada} />
       )}
       {/* sem texto (só o anexo), a marca fica sozinha embaixo */}
-      {!message.content && !editando && marcaDeEditada}
+      {(!message.content || message.dado) && !editando && marcaDeEditada}
       {historicoAberto && message.editadaEm && <HistoricoDaMensagem key={message.editadaEm} id={message.id} />}
       {message.attachments.length > 0 && <Attachments files={message.attachments} />}
       {message.poll && <PollCard poll={message.poll} canClose={canManagePoll} onChange={onPollChange} />}
+      {message.dado && <DadoCard messageId={message.id} createdAt={message.createdAt} info={message.dado} ehMeu={meuId !== undefined && message.author.id === meuId} />}
       {message.thread && onOpenThread && <ThreadChip thread={message.thread} onOpen={() => onOpenThread(message.thread!)} />}
       {message.suggestion?.accepted && (
         <span className="ideia-acolhida">

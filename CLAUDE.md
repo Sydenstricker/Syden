@@ -3328,3 +3328,42 @@ declaração revelou que a frase acima era falsa no código: a Noto era baixada 
 português incluído, e o `preconnect` do `index.html` abria conexão com o Google em toda visita.
 Hoje latino, cirílico e grego usam a letra do sistema (`ESCRITAS_DO_SISTEMA`, em `i18n/index.ts`).
 Quem mexer nisso: a política promete "só nas outras escritas", e é esse conjunto que a cumpre.
+
+## O bot de dados: uma mensagem no chat, desenhada em 2D
+
+**Combinado e FEITO em 27/11/2026, com o Sydenstricker** (as três etapas). Não é uma conta de bot: é um TIPO DE MENSAGEM, como a
+enquete e a figurinha. `/r 2d6+3` (também `/roll`, `/rolar`; sem expressão abre a janela) ou o item "Rolar dados" do "+" do
+compositor posta um cartão no canal, no tópico ou na conversa privada. **O cartão fica no chat** (decisão dele): nada por cima do
+palco da sala de voz, por enquanto.
+
+- **Quem sorteia é o servidor** (`server/src/dados.ts`: o parser, as contas e os sorteios, puros; o sorteador é o
+  `crypto.randomInt`, sem viés). Limites: 100 dados por termo, 200 por rolagem, faces de 2 a 1000, 10 termos, 20 sorteios por
+  minuto por pessoa. O resultado guarda a conta inteira ("2d6+3 → [4, 5] + 3 = 12") em `rolagens` (uma linha por mensagem, no
+  fim de db.ts), e o TEXTO da mensagem é o resumo ("🎲 2d6+3 = 12"), para prévia, busca, caixa-preta e tela antiga.
+- **A notação:** `NdM`, `d%`, `dF` (dados de dois resultados), soma e subtração de termos, `kh`/`kl`/`dh`/`dl` (manter
+  e descartar), `!` (explode, com teto), `>=N`/`<=N`/`>N`/`<N` (contar sucessos) e "vantagem"/"desvantagem" para um d20
+  sozinho. O d20 sozinho com o máximo ou o 1 leva o destaque de crítico e falha. Vocabulário comum de RPG pode; o que não entra é
+  MARCA: nome de sistema comercial, logo, arte ou texto de livro, nem "oficial" ou "compatível com X".
+- **Os outros sorteios** (tipo da mensagem): moeda, número entre A e B, escolher um (a roleta), embaralhar, times (de 2 a 8) e
+  iniciativa (d20 mais o modificador de cada um, "Ana +3", do maior para o menor). A janela traz "quem está na sala de voz em que
+  eu estou" para preencher as listas (`pessoasNaSala.ts`, publicado pela Shell). O que a pessoa escreve (rótulo, opções, nomes)
+  passa pela moderação automática da comunidade, e quem administra não passa, como nas mensagens.
+- **A rolagem secreta:** o servidor a guarda, mas a sala só recebe a mensagem sem o resultado (`oculta`) e o texto neutro
+  "🎲 Rolagem secreta"; só as telas de quem rolou recebem a completa (`publish` com `completaParaQuemRolou`). Revelar
+  (`POST /api/messages/:id/dado/revelar`, só quem rolou) manda `dado:revelado` à sala, e a revelação sempre encena.
+- **Os atalhos** ("ataque com a espada = 1d20+5", até 20 por pessoa, `dados_atalhos`) são só da pessoa, vão no "Levar seus dados"
+  junto com tudo o que ela rolou (`rolagensDoChat`) e somem com a conta.
+- **A visualização é 2D** (SVG e CSS, `web/src/DadoCard.tsx`; sem three.js nem WebGL): a silhueta de cada dado (d4 triângulo,
+  d6 quadrado, d8 losango, d10 papagaio, d12 pentágono, d20 hexágono com o miolo) sacode e o número troca depressa até travar; a
+  moeda gira, a roleta percorre as opções e para na sorteada. O 3D ficou como opção futura (as bibliotecas prontas de dado 3D usam
+  wasm e pedem o `wasm-unsafe-eval`, que o site não libera).
+- **A encenação toca UMA vez, só para a rolagem de agora** (até 8 s de idade, com a janela à vista); no histórico o cartão já vem
+  com o resultado. Com "menos movimento" ou sem foco, não anima. Som: os efeitos `dado`, `moeda` e `vez` de `somDosJogos.ts`.
+- **Dado rolado não se edita** (só apagar a mensagem inteira; apagar leva a rolagem junto).
+- **Testes:** `server/test/dados.test.ts` (a notação e as contas), `server/test/dados-no-chat.test.ts` (as rotas, a secreta, a
+  moderação, os atalhos), `web/test/dadosNotacao.test.ts` e `e2e/dados.mjs` (a tela, com fotos em `e2e/fotos/dados/`).
+- **PENDÊNCIAS:** (1) **a tradução**, por decisão dele: as frases entram só em português e os 80 idiomas ficam para depois (a
+  lista está em `docs/frases-novas/dados.txt`; as mensagens de erro do servidor, como nas outras rotas, também só em português).
+  (2) **A política de privacidade ainda não diz** que o Syden guarda o que a pessoa rolou e os atalhos dela: a linha entra antes
+  de ir ao ar, nas duas línguas. (3) Ninguém jogou com gente. (4) Ficaram de fora: o dado 3D, o d100 com dado de dezenas
+  (bônus e penalidade), as tabelas aleatórias nossas (nomes de fantasia, d66) e o baralho.
