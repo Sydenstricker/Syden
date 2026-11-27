@@ -429,3 +429,19 @@
   font-size: calc(16px * var(--escala-do-texto, 1));
   font-weight: 700;
 }
+
+/* ---- Palavra secreta, modo Juntos (27/11/2026): cada linha do quadro da turma diz quem a deu ---- */
+.palavra-linha-autor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.palavra-linha-autor .palavra-autor {
+  min-width: 0;
+  max-width: 7em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.7;
+  font-size: 12px;
+}

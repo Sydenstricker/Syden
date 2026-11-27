@@ -203,6 +203,8 @@ interface Chute {
   chave: string;
   /** As cores para cada palavra da rodada ([] na palavra que já tinha sido acertada antes deste chute). */
   cores: number[][];
+  /** No modo Juntos, quem deu o chute (o quadro é um só, da turma). */
+  autor?: number;
 }
 
 interface Quadro {
@@ -231,7 +233,10 @@ export const palavra: Definicao = {
     const tempo = ctx.solo ? PALAVRA_SOLO_MS : PALAVRA_MS;
     if (dic.sorteio.length < rodadas * porRodada) return 'As palavras não estão no servidor.';
     const sorteadas = _teste.palavras ?? embaralhar([...dic.sorteio]).slice(0, rodadas * porRodada);
-    const largada = { modo, dificil, letras, idioma };
+    // O JUNTOS (27/11/2026, pedido dele: "o coletivo similar ao individual, apenas colaborativo"): a turma inteira num quadro só,
+    // como o Termo individual, e cada chute (de qualquer um) vale para todos. Só na sala: sozinho, é o Solo de sempre.
+    const juntos = corpo.juntos === true && !ctx.solo;
+    const largada = { modo, dificil, letras, idioma, ...(juntos ? { juntos: true } : {}) };
     let rodada = 1;
     let fase: 'chutando' | 'revelando' | 'fim' = 'chutando';
     let inicio = Date.now();
@@ -255,6 +260,8 @@ export const palavra: Definicao = {
     }
     // Todo mundo da sala acertou ou gastou os chutes (quem saiu da sala não segura os outros): a palavra aparece na hora.
     const todosProntos = () => {
+      // Juntos, a rodada acaba quando a turma acerta ou gasta os chutes (quem sai da sala não muda isso).
+      if (juntos) return comum.acertouEm !== null || comum.chutes.length >= maxChutes;
       const naSalaAgora = ctx.naSala();
       return [...quadros.entries()].every(([id, x]) => x.acertouEm !== null || x.chutes.length >= maxChutes || !naSalaAgora.includes(id));
     };
@@ -263,8 +270,11 @@ export const palavra: Definicao = {
     /** As palavras da rodada como a revelação mostra (com as duas grafias, quando a chave tem duas). */
     const reveladas = () => daRodada().map((p) => dic.revelada.get(chaveDe(p, idioma)) ?? p);
     const quadroNovo = (): Quadro => ({ chutes: [], resolvidas: Array<number | null>(porRodada).fill(null), acertouEm: null });
+    /** O quadro da turma (só no Juntos). */
+    let comum: Quadro = quadroNovo();
 
     function novaRodada() {
+      comum = quadroNovo();
       quadros.clear();
       for (const id of pontos.keys()) quadros.set(id, quadroNovo());
       fase = 'chutando';
@@ -275,14 +285,20 @@ export const palavra: Definicao = {
 
     function revelar() {
       if (fase !== 'chutando') return;
-      // Cada palavra acertada vale pelos chutes que levou; quem acertou todas primeiro ganha +1.
-      for (const [id, q] of quadros) {
-        for (const n of q.resolvidas) if (n !== null) pontos.set(id, (pontos.get(id) ?? 0) + pontosDoAcerto(n, maxChutes));
+      if (juntos) {
+        // Os pontos são da turma: cada palavra acertada vale pelos chutes que levou, para todo mundo que está na sala.
+        const ganhos = comum.resolvidas.reduce<number>((soma, n) => soma + (n !== null ? pontosDoAcerto(n, maxChutes) : 0), 0);
+        for (const id of ctx.naSala()) pontos.set(id, (pontos.get(id) ?? 0) + ganhos);
+      } else {
+        // Cada palavra acertada vale pelos chutes que levou; quem acertou todas primeiro ganha +1.
+        for (const [id, q] of quadros) {
+          for (const n of q.resolvidas) if (n !== null) pontos.set(id, (pontos.get(id) ?? 0) + pontosDoAcerto(n, maxChutes));
+        }
+        const primeiro = [...quadros.entries()]
+          .filter(([, q]) => q.acertouEm !== null)
+          .sort(([, a], [, b]) => (a.acertouEm ?? 0) - (b.acertouEm ?? 0))[0];
+        if (primeiro) pontos.set(primeiro[0], (pontos.get(primeiro[0]) ?? 0) + 1);
       }
-      const primeiro = [...quadros.entries()]
-        .filter(([, q]) => q.acertouEm !== null)
-        .sort(([, a], [, b]) => (a.acertouEm ?? 0) - (b.acertouEm ?? 0))[0];
-      if (primeiro) pontos.set(primeiro[0], (pontos.get(primeiro[0]) ?? 0) + 1);
       if (ctx.solo && sequencia) {
         const s = sequencia;
         const venceu = (quadros.get(criadaPor)?.acertouEm ?? null) !== null;
@@ -314,6 +330,36 @@ export const palavra: Definicao = {
       publico(quem) {
         const meu = quadros.get(quem);
         const aberta = fase !== 'chutando';
+        if (juntos) {
+          // O quadro é de todos: as letras aparecem para a turma inteira, cada linha com quem a deu.
+          return {
+            rodada,
+            rodadas,
+            fase,
+            chutes: maxChutes,
+            palavras: porRodada,
+            letras,
+            dificil,
+            modo,
+            idioma,
+            largada,
+            juntos: true,
+            meu: comum.chutes.map((c) => ({
+              texto: c.texto,
+              cores: c.cores[0] ?? [],
+              coresTodas: c.cores,
+              autor: c.autor ?? null,
+              autorNome: c.autor !== undefined ? ctx.nome(c.autor) : '',
+            })),
+            resolvidas: comum.resolvidas,
+            acertei: comum.acertouEm !== null,
+            palavra: aberta ? reveladas()[0] : null,
+            palavrasReveladas: aberta ? reveladas() : null,
+            outros: [],
+            sequencia,
+            placar: placar(pontos, ctx.nome),
+          };
+        }
         return {
           rodada,
           rodadas,
@@ -351,16 +397,23 @@ export const palavra: Definicao = {
         const limpa = chaveDe(String(corpo.texto ?? '').trim(), idioma);
         if (!new RegExp(`^[${LETRAS[idioma]}]{${letras}}$`).test(limpa)) return ERRO_DO_TAMANHO[letras];
         if (!valida(limpa, letras, idioma)) return 'Essa palavra não está na lista.';
-        let q = quadros.get(quem);
-        if (!q) {
-          q = quadroNovo();
-          quadros.set(quem, q);
+        let quadro: Quadro;
+        if (juntos) {
           if (!pontos.has(quem)) pontos.set(quem, 0);
+          quadro = comum;
+        } else {
+          let q = quadros.get(quem);
+          if (!q) {
+            q = quadroNovo();
+            quadros.set(quem, q);
+            if (!pontos.has(quem)) pontos.set(quem, 0);
+          }
+          quadro = q;
         }
-        const quadro = q;
         if (quadro.acertouEm !== null || quadro.chutes.length >= maxChutes) return null;
-        // O mesmo chute duas vezes não gasta outra tentativa (Enter apertado duas vezes com a internet lenta).
-        if (quadro.chutes.some((c) => c.chave === limpa)) return 'Você já chutou essa palavra.';
+        // O mesmo chute duas vezes não gasta outra tentativa (Enter apertado duas vezes com a internet lenta; no Juntos, dois
+        // da turma chutando a mesma palavra ao mesmo tempo: vale o primeiro).
+        if (quadro.chutes.some((c) => c.chave === limpa)) return juntos ? 'A turma já chutou essa palavra.' : 'Você já chutou essa palavra.';
         const alvo = secretas();
         if (dificil) {
           const respeita = alvo.every(
@@ -369,7 +422,12 @@ export const palavra: Definicao = {
           if (!respeita) return 'No modo difícil, use as letras já reveladas.';
         }
         const grafia = alvo.includes(limpa) ? (dic.sorteada.get(limpa) ?? limpa) : (dic.grafia.get(limpa) ?? limpa);
-        quadro.chutes.push({ texto: grafia, chave: limpa, cores: alvo.map((p, b) => (quadro.resolvidas[b] !== null ? [] : cores(limpa, p))) });
+        quadro.chutes.push({
+          texto: grafia,
+          chave: limpa,
+          cores: alvo.map((p, b) => (quadro.resolvidas[b] !== null ? [] : cores(limpa, p))),
+          ...(juntos ? { autor: quem } : {}),
+        });
         alvo.forEach((p, b) => {
           if (quadro.resolvidas[b] === null && p === limpa) quadro.resolvidas[b] = quadro.chutes.length;
         });
@@ -379,6 +437,8 @@ export const palavra: Definicao = {
         return null;
       },
       conferir() {
+        // Juntos, quem sai da sala não acaba nem segura a rodada: a turma que fica continua.
+        if (juntos) return;
         if (fase === 'chutando' && quadros.size > 0 && todosProntos()) revelar();
       },
     };

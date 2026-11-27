@@ -965,6 +965,14 @@ mais de objetivos do segundo mora à parte na tabela comum (`objetivos2-<pista>`
 
 **O "QUAL É O TAMANHO?", FAZENDA E ESPORTE (21/11/2026, o lote D):** duas categorias novas, com 12 figuras do Fluent Emoji conferidas inteiras (pintinho, galo, ganso, porco, ovelha, cabra; bola de beisebol, bola de vôlei, pedra de curling, patins de gelo, esqui, gol de handebol) e os objetos que já existiam. Ficaram de fora os bichos do mar (o Fluent os desenha curvados ou de pé, e a medida mentiria), o peru (em português é também o país), o jumento (pulando), as bolas de rúgbi e de futebol americano (na diagonal, a ponta erra a medida) e o frisbee (o rastro do voo). Com 13 objetos, Esportes às vezes repetia o objeto a estimar: o sorteio agora guarda os ESTIMADOS (`estimados` em `sortearPar`), e só a referência pode voltar.
 
+**A PALAVRA SECRETA, O MODO JUNTOS (27/11/2026, pedido dele: "o coletivo similar ao individual, apenas colaborativo"):** na largada da
+sala, ao lado da corrida (`corpo.juntos`; no Solo não existe): a turma inteira num QUADRO SÓ, como o Termo individual. Qualquer um
+escreve e aperta Enter, o chute vale para todos, as letras aparecem para a turma inteira e cada linha diz quem a deu. São os mesmos 6 chutes
+(7 e 9 no dueto e no quarteto) da turma, não de cada um; chute repetido não gasta outro; a rodada acaba quando a turma acerta ou gasta os
+chutes, e os pontos de cada palavra são de todo mundo que está na sala (sem o +1 do primeiro). Quem sai não segura a rodada. O rascunho de
+quem digita NÃO vai aos outros (dois escrevendo ao mesmo tempo é o que sobra: vale o Enter que chegar primeiro). Sem troféu, como a corrida.
+Teste: `server/test/minijogos-palavra-juntos.test.ts`; ninguém jogou com gente.
+
 **A PALAVRA SECRETA DE 4 E DE 6 LETRAS (21/11/2026, o lote D):** escolhida na largada (`corpo.letras`; a de 5 continua a de fábrica), em todos os modos. As que saem são NOSSAS (`sorteio-4.txt`, 297; `sorteio-6.txt`, 339), conferidas contra o VERO; as que se chutam saem do VERO pelo mesmo script, agora com o tamanho (`palavras-do-vero.py saida.txt 6 --final`; o de 5, regenerado, saiu byte a byte igual ao de antes). O recorde e a sequência do Solo de 4 e de 6 são à parte (`@4`, `@6` na variante).
 
 **O STOP, A CONFERÊNCIA POR CATEGORIA (21/11/2026, o lote D):** depois do STOP, a turma confere UMA categoria de cada vez, toda a sala na mesma, com as respostas de todos lado a lado em cartas; contestar e aceitar só nela. Cada categoria tem 25 s (`CONFERINDO_POR_CATEGORIA_MS`), e o "Pronto" de todos passa à próxima; depois da última, os pontos. A regra de quando a resposta cai (a maioria, ou o aceite de quem escreveu) não mudou.
@@ -3397,6 +3405,11 @@ que chegou a quem assistia, vieram dele). `web/src/correcaoHdr.ts`; Configuraç�
   a dica de conteúdo chega à saída; a intensidade muda sem reiniciar) e `e2e/filtro-hdr-config.mjs` (a seção, a régua e o que fica
   guardado depois de recarregar). Nas bordas de cor a saída difere da conta, porque a faixa codificada é 4:2:0 e borra o croma: por
   isso o e2e compara só as áreas planas.
+- **O SELO "HDR corrigido" (27/11/2026, pedido dele: "facilita quem tá vendo"):** na etiqueta do quadro da transmissão, para quem assiste e para quem
+  transmite. Mostra o estado REAL, não a configuração: `ProcessadorDoHdr.aplicando` só é verdade quando os quadros estão sendo corrigidos
+  (placa viva, filtro ligado, intensidade acima de zero), e quem muda avisa o servidor por `voice:update` (`screenHdr`, só um booleano e só com a
+  tela de pé; `realtime.ts`). Placa que recusa o shader: sem selo. Só na etiqueta de cima. Teste: `e2e/selo-hdr.mjs` (a ana liga e desliga no meio da
+  transmissão; passou). **Quem assiste não consegue corrigir o que chega: o filtro é de quem transmite.**
 - **PENDÊNCIAS:** (1) **só foi calibrado numa cena de um jogo** (Just Volleyball, o mapa do céu): quem tem HDR e vê outra coisa ajusta a
   régua, e o certo é medir mais pares (outros jogos, a interface do Windows). (2) **Ninguém testou com uma transmissão de verdade
   pelo app**: o e2e passa a imagem pelo processador, mas não a captura de tela do Windows nem a chamada. (3) **O custo na placa de quem

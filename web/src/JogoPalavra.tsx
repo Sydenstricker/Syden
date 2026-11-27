@@ -23,7 +23,9 @@ type EstadoPalavraNovo = Omit<EstadoPalavra, 'meu' | 'outros'> & {
   /** Quantas letras tem a palavra (4, 5 ou 6; 21/11/2026). Servidor antigo: 5. */
   letras?: number;
   dificil?: boolean;
-  meu: { texto: string; cores: number[]; coresTodas?: number[][] }[];
+  meu: { texto: string; cores: number[]; coresTodas?: number[][]; autor?: number | null; autorNome?: string }[];
+  /** O modo Juntos (27/11/2026): a turma num quadro só, cada linha com quem a deu. */
+  juntos?: boolean;
   resolvidas?: (number | null)[];
   palavrasReveladas?: string[] | null;
   outros: (EstadoPalavra['outros'][number] & { coresTodas?: number[][][] })[];
@@ -78,6 +80,7 @@ export function JogoPalavra({
   // (no alemão uma tecla pode dar duas letras: Ä é AE)
   const letra = idioma === 'es' ? /^[a-zñ]$/ : idioma === 'de' ? /^[a-z]{1,2}$/ : /^[a-z]$/;
   const teclado = idioma === 'es' ? TECLADO_ES : idioma === 'fr' ? TECLADO_FR : idioma === 'de' ? TECLADO_DE : TECLADO;
+  const juntos = estado.juntos === true;
   const resolvidas = estado.resolvidas ?? [estado.acertei ? estado.meu.length : null];
   const [escrito, setEscrito] = useState('');
   // Um chute por vez (revisão de 16/10/2026): Enter segurado, ou duas vezes com a internet lenta, mandava o mesmo
@@ -87,8 +90,11 @@ export function JogoPalavra({
 
   // Rodada nova: o que estava escrito some.
   useEffect(() => setEscrito(''), [estado.rodada]);
-  // O chute foi aceito (o quadro cresceu): a linha de escrever fica vazia. Recusado, o texto fica para corrigir.
-  useEffect(() => setEscrito(''), [estado.meu.length]);
+  // O chute foi aceito (o quadro cresceu): a linha de escrever fica vazia. Recusado, o texto fica para corrigir. No Juntos, o chute
+  // que chega de outro da turma não apaga o que eu estou escrevendo.
+  useEffect(() => {
+    if (!juntos || estado.meu[estado.meu.length - 1]?.autor === eu) setEscrito('');
+  }, [estado.meu.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // OS SONS (19/11/2026): cada palavra acertada, o último chute que não acertou, e a medalha da sequência nova.
   const acertadas = resolvidas.filter((n) => n !== null).length;
@@ -178,8 +184,11 @@ export function JogoPalavra({
 
   let situacao: string;
   if (estado.fase === 'revelando') situacao = t('A palavra era: {palavra}', { palavra: reveladas });
+  else if (juntos && estado.acertei) situacao = t('A turma acertou!');
+  else if (juntos && estado.meu.length >= estado.chutes) situacao = t('Acabaram os chutes da turma. Espere a palavra.');
   else if (estado.acertei) situacao = t('Acertou! Agora é torcer pelos outros.');
   else if (estado.meu.length >= estado.chutes) situacao = t('Acabaram os seus chutes. Espere a palavra.');
+  else if (juntos) situacao = t('Chutem juntos: qualquer um da turma pode escrever e apertar Enter.');
   // (a de 5 é o texto de sempre; a de 4 e a de 6, o mesmo com o número)
   else situacao = n === 5 ? t('Escreva uma palavra de 5 letras e aperte Enter.') : t('Escreva uma palavra de {n} letras e aperte Enter.', { n });
 
@@ -189,15 +198,25 @@ export function JogoPalavra({
       <div className={`palavra-quadros${nPalavras > 1 ? ' varias' : ''}`}>
         {Array.from({ length: nPalavras }, (_, b) => (
           <div key={b} className={`palavra-quadro${nPalavras > 1 && resolvidas[b] !== null ? ' resolvido' : ''}`} aria-label={t('Seu quadro')}>
-            {linhasDe(b).map((linha, l) => (
-              <div key={l} className={`palavra-linha${linha.atual ? ' atual' : ''}`}>
-                {linha.letras.map((letra, i) => (
-                  <span key={i} className={`palavra-casa${linha.cores ? ` ${CLASSE[linha.cores[i]]}` : ''}`}>
-                    {letra.trim().toUpperCase()}
-                  </span>
-                ))}
-              </div>
-            ))}
+            {linhasDe(b).map((linha, l) => {
+              const casas = (
+                <div className={`palavra-linha${linha.atual ? ' atual' : ''}`}>
+                  {linha.letras.map((letra, i) => (
+                    <span key={i} className={`palavra-casa${linha.cores ? ` ${CLASSE[linha.cores[i]]}` : ''}`}>
+                      {letra.trim().toUpperCase()}
+                    </span>
+                  ))}
+                </div>
+              );
+              // No Juntos, cada linha diz quem a deu (só no quadro único: no dueto e no quarteto o espaço não dá).
+              if (!juntos || nPalavras > 1) return <div key={l}>{casas}</div>;
+              return (
+                <div key={l} className="palavra-linha-autor">
+                  {casas}
+                  <small className="palavra-autor">{estado.meu[l]?.autorNome ?? ''}</small>
+                </div>
+              );
+            })}
           </div>
         ))}
       </div>

@@ -1,0 +1,4 @@
+A turma acertou!
+Acabaram os chutes da turma. Espere a palavra.
+Chutem juntos: qualquer um da turma pode escrever e apertar Enter.
+(já existentes, reaproveitadas: Modo, Corrida, Juntos)

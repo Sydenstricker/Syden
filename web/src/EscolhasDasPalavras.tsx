@@ -79,6 +79,7 @@ export function EscolhaDosJogosDePalavras({
   // Palavra secreta
   const [modo, setModo] = useState<'normal' | 'dueto' | 'quarteto'>('normal');
   const [dificil, setDificil] = useState(false);
+  const [juntosNaPalavra, setJuntosNaPalavra] = useState(false);
   const [letras, setLetras] = useState<4 | 5 | 6>(5);
   const [idiomaDaPalavra, setIdiomaDaPalavra] = useState<IdiomaDaPalavra>(() => idiomaDaPalavraDe(idiomaAtual()));
   // Desenho
@@ -201,9 +202,23 @@ export function EscolhaDosJogosDePalavras({
       </>
     );
   } else if (jogo === 'palavra') {
-    corpo = { modo, dificil, letras, idioma: idiomaDaPalavra };
+    corpo = { modo, dificil, letras, idioma: idiomaDaPalavra, ...(juntosNaPalavra && !solo ? { juntos: true } : {}) };
     conteudo = (
       <>
+        {/* O JUNTOS (27/11/2026): a turma num quadro só, como o Termo, ao lado da corrida de sempre */}
+        {!solo && (
+          <fieldset>
+            <legend>{t('Modo')}</legend>
+            <Opcoes
+              valor={juntosNaPalavra ? 'juntos' : 'corrida'}
+              aoMudar={(v) => setJuntosNaPalavra(v === 'juntos')}
+              opcoes={[
+                { valor: 'corrida', nome: `🏁 ${t('Corrida')}` },
+                { valor: 'juntos', nome: `🤝 ${t('Juntos')}` },
+              ]}
+            />
+          </fieldset>
+        )}
         <fieldset>
           <legend>{t('Idioma')}</legend>
           <Opcoes
