@@ -3364,6 +3364,6 @@ palco da sala de voz, por enquanto.
   moderação, os atalhos), `web/test/dadosNotacao.test.ts` e `e2e/dados.mjs` (a tela, com fotos em `e2e/fotos/dados/`).
 - **PENDÊNCIAS:** (1) **a tradução**, por decisão dele: as frases entram só em português e os 80 idiomas ficam para depois (a
   lista está em `docs/frases-novas/dados.txt`; as mensagens de erro do servidor, como nas outras rotas, também só em português).
-  (2) **A política de privacidade ainda não diz** que o Syden guarda o que a pessoa rolou e os atalhos dela: a linha entra antes
-  de ir ao ar, nas duas línguas. (3) Ninguém jogou com gente. (4) Ficaram de fora: o dado 3D, o d100 com dado de dezenas
+  (2) **Política de privacidade: não muda** (decisão dele, 27/11/2026: "não vejo necessidade por causa de dados"); o que se rola e os atalhos
+  entram no "Levar seus dados" e são apagados com a conta. (3) Ninguém jogou com gente. (4) Ficaram de fora: o dado 3D, o d100 com dado de dezenas
   (bônus e penalidade), as tabelas aleatórias nossas (nomes de fantasia, d66) e o baralho.
