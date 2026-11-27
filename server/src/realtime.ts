@@ -106,6 +106,8 @@ export interface VoiceMember {
   screenName: string | null;
   /** O gênero do jogo transmitido, de uma lista fechada (web/src/generoDoJogo.ts): a TV do salão desenha o dele. */
   screenGenero: string | null;
+  /** O filtro de HDR de quem transmite está corrigindo a imagem agora (o selo que quem assiste vê). Só vale com a tela de pé. */
+  screenHdr: boolean;
   /**
    * De quem são as transmissões que esta pessoa ABRIU (ids). É o que conta "quantas pessoas assistem":
    * estar na sala não basta, porque abrir a transmissão é escolha de cada um (ver assistir, em useVoice.ts).
@@ -198,7 +200,7 @@ function chamadaVistaPor(userId: number, channelId: number): VoiceMember[] {
   if (!compativelCom(userId, ids)) return [];
   // Quem ainda não entrou vê quem está, e não o título da janela que alguém transmite nem quem assiste o quê: é conversa
   // privada, e isso é de quem está dentro (revisão de 02/11/2026).
-  return membros.map((m) => ({ ...m, screenName: null, screenGenero: null, assistindo: [] }));
+  return membros.map((m) => ({ ...m, screenName: null, screenGenero: null, screenHdr: false, assistindo: [] }));
 }
 
 function broadcastChamada(io: IOServer, channelId: number) {
@@ -705,6 +707,7 @@ export function setupRealtime(io: IOServer) {
         screen: false,
         screenName: null,
         screenGenero: null,
+        screenHdr: false,
         assistindo: [],
         travado: false, // o voiceState lê de microfonesTravados
         socketId: socket.id,
@@ -739,7 +742,7 @@ export function setupRealtime(io: IOServer) {
       for (const id of new Set([...quemEstaNaSala(channelId), user.id])) io.to(salaDaPessoa(id)).emit('chamada:recusada', { channelId, userId: user.id });
     });
 
-    socket.on('voice:update', (patch: Partial<Pick<VoiceMember, 'muted' | 'deafened' | 'video' | 'screen' | 'screenName' | 'screenGenero' | 'assistindo'>>) => {
+    socket.on('voice:update', (patch: Partial<Pick<VoiceMember, 'muted' | 'deafened' | 'video' | 'screen' | 'screenName' | 'screenGenero' | 'screenHdr' | 'assistindo'>>) => {
       const member = voiceMembers.get(user.id);
       if (!member || member.socketId !== socket.id) return;
       for (const key of ['muted', 'deafened', 'video', 'screen'] as const) {
@@ -751,6 +754,8 @@ export function setupRealtime(io: IOServer) {
       member.screenName = member.screen ? nome || null : null;
       // O gênero: só um da lista, e só com a transmissão de pé.
       member.screenGenero = member.screen && typeof patch?.screenGenero === 'string' && GENEROS_DE_JOGO.has(patch.screenGenero) ? patch.screenGenero : null;
+      // O selo do filtro de HDR: só um booleano, e só com a transmissão de pé.
+      member.screenHdr = member.screen && patch?.screenHdr === true;
       // Só números, e só gente DA MESMA SALA: o que vem da tela não decide nada além disso. (Quem parou de
       // transmitir continua na lista: se voltar, a transmissão reabre sozinha para quem tinha aberto.)
       if (Array.isArray(patch?.assistindo)) {

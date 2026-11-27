@@ -352,6 +352,8 @@ export interface VoiceMember {
   screenName: string | null;
   /** O gênero do jogo transmitido (moba, tiro, futebol…), quando o app sabe. Ver generoDoJogo.ts. */
   screenGenero?: string | null;
+  /** O filtro de HDR de quem transmite está corrigindo a imagem agora (correcaoHdr.ts). Ausente em servidor antigo. */
+  screenHdr?: boolean;
   /** De quem são as transmissões que esta pessoa abriu (ids). Vazio em servidor antigo. */
   assistindo?: number[];
   /** O microfone está travado pela moderação da comunidade. Ausente em servidor antigo. */

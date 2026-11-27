@@ -398,6 +398,8 @@ export function useVoice(socket: Socket | null) {
   const nomeDaTelaRef = useRef<string | null>(null);
   // O GÊNERO do jogo transmitido (18/10/2026): o que vai para os outros, no lugar do nome do programa.
   const generoDaTelaRef = useRef<Genero | null>(null);
+  /** O filtro de HDR está mesmo corrigindo a tela que sai agora? Quem assiste vê o selo (correcaoHdr.ts). */
+  const hdrDaTelaRef = useRef(false);
   // A sala cuja chamada outro aparelho ou aba assumiu (voice:substituida): nela não se reanuncia sozinho.
   const substituidaRef = useRef<number | null>(null);
   const [media, setMedia] = useState<LocalMedia>({ muted: false, video: false, screen: false });
@@ -507,6 +509,7 @@ export function useVoice(socket: Socket | null) {
         stopAppAudioRef.current();
         nomeDaTelaRef.current = null;
         generoDaTelaRef.current = null;
+        hdrDaTelaRef.current = false;
         setEcoNaTransmissao(false);
       }
       setMedia(next);
@@ -515,6 +518,7 @@ export function useVoice(socket: Socket | null) {
           ...next,
           screenName: next.screen ? nomeDaTelaRef.current : null,
           screenGenero: next.screen ? generoDaTelaRef.current : null,
+          screenHdr: next.screen ? hdrDaTelaRef.current : false,
         });
       }
     };
@@ -948,6 +952,7 @@ export function useVoice(socket: Socket | null) {
         // Sem o nome, quem caiu e voltou seguia "AO VIVO", mas sem dizer o quê (o voice:join zera tudo).
         screenName: media.screen ? nomeDaTelaRef.current : null,
         screenGenero: media.screen ? generoDaTelaRef.current : null,
+        screenHdr: media.screen ? hdrDaTelaRef.current : false,
         deafened: deafenedRef.current,
         assistindo: [...assistindoRef.current].map(Number),
       });
@@ -1612,7 +1617,28 @@ export function useVoice(socket: Socket | null) {
       const tem = faixa.getProcessor() instanceof ProcessadorDoHdr;
       try {
         if (!quer && tem) await faixa.stopProcessor();
-        else if (quer && !tem) await faixa.setProcessor(new ProcessadorDoHdr(() => getSettings().filtroHdr), true);
+        else if (quer && !tem) {
+          // O selo de quem assiste diz o que o filtro FAZ (corrigindo de verdade), não o que a configuração pede: se a
+          // placa recusar, o quadro passa como veio e o selo não aparece.
+          await faixa.setProcessor(
+            new ProcessadorDoHdr(
+              () => getSettings().filtroHdr,
+              (aplicando) => {
+                hdrDaTelaRef.current = aplicando;
+                const lp = room.localParticipant;
+                if (channelRef.current !== null && lp.getTrackPublication(Track.Source.ScreenShare)) {
+                  socketRef.current?.emit('voice:update', {
+                    ...readLocalMedia(lp),
+                    screenName: nomeDaTelaRef.current,
+                    screenGenero: generoDaTelaRef.current,
+                    screenHdr: aplicando,
+                  });
+                }
+              },
+            ),
+            true,
+          );
+        }
       } catch (e) {
         console.error(e);
         reportProblem('transmissão', `correção de HDR: ${e instanceof Error ? e.message : String(e)}`.slice(0, 200));
@@ -1924,6 +1950,7 @@ export function useVoice(socket: Socket | null) {
             ...readLocalMedia(lp),
             screenName: nomeDaTelaRef.current,
             screenGenero: generoDaTelaRef.current,
+            screenHdr: hdrDaTelaRef.current,
           });
         }
         // A caixinha de som do seletor do app. Ligava-se a captura SEMPRE, e desmarcar não tirava o

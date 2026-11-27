@@ -12628,6 +12628,15 @@ body.arrastando-barra {
 .tile-name-oque::before {
   content: '· ';
 }
+/* O selo "HDR corrigido" (VoiceStage.tsx): só aparece com o filtro de quem transmite corrigindo de verdade. */
+.stream-etiqueta .stream-selo-hdr {
+  flex-shrink: 0;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: calc(11px * var(--escala-do-texto));
+  font-weight: 600;
+}
 
 /* ---------- Seletor de GIFs (ver web/src/GifPicker.tsx) ----------
    Mede em inset-inline-end, e não em `right`, porque em árabe o campo de mensagem está do outro lado

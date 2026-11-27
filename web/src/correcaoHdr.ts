@@ -173,8 +173,23 @@ export class ProcessadorDoHdr implements TrackProcessor<Track.Kind.Video, VideoP
   processedTrack?: MediaStreamTrack;
   private parar: (() => void) | null = null;
 
-  /** `lerFiltro` devolve as preferências de agora: o laço a pergunta a cada quadro, e a intensidade muda na hora. */
-  constructor(private readonly lerFiltro: () => FiltroHdr) {}
+  /** O filtro está MESMO corrigindo os quadros que saem agora (ligado, com a placa viva e intensidade acima de zero)? */
+  aplicando = false;
+
+  /**
+   * `lerFiltro` devolve as preferências de agora: o laço a pergunta a cada quadro, e a intensidade muda na hora.
+   * `aoMudar` é avisado quando `aplicando` troca (o selo que quem assiste vê depende dele).
+   */
+  constructor(
+    private readonly lerFiltro: () => FiltroHdr,
+    private readonly aoMudar?: (aplicando: boolean) => void,
+  ) {}
+
+  private marcar(valor: boolean) {
+    if (this.aplicando === valor) return;
+    this.aplicando = valor;
+    this.aoMudar?.(valor);
+  }
 
   async init({ track }: VideoProcessorOptions) {
     const g = globalThis as ComProcessador;
@@ -210,6 +225,7 @@ export class ProcessadorDoHdr implements TrackProcessor<Track.Kind.Video, VideoP
         const filtro = filtroHdrValido(this.lerFiltro());
         const k = kDaIntensidade(filtro.intensidade);
         if (!placa || placa.perdida || !filtro.ligado || k <= 1.001) {
+          this.marcar(false);
           await escritor.write(quadro).catch(() => quadro.close());
           continue;
         }
@@ -222,9 +238,13 @@ export class ProcessadorDoHdr implements TrackProcessor<Track.Kind.Video, VideoP
           placa.perdida = true;
         }
         if (saida) {
+          this.marcar(true);
           quadro.close();
           await escritor.write(saida).catch(() => saida!.close());
-        } else await escritor.write(quadro).catch(() => quadro.close());
+        } else {
+          this.marcar(false);
+          await escritor.write(quadro).catch(() => quadro.close());
+        }
       }
     };
     void laco();
@@ -236,6 +256,7 @@ export class ProcessadorDoHdr implements TrackProcessor<Track.Kind.Video, VideoP
   }
 
   async destroy() {
+    this.marcar(false);
     this.parar?.();
     this.parar = null;
     this.processedTrack?.stop();

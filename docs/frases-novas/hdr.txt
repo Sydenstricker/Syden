@@ -3,3 +3,4 @@ Com o HDR do Windows ligado, a imagem pode chegar mais clara e estourada a quem 
 O seu monitor está em HDR agora.
 O seu monitor não parece estar em HDR agora.
 Intensidade
+HDR corrigido

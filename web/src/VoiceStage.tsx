@@ -1136,12 +1136,14 @@ function FocusPane({
               <MonitorPlay size={14} />
               <span>{nomeNaComunidade(Number(trackRef.participant.identity), trackRef.participant.name || trackRef.participant.identity)}</span>
               {membro?.screenName && <span className="tile-name-oque">{membro.screenName}</span>}
+              {membro?.screenHdr && <span className="stream-selo-hdr">{t('HDR corrigido')}</span>}
             </div>
           )}
-          {trackRef.participant.isLocal && membro?.screenName && (
+          {trackRef.participant.isLocal && (membro?.screenName || membro?.screenHdr) && (
             <div className="stream-etiqueta">
               <MonitorPlay size={14} />
-              <span>{membro.screenName}</span>
+              {membro?.screenName && <span>{membro.screenName}</span>}
+              {membro?.screenHdr && <span className="stream-selo-hdr">{t('HDR corrigido')}</span>}
             </div>
           )}
         </div>
