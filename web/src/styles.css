@@ -22123,3 +22123,14 @@ body.arrastando-barra {
 .dados-numero label {
   flex: 1;
 }
+
+/* A correção de HDR da transmissão (correcaoHdr.ts): a régua de intensidade com o texto inteiro numa linha */
+.filtro-hdr .ajuste-regua {
+  grid-template-columns: 150px 1fr;
+  margin: 4px 0 12px;
+}
+.filtro-hdr .ajuste-regua span {
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}

@@ -65,6 +65,7 @@ import { MOLDURAS } from './guardaRoupa';
 import { IdiomaSection } from './IdiomaSection';
 import { API_URL, api, loadToken, mediaUrl, saveToken } from './api';
 import { soToque } from './CelularComoCamera';
+import { correcaoHdrDisponivel, monitorEmHdr } from './correcaoHdr';
 import { AJUSTE_PADRAO, type AjusteDaCamera, ajusteAtivo, arrastar, entradaDaCamera, ZOOM_MAXIMO } from './ajusteDaCamera';
 import { FamiliaSection } from './Familia';
 import { procurarRepetidos } from './somParecido';
@@ -2624,7 +2625,54 @@ function VoiceSection({ voice }: { voice: Voice }) {
         </div>
       )}
       <RecomendarModo />
+      <FiltroDeHdr voice={voice} />
     </>
+  );
+}
+
+/**
+ * A CORREÇÃO DE HDR DA TRANSMISSÃO (27/11/2026, opcional; ver correcaoHdr.ts). Para quem transmite com o HDR do Windows ligado:
+ * a imagem chega mais clara e estourada a quem assiste. O filtro reduz a exposição, e a intensidade é de quem escolhe, porque
+ * foi calibrado numa cena só e não restaura o matiz que o HDR já cortou. Só onde o navegador deixa mexer nos quadros.
+ */
+function FiltroDeHdr({ voice }: { voice: Voice }) {
+  const t = useT();
+  const { filtroHdr } = useSettings();
+  const [emHdr, setEmHdr] = useState(() => monitorEmHdr());
+  useEffect(() => {
+    if (typeof matchMedia === 'undefined') return;
+    const consulta = matchMedia('(dynamic-range: high)');
+    const ao = () => setEmHdr(consulta.matches);
+    consulta.addEventListener('change', ao);
+    return () => consulta.removeEventListener('change', ao);
+  }, []);
+  if (!correcaoHdrDisponivel()) return null;
+  return (
+    <div className="filtro-hdr">
+      <Toggle
+        label={t('Corrigir HDR na transmissão')}
+        description={t('Com o HDR do Windows ligado, a imagem pode chegar mais clara e estourada a quem assiste. Este filtro reduz o brilho para ficar mais perto do que você vê. Vale na hora, também durante a transmissão.')}
+        nota={emHdr ? t('O seu monitor está em HDR agora.') : t('O seu monitor não parece estar em HDR agora.')}
+        checked={filtroHdr.ligado}
+        onChange={(ligado) => void voice.setFiltroHdr({ ...filtroHdr, ligado })}
+      />
+      {filtroHdr.ligado && (
+        <label className="ajuste-regua">
+          <span>
+            {t('Intensidade')} · {Math.round(filtroHdr.intensidade * 100)}%
+          </span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.05}
+            value={filtroHdr.intensidade}
+            aria-label={t('Intensidade')}
+            onChange={(e) => void voice.setFiltroHdr({ ...filtroHdr, intensidade: Number(e.target.value) })}
+          />
+        </label>
+      )}
+    </div>
   );
 }
 

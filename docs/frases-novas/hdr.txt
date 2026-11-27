@@ -1,0 +1,5 @@
+Corrigir HDR na transmissão
+Com o HDR do Windows ligado, a imagem pode chegar mais clara e estourada a quem assiste. Este filtro reduz o brilho para ficar mais perto do que você vê. Vale na hora, também durante a transmissão.
+O seu monitor está em HDR agora.
+O seu monitor não parece estar em HDR agora.
+Intensidade

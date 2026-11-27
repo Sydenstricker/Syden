@@ -68,6 +68,7 @@ import { ehEfeitoVisual, type EfeitoVisualId } from './efeitosVisuais';
 import type { DisparoVisual } from './CamadaDeEfeitos';
 import { type VoiceEffectId } from './voiceEffects';
 import { ProcessadorDoMicrofone, supressaoDisponivel } from './microfone';
+import { correcaoHdrDisponivel, type FiltroHdr, filtroHdrValido, ProcessadorDoHdr } from './correcaoHdr';
 import { ajusteDaImagemDisponivel, type EfeitoDoFundo, fundoDaCameraDisponivel, ProcessadorDoFundo } from './fundoDaCamera';
 import { type AjusteDaCamera, ajusteAtivo } from './ajusteDaCamera';
 import { type AppAudio, captureAppAudio } from './screenAudio';
@@ -1597,6 +1598,44 @@ export function useVoice(socket: Socket | null) {
       room.off(RoomEvent.LocalTrackPublished, aoPublicar);
     };
   }, [room, aplicarFundo]);
+  /**
+   * A CORREÇÃO DE HDR DA TRANSMISSÃO (opcional; ver correcaoHdr.ts): um processador na faixa de tela, posto ao publicá-la e
+   * ligado ou desligado na hora pelas Configurações. A intensidade o próprio processador lê a cada quadro. Numa fila, como o
+   * fundo da câmera. Ao trocar a tela (replaceTrack), o LiveKit reinicia o processador sozinho.
+   */
+  const filaDoHdr = useRef<Promise<void>>(Promise.resolve());
+  const aplicarFiltroHdr = useCallback(() => {
+    filaDoHdr.current = filaDoHdr.current.then(async () => {
+      const faixa = room.localParticipant.getTrackPublication(Track.Source.ScreenShare)?.videoTrack as LocalVideoTrack | undefined;
+      if (!faixa) return;
+      const quer = filtroHdrValido(getSettings().filtroHdr).ligado && correcaoHdrDisponivel();
+      const tem = faixa.getProcessor() instanceof ProcessadorDoHdr;
+      try {
+        if (!quer && tem) await faixa.stopProcessor();
+        else if (quer && !tem) await faixa.setProcessor(new ProcessadorDoHdr(() => getSettings().filtroHdr), true);
+      } catch (e) {
+        console.error(e);
+        reportProblem('transmissão', `correção de HDR: ${e instanceof Error ? e.message : String(e)}`.slice(0, 200));
+      }
+    });
+    return filaDoHdr.current;
+  }, [room]);
+  useEffect(() => {
+    const aoPublicar = (pub: TrackPublication) => {
+      if (pub.source === Track.Source.ScreenShare) void aplicarFiltroHdr();
+    };
+    room.on(RoomEvent.LocalTrackPublished, aoPublicar);
+    return () => {
+      room.off(RoomEvent.LocalTrackPublished, aoPublicar);
+    };
+  }, [room, aplicarFiltroHdr]);
+  const setFiltroHdr = useCallback(
+    (filtro: FiltroHdr) => {
+      updateSettings({ filtroHdr: filtroHdrValido(filtro) });
+      return aplicarFiltroHdr();
+    },
+    [aplicarFiltroHdr],
+  );
   const setFundoDaCamera = useCallback(
     (efeito: EfeitoDoFundo) => {
       updateSettings({ fundoDaCamera: efeito });
@@ -2485,6 +2524,7 @@ export function useVoice(socket: Socket | null) {
     abrirCelular,
     fecharCelular,
     setFundoDaCamera,
+    setFiltroHdr,
     setAjusteDaCamera,
     shareScreen,
     stopScreen,

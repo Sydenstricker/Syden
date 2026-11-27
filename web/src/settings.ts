@@ -1,4 +1,5 @@
 import { AJUSTE_PADRAO, type AjusteDaCamera, ajusteValido } from './ajusteDaCamera';
+import { FILTRO_HDR_PADRAO, type FiltroHdr, filtroHdrValido } from './correcaoHdr';
 import type { QuadrosDaTela, ResolucaoDaTela } from './telaPersonalizada';
 import { useSyncExternalStore } from 'react';
 import type { Paleta, Theme } from './theme';
@@ -31,6 +32,8 @@ export interface Settings {
   qualidadeDoFundo: 'automatico' | 'leve' | 'completo';
   /** Enquadrar, formato, espelho e luz da câmera (ver ajusteDaCamera.ts). */
   ajusteDaCamera: AjusteDaCamera;
+  /** A correção de HDR da transmissão (opcional, desligada de fábrica; ver correcaoHdr.ts). */
+  filtroHdr: FiltroHdr;
   noiseSuppression: boolean;
   echoCancellation: boolean;
   screenQuality: ScreenQuality;
@@ -102,6 +105,7 @@ const DEFAULTS: Settings = {
   fundoDaCamera: 'nenhum',
   qualidadeDoFundo: 'automatico',
   ajusteDaCamera: AJUSTE_PADRAO,
+  filtroHdr: FILTRO_HDR_PADRAO,
   noiseSuppression: true,
   echoCancellation: true,
   screenQuality: 'standard',
@@ -152,7 +156,7 @@ function load(): Settings {
   try {
     const guardado = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
     const lido = { ...DEFAULTS, ...converterPreferenciasAntigas(guardado) } as Settings;
-    return { ...lido, ajusteDaCamera: ajusteValido(lido.ajusteDaCamera) };
+    return { ...lido, ajusteDaCamera: ajusteValido(lido.ajusteDaCamera), filtroHdr: filtroHdrValido(lido.filtroHdr) };
   } catch {
     return DEFAULTS;
   }

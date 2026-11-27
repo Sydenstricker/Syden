@@ -3367,3 +3367,41 @@ palco da sala de voz, por enquanto.
   (2) **Política de privacidade: não muda** (decisão dele, 27/11/2026: "não vejo necessidade por causa de dados"); o que se rola e os atalhos
   entram no "Levar seus dados" e são apagados com a conta. (3) Ninguém jogou com gente. (4) Ficaram de fora: o dado 3D, o d100 com dado de dezenas
   (bônus e penalidade), as tabelas aleatórias nossas (nomes de fantasia, d66) e o baralho.
+
+## HDR na transmissão: um filtro opcional que ameniza, não restaura
+
+**Feito em 27/11/2026, pedido dele** ("usuário usa muito função HDR"; as duas capturas do mesmo jogo, a tela de quem jogava e a imagem
+que chegou a quem assistia, vieram dele). `web/src/correcaoHdr.ts`; Configurações → Voz e vídeo → "Corrigir HDR na transmissão",
+**desligado de fábrica**, com a régua de Intensidade (padrão 40%).
+
+- **O defeito, medido** (`e2e/hdr/`, fora do git): com o HDR do Windows ligado a imagem chega mais clara e estourada. A luminância média
+  foi de 159 para 216, 16,6% dos pixels viraram branco (contra 1%), e as cores saturadas foram puxadas para ciano, amarelo e magenta
+  (a quadra azul, matiz 210°, chegou em 184°; o laranja do HUD chegou amarelo). O padrão, nos quatro pares de cor medidos: o canal do
+  MEIO sobe até o teto (rosa 184 → 254, laranja 140 → 231, quadra 152 → 252). Não é só brilho nem gama: **o canal que vai ao teto perde
+  a informação**, e o azul que virou ciano não tem como voltar.
+- **O que o filtro faz, e só isso:** divide o pixel por um ganho k em LUZ LINEAR, deixando em paz o quase-branco (nuvens, texto
+  branco), numa conta igual no shader de WebGL2 e em `corrigirPixel`. k = 1 + 1,2 × intensidade (padrão 40% = 1,48, o melhor ajuste).
+  Aproxima a cor da tela original em cerca de 20% (distância média 53 → 42 nos pares); a quadra, de 101 para ~67. **Não restaura o
+  matiz**: o azul continua turquesa, só menos estourado (a 100% vira verde-azulado escuro). Foi isso que o ajuste mostrou; um filtro
+  por pixel não passa disso, porque um mesmo (81, 252, 254) pode ter sido um azul ou um ciano de verdade.
+- **Como roda:** um processador na faixa de tela (o mesmo modelo do fundo da câmera): `MediaStreamTrackProcessor` → shader →
+  `MediaStreamTrackGenerator`. Só onde o navegador mexe nos quadros (o app, Chrome e Edge); sem isso a seção nem aparece. Se a placa
+  recusar, o quadro passa como veio. **A dica de conteúdo (`motion`/`detail`) que a otimização da transmissão muda na faixa de ORIGEM
+  é copiada para a faixa de saída a cada quadro**, porque o codificador lê a da saída. Trocar a tela (`replaceTrack`) reinicia o
+  processador pelo LiveKit (`restart`). A intensidade vale na hora, também durante a transmissão. O processador recebe a leitura das
+  preferências de fora (`lerFiltro`), para o módulo não importar `settings.ts` (importação circular).
+- **A tela diz se o monitor está em HDR** (a consulta de CSS `dynamic-range: high`), só como informação; o filtro NUNCA liga sozinho.
+- **Testes:** `web/test/correcaoHdr.test.ts` (as propriedades: preto e branco intactos, cinzas continuam neutros, nunca clareia,
+  monotônico, e a calibração gravada com os pares medidos); `e2e/filtro-hdr.mjs` (a imagem que chegou, pelo processador de verdade:
+  o shader bate com a conta nas áreas planas, diferença média 0,72 em 52 mil pixels, nenhum acima de 3; desligado, passa idêntico;
+  a dica de conteúdo chega à saída; a intensidade muda sem reiniciar) e `e2e/filtro-hdr-config.mjs` (a seção, a régua e o que fica
+  guardado depois de recarregar). Nas bordas de cor a saída difere da conta, porque a faixa codificada é 4:2:0 e borra o croma: por
+  isso o e2e compara só as áreas planas.
+- **PENDÊNCIAS:** (1) **só foi calibrado numa cena de um jogo** (Just Volleyball, o mapa do céu): quem tem HDR e vê outra coisa ajusta a
+  régua, e o certo é medir mais pares (outros jogos, a interface do Windows). (2) **Ninguém testou com uma transmissão de verdade
+  pelo app**: o e2e passa a imagem pelo processador, mas não a captura de tela do Windows nem a chamada. (3) **O custo na placa de quem
+  joga não foi medido** (1080p a 60 quadros disputa a GPU com o jogo): medir antes de pensar em ligar sozinho. (4) **Ligar sozinho
+  quando o monitor está em HDR** fica como decisão dele (a regra do "o Syden decide" pede medir antes). (5) A correção de verdade, que
+  restauraria o matiz, é capturar em ponto flutuante antes do corte (Windows.Graphics.Capture em R16G16B16A16Float, no módulo nativo)
+  e fazer o mapeamento de tons ali: uma obra de semanas, com o custo de levar os quadros nativos ao WebRTC. As frases novas estão em
+  `docs/frases-novas/hdr.txt` (só em português, como as dos dados).
